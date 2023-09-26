@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+
 import { UserDataService } from '../user-data.service';
 
 @Component({
@@ -9,19 +11,27 @@ import { UserDataService } from '../user-data.service';
 })
 export class HeaderComponent implements OnInit {
   color!: string;
+  private colorSubscription!: Subscription;
   pages = ['Game', 'Leaderboard', 'Chat', 'Profile'];
+  
   constructor(private router: Router,
     private userDataService: UserDataService) {
       this.color = ''
-    }
-
-  ngOnInit(): void {
-    this.color = this.userDataService.getColor();
   }
 
-  // another method for changing color after clicking button in Profile
+  ngOnInit(): void {
+    this.colorSubscription = this.userDataService.color$.subscribe(
+      (color) => {
+        this.color = color;
+      }
+    );
+  }
 
   isCurrentPage(page: string): boolean {
     return this.router.isActive(`/${page.toLowerCase()}`, true);
+  }
+
+  ngOnDestroy(): void {
+    this.colorSubscription.unsubscribe();
   }
 }

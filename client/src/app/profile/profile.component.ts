@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../user-data.service';
 import { User } from '../shared/user';
@@ -10,11 +11,12 @@ import { User } from '../shared/user';
 })
 export class ProfileComponent implements OnInit {
   myUser: User;
+  private colorSubscription!: Subscription;
 
   constructor(
     private userDataService: UserDataService) {
       this.myUser = {
-        id: 0, // You can set it to a default value
+        id: 0,
         userName: '',
         score: 0,
         color: '',
@@ -24,6 +26,11 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.myUser = this.userDataService.getUser();
+    this.colorSubscription = this.userDataService.color$.subscribe(
+      (color) => {
+        this.myUser.color = color;
+      }
+    );
   }
 
   editName(name: string) {
@@ -32,5 +39,9 @@ export class ProfileComponent implements OnInit {
 
   editColor(color: string) {
     this.userDataService.setColor(color);
+  }
+
+  ngOnDestroy(): void {
+    this.colorSubscription.unsubscribe();
   }
 }

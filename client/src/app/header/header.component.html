@@ -7,8 +7,7 @@
 		<ul class="m-2 flex h-full items-center">
 			<li *ngFor="let page of pages" class=" flex items-center justify-center p-2 h-full cursor-pointer hover:text-violet-500 transition-all"
 				[class.text-violet-300]="!isCurrentPage(page)"
-				[class.text-violet-500]="isCurrentPage(page)"
-			>
+				[class.text-violet-500]="isCurrentPage(page)">
 				<a routerLink="/{{ page | lowercase }}">{{ page | lowercase }}</a>
 			</li>
 		</ul>

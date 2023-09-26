@@ -1,18 +1,21 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
 import { User } from './shared/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserDataService {
   myUser!: User;
+  private colorSubject = new BehaviorSubject<string>('#E0CEFE');
+  color$ = this.colorSubject.asObservable();
 
   constructor() {
     this.myUser = {
       id: 1,
-      userName: 'Me',
+      userName: 'Nadiia',
       score: 110,
-      color: '#E0CEFE',
       avatarUrl: './assets/avatars/av1.jpg',
     }
   }
@@ -22,7 +25,7 @@ export class UserDataService {
   }
 
   getColor() {
-    return this.myUser.color;
+    return this.colorSubject.value;;
   }
 
   setName(name: string) {
@@ -30,6 +33,6 @@ export class UserDataService {
   }
 
   setColor(color: string) {
-    this.myUser.color = color;
+    this.colorSubject.next(color);
   }
 }
