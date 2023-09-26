@@ -1,1 +1,7 @@
 <p>chat works!</p>
+<div *ngFor="let message of messages">
+    <div class="flex p-2">
+        <p class="font-bold">{{message.user}}:</p>
+        <p class="ml-2">{{message.text}}</p>
+    </div>
+</div>

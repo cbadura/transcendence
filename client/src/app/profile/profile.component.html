@@ -1,1 +1,7 @@
-<p>profile works!</p>
+<div>
+    <h1>User Profile</h1>
+    <p>Name: {{ myUser.userName }}</p>
+    <p>Color: {{myUser.color}}</p>
+    <button type="button" (click)="editName('jean')">Change name</button>
+    <button type="button" (click)="editColor('#fcba03')">Change color</button>
+</div>

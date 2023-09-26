@@ -7,4 +7,14 @@ import { Component } from '@angular/core';
 })
 export class ChatComponent {
 
+  messages = [
+    {
+      text: 'Hello',
+      user: 'John Doe'
+    },
+    {
+      text: 'Hi',
+      user: 'Jane Doe'
+    }
+  ]
 }

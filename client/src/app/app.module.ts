@@ -10,6 +10,7 @@ import { ChatComponent } from './chat/chat.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { SortByScorePipe } from './sort-by-score.pipe';
+import { UserDataService } from './user-data.service';
 
 
 
@@ -28,7 +29,7 @@ import { SortByScorePipe } from './sort-by-score.pipe';
     BrowserModule,
 		AppRoutingModule
 	],
-  providers: [],
+  providers: [UserDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

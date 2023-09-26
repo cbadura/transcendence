@@ -30,6 +30,7 @@ export class UserListComponent {
         id: 2,
         userName: 'Cosmo',
         score: 80,
+        color: 'black',
         avatarUrl: './assets/avatars/av2.jpg'
       }
     ];
