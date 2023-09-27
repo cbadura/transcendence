@@ -68,6 +68,14 @@ export class GameComponent {
     }, 10);
   }
 
+  getUserScore() {
+    return this.userScore;
+  }
+
+  getOppScore() {
+    return this.oppScore;
+  }
+
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     const max = this.ctx.canvas.height - 50;

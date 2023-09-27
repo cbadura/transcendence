@@ -39,10 +39,10 @@ export class Ball {
 		if (this.x <= this.ballRadius || this.x >= this.ctx.canvas.width - this.ballRadius) {
 			this.stop = true;
 			if (this.x <= this.ballRadius ) {
-				return 1;
+				return 2;
 			}
 			else if (this.x >= this.ctx.canvas.width - this.ballRadius) {
-				return 2;
+				return 1;
 			}
 		}
 		return 0;
