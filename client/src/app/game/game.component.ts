@@ -1,6 +1,9 @@
-import { Component, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, ViewChild, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+
 import { Square } from './square';
 import { Ball } from './ball';
+import { UserDataService } from '../user-data.service';
 
 @Component({
   selector: 'tcd-game',
@@ -9,12 +12,25 @@ import { Ball } from './ball';
 })
 export class GameComponent {
   @ViewChild('canvas', { static: true })
-  canvas!: ElementRef<HTMLCanvasElement>;  
-  
+  canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
   private paddle!: Square;
   private oppPaddle!: Square;
   private ball!: Ball;
+  private paddleColor!: string;
+  private userScore = 0;
+  private oppScore = 0;
+  private colorSubscription!: Subscription;
+
+  constructor(private userDataService: UserDataService) {}
+
+  ngOnInit() {
+    this.colorSubscription = this.userDataService.color$.subscribe(
+      (color) => {
+        this.paddleColor = color;
+      }
+    );
+  }
 
   ngAfterViewInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -24,7 +40,7 @@ export class GameComponent {
   
   play(): void {
     this.paddle = new Square(this.ctx, 10, 10, 10, 50);
-    this.ctx.fillStyle = 'red';
+    this.ctx.fillStyle = this.paddleColor;
     this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 20, 10,
       10, 50);
     this.ball = new Ball(this.ctx, this.ctx.canvas.width / 2 - 5, this.ctx.canvas.height / 2 - 5, 1, 1, 1.5, false)
@@ -36,8 +52,15 @@ export class GameComponent {
   }
 
   game() : void {
+    let score = 0;
     const itval = setInterval(() => {
-      this.ball.move(this.paddle.y, this.oppPaddle.y);
+      score = this.ball.move(this.paddle.y, this.oppPaddle.y);
+      if (score === 1) {
+        this.userScore++;
+      }
+      else if (score == 2) {
+        this.oppScore++;
+      }
       if (this.ball.stop) {
         clearInterval(itval);
       }
@@ -80,7 +103,7 @@ export class GameComponent {
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    this.ctx.fillStyle = 'red';
+    this.ctx.fillStyle = this.paddleColor;
     this.paddle.draw();
     this.ctx.fillStyle = 'blue';
     this.oppPaddle.draw();
