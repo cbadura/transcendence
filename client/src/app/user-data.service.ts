@@ -8,6 +8,7 @@ import { User } from './shared/user';
 })
 export class UserDataService {
   myUser!: User;
+  // can the Subject be a User object?
   private colorSubject = new BehaviorSubject<string>('#E0CEFE');
   color$ = this.colorSubject.asObservable();
 

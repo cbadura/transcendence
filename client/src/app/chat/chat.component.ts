@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+import { ChatHistoryService } from '../chat-history.service';
+import { Post } from '../shared/post';
 
 @Component({
   selector: 'tcd-chat',
@@ -6,15 +9,25 @@ import { Component } from '@angular/core';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent {
+  messages!: Post[];
+  post!: Post;
+  tempText!: string;
 
-  messages = [
-    {
-      text: 'Hello',
-      user: 'John Doe'
-    },
-    {
-      text: 'Hi',
-      user: 'Jane Doe'
-    }
-  ]
+  constructor(private chatHistoryService: ChatHistoryService) {
+    this.messages = [];
+    this.post = {
+        user: 'This user',
+        text: ''
+    };
+    this.tempText = '';
+  }
+
+  ngOnInit() {
+    this.messages = this.chatHistoryService.getHistory();
+  }
+
+  savePost(message: string) {
+    this.post.text = message;
+    this.chatHistoryService.addPost(this.post);
+  }
 }

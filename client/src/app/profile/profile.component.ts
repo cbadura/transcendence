@@ -24,6 +24,8 @@ export class ProfileComponent implements OnInit {
         color: '',
         avatarUrl: '',
       };
+      this.tempUserName = '';
+      this.tempColor = '';
   }
 
   ngOnInit() {
@@ -31,8 +33,6 @@ export class ProfileComponent implements OnInit {
     this.colorSubscription = this.userDataService.color$.subscribe(
       (color) => {
         this.myUser.color = color;
-        this.tempUserName = '';
-        this.tempColor = '';
       }
     );
   }
