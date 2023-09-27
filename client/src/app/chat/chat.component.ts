@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 
 import { ChatHistoryService } from '../chat-history.service';
+import { UserDataService } from '../user-data.service';
 import { Post } from '../shared/post';
 
 @Component({
@@ -10,15 +12,13 @@ import { Post } from '../shared/post';
 })
 export class ChatComponent {
   messages!: Post[];
-  post!: Post;
   tempText!: string;
 
-  constructor(private chatHistoryService: ChatHistoryService) {
+  constructor(
+    public datepipe: DatePipe,
+    private chatHistoryService: ChatHistoryService,
+    private userDataService: UserDataService) {
     this.messages = [];
-    this.post = {
-        user: 'This user',
-        text: ''
-    };
     this.tempText = '';
   }
 
@@ -27,7 +27,11 @@ export class ChatComponent {
   }
 
   savePost(message: string) {
-    this.post.text = message;
-    this.chatHistoryService.addPost(this.post);
+    const newPost: Post = {
+        user: this.userDataService.getUser().userName,
+        text: message,
+        dateTime: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
+    };
+    this.chatHistoryService.addPost(newPost);
   }
 }

@@ -1,5 +1,7 @@
+import { DatePipe } from "@angular/common";
+
 export interface Post {
     user: string;
     text: string;
-    // time: string;
+    dateTime: string | null;
 }

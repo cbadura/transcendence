@@ -2,8 +2,9 @@
 <div class="border">
   <div *ngFor="let message of messages">
     <div class="flex p-2">
-      <p class="font-bold">{{message.user}}:</p>
-      <p class="ml-2">{{message.text}}</p>
+      <p class="font-bold">{{ message.user }}:</p>
+      <p class="ml-2">{{ message.text }}</p>
+      <p class="italic ml-1">({{ message.dateTime }})</p>
     </div>
   </div>
 </div>

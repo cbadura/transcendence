@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit {
         userName: '',
         score: 0,
         color: '',
-        avatarUrl: '',
+        avatarUrl: ''
       };
       this.tempUserName = '';
       this.tempColor = '';

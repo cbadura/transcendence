@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DatePipe } from "@angular/common";
 
 import { Post } from './shared/post';
 
@@ -8,17 +9,17 @@ import { Post } from './shared/post';
 export class ChatHistoryService {
   chatHistory: Post[] = [];
 
-  constructor() {
+  constructor(public datepipe: DatePipe) {
     this.chatHistory = [
       {
         user: 'John Doe',
         text: 'Hello',
-        // time: '20:00'
+        dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
       },
       {
         user: 'Jane Doe',
         text: 'Hi',
-        // time: '20:01'
+        dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
       }
     ]
   }
