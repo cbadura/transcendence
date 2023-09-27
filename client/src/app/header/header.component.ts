@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit {
   
   constructor(private router: Router,
     private userDataService: UserDataService) {
-      this.color = ''
+      this.color = '';
   }
 
   ngOnInit(): void {

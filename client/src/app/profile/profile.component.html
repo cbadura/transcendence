@@ -1,7 +1,15 @@
 <div>
-    <h1>User Profile</h1>
+    <h1 class="font-bold text-2xl">User Profile</h1>
     <p>Name: {{ myUser.userName }}</p>
-    <p>Color: {{myUser.color}}</p>
-    <button type="button" (click)="editName('Jean')">Change name</button>
-    <button type="button" (click)="editColor('#fcba03')">Change color</button>
+    <p>score: {{ myUser.score }}</p>
+    <p>Color: {{ myUser.color }}</p>
+    <p>Avatar: <img  class="w-32" *ngIf="myUser.avatarUrl" [src]="myUser.avatarUrl"
+        alt="avatar"></p>
+
+    <div class="flex items-center justify-center p-2 h-full">
+        <input class="border" type="text" [(ngModel)]="tempUserName" placeholder="{{ myUser.userName }}">
+        <button class="border" type="button" (click)="editName(tempUserName)">Change name</button>
+        <input class="border" type="text" [(ngModel)]="tempColor" placeholder="{{ myUser.color }}">
+        <button class="border" type="button" (click)="editColor(tempColor)">Change color</button>
+    </div>
 </div>

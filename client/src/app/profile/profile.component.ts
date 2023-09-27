@@ -12,6 +12,8 @@ import { User } from '../shared/user';
 export class ProfileComponent implements OnInit {
   myUser: User;
   private colorSubscription!: Subscription;
+  tempUserName!: string;
+  tempColor!: string;
 
   constructor(
     private userDataService: UserDataService) {
@@ -29,6 +31,8 @@ export class ProfileComponent implements OnInit {
     this.colorSubscription = this.userDataService.color$.subscribe(
       (color) => {
         this.myUser.color = color;
+        this.tempUserName = '';
+        this.tempColor = '';
       }
     );
   }
