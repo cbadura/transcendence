@@ -39,32 +39,38 @@ export class GameComponent {
   }
   
   play(): void {
-    this.paddle = new Square(this.ctx, 10, 10, 10, 50);
-    this.ctx.fillStyle = this.paddleColor;
-    this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 20, 10,
-      10, 50);
-    this.ball = new Ball(this.ctx, this.ctx.canvas.width / 2 - 5, this.ctx.canvas.height / 2 - 5, 1, 1, 1.5, false)
-    this.ball.draw();
-    this.paddle.draw();
-    this.ctx.fillStyle = 'blue';
-    this.oppPaddle.draw();
-    this.game();
+      this.paddle = new Square(this.ctx, 10, 10, 10, 50);
+      this.ctx.fillStyle = this.paddleColor;
+      this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 20, 10,
+        10, 50);
+      this.ball = new Ball(this.ctx);
+      this.ball.resetBall();
+      this.ball.draw();
+      this.paddle.draw();
+      this.ctx.fillStyle = 'blue';
+      this.oppPaddle.draw();
+      this.game();
   }
 
   game() : void {
-    let score = 0;
     const itval = setInterval(() => {
-      score = this.ball.move(this.paddle.y, this.oppPaddle.y);
+      const score = this.ball.move(this.paddle.y, this.oppPaddle.y);
       if (score === 1) {
         this.userScore++;
+        this.ball.resetBall();
       }
       else if (score == 2) {
         this.oppScore++;
-      }
-      if (this.ball.stop) {
-        clearInterval(itval);
+        this.ball.resetBall();
       }
       this.redraw();
+
+      if (this.userScore >= 5 || this.oppScore >= 5) {
+        clearInterval(itval);
+      } else if (this.ball.stop) {
+        clearInterval(itval);
+        this.game();
+      }
     }, 10);
   }
 
