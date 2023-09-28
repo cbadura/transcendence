@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../user-data.service';
+import { User } from '../shared/user';
 
 @Component({
   selector: 'tcd-header',
@@ -10,19 +11,19 @@ import { UserDataService } from '../user-data.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  color!: string;
+  myUser!: User;
   private colorSubscription!: Subscription;
+  private userSubscription!: Subscription;
   pages = ['Game', 'Leaderboard', 'Chat', 'Profile'];
   
   constructor(private router: Router,
     private userDataService: UserDataService) {
-      this.color = '';
   }
 
   ngOnInit(): void {
-    this.colorSubscription = this.userDataService.color$.subscribe(
-      (color) => {
-        this.color = color;
+    this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
       }
     );
   }
@@ -32,6 +33,6 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.colorSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
   }
 }

@@ -7,33 +7,46 @@ import { User } from './shared/user';
   providedIn: 'root',
 })
 export class UserDataService {
-  myUser!: User;
-  // can the Subject be a User object?
-  private colorSubject = new BehaviorSubject<string>('#E0CEFE');
-  color$ = this.colorSubject.asObservable();
+  private myUser: User = {
+    id: 1,
+    userName: 'Nadiia',
+    status: 'online',
+    wins: 0,
+    losses: 0,
+    color: 'green',
+    avatarUrl: './assets/avatars/av1.jpg',
+    friends: []
+  };
 
-  constructor() {
-    this.myUser = {
-      id: 1,
-      userName: 'Nadiia',
-      score: 110,
-      avatarUrl: './assets/avatars/av1.jpg',
-    }
-  }
+  constructor() {}
 
-  getUser() {
-    return this.myUser;
-  }
+  private userSubject = new BehaviorSubject<User>(this.myUser);
+  user$ = this.userSubject.asObservable();
 
-  getColor() {
-    return this.colorSubject.value;;
+
+  getUser(): User {
+    return this.userSubject.value;
   }
 
   setName(name: string) {
-    this.myUser.userName = name;
+    const user = { ...this.getUser(), userName: name }; // shallow copy with spread operator, then update
+    this.userSubject.next(user);
   }
 
   setColor(color: string) {
-    this.colorSubject.next(color);
+    const user = { ...this.getUser(), color: color };
+    this.userSubject.next(user);
+  }
+
+  incrementWins() {
+    let wins = ++this.myUser.wins;
+    const user = { ...this.getUser(), wins: wins };
+    this.userSubject.next(user);
+  }
+
+  incrementLosses() {
+    let losses = ++this.myUser.losses;
+    const user = { ...this.getUser(), losses: losses };
+    this.userSubject.next(user);
   }
 }

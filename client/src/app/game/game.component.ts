@@ -1,9 +1,10 @@
-import { Component, ViewChild, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { Square } from './square';
 import { Ball } from './ball';
 import { UserDataService } from '../user-data.service';
+import { User } from '../shared/user';
 
 @Component({
   selector: 'tcd-game',
@@ -20,14 +21,16 @@ export class GameComponent {
   private paddleColor!: string;
   private userScore = 0;
   private oppScore = 0;
-  private colorSubscription!: Subscription;
+  private userSubscription!: Subscription;
+  myUser!: User;
 
   constructor(private userDataService: UserDataService) {}
 
   ngOnInit() {
-    this.colorSubscription = this.userDataService.color$.subscribe(
-      (color) => {
-        this.paddleColor = color;
+    this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+        this.paddleColor = this.myUser.color;
       }
     );
   }
@@ -66,6 +69,11 @@ export class GameComponent {
       this.redraw();
 
       if (this.userScore >= 5 || this.oppScore >= 5) {
+        if (this.userScore >= 5) {
+          this.incrementUserWins();
+        } else if (this.oppScore >= 5) {
+          this.incrementUserLosses();
+        }
         clearInterval(itval);
       } else if (this.ball.stop) {
         clearInterval(itval);
@@ -86,7 +94,6 @@ export class GameComponent {
   handleKeyDown(event: KeyboardEvent) {
     const max = this.ctx.canvas.height - 50;
 
-    console.log(event.key);
     if (event.key === 'w') {
       if (this.paddle.y > 0) {
         this.paddle.moveBy(-15);
@@ -123,5 +130,17 @@ export class GameComponent {
     this.oppPaddle.draw();
     this.ctx.fillStyle = 'yellow';
     this.ball.draw();
+  }
+
+  incrementUserWins() {
+    this.userDataService.incrementWins();
+  }
+
+  incrementUserLosses() {
+    this.userDataService.incrementLosses();
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription.unsubscribe();
   }
 }

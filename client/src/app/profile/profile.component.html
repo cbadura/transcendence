@@ -5,7 +5,8 @@
     <input class="border" type="text" [(ngModel)]="tempUserName" placeholder="Enter name">
     <button class="border" type="button" (click)="editName(tempUserName)">Change name</button>
   </p>
-  <p class="flex items-center justify-center p-2 h-full">score: {{ myUser.score }}</p>
+  <p class="flex items-center justify-center p-2 h-full">wins: {{ myUser.wins }}</p>
+  <p class="flex items-center justify-center p-2 h-full">losses: {{ myUser.losses }}</p>
   <p class="flex items-center justify-center p-2 h-full">
     Color: {{ myUser.color }}
     <input class="border" type="text" [(ngModel)]="tempColor" placeholder="Enter color">

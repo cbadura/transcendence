@@ -11,7 +11,7 @@ import { User } from '../shared/user';
 })
 export class ProfileComponent implements OnInit {
   myUser: User;
-  private colorSubscription!: Subscription;
+  private userSubscription!: Subscription;
   tempUserName!: string;
   tempColor!: string;
 
@@ -20,19 +20,21 @@ export class ProfileComponent implements OnInit {
       this.myUser = {
         id: 0,
         userName: '',
-        score: 0,
+        status: '',
+        wins: 0,
+        losses: 0,
         color: '',
-        avatarUrl: ''
+        avatarUrl: '',
+        friends: []
       };
       this.tempUserName = '';
       this.tempColor = '';
   }
 
   ngOnInit() {
-    this.myUser = this.userDataService.getUser();
-    this.colorSubscription = this.userDataService.color$.subscribe(
-      (color) => {
-        this.myUser.color = color;
+    this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
       }
     );
   }
@@ -46,6 +48,6 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.colorSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
   }
 }

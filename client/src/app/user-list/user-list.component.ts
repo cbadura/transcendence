@@ -15,23 +15,52 @@ export class UserListComponent {
       {
         id: 0,
         userName: 'Chris',
-        score: 100,
+        status: 'online',
+        wins: 5,
+        losses: 5,
         color: 'blue',
-        avatarUrl: './assets/avatars/av0.jpg'
+        avatarUrl: './assets/avatars/av0.jpg',
+        friends: []
       },
       {
         id: 1,
         userName: 'Luca',
-        score: 50,
+        status: 'online',
+        wins: 12,
+        losses: 2,
         color: 'purple',
-        avatarUrl: './assets/avatars/av1.jpg'
+        avatarUrl: './assets/avatars/av1.jpg',
+        friends: []
       },
       {
         id: 2,
         userName: 'Cosmo',
-        score: 80,
+        status: 'online',
+        wins: 10,
+        losses: 6,
         color: 'black',
-        avatarUrl: './assets/avatars/av2.jpg'
+        avatarUrl: './assets/avatars/av2.jpg',
+        friends: []
+      },
+      {
+        id: 3,
+        userName: 'Jean',
+        status: 'online',
+        wins: 14,
+        losses: 6,
+        color: 'black',
+        avatarUrl: './assets/avatars/av4.jpg',
+        friends: []
+      },
+      {
+        id: 3,
+        userName: 'Nadiia',
+        status: 'online',
+        wins: 16,
+        losses: 6,
+        color: 'black',
+        avatarUrl: './assets/avatars/av3.jpg',
+        friends: []
       }
     ];
   }

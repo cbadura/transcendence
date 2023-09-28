@@ -1,7 +1,10 @@
 export interface User {
     id: number;
     userName: string;
-    score: number;
-    color?: string;
+    status: string;
+    wins: number;
+    losses: number;
+    color: string;
     avatarUrl?: string;
+    friends: User[];
 }

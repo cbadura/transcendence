@@ -7,7 +7,7 @@ export class SortByScorePipe implements PipeTransform {
 
   transform(value: any[]): any[] {
     return value.sort((n1, n2) => {
-      return n2.score - n1.score; 
+      return n2.wins - n1.wins; 
     });
   }
 }

@@ -65,6 +65,6 @@ export class Ball {
 		this.dirX = 1;
 		this.dirY = 1;
 		this.stop = false;
-		this.speed = (Math.floor(Math.random() * 2) === 0 ? 1.5 : -1.5);
+		this.speed = (Math.floor(Math.random() * 2) === 0 ? 1.8 : -1.8);
 	}
 }
