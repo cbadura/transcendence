@@ -62,9 +62,9 @@ export class Ball {
 	resetBall() {
 		this.x = this.ctx.canvas.width / 2 - 5;
 		this.y = this.ctx.canvas.height / 2 - 5;
-		this.dirX = 1;
-		this.dirY = 1;
+		this.dirX = (Math.floor(Math.random() * 2) === 0 ? 1 : -1);;
+		this.dirY = (Math.floor(Math.random() * 2));
 		this.stop = false;
-		this.speed = (Math.floor(Math.random() * 2) === 0 ? 1.8 : -1.8);
+		this.speed = 1.8;
 	}
 }

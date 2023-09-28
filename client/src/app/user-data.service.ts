@@ -13,7 +13,7 @@ export class UserDataService {
     status: 'online',
     wins: 0,
     losses: 0,
-    color: 'green',
+    color: '#E7C9FF',
     avatarUrl: './assets/avatars/av1.jpg',
     friends: []
   };

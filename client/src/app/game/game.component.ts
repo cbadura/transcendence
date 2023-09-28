@@ -42,7 +42,7 @@ export class GameComponent {
   }
   
   play(): void {
-      this.paddle = new Square(this.ctx, 10, 10, 10, 50);
+      this.paddle = new Square(this.ctx, 10, this.ctx.canvas.height / 2 - 20, 10, 50);
       this.ctx.fillStyle = this.paddleColor;
       this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 20, 10,
         10, 50);
