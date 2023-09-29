@@ -6,6 +6,8 @@ export class Ball {
 	dirY!: number;
 	speed!: number;
 	stop: boolean = false;
+	
+	private MAX_BOUNCE_ANGLE = 75 * Math.PI / 180;  // 75 degrees in radians
 
 	constructor(private ctx: CanvasRenderingContext2D) { }
 
@@ -29,6 +31,11 @@ export class Ball {
 		// left paddle
 		if (this.x - this.ballRadius < 20 && this.y + this.ballRadius > paddleY && this.y - this.ballRadius < paddleY + 50) {
 			this.dirX *= -1;
+			// calculate bouncing angle
+			const relativehitPoint = (this.y - (paddleY + 25)) / 25;  // paddle height is 50
+			const bounceAngle = this.MAX_BOUNCE_ANGLE * relativehitPoint;
+			this.dirY = Math.sin(bounceAngle);
+
 			if (this.speed > 0) {
 				this.speed += 0.2;
 			} else {
@@ -39,6 +46,11 @@ export class Ball {
 		// right paddle
 		else if (this.x + this.ballRadius > this.ctx.canvas.width - 20 && this.y + this.ballRadius > paddOppY && this.y - this.ballRadius < paddOppY + 50) {
 			this.dirX *= -1;
+			// calculate bouncing angle
+			const relativehitPoint = (this.y - (paddOppY + 30)) / 30;
+			const bounceAngle = this.MAX_BOUNCE_ANGLE * relativehitPoint;
+			this.dirY = Math.sin(bounceAngle);
+
 			if (this.speed > 0) {
 				this.speed += 0.2;
 			} else {

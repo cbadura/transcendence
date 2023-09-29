@@ -122,11 +122,11 @@ export class GameComponent {
   redraw() {
     const canvas = this.ctx.canvas;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    this.ctx.beginPath();
+    // this.ctx.beginPath();
 
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // this.drawCourt();
+    this.drawCourt();
 
     this.ctx.fillStyle = this.paddleColor;
     this.paddle.draw();
