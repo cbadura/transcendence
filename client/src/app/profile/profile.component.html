@@ -1,0 +1,26 @@
+<div>
+  <div>
+    <img class="w-32" *ngIf="myUser.avatarUrl" [src]="myUser.avatarUrl" alt="avatar">
+    <h1>{{ myUser.userName }}</h1>
+    <p>level 6</p>
+    <button><a>
+      
+    </a></button>
+  </div>
+  <h1 class="font-bold text-2xl">User Profile</h1>
+  <p class="flex items-center justify-center p-2 h-full">
+    Name: {{ myUser.userName }}
+    <input class="border" type="text" [(ngModel)]="tempUserName" placeholder="Enter name">
+    <button class="border" type="button" (click)="editName(tempUserName)">Change name</button>
+  </p>
+  <p class="flex items-center justify-center p-2 h-full">wins: {{ myUser.wins }}</p>
+  <p class="flex items-center justify-center p-2 h-full">losses: {{ myUser.losses }}</p>
+  <p class="flex items-center justify-center p-2 h-full">
+    Color: {{ myUser.color }}
+    <input class="border" type="text" [(ngModel)]="tempColor" placeholder="Enter color">
+    <button class="border" type="button" (click)="editColor(tempColor)">Change color</button>
+  </p>
+  <p class="flex items-center justify-center p-2 h-full">
+    Avatar: <img class="w-32" *ngIf="myUser.avatarUrl" [src]="myUser.avatarUrl" alt="avatar">
+  </p>
+</div>

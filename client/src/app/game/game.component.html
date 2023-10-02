@@ -1,0 +1,11 @@
+<p class="p-2 pr-4 pl-4 h-full font-sans font-bold">
+  Your pong match: click Play!
+</p>
+<div class="font-bold">
+  Score: {{ getUserScore() }} | {{ getOppScore() }}
+</div>
+
+<canvas class="border" #canvas width="600" height="300"></canvas>
+<button class="hover:text-violet-500 font-sans font-bold"(click)="startGame()">
+  Play
+</button>
