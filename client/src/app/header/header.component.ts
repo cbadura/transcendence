@@ -12,7 +12,6 @@ import { User } from '../shared/user';
 })
 export class HeaderComponent implements OnInit {
   myUser!: User;
-  private colorSubscription!: Subscription;
   private userSubscription!: Subscription;
   pages = ['Game', 'Leaderboard', 'Chat', 'Profile'];
   

@@ -13,6 +13,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { SortByScorePipe } from './sort-by-score.pipe';
 import { UserDataService } from './user-data.service';
+import { BodyComponent } from './body/body.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { UserDataService } from './user-data.service';
     ChatComponent,
     LeaderboardComponent,
     UserListComponent,
-    SortByScorePipe
+    SortByScorePipe,
+    BodyComponent
   ],
   imports: [
     BrowserModule,
