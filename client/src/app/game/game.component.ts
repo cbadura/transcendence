@@ -122,12 +122,12 @@ export class GameComponent {
   redraw() {
     const canvas = this.ctx.canvas;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    this.ctx.beginPath();
-
+    
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // this.drawCourt();
-
+    this.drawCourt();
+    
+    this.ctx.beginPath();
     this.ctx.fillStyle = this.paddleColor;
     this.paddle.draw();
     this.ctx.fillStyle = 'blue';
@@ -140,7 +140,8 @@ export class GameComponent {
     const canvasWidth = this.ctx.canvas.width;
     const canvasHeight = this.ctx.canvas.height;
     
-    const midX = canvasWidth / 2;
+    const midX = canvasWidth / 2 - 2;
+    const midY = canvasHeight / 2;
 
     this.ctx.strokeStyle = 'white';
     this.ctx.lineWidth = 2;
@@ -148,6 +149,12 @@ export class GameComponent {
     this.ctx.beginPath();
     this.ctx.moveTo(midX, 0);
     this.ctx.lineTo(midX, canvasHeight);
+    this.ctx.closePath();
+    this.ctx.stroke();
+
+    this.ctx.beginPath();
+    this.ctx.arc(midX, midY, 40, 0, Math.PI * 2);
+    this.ctx.closePath();
     this.ctx.stroke();
   }
 
