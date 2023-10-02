@@ -17,6 +17,7 @@ import { BodyComponent } from './body/body.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ProfileInfoComponent } from './profile-info/profile-info.component';
 import { ProfilePicComponent } from './profile-pic/profile-pic.component';
+import { CustomButtonComponent } from './custom-button/custom-button.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { ProfilePicComponent } from './profile-pic/profile-pic.component';
     BodyComponent,
     ProfileComponent,
     ProfileInfoComponent,
-    ProfilePicComponent
+    ProfilePicComponent,
+    CustomButtonComponent
   ],
   imports: [
     BrowserModule,
