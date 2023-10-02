@@ -3,6 +3,7 @@ const mouseXElement = document.getElementById('mouseX');
 const mouseYElement = document.getElementById('mouseY');
 const serverResponseElement = document.getElementById('serverResponse');
 
+console.log('here');
 socket.on('connect', () => {
    console.log('WebSocket connection established.');
 });

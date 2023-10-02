@@ -1,5 +1,5 @@
 {
-  "name": "ws-test",
+  "name": "chatty",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
-    "@nestjs/platform-express": "^10.2.6",
+    "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-socket.io": "^10.2.6",
     "@nestjs/websockets": "^10.2.6",
     "reflect-metadata": "^0.1.13",
