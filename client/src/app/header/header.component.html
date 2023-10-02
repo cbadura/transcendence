@@ -1,5 +1,4 @@
-<header [ngStyle]="{'background-color': myUser.color}" class="flex justify-center">
-	<div class="flex h-20 w-full max-w-screen-md justify-between items-center font-sans font-bold text-2xl">
+<header class="flex h-20 justify-between items-center font-sans font-bold text-2xl">
 		<div class="p-2 pr-4 pl-4 h-full flex justify-center items-center cursor-pointer">
 			<img class="w-8 m-2" [src]="'./assets/ball.svg'" alt="Ball Image">
 			<a routerLink="/">pong</a>
@@ -11,5 +10,4 @@
 				<a routerLink="/{{ page | lowercase }}">{{ page | lowercase }}</a>
 			</li>
 		</ul>
-	</div>
 </header>

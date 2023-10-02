@@ -1,0 +1,67 @@
+<section class="m-4 flex justify-center items-center flex-col">
+  <div class="flex justify-center items-center w-full space-x-5">
+<tcd-profile-pic [profilePic]="myUser.avatarUrl"></tcd-profile-pic>
+    <button
+      class="h-10 rounded-full p-2 border border-black hover:bg-black hover:text-white hover:cursor-pointer relative"
+    >
+      <input
+        type="file"
+        class="opacity-0 absolute top-0 left-0 max-w-full h-full hover:cursor-pointer"
+      />
+      Upload new picture
+    </button>
+    <button
+      class="h-10 rounded-full p-2 border border-black hover:bg-black hover:text-white"
+    >
+      Delete
+    </button>
+  </div>
+  <div class="w-full flex flex-col max-w-screen-md">
+    <p class="font-bold"><label for="name">Name</label></p>
+    <input
+      class="p-2 border border-black rounded-full bg-transparent outline-none"
+      name="name"
+      type="text"
+      [(ngModel)]="tempUserName"
+      placeholder="{{ myUser.userName }}"
+    />
+  </div>
+  <div class="w-full flex flex-col max-w-screen-md">
+    <p class="font-bold"><label for="color">Color</label></p>
+    <div class="flex">
+      <div
+        *ngFor="let color of availableColors"
+        [ngStyle]="{ 'background-color': color }"
+        [class.border-4]="color == myUser.color"
+        (click)="editColor(color)"
+        class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-2 rounded-lg active:scale-95"
+      ></div>
+    </div>
+  </div>
+  <div class="w-full flex flex-col max-w-screen-md">
+
+    <button
+    class="h-10 rounded-full p-2 border bg-black ml-auto"
+    [ngStyle]="{ 'color': 'white' }"
+    (click)="editName(tempUserName)"
+    routerLink="/profile"
+    >
+      Save changes
+  </button>
+</div>
+  <!-- <p class="flex items-center justify-center p-2 h-full">
+    <button class="border" type="button" (click)="editName(tempUserName)">Change name</button>
+  </p> -->
+</section>
+<!-- <h1 class="font-bold text-2xl">User Profile</h1>
+  <p class="flex items-center justify-center p-2 h-full">wins: {{ myUser.wins }}</p>
+  <p class="flex items-center justify-center p-2 h-full">losses: {{ myUser.losses }}</p>
+  <p class="flex items-center justify-center p-2 h-full">
+    Color: {{ myUser.color }}
+    <input class="border" type="text" [(ngModel)]="tempColor" placeholder="Enter color">
+    <button class="border" type="button" (click)="editColor(tempColor)">Change color</button>
+  </p>
+  <p class="flex items-center justify-center p-2 h-full">
+    Avatar: <img class="w-32" *ngIf="myUser.avatarUrl" [src]="myUser.avatarUrl" alt="avatar">
+  </p>
+</div> -->
