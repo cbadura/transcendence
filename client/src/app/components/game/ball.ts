@@ -1,5 +1,5 @@
 export class Ball {
-	ballRadius = 6;
+	ballRadius = 10;
 	x!: number;
 	y!: number;
 	dirX!: number;
@@ -7,6 +7,8 @@ export class Ball {
 	speed!: number;
 	stop: boolean = false;
 	
+	private PADDLE_LEN = 100;
+	private PADDLE_WIDTH = 15;
 	private MAX_BOUNCE_ANGLE = 75 * Math.PI / 180;  // 75 degrees in radians
 
 	constructor(private ctx: CanvasRenderingContext2D) { }
@@ -29,10 +31,13 @@ export class Ball {
 			this.dirY *= -1;
 		}
 		// left paddle
-		if (this.x - this.ballRadius < 20 && this.y + this.ballRadius > paddleY && this.y - this.ballRadius < paddleY + 50) {
+		if (this.x - this.ballRadius < this.PADDLE_WIDTH + this.ballRadius &&
+			this.y + this.ballRadius > paddleY &&
+			this.y - this.ballRadius < paddleY + this.PADDLE_LEN) {
 			this.dirX *= -1;
+
 			// calculate bouncing angle
-			const relativehitPoint = (this.y - (paddleY + 25)) / 25;  // paddle height is 50
+			const relativehitPoint = (this.y - (paddleY + this.PADDLE_LEN / 2)) / (this.PADDLE_LEN / 2);
 			const bounceAngle = this.MAX_BOUNCE_ANGLE * relativehitPoint;
 			this.dirY = Math.sin(bounceAngle);
 
@@ -41,13 +46,16 @@ export class Ball {
 			} else {
 				this.speed -= 0.2;
 			}
-			this.x = 20 + this.ballRadius;
+			this.x = this.PADDLE_WIDTH + this.ballRadius + 10;
 		}
 		// right paddle
-		else if (this.x + this.ballRadius > this.ctx.canvas.width - 20 && this.y + this.ballRadius > paddOppY && this.y - this.ballRadius < paddOppY + 50) {
+		else if (this.x + this.ballRadius > this.ctx.canvas.width - this.ballRadius - 5 && 
+			this.y + this.ballRadius > paddOppY && 
+			this.y - this.ballRadius < paddOppY + this.PADDLE_LEN) {
 			this.dirX *= -1;
+
 			// calculate bouncing angle
-			const relativehitPoint = (this.y - (paddOppY + 30)) / 30;
+			const relativehitPoint = (this.y - (paddOppY + this.PADDLE_LEN / 2)) / (this.PADDLE_LEN / 2);
 			const bounceAngle = this.MAX_BOUNCE_ANGLE * relativehitPoint;
 			this.dirY = Math.sin(bounceAngle);
 
@@ -56,7 +64,7 @@ export class Ball {
 			} else {
 				this.speed -= 0.2;
 			}
-			this.x = this.ctx.canvas.width - 20 - this.ballRadius;
+			this.x = this.ctx.canvas.width - this.PADDLE_WIDTH - this.ballRadius;
 		}
 		// stop game after point
 		if (this.x <= this.ballRadius || this.x >= this.ctx.canvas.width - this.ballRadius) {
@@ -77,6 +85,6 @@ export class Ball {
 		this.dirX = (Math.floor(Math.random() * 2) === 0 ? 1 : -1);;
 		this.dirY = (Math.floor(Math.random() * 2));
 		this.stop = false;
-		this.speed = 1.8;
+		this.speed = 2;
 	}
 }

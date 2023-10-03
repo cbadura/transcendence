@@ -24,7 +24,8 @@ export class GameComponent {
   private oppScore = 0;
   private userSubscription!: Subscription;
 
-  private PADDLE_LEN = 60;
+  private PADDLE_LEN = 100;
+  private PADDLE_WIDTH = 15;
   
   constructor(private userDataService: UserDataService) {}
 
@@ -45,10 +46,10 @@ export class GameComponent {
   
   startGame(): void {
       this.paddle = new Square(this.ctx, 10,
-        this.ctx.canvas.height / 2 - 25, 10, this.PADDLE_LEN);
+        this.ctx.canvas.height / 2 - 25, this.PADDLE_WIDTH, this.PADDLE_LEN);
       this.ctx.fillStyle = this.paddleColor;
       this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 20,
-        this.ctx.canvas.height / 2 - 25, 10, this.PADDLE_LEN);
+        this.ctx.canvas.height / 2 - 25, this.PADDLE_WIDTH, this.PADDLE_LEN);
       this.ball = new Ball(this.ctx);
       this.ball.resetBall();
       this.ball.draw();
@@ -95,15 +96,15 @@ export class GameComponent {
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
-    const max = this.ctx.canvas.height - 50;
+    const max = this.ctx.canvas.height - this.PADDLE_LEN - 15;
 
     if (event.key === 'w') {
-      if (this.paddle.y > 15) {
+      if (this.paddle.y > this.PADDLE_LEN / 4) {
         this.paddle.moveBy(-15);
       }
     }
     if (event.key === 's') {
-      if (this.paddle.y < max - 17) {
+      if (this.paddle.y < max) {
         this.paddle.moveBy(15);
       }
     }
@@ -113,7 +114,7 @@ export class GameComponent {
       }
     }
     if (event.key === 'ArrowDown') {
-      if (this.oppPaddle.y < max - 17) {
+      if (this.oppPaddle.y < max) {
         this.oppPaddle.moveBy(15);
       }
     }
@@ -153,9 +154,15 @@ export class GameComponent {
     this.ctx.stroke();
 
     this.ctx.beginPath();
-    this.ctx.arc(midX, midY, 40, 0, Math.PI * 2);
+    this.ctx.arc(midX, midY, 80, 0, Math.PI * 2);
     this.ctx.closePath();
     this.ctx.stroke();
+
+    // Draw text here
+    this.ctx.fillStyle = 'red';  // Set the color for the text
+    this.ctx.font = "40pt Calibri";
+    this.ctx.fillText(this.getUserScore().toString(), canvasWidth / 4, 50);
+    this.ctx.fillText(this.getOppScore().toString(), 3 * canvasWidth / 4, 50);
   }
 
   incrementUserWins() {
