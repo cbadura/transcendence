@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UserDataService } from '../user-data.service';
-import { User } from '../shared/user';
+import { UserDataService } from '../../../services/user-data.service';
+import { User } from '../../../shared/user';
 import { ProfilePicComponent } from '../profile-pic/profile-pic.component';
-import { CustomButtonComponent } from '../custom-button/custom-button.component';
+import { CustomButtonComponent } from '../../shared-components/custom-button/custom-button.component';
 
 @Component({
   selector: 'tcd-edit-profile',

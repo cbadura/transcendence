@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
-import { ChatHistoryService } from '../chat-history.service';
-import { UserDataService } from '../user-data.service';
-import { Post } from '../shared/post';
+import { ChatHistoryService } from '../../services/chat-history.service';
+import { UserDataService } from '../../services/user-data.service';
+import { Post } from '../../shared/post';
 
 @Component({
   selector: 'tcd-chat',

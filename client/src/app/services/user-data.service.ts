@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { User } from './shared/user';
+import { User } from '../shared/user';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +11,8 @@ export class UserDataService {
     id: 1,
     userName: 'Nadiia',
     status: 'online',
-    wins: 0,
-    losses: 0,
+    wins: 25,
+    losses: 5,
     color: '#E7C9FF',
     avatarUrl: './assets/avatars/av1.jpg',
     friends: []

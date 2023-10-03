@@ -1,0 +1,32 @@
+<section class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4">
+
+<!-- Profile picture -->
+<tcd-profile-pic [profilePic]="myUser.avatarUrl"></tcd-profile-pic>
+
+<!-- Name , level and status -->
+<div class="flex flex-col items-center">
+    <div class="flex items-center gap-2">
+        <div   [ngClass] = "{ 'h-4 aspect-square  rounded-full border border-black' : true,
+        'bg-green-300' : myUser.status === 'online',
+        'bg-red-400' : myUser.status === 'offline',
+        'bg-blue-400' : myUser.status === 'ingame'
+      }"
+      
+        ></div>
+        <h1 class="font-bold text-2xl">{{myUser.userName}}</h1>
+    </div>
+    <p>level 6</p>
+</div>
+
+<!-- Add, remove, block friend -->
+<div class="flex gap-4">
+    <tcd-custom-button buttonText="Add friend"></tcd-custom-button>
+    <tcd-custom-button buttonText="Block"></tcd-custom-button>
+    <tcd-custom-button buttonText="Edit profile" [customRoute]="'/edit-profile'"></tcd-custom-button>
+</div>
+
+<!-- Stats -->
+<tcd-stats [wins]="myUser.wins" [losses]="myUser.losses"></tcd-stats>
+
+</section>
+

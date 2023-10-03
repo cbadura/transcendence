@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UserDataService } from '../user-data.service';
-import { User } from '../shared/user';
+import { UserDataService } from '../../services/user-data.service';
+import { User } from '../../shared/user';
 
 @Component({
   selector: 'tcd-body',

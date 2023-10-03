@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DatePipe } from "@angular/common";
 
-import { Post } from './shared/post';
+import { Post } from '../shared/post';
 
 @Injectable({
   providedIn: 'root'

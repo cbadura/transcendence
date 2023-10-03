@@ -3,8 +3,8 @@ import { Subscription } from 'rxjs';
 
 import { Square } from './square';
 import { Ball } from './ball';
-import { UserDataService } from '../user-data.service';
-import { User } from '../shared/user';
+import { UserDataService } from '../../services/user-data.service';
+import { User } from '../../shared/user';
 
 @Component({
   selector: 'tcd-game',

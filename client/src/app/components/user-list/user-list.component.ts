@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { User } from '../shared/user';
+import { User } from '../../shared/user';
 
 @Component({
   selector: 'tcd-user-list',
