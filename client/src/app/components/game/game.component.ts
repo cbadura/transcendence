@@ -54,9 +54,8 @@ export class GameComponent {
       this.ball = new Ball(this.ctx);
       this.ball.resetBall();
       this.ball.draw();
-      this.paddle.draw();
-      this.ctx.fillStyle = 'blue';
-      this.oppPaddle.draw();
+      this.paddle.draw(this.paddleColor);
+      this.oppPaddle.draw('blue');
       this.gameLoop();
   }
 
@@ -130,11 +129,8 @@ export class GameComponent {
     this.drawCourt();
     
     this.ctx.beginPath();
-    this.ctx.fillStyle = this.paddleColor;
-    this.paddle.draw();
-    this.ctx.fillStyle = 'blue';
-    this.oppPaddle.draw();
-    this.ctx.fillStyle = 'yellow';
+    this.paddle.draw(this.paddleColor);
+    this.oppPaddle.draw('blue');
     this.ball.draw();
   }
 

@@ -14,6 +14,7 @@ export class Ball {
 	constructor(private ctx: CanvasRenderingContext2D) { }
 
 	draw() {
+		this.ctx.beginPath();
 		this.ctx.fillStyle = 'yellow';
 		this.ctx.strokeStyle = 'black';
 		this.ctx.lineWidth = 2;
