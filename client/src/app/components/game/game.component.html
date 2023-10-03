@@ -1,7 +1,11 @@
-<canvas class="border rounded-2xl" #canvas width="800" height="500"></canvas>
-
-<button
-  class="hover:text-violet-500 font-sans font-bold border"
-  (click)="startGame()">
-  Click to Play
-</button>
+<div class="flex justify-center items-center h-full mt-20">
+  <div>
+    <canvas class="border rounded-2xl" #canvas width="800" height="500"></canvas>
+    
+    <button
+      class="h-10 rounded-full p-2 border border-black transition-all active:scale-95"
+      (click)="startGame()">
+      Click to Play
+    </button>
+  </div>
+</div>

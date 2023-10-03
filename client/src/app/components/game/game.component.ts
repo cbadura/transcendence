@@ -42,13 +42,14 @@ export class GameComponent {
     this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.drawCourt();
   }
   
   startGame(): void {
       this.paddle = new Square(this.ctx, 10,
         this.ctx.canvas.height / 2 - 25, this.PADDLE_WIDTH, this.PADDLE_LEN);
       this.ctx.fillStyle = this.paddleColor;
-      this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 20,
+      this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 25,
         this.ctx.canvas.height / 2 - 25, this.PADDLE_WIDTH, this.PADDLE_LEN);
       this.ball = new Ball(this.ctx);
       this.ball.resetBall();
@@ -144,25 +145,40 @@ export class GameComponent {
     const midX = canvasWidth / 2 - 2;
     const midY = canvasHeight / 2;
 
-    this.ctx.strokeStyle = 'white';
+    this.ctx.strokeStyle = this.myUser.color;
     this.ctx.lineWidth = 2;
 
+    // Mid line
     this.ctx.beginPath();
     this.ctx.moveTo(midX, 0);
     this.ctx.lineTo(midX, canvasHeight);
     this.ctx.closePath();
     this.ctx.stroke();
 
+    // Opponent's lines
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.PADDLE_WIDTH + 3, 0);
+    this.ctx.lineTo(this.PADDLE_WIDTH + 3, canvasHeight);
+    this.ctx.closePath();
+    this.ctx.stroke();
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(canvasWidth - this.PADDLE_WIDTH - 3, 0);
+    this.ctx.lineTo(canvasWidth - this.PADDLE_WIDTH - 3, canvasHeight);
+    this.ctx.closePath();
+    this.ctx.stroke();
+
+    // Center circle
     this.ctx.beginPath();
     this.ctx.arc(midX, midY, 80, 0, Math.PI * 2);
     this.ctx.closePath();
     this.ctx.stroke();
 
-    // Draw text here
-    this.ctx.fillStyle = 'red';  // Set the color for the text
-    this.ctx.font = "40pt Calibri";
-    this.ctx.fillText(this.getUserScore().toString(), canvasWidth / 4, 50);
-    this.ctx.fillText(this.getOppScore().toString(), 3 * canvasWidth / 4, 50);
+    // Score
+    this.ctx.fillStyle = this.myUser.color;
+    this.ctx.font = "60pt Inter";
+    this.ctx.fillText(this.getUserScore().toString(), 3 * canvasWidth / 8, 100);
+    this.ctx.fillText(this.getOppScore().toString(), 4.5 * canvasWidth / 8, 100);
   }
 
   incrementUserWins() {
