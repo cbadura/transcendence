@@ -28,9 +28,13 @@ export class ProfileComponent implements OnInit {
     );
 
     this.achievements = [
-      { name: 'Achievement 1', url: 'https://picsum.photos/100' },
-      { name: 'Achievement 2', url: 'https://picsum.photos/100' },
-     
+      { name: 'Paddle Master', url: 'https://picsum.photos/100' },
+      { name: 'Ping Pong Champion', url: 'https://picsum.photos/100' },
+      { name: 'Pong Prodigy', url: 'https://picsum.photos/100' },
+      { name: 'Rally King', url: 'https://picsum.photos/100' },
+      { name: 'Paddle Wizard', url: 'https://picsum.photos/100' },
+      { name: 'Table Tennis Titan', url: 'https://picsum.photos/100' },
     ];
+    
   }
 }
