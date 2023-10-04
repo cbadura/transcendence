@@ -35,8 +35,8 @@ export class Ball {
 		if (this.x - this.ballRadius < this.PADDLE_WIDTH + this.ballRadius &&
 			this.y + this.ballRadius > paddleY &&
 			this.y - this.ballRadius < paddleY + this.PADDLE_LEN) {
+			// reverse direction
 			this.dirX *= -1;
-
 			// calculate bouncing angle
 			const relativehitPoint = (this.y - (paddleY + this.PADDLE_LEN / 2)) / (this.PADDLE_LEN / 2);
 			const bounceAngle = this.MAX_BOUNCE_ANGLE * relativehitPoint;
@@ -50,11 +50,11 @@ export class Ball {
 			this.x = this.PADDLE_WIDTH + this.ballRadius + 10;
 		}
 		// right paddle
-		else if (this.x + this.ballRadius > this.ctx.canvas.width - this.ballRadius - 5 && 
+		else if (this.x + this.ballRadius >= this.ctx.canvas.width - 25 && 
 			this.y + this.ballRadius > paddOppY && 
 			this.y - this.ballRadius < paddOppY + this.PADDLE_LEN) {
+			// reverse direction
 			this.dirX *= -1;
-
 			// calculate bouncing angle
 			const relativehitPoint = (this.y - (paddOppY + this.PADDLE_LEN / 2)) / (this.PADDLE_LEN / 2);
 			const bounceAngle = this.MAX_BOUNCE_ANGLE * relativehitPoint;
@@ -65,7 +65,7 @@ export class Ball {
 			} else {
 				this.speed -= 0.2;
 			}
-			this.x = this.ctx.canvas.width - this.PADDLE_WIDTH - this.ballRadius;
+			this.x = this.ctx.canvas.width - 25 - this.ballRadius;
 		}
 		// stop game after point
 		if (this.x <= this.ballRadius || this.x >= this.ctx.canvas.width - this.ballRadius) {

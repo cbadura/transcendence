@@ -53,7 +53,7 @@ export class UserListComponent {
         friends: []
       },
       {
-        id: 3,
+        id: 4,
         userName: 'Nadiia',
         status: 'online',
         wins: 16,

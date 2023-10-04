@@ -6,13 +6,11 @@
 <!-- Name , level and status -->
 <div class="flex flex-col items-center">
     <div class="flex items-center gap-2">
-        <div   [ngClass] = "{ 'h-4 aspect-square  rounded-full border border-black' : true,
-        'bg-green-300' : myUser.status === 'online',
-        'bg-red-400' : myUser.status === 'offline',
-        'bg-blue-400' : myUser.status === 'ingame'
-      }"
-      
-        ></div>
+        <div [ngClass] = "{ 'h-4 aspect-square  rounded-full border border-black' : true,
+            'bg-green-300' : myUser.status === 'online',
+            'bg-red-400' : myUser.status === 'offline',
+            'bg-blue-400' : myUser.status === 'ingame'}">
+        </div>
         <h1 class="font-bold text-2xl">{{myUser.userName}}</h1>
     </div>
     <p>level 6</p>

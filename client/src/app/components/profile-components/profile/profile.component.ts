@@ -13,7 +13,6 @@ export class ProfileComponent implements OnInit {
   myUser!: User;
   private userSubscription!: Subscription;
 
-
   constructor(
     private userDataService: UserDataService) {
   }
