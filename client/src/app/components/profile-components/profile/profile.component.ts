@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UserDataService } from '../../../services/user-data.service';
-import { User } from '../../../shared/user';
+import { UserDataService } from 'src/app/services/user-data.service';
+import { User } from 'src/app/shared/user';
+import { Achievement } from 'src/app/shared/achievement';
+
 
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+
 })
 export class ProfileComponent implements OnInit {
   myUser!: User;
   private userSubscription!: Subscription;
-
+  achievements: Achievement[] = [];
 
   constructor(
     private userDataService: UserDataService) {
@@ -24,5 +26,11 @@ export class ProfileComponent implements OnInit {
         this.myUser = user;
       }
     );
+
+    this.achievements = [
+      { name: 'Achievement 1', url: 'https://picsum.photos/100' },
+      { name: 'Achievement 2', url: 'https://picsum.photos/100' },
+     
+    ];
   }
 }

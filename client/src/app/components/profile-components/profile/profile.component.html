@@ -28,5 +28,15 @@
 <!-- Stats -->
 <tcd-stats [wins]="myUser.wins" [losses]="myUser.losses"></tcd-stats>
 
+<!-- Achievements -->
+<div class="flex flex-col items-center w-full">
+    <p>Achievements</p>
+    <div class="bg-black w-full rounded-full h-10">
+        <div *ngFor="let achievement of achievements">
+            <tcd-achievement [achievement]="achievement"></tcd-achievement>
+        </div>
+    </div>
+</div>
+
 </section>
 
