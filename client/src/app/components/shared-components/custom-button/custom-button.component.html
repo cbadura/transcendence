@@ -1,0 +1,11 @@
+<button
+  [ngClass]="{
+    'h-10 rounded-full p-2 border border-black transition-all active:scale-95': true,
+    'bg-black text-white': isBlack,
+    'hover:bg-black hover:text-white': !isBlack
+  }"
+  (click)="onClick && onClick()"
+  [routerLink]="customRoute"
+>
+  {{ buttonText }}
+</button>
