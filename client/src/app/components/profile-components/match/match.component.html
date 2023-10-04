@@ -1,0 +1,29 @@
+<div class="flex text-white justify-between items-center">
+
+    <!-- My user -->
+  <div class="flex flex-col items-center h-[125px]">
+    <tcd-thumbnail [imgUrl]="me.avatarUrl"></tcd-thumbnail>
+    <h1>{{ me.userName }}</h1>
+  </div>
+
+  <!-- Score and date -->
+  <div class="flex flex-col items-center">
+
+    <!-- Score -->
+    <div class="font-bold text-4xl flex p-2 rounded-xl" [ngClass]="{'bg-green-600': match.myScore > match.opponentScore, 'bg-red-600': match.myScore <= match.opponentScore}">
+      <h1>{{ match.myScore }}</h1>
+      <h1 class="ml-1 mr-1">:</h1>
+      <h1>{{ match.opponentScore }}</h1>
+    </div>
+
+    <!-- Formatted date -->
+    <h1>{{ formatDate(match.dateTime) }}</h1>
+  </div>
+
+  <!-- Opponent -->
+  <div class="flex flex-col items-center h-[125px]">
+    <tcd-thumbnail [imgUrl]="match.opponent.avatarUrl"></tcd-thumbnail>
+    <h1>{{ match.opponent.userName }}</h1>
+  </div>
+
+</div>
