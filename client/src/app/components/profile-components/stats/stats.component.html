@@ -1,0 +1,11 @@
+<div class="flex flex-col items-center">
+    <p>Stats</p>
+    <div class="border rounded-full w-96 border-black">
+        <div class="h-10 bg-black rounded-full" [style.width.%]="getPercentage()"
+        ></div>
+    </div>
+    <div class="flex w-full justify-between">
+        <p>Wins <strong>{{wins}}</strong></p>
+        <p>Losses <strong>{{losses}}</strong></p>
+    </div>
+</div>
