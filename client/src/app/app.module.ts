@@ -21,6 +21,7 @@ import { CustomButtonComponent } from './components/shared-components/custom-but
 import { StatsComponent } from './components/profile-components/stats/stats.component';
 import { AchievementComponent } from './components/profile-components/achievement/achievement.component';
 import { ThumbnailComponent } from './components/profile-components/thumbnail/thumbnail.component';
+import { MatchComponent } from './components/profile-components/match/match.component';
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { ThumbnailComponent } from './components/profile-components/thumbnail/th
     CustomButtonComponent,
     StatsComponent,
     AchievementComponent,
-    ThumbnailComponent
+    ThumbnailComponent,
+    MatchComponent
   ],
   imports: [
     BrowserModule,
