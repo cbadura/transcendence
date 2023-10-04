@@ -5,14 +5,14 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  intraID: number;
-
-  @Column({ nullable: false })
+  @Column()
   name: string;
 
   @Column({ nullable: true })
   avatar: string;
+
+  @Column({ nullable: true })
+  color: string
 
   @Column('decimal',{ nullable: false, precision: 6, scale: 2})
   level: number;
