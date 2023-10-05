@@ -22,9 +22,9 @@ export class UserService {
 
   async updateUser(id: number,dto: UpdateUserDto) {
     const currUser = await this.userRepository.findOne({ where: { id }});
-    console.log(currUser);
+    // console.log(currUser);
     this.userRepository.merge(currUser, dto);
-    console.log(currUser);
+    // console.log(currUser);
     const updatedUser = await this.userRepository.save(currUser);
     return updatedUser;
   }

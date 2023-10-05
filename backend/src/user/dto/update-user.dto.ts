@@ -11,5 +11,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
     @IsHexColor()
     @IsOptional()
-    color: string;
+    color: string; 
 }

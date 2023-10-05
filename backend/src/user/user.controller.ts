@@ -30,15 +30,17 @@ export class UserController {
     this.userService.deleteUserDatabase();
   }
 
+  //todo: prevent uploading files if user doesnt exist 
   @Post(':id/profilepic')
   @UseInterceptors(FileInterceptor('file',{
     storage: diskStorage({
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
           const userId = req.params.id;
-          const uniqueSuffix = Date.now()
+          // const uniqueSuffix = Date.now() 
+          // console.log(req);
           const extension = extname(file.originalname)
-          const filename =`profilepic_${userId}_${uniqueSuffix}${extension}`;
+          const filename =`profilepic_user_${userId}${extension}`;
           callback(null,filename);
       }
     })
@@ -49,21 +51,22 @@ export class UserController {
     @Req() request: Request,
     ) {
 
-    const baseUrl = request.protocol + '://' + request.get('host');
-    const userProfileImageURL = `${baseUrl}/users/${id}/${file.filename}`
+    // const baseUrl = request.protocol + '://' + request.get('host');
+    const userProfileImageURL = `/users/profilepic/${file.filename}`
 
     let updateDTO = new UpdateUserDto();
+    console.log('successfully uploaded file to: ',userProfileImageURL);
     updateDTO.avatar = userProfileImageURL;
     try {
        this.userService.updateUser(id,updateDTO);
-  } catch (error) {
-      throw new NotFoundException()
-  }
-    return userProfileImageURL;
+    } catch (error) {
+        throw new NotFoundException()
+    }
+      return userProfileImageURL;
   }
 
   // this makes sense, but blocks the other
-  @Get(':id/:filename')
+  @Get('profilepic/:filename')
   ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
       const filePath = path.join(__dirname, '../../', 'uploadedData/profilepictures/', filename);
       res.sendFile(filePath)
