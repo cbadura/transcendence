@@ -1,7 +1,7 @@
 <section class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4 p-4">
 
 <!-- Profile picture -->
-<tcd-profile-pic [profilePic]="myUser.avatarUrl"></tcd-profile-pic>
+<tcd-profile-pic [profilePic]="myUser.avatar"></tcd-profile-pic>
 
 <!-- Name , level and status -->
 <div class="flex flex-col items-center">
@@ -11,7 +11,7 @@
             'bg-red-400' : myUser.status === 'offline',
             'bg-blue-400' : myUser.status === 'ingame'}">
         </div>
-        <h1 class="font-bold text-2xl">{{myUser.userName}}</h1>
+        <h1 class="font-bold text-2xl">{{myUser.name}}</h1>
     </div>
     <p>level 6</p>
 </div>
@@ -23,8 +23,9 @@
     <tcd-custom-button buttonText="Edit profile" [customRoute]="'/edit-profile'"></tcd-custom-button>
 </div>
 
+<!-- note from Jean: it might make sense to also display the overall matches here -->
 <!-- Stats -->
-<tcd-stats [wins]="myUser.wins" [losses]="myUser.losses"></tcd-stats>
+<tcd-stats [level]="myUser.level"></tcd-stats>
 
 <!-- Achievements -->
 <div class="flex flex-col items-center w-full">

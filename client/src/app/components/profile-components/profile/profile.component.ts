@@ -39,34 +39,37 @@ export class ProfileComponent implements OnInit {
 
     const Ana : User = {
       id: 1,
-      userName: 'Ana',
+      name: 'Ana',
       status: 'Online',
       wins: 10,
-      losses: 5,
+      matches: 15,
+      level: 1.00,
       color: 'blue',
-      avatarUrl: 'https://picsum.photos/100',
+      avatar: 'https://picsum.photos/100',
       friends: [],
     };
 
     const Bob : User = {
       id: 2,
-      userName: 'Bob',
+      name: 'Bob',
       status: 'Online',
       wins: 5,
-      losses: 10,
+      matches: 15,
+      level: 1.00,
       color: 'red',
-      avatarUrl: 'https://picsum.photos/100',
+      avatar: 'https://picsum.photos/100',
       friends: [],
     };
 
     const Carl : User = {
       id: 3,
-      userName: 'Carl',
+      name: 'Carl',
       status: 'Offline',
       wins: 2,
-      losses: 3,
+      matches: 5,
+      level: 1.00,
       color: 'green',
-      avatarUrl: 'https://picsum.photos/100',
+      avatar: 'https://picsum.photos/100',
       friends: [],
     };
 

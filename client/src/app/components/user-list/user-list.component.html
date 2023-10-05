@@ -2,9 +2,9 @@
     <ul>
         <li *ngFor="let user of users | sortByScore">
             <div class="flex items-center gap-2">
-                <tcd-profile-pic [profilePic]="user.avatarUrl"></tcd-profile-pic>
+                <tcd-profile-pic [profilePic]="user.avatar"></tcd-profile-pic>
                 <div class="">
-                    <h2>{{ user.userName }}</h2>
+                    <h2>{{ user.name }}</h2>
                     <h2>wins: {{ user.wins }}</h2>
                     <p *ngIf="user.color">
                         color: {{ user.color }}
@@ -14,7 +14,7 @@
             </div>
         </li>
         <li *ngIf="!users.length">
-            No users available.
+            No users available. The backend Server might not be running or there is no data in the Database.
         </li>
     </ul>
 </div>

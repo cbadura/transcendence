@@ -8,7 +8,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   avatar: string;
 
   @Column({ nullable: true })

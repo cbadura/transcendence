@@ -1,11 +1,9 @@
-<div class="flex flex-col items-center">
-    <p>Stats</p>
-    <div class="border rounded-full w-96 border-black">
-        <div class="h-10 bg-black rounded-full" [style.width.%]="getPercentage()"
-        ></div>
-    </div>
-    <div class="flex w-full justify-between">
-        <p>Wins <strong>{{wins}}</strong></p>
-        <p>Losses <strong>{{losses}}</strong></p>
-    </div>
+<div class="flex flex-col items-center relative mb-10">
+	<div class="border rounded-full w-96 border-black">
+		<div class="h-10 bg-black rounded-full" [style.width.%]="getPercentage()"></div>
+	</div>
+	<div class=" mt-2 p-1 border border-black absolute top-10 rounded-full aspect-square flex justify-center items-center" [style.left.%]="getPercentage() - 7">
+
+		<p class="font-Sniglet font-bold text-xl">{{getPercentage()}}%</p>
+	</div>
 </div>

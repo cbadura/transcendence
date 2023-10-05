@@ -6,7 +6,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'Inter': ['Inter', 'sans-serif'],
+			'Inter': ['Inter', 'sans-serif'],
+		  	'Sniglet': ['Sniglet', 'cursive'],
       }
     },
   },
