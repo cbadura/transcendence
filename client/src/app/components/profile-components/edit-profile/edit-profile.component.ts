@@ -20,14 +20,14 @@ export class EditProfileComponent implements OnInit {
     private userDataService: UserDataService) {
       this.myUser = {
         id: 0,
-        userName: '',
+        name: '',
         status: '',
+        matches: 0,
         wins: 0,
-        losses: 0,
+        level: 1.00,
         color: '',
-        avatarUrl: '',
-		  friends: [],
-		  level: 0
+        avatar: '',
+        friends: []
       };
       this.tempUserName = '';
       this.tempColor = '';
@@ -40,6 +40,11 @@ export class EditProfileComponent implements OnInit {
       }
     );
   }
+
+  getUsers() {
+    this.userDataService.getUsers();
+  }
+
 
   editName(name: string) {
     if (name && name.trim() !== '') {

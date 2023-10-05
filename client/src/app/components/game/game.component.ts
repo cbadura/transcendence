@@ -182,7 +182,7 @@ export class GameComponent {
   }
 
   incrementUserLosses() {
-    this.userDataService.incrementLosses();
+    this.userDataService.incrementMatches();
   }
 
   ngOnDestroy(): void {

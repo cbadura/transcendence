@@ -1,11 +1,11 @@
 export interface User {
     id: number;
-    userName: string;
+    name: string;
     status: string;
+    level: number; //should be float with 2 digits after comma e.g 2.03
+    matches: number;
     wins: number;
-    losses: number;
     color: string;
-    avatarUrl: string;
-	friends: User[];
-	level: number;
+    avatar: string;
+    friends: User[];
 }

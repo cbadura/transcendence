@@ -8,6 +8,9 @@ async function bootstrap() {
     whitelist: true, //strips away additional data that is not marked with a decorator
     transform: true, //automatically transform payloads to be objects typed according to their DTO classes
   }));
+  app.enableCors({
+    origin: 'http://localhost:4200'
+  });
   await app.listen(3000);
 }
 bootstrap();

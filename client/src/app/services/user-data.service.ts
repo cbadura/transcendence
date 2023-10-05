@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/user';
@@ -9,21 +10,30 @@ import { User } from '../shared/user';
 export class UserDataService {
   private myUser: User = {
     id: 1,
-    userName: 'Nadiia',
+    name: 'Nadiia',
     status: 'online',
     wins: 25,
-    losses: 5,
+    matches: 30,
+    level: 6.83,
     color: '#E7C9FF',
-    avatarUrl: './assets/avatars/av1.jpg',
-	  friends: [],
-	level: 6.83
+    avatar: './assets/avatars/av1.jpg',
+    friends: []
   };
 
-  constructor() {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
+  getUsers() {
+    this.http.get('http://localhost:3000/users').subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error fetching users: ' + JSON.stringify(error));
+    });
+  }
 
   getUser(): User {
     return this.userSubject.value;
@@ -45,9 +55,9 @@ export class UserDataService {
     this.userSubject.next(user);
   }
 
-  incrementLosses() {
-    let losses = ++this.myUser.losses;
-    const user = { ...this.getUser(), losses: losses };
+  incrementMatches() {
+    let matches = ++this.myUser.matches;
+    const user = { ...this.getUser(), matches: matches };
     this.userSubject.next(user);
   }
 }

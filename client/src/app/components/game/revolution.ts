@@ -75,7 +75,7 @@ export class GameComponent {
         if (this.userScore >= 5) {
           this.incrementUserWins();
         } else if (this.oppScore >= 5) {
-          this.incrementUserLosses();
+          this.incrementUserMatches();
         }
         clearInterval(itval);
       } else if (this.ball.stop) {
@@ -155,8 +155,8 @@ export class GameComponent {
     this.userDataService.incrementWins();
   }
 
-  incrementUserLosses() {
-    this.userDataService.incrementLosses();
+  incrementUserMatches() {
+    this.userDataService.incrementMatches();
   }
 
   ngOnDestroy(): void {
