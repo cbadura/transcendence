@@ -7,8 +7,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsOptional()
     name: string;
     
-    @IsOptional()
-    avatar: string;
+    avatar: string; //should not be changeable by users. Will be set automatically to either default or user uploaded profile
 
     @IsHexColor()
     @IsOptional()

@@ -21,8 +21,6 @@ export class UserService {
   }
 
   async updateUser(id: number,dto: UpdateUserDto) {
-    console.log(dto)
-    console.log('here');
     const currUser = await this.userRepository.findOne({ where: { id }});
     console.log(currUser);
     this.userRepository.merge(currUser, dto);
