@@ -20,10 +20,11 @@ export class EditProfileComponent implements OnInit {
     private userDataService: UserDataService) {
       this.myUser = {
         id: 0,
-        userName: '',
+        name: '',
         status: '',
+        matches: 0,
         wins: 0,
-        losses: 0,
+        level: 1.00,
         color: '',
         avatar: '',
         friends: []

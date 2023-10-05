@@ -10,10 +10,11 @@ import { User } from '../shared/user';
 export class UserDataService {
   private myUser: User = {
     id: 1,
-    userName: 'Nadiia',
+    name: 'Nadiia',
     status: 'online',
     wins: 25,
-    losses: 5,
+    matches: 30,
+    level: 1.00,
     color: '#E7C9FF',
     avatar: './assets/avatars/av1.jpg',
     friends: []
@@ -54,9 +55,9 @@ export class UserDataService {
     this.userSubject.next(user);
   }
 
-  incrementLosses() {
-    let losses = ++this.myUser.losses;
-    const user = { ...this.getUser(), losses: losses };
+  incrementMatches() {
+    let matches = ++this.myUser.matches;
+    const user = { ...this.getUser(), matches: matches };
     this.userSubject.next(user);
   }
 }
