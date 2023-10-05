@@ -6,6 +6,7 @@ export class Ball {
 	dirY!: number;
 	speed!: number;
 	stop: boolean = false;
+	hits!: number;
 	
 	private PADDLE_LEN = 100;
 	private PADDLE_WIDTH = 15;
@@ -26,7 +27,7 @@ export class Ball {
 	move(paddleY: number, paddOppY: number): number {
 		this.x += this.dirX * this.speed;
 		this.y += this.dirY * this.speed;
-		
+		console.log(this.hits);
 		// wall collision
 		if (this.y <= 5 || this.y >= this.ctx.canvas.height - 5) {
 			this.dirY *= -1;
@@ -48,6 +49,7 @@ export class Ball {
 				this.speed -= 0.2;
 			}
 			this.x = this.PADDLE_WIDTH + this.ballRadius + 10;
+			this.hits++;
 		}
 		// right paddle
 		else if (this.x + this.ballRadius >= this.ctx.canvas.width - 25 && 
@@ -66,6 +68,7 @@ export class Ball {
 				this.speed -= 0.2;
 			}
 			this.x = this.ctx.canvas.width - 25 - this.ballRadius;
+			this.hits++;
 		}
 		// stop game after point
 		if (this.x <= this.ballRadius || this.x >= this.ctx.canvas.width - this.ballRadius) {
@@ -87,5 +90,10 @@ export class Ball {
 		this.dirY = (Math.floor(Math.random() * 2));
 		this.stop = false;
 		this.speed = 2;
+		this.hits = 0;
 	}
+
+	getHits(): number {
+		return this.hits;
+	  }
 }

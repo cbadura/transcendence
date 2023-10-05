@@ -2,8 +2,8 @@
 
     <!-- My user -->
   <div class="flex flex-col items-center h-[125px]">
-    <tcd-thumbnail [imgUrl]="me.avatarUrl"></tcd-thumbnail>
-    <h1>{{ me.userName }}</h1>
+    <tcd-thumbnail [imgUrl]="me.avatar" [size]="'5rem'"></tcd-thumbnail>
+    <h1>{{ me.name }}</h1>
   </div>
 
   <!-- Score and date -->
@@ -22,8 +22,8 @@
 
   <!-- Opponent -->
   <div class="flex flex-col items-center h-[125px]">
-    <tcd-thumbnail [imgUrl]="match.opponent.avatarUrl"></tcd-thumbnail>
-    <h1>{{ match.opponent.userName }}</h1>
+    <tcd-thumbnail [imgUrl]="match.opponent.avatar" [size]="'5rem'"></tcd-thumbnail>
+    <h1>{{ match.opponent.name }}</h1>
   </div>
 
 </div>

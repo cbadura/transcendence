@@ -9,14 +9,14 @@ import { User } from '../shared/user';
 export class UserDataService {
   private myUser: User = {
     id: 1,
-    userName: 'Nadiia',
+    name: 'Nadiia',
     status: 'online',
     wins: 25,
-    losses: 5,
     color: '#E7C9FF',
-    avatarUrl: './assets/avatars/av1.jpg',
+    avatar: './assets/avatars/av1.jpg',
 	  friends: [],
-	level: 6.83
+	  level: 6.83,
+    matches: 0
   };
 
   constructor() {}
@@ -30,7 +30,7 @@ export class UserDataService {
   }
 
   setName(name: string) {
-    const user = { ...this.getUser(), userName: name }; // shallow copy with spread operator, then update
+    const user = { ...this.getUser(), name: name }; // shallow copy with spread operator, then update
     this.userSubject.next(user);
   }
 
@@ -39,15 +39,31 @@ export class UserDataService {
     this.userSubject.next(user);
   }
 
-  incrementWins() {
-    let wins = ++this.myUser.wins;
-    const user = { ...this.getUser(), wins: wins };
+  incrementLevel() {
+    let level = this.myUser.level + 0.25;
+    //let wins = ++this.myUser.wins;
+    const user = { ...this.getUser(), level: level };
     this.userSubject.next(user);
   }
 
-  incrementLosses() {
-    let losses = ++this.myUser.losses;
-    const user = { ...this.getUser(), losses: losses };
+  decrementLevel() {
+    let level = this.myUser.level + 0.05;
+    // let losses = ++this.myUser.losses;
+    const user = { ...this.getUser(), level: level };
     this.userSubject.next(user);
   }
 }
+
+// incrementLevel() {
+//   let level = this.myUser.level + 0.25;
+//   //let wins = ++this.myUser.wins;
+//   const user = { ...this.getUser(), level: level };
+//   this.userSubject.next(user);
+// }
+
+// decrementLevel() {
+//   let level = this.myUser.level + 0.05;
+//   // let losses = ++this.myUser.losses;
+//   const user = { ...this.getUser(), level: level };
+//   this.userSubject.next(user);
+// }

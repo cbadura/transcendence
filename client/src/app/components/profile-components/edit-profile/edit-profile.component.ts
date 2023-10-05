@@ -20,14 +20,14 @@ export class EditProfileComponent implements OnInit {
     private userDataService: UserDataService) {
       this.myUser = {
         id: 0,
-        userName: '',
+        name: '',
         status: '',
         wins: 0,
-        losses: 0,
         color: '',
-        avatarUrl: '',
+        avatar: '',
 		  friends: [],
-		  level: 0
+		  level: 0,
+      matches: 0
       };
       this.tempUserName = '';
       this.tempColor = '';

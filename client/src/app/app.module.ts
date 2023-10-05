@@ -22,6 +22,7 @@ import { StatsComponent } from './components/profile-components/stats/stats.comp
 import { AchievementComponent } from './components/profile-components/achievement/achievement.component';
 import { ThumbnailComponent } from './components/profile-components/thumbnail/thumbnail.component';
 import { MatchComponent } from './components/profile-components/match/match.component';
+import { MessageComponent } from './components/chat/message/message.component';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { MatchComponent } from './components/profile-components/match/match.comp
     StatsComponent,
     AchievementComponent,
     ThumbnailComponent,
-    MatchComponent
+    MatchComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,

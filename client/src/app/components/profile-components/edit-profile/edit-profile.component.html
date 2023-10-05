@@ -2,7 +2,7 @@
   
 	<!-- Edit picture section -->
 	<div class="flex justify-center items-center w-full space-x-5">
-    <tcd-profile-pic [profilePic]="myUser.avatarUrl"></tcd-profile-pic>
+    <tcd-profile-pic [profilePic]="myUser.avatar"></tcd-profile-pic>
     <tcd-custom-button [buttonText]="'Upload new picture'"> </tcd-custom-button>
     <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
   </div>
@@ -15,7 +15,7 @@
       name="name"
       type="text"
       [(ngModel)]="tempUserName"
-      placeholder="{{ myUser.userName }}"
+      placeholder="{{ myUser.name }}"
     />
   </div>
 

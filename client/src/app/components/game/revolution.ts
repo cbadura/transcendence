@@ -152,11 +152,11 @@ export class GameComponent {
   }
 
   incrementUserWins() {
-    this.userDataService.incrementWins();
+    this.userDataService.incrementLevel();
   }
 
   incrementUserLosses() {
-    this.userDataService.incrementLosses();
+    this.userDataService.decrementLevel();
   }
 
   ngOnDestroy(): void {

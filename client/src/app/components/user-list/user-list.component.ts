@@ -14,58 +14,58 @@ export class UserListComponent {
     this.users = [
       {
         id: 0,
-        userName: 'Chris',
+        name: 'Chris',
         status: 'online',
         wins: 5,
-        losses: 5,
         color: 'blue',
-        avatarUrl: './assets/avatars/av0.jpg',
+        avatar: './assets/avatars/av0.jpg',
 			friends: [],
-			level: 0
+			level: 0,
+      matches: 0
       },
       {
         id: 1,
-        userName: 'Luca',
+        name: 'Luca',
         status: 'online',
         wins: 12,
-        losses: 2,
         color: 'purple',
-        avatarUrl: './assets/avatars/av1.jpg',
+        avatar: './assets/avatars/av1.jpg',
 		  friends: [],
-		  level: 0
+		  level: 0,
+      matches: 0
       },
       {
         id: 2,
-        userName: 'Cosmo',
+        name: 'Cosmo',
         status: 'online',
         wins: 10,
-        losses: 6,
         color: 'black',
-        avatarUrl: './assets/avatars/av2.jpg',
+        avatar: './assets/avatars/av2.jpg',
 		  friends: [],
-		  level: 0
+		  level: 0,
+      matches: 0
       },
       {
         id: 3,
-        userName: 'Jean',
+        name: 'Jean',
         status: 'online',
         wins: 14,
-        losses: 6,
         color: 'black',
-        avatarUrl: './assets/avatars/av4.jpg',
+        avatar: './assets/avatars/av4.jpg',
 		  friends: [],
-		  level: 0
+		  level: 0,
+      matches: 0
       },
       {
         id: 4,
-        userName: 'Nadiia',
+        name: 'Nadiia',
         status: 'online',
         wins: 16,
-        losses: 6,
         color: 'black',
-        avatarUrl: './assets/avatars/av3.jpg',
+        avatar: './assets/avatars/av3.jpg',
 		  friends: [],
-		level: 0
+		level: 0,
+    matches: 0
       }
     ];
   }
