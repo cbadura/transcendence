@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { MulterModule } from '@nestjs/platform-express';
+import { ChatModule } from './chat/chat.module';
 import * as path from 'path';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
@@ -24,6 +25,7 @@ import * as path from 'path';
     MulterModule.register({
       dest: './uploads/'
     }),
+    ChatModule,
   ], 
   controllers: [AppController],
   providers: [AppService],

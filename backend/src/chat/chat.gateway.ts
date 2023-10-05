@@ -1,7 +1,7 @@
 import { OnModuleInit } from "@nestjs/common";
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Namespace, Server, Socket } from 'socket.io'
-import { Chat } from "./Ichat";
+import { Namespace, Socket} from "socket.io";
+
 
 @WebSocketGateway({
   cors: {
@@ -54,7 +54,6 @@ export class ChatGateway implements OnModuleInit {
   @SubscribeMessage('leaveRoom')
   leaveChannel(client: Socket, room: string) {
     client.leave(room);
-
     console.log(`${client.id} left the room: ${room}`);
     this.server.to(room).emit('message', `${client.id} left the room: ${room}`);
 
@@ -63,4 +62,3 @@ export class ChatGateway implements OnModuleInit {
 
 
 }
-
