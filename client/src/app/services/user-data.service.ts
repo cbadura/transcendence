@@ -15,7 +15,8 @@ export class UserDataService {
     losses: 5,
     color: '#E7C9FF',
     avatarUrl: './assets/avatars/av1.jpg',
-    friends: []
+	  friends: [],
+	level: 6.83
   };
 
   constructor() {}

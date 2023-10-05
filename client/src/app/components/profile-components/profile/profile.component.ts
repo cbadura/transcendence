@@ -45,7 +45,8 @@ export class ProfileComponent implements OnInit {
       losses: 5,
       color: 'blue',
       avatarUrl: 'https://picsum.photos/100',
-      friends: [],
+		friends: [],
+		level: 0
     };
 
     const Bob : User = {
@@ -56,7 +57,8 @@ export class ProfileComponent implements OnInit {
       losses: 10,
       color: 'red',
       avatarUrl: 'https://picsum.photos/100',
-      friends: [],
+		friends: [],
+		level: 0
     };
 
     const Carl : User = {
@@ -67,7 +69,8 @@ export class ProfileComponent implements OnInit {
       losses: 3,
       color: 'green',
       avatarUrl: 'https://picsum.photos/100',
-      friends: [],
+		friends: [],
+		level: 0
     };
 
     this.matches = [

@@ -6,5 +6,6 @@ export interface User {
     losses: number;
     color: string;
     avatarUrl: string;
-    friends: User[];
+	friends: User[];
+	level: number;
 }

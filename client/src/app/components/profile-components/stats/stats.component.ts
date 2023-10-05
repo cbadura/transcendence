@@ -6,13 +6,13 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./stats.component.css']
 })
 export class StatsComponent {
-  @Input() wins: number = 0;
-  @Input() losses: number = 0;
+  @Input() level: number = 0;
 
     getPercentage = () =>
-    {
-      let total = this.wins + this.losses;
-      let percentageOfWins = this.wins / total * 100;
-      return percentageOfWins;
+	{
+		let percentage = (this.level - Math.floor(this.level)) * 100;
+		//remove decimal
+		percentage = Math.floor(percentage);
+		return percentage;
     }
 }

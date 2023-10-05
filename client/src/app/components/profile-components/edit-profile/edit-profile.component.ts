@@ -26,7 +26,8 @@ export class EditProfileComponent implements OnInit {
         losses: 0,
         color: '',
         avatarUrl: '',
-        friends: []
+		  friends: [],
+		  level: 0
       };
       this.tempUserName = '';
       this.tempColor = '';

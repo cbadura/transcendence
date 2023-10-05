@@ -20,7 +20,8 @@ export class UserListComponent {
         losses: 5,
         color: 'blue',
         avatarUrl: './assets/avatars/av0.jpg',
-        friends: []
+			friends: [],
+			level: 0
       },
       {
         id: 1,
@@ -30,7 +31,8 @@ export class UserListComponent {
         losses: 2,
         color: 'purple',
         avatarUrl: './assets/avatars/av1.jpg',
-        friends: []
+		  friends: [],
+		  level: 0
       },
       {
         id: 2,
@@ -40,7 +42,8 @@ export class UserListComponent {
         losses: 6,
         color: 'black',
         avatarUrl: './assets/avatars/av2.jpg',
-        friends: []
+		  friends: [],
+		  level: 0
       },
       {
         id: 3,
@@ -50,7 +53,8 @@ export class UserListComponent {
         losses: 6,
         color: 'black',
         avatarUrl: './assets/avatars/av4.jpg',
-        friends: []
+		  friends: [],
+		  level: 0
       },
       {
         id: 4,
@@ -60,7 +64,8 @@ export class UserListComponent {
         losses: 6,
         color: 'black',
         avatarUrl: './assets/avatars/av3.jpg',
-        friends: []
+		  friends: [],
+		level: 0
       }
     ];
   }
