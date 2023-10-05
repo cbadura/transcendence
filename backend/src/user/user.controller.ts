@@ -1,7 +1,7 @@
 import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Express } from 'express'
