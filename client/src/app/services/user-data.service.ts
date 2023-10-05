@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/user';
@@ -18,11 +19,17 @@ export class UserDataService {
     friends: []
   };
 
-  constructor() {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
+  /* getUsers() {
+    console.log(this.http.get('/users'));
+    window.alert(this.http.get('/users'));
+  } */
 
   getUser(): User {
     return this.userSubject.value;
