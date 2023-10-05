@@ -1,4 +1,4 @@
-<section class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4">
+<section class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4 p-4">
 
 <!-- Profile picture -->
 <tcd-profile-pic [profilePic]="myUser.avatarUrl"></tcd-profile-pic>
@@ -26,5 +26,24 @@
 <!-- Stats -->
 <tcd-stats [wins]="myUser.wins" [losses]="myUser.losses"></tcd-stats>
 
+<!-- Achievements -->
+<div class="flex flex-col items-center w-full">
+    <p>Achievements</p>
+    <div class="bg-black w-full rounded-3xl h-fit p-4 grid gap-4 grid-cols-3 sm:grid-cols-5 justify-items-center items-center" >
+        <div *ngFor="let achievement of achievements">
+            <tcd-achievement [achievement]="achievement"></tcd-achievement>
+        </div>
+    </div>
+</div>
+
+<!-- Match history -->
+<div class="flex flex-col items-center w-full">
+    <p>Match history</p>
+    <div class="bg-black w-full rounded-3xl h-fit p-4" >
+        <div *ngFor="let match of matches">
+            <tcd-match [match]="match" [me]="myUser"></tcd-match>
+        </div>
+    </div>
+</div>
 </section>
 

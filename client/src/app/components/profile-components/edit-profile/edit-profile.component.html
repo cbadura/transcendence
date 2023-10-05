@@ -33,6 +33,15 @@
     </div>
   </div>
 
+  <!--Test user request-->
+  <div class="w-full flex justify-end">
+    <tcd-custom-button
+      [buttonText]="'Get users'"
+      [onClick]="getUsers.bind(this)"
+      [isBlack]="true"
+    ></tcd-custom-button>
+  </div>
+
   <!-- Save button -->
   <div class="w-full flex justify-end">
     <tcd-custom-button

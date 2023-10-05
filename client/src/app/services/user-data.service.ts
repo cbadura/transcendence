@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/user';
@@ -18,11 +19,20 @@ export class UserDataService {
     friends: []
   };
 
-  constructor() {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
+  getUsers() {
+    this.http.get('http://localhost:3000/users').subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error fetching users: ' + JSON.stringify(error));
+    });
+  }
 
   getUser(): User {
     return this.userSubject.value;

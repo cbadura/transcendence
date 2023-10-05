@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -19,6 +20,9 @@ import { ProfileInfoComponent } from './components/profile-components/profile-in
 import { ProfilePicComponent } from './components/profile-components/profile-pic/profile-pic.component';
 import { CustomButtonComponent } from './components/shared-components/custom-button/custom-button.component';
 import { StatsComponent } from './components/profile-components/stats/stats.component';
+import { AchievementComponent } from './components/profile-components/achievement/achievement.component';
+import { ThumbnailComponent } from './components/profile-components/thumbnail/thumbnail.component';
+import { MatchComponent } from './components/profile-components/match/match.component';
 
 
 @NgModule({
@@ -36,9 +40,13 @@ import { StatsComponent } from './components/profile-components/stats/stats.comp
     ProfileInfoComponent,
     ProfilePicComponent,
     CustomButtonComponent,
-    StatsComponent
+    StatsComponent,
+    AchievementComponent,
+    ThumbnailComponent,
+    MatchComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
 		AppRoutingModule,
     FormsModule

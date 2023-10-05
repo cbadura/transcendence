@@ -40,6 +40,11 @@ export class EditProfileComponent implements OnInit {
     );
   }
 
+  getUsers() {
+    this.userDataService.getUsers();
+  }
+
+
   editName(name: string) {
     if (name && name.trim() !== '') {
       this.userDataService.setName(name);
