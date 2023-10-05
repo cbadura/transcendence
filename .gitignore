@@ -2,6 +2,9 @@
 backend/dist
 backend/node_modules
 
+# backend uploaded file storage
+/backend/uploadedData
+
 # Logs
 logs
 *.log
