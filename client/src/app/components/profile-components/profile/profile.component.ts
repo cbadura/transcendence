@@ -44,7 +44,7 @@ export class ProfileComponent implements OnInit {
       wins: 10,
       losses: 5,
       color: 'blue',
-      avatarUrl: 'https://picsum.photos/100',
+      avatar: 'https://picsum.photos/100',
       friends: [],
     };
 
@@ -55,7 +55,7 @@ export class ProfileComponent implements OnInit {
       wins: 5,
       losses: 10,
       color: 'red',
-      avatarUrl: 'https://picsum.photos/100',
+      avatar: 'https://picsum.photos/100',
       friends: [],
     };
 
@@ -66,7 +66,7 @@ export class ProfileComponent implements OnInit {
       wins: 2,
       losses: 3,
       color: 'green',
-      avatarUrl: 'https://picsum.photos/100',
+      avatar: 'https://picsum.photos/100',
       friends: [],
     };
 

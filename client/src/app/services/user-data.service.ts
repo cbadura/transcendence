@@ -15,7 +15,7 @@ export class UserDataService {
     wins: 25,
     losses: 5,
     color: '#E7C9FF',
-    avatarUrl: './assets/avatars/av1.jpg',
+    avatar: './assets/avatars/av1.jpg',
     friends: []
   };
 
