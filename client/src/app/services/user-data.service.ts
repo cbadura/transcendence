@@ -26,10 +26,13 @@ export class UserDataService {
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
-  /* getUsers() {
-    console.log(this.http.get('/users'));
-    window.alert(this.http.get('/users'));
-  } */
+  getUsers() {
+    this.http.get('http://localhost:3000/users').subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error fetching users: ' + JSON.stringify(error));
+    });
+  }
 
   getUser(): User {
     return this.userSubject.value;

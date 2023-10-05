@@ -40,9 +40,9 @@ export class EditProfileComponent implements OnInit {
     );
   }
 
-  /* getUsers() {
+  getUsers() {
     this.userDataService.getUsers();
-  } */
+  }
 
 
   editName(name: string) {

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -45,6 +46,7 @@ import { MatchComponent } from './components/profile-components/match/match.comp
     MatchComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
 		AppRoutingModule,
     FormsModule
