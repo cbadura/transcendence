@@ -5,7 +5,7 @@ export class Square {
 
   draw(color: string) {
     this.ctx.fillStyle = color;;
-    this.drawRoundedPaddle(this.x, this.y, this.sizeX, this.sizeY, 10);  // The last argument is the rounding radius
+    this.drawRoundedPaddle(this.x, this.y, this.sizeX, this.sizeY, 10);  // last argument is rounding radius
   }
 
   drawRoundedPaddle(x: number, y: number, width: number, height: number, radius: number) {

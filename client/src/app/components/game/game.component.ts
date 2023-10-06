@@ -52,7 +52,7 @@ export class GameComponent {
     this.paddle = new Square(
       this.ctx,
       10,
-      this.ctx.canvas.height / 2 - 25,
+      this.ctx.canvas.height / 2 - 55,
       this.PADDLE_WIDTH,
       this.PADDLE_LEN
     );
@@ -60,7 +60,7 @@ export class GameComponent {
     this.oppPaddle = new Square(
       this.ctx,
       this.ctx.canvas.width - 25,
-      this.ctx.canvas.height / 2 - 25,
+      this.ctx.canvas.height / 2 - 55,
       this.PADDLE_WIDTH,
       this.PADDLE_LEN
     );
@@ -163,7 +163,7 @@ export class GameComponent {
     this.ctx.closePath();
     this.ctx.stroke();
 
-    // Opponent's lines
+    // Opponents' lines
     this.ctx.beginPath();
     this.ctx.moveTo(this.PADDLE_WIDTH + 3, 0);
     this.ctx.lineTo(this.PADDLE_WIDTH + 3, canvasHeight);
@@ -200,14 +200,22 @@ export class GameComponent {
       450
     );
 
-    //Ball Hits
+    // Ball Hits
     this.ctx.fillStyle = this.myUser.color;
     this.ctx.font = 'bold 100pt Sniglet';
-    this.ctx.fillText(
-      this.ball.getHits().toString(),
-      canvasWidth / 2 - 40,
-      300
-    );
+    if (this.ball.getHits() < 10) {
+      this.ctx.fillText(
+        this.ball.getHits().toString(),
+        canvasWidth / 2 - 40,
+        300
+      );
+    } else {
+      this.ctx.fillText(
+        this.ball.getHits().toString(),
+        canvasWidth / 2 - 77,
+        300
+      );
+    }
   }
 
   incrementUserLevel() {
