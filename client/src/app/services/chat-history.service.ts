@@ -19,6 +19,18 @@ export class ChatHistoryService {
 
   constructor(public datepipe: DatePipe,
     @Inject('chatSocket') private chatSocket: Socket) {}
+
+  /* Optional approach for namespaces
+  private chatSocket :any;
+  constructor(public datepipe: DatePipe,
+    private socket: Socket) {
+        this.chatSocket = new Socket({
+        url: 'http://localhost:3000',
+        options: {}
+      })
+      this.chatSocket.ioSocket.nsp = '/chat'
+    }
+  */
   
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
