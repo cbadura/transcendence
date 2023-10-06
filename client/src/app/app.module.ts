@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { Socket, SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -25,8 +25,11 @@ import { AchievementComponent } from './components/profile-components/achievemen
 import { ThumbnailComponent } from './components/profile-components/thumbnail/thumbnail.component';
 import { MatchComponent } from './components/profile-components/match/match.component';
 import { MessageComponent } from './components/chat/message/message.component';
+import { ChatSocketModule } from './chat-socket/chat-socket.module';
+import { GameSocketModule } from './game-socket/game-socket.module';
 
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
+// const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game', options: {} };
 
 @NgModule({
   declarations: [
@@ -54,11 +57,14 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     BrowserModule,
 		AppRoutingModule,
     FormsModule,
-    SocketIoModule.forRoot(config)
-	],
+    ChatSocketModule,
+    GameSocketModule
+  ],
   providers: [
     UserDataService,
-    DatePipe
+    DatePipe,
+    // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
+    { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],
   bootstrap: [AppComponent]
 })

@@ -1,11 +1,10 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/user';
-import { dummyUsers } from '../temp/dummyUsers';
 import { Post } from '../shared/post';
 
 @Injectable({
@@ -19,8 +18,20 @@ export class ChatHistoryService {
   room: string = "testRoom";
 
   constructor(public datepipe: DatePipe,
-    private socket: Socket) {}
-  chatns = this.socket.ioSocket.io('/chat');
+    @Inject('chatSocket') private chatSocket: Socket) {}
+
+  /* Optional approach for namespaces
+  private chatSocket :any;
+  constructor(public datepipe: DatePipe,
+    private socket: Socket) {
+        this.chatSocket = new Socket({
+        url: 'http://localhost:3000',
+        options: {}
+      })
+      this.chatSocket.ioSocket.nsp = '/chat'
+    }
+  */
+  
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
   
@@ -41,10 +52,10 @@ export class ChatHistoryService {
   }
 
   sendMessage(post: Post) {
-    this.socket.emit('message', post);
+    this.chatSocket.emit('message', post);
   }
   getMessage() {
-    let message = this.chatns.fromEvent('chatMessage')
+    let message = this.chatSocket.fromEvent('chatMessage')
       .pipe(map((msg: any) => {
       return msg;
     }));
