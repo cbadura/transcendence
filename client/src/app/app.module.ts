@@ -25,6 +25,12 @@ import { ThumbnailComponent } from './components/profile-components/thumbnail/th
 import { MatchComponent } from './components/profile-components/match/match.component';
 import { MessageComponent } from './components/chat/message/message.component';
 
+import { NgIconsModule } from '@ng-icons/core';
+import { featherSettings, featherSend, featherUser } from '@ng-icons/feather-icons';
+import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
+import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
+import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
+
 
 @NgModule({
   declarations: [
@@ -45,13 +51,17 @@ import { MessageComponent } from './components/chat/message/message.component';
     AchievementComponent,
     ThumbnailComponent,
     MatchComponent,
-    MessageComponent
+    MessageComponent,
+    ChatHeaderComponent,
+    ChatInputComponent,
+    ChatBtnComponent
   ],
   imports: [
     HttpClientModule,
     BrowserModule,
 		AppRoutingModule,
-    FormsModule
+    FormsModule,
+    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser }),
 	],
   providers: [
     UserDataService,

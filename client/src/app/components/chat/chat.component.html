@@ -1,10 +1,12 @@
-<div class="border bg-gray-800 rounded-3xl h-screen p-6 m-4">
-  <div *ngFor="let message of messages">
-    <tcd-message [post]="message"></tcd-message>
-  </div>
-  
-</div>
+<div class="border border-zinc-800 bg-zinc-800 rounded-3xl h-[calc(100vh-115px)] m-4 relative">
+  <tcd-chat-header></tcd-chat-header>
+  <div class="overflow-y-auto h-[calc(100%-180px)]  pl-9 pr-9 scrollbar-hide mt-28 pt-6 pb-8" >
+    <div *ngFor="let message of messages">
+      <tcd-message [post]="message"></tcd-message>
+    </div>
 
+  <tcd-chat-input></tcd-chat-input>
+</div>
 
 <!-- Input -->
 <!-- <p class="flex items-center justify-center p-2 h-full">
@@ -12,14 +14,3 @@
   <input class="border" type="text" [(ngModel)]="tempText" placeholder="Enter message">
   <button class="border" type="button" (click)="savePost(tempText)">Send</button>
 </p> -->
-
-
-
-
-<!-- messages -->
-
-  <!-- <div class="flex p-2">
-    <p class="font-bold">{{ message.user.name }}:</p>
-    <p class="ml-2">{{ message.text }}</p>
-    <p class="italic ml-1">({{ message.dateTime }})</p>
-  </div> -->
