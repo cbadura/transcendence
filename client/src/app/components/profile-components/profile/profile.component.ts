@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+
 import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { User } from 'src/app/shared/user';

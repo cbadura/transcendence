@@ -62,10 +62,10 @@ export class UserDataService {
     this.userSubject.next(user);
   }
   
-    incrementMatches() {
-      let matches = ++this.myUser.matches;
-      const user = { ...this.getUser(), matches: matches };
-    }
+  incrementMatches() {
+    let matches = ++this.myUser.matches;
+    const user = { ...this.getUser(), matches: matches };
+  }
 }
 
 // incrementLevel() {

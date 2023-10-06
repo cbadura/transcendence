@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 import { ChatHistoryService } from '../../services/chat-history.service';
 import { UserDataService } from '../../services/user-data.service';
@@ -12,7 +13,9 @@ import { Post } from '../../shared/post';
 })
 export class ChatComponent {
   messages!: Post[];
+  serverPosts!: string[];
   tempText!: string;
+  private postSubscription!: Subscription;
 
   constructor(
     public datepipe: DatePipe,
@@ -24,6 +27,12 @@ export class ChatComponent {
 
   ngOnInit() {
     this.messages = this.chatHistoryService.getHistory();
+    this.chatHistoryService.subscribeToMessages();
+    this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
+      (posts) => {
+        this.messages = posts;
+      }
+    );
   }
 
   savePost(message: string) {
@@ -32,6 +41,6 @@ export class ChatComponent {
         text: message,
         dateTime: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
     };
-    this.chatHistoryService.addPost(newPost);
+    this.chatHistoryService.sendMessage(newPost);
   }
 }
