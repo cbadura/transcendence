@@ -1,11 +1,10 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/user';
-import { dummyUsers } from '../temp/dummyUsers';
 import { Post } from '../shared/post';
 
 @Injectable({
@@ -19,7 +18,7 @@ export class ChatHistoryService {
   room: string = "testRoom";
 
   constructor(public datepipe: DatePipe,
-    private socket: Socket) {}
+    @Inject('chatSocket') private chatSocket: Socket) {}
   
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
@@ -41,10 +40,10 @@ export class ChatHistoryService {
   }
 
   sendMessage(post: Post) {
-    this.socket.emit('message', post);
+    this.chatSocket.emit('message', post);
   }
   getMessage() {
-    let message = this.socket.fromEvent('chatMessage')
+    let message = this.chatSocket.fromEvent('chatMessage')
       .pipe(map((msg: any) => {
       return msg;
     }));
