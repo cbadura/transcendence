@@ -6,4 +6,5 @@ import { Component, Input } from '@angular/core';
 })
 export class ThumbnailComponent {
   @Input() imgUrl: string = ''; 
+  @Input() size!: string;
 }

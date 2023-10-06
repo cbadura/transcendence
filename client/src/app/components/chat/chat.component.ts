@@ -28,7 +28,7 @@ export class ChatComponent {
 
   savePost(message: string) {
     const newPost: Post = {
-        user: this.userDataService.getUser().name,
+        user: this.userDataService.getUser(),
         text: message,
         dateTime: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
     };

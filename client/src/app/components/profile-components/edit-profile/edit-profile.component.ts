@@ -24,10 +24,10 @@ export class EditProfileComponent implements OnInit {
         status: '',
         matches: 0,
         wins: 0,
-        level: 1.00,
         color: '',
         avatar: '',
-        friends: []
+		  friends: [],
+		  level: 0,
       };
       this.tempUserName = '';
       this.tempColor = '';

@@ -40,7 +40,7 @@ export class UserDataService {
   }
 
   setName(name: string) {
-    const user = { ...this.getUser(), userName: name }; // shallow copy with spread operator, then update
+    const user = { ...this.getUser(), name: name }; // shallow copy with spread operator, then update
     this.userSubject.next(user);
   }
 
@@ -49,15 +49,35 @@ export class UserDataService {
     this.userSubject.next(user);
   }
 
-  incrementWins() {
-    let wins = ++this.myUser.wins;
-    const user = { ...this.getUser(), wins: wins };
+  incrementLevel() {
+    let level = this.myUser.level + 0.25;
+    //let wins = ++this.myUser.wins;
+    const user = { ...this.getUser(), level: level };
     this.userSubject.next(user);
   }
-
-  incrementMatches() {
-    let matches = ++this.myUser.matches;
-    const user = { ...this.getUser(), matches: matches };
+  decrementLevel() {
+    let level = this.myUser.level + 0.05;
+    // let losses = ++this.myUser.losses;
+    const user = { ...this.getUser(), level: level };
     this.userSubject.next(user);
   }
+  
+    incrementMatches() {
+      let matches = ++this.myUser.matches;
+      const user = { ...this.getUser(), matches: matches };
+    }
 }
+
+// incrementLevel() {
+//   let level = this.myUser.level + 0.25;
+//   //let wins = ++this.myUser.wins;
+//   const user = { ...this.getUser(), level: level };
+//   this.userSubject.next(user);
+// }
+
+// decrementLevel() {
+//   let level = this.myUser.level + 0.05;
+//   // let losses = ++this.myUser.losses;
+//   const user = { ...this.getUser(), level: level };
+//   this.userSubject.next(user);
+// }

@@ -152,11 +152,16 @@ export class GameComponent {
   }
 
   incrementUserWins() {
-    this.userDataService.incrementWins();
+    this.userDataService.incrementLevel();
   }
 
+<<<<<<< HEAD
   incrementUserMatches() {
     this.userDataService.incrementMatches();
+=======
+  incrementUserLosses() {
+    this.userDataService.decrementLevel();
+>>>>>>> origin/frontend-chat-game
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-
+import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { User } from 'src/app/shared/user';
 import { Achievement } from 'src/app/shared/achievement';
@@ -37,46 +37,14 @@ export class ProfileComponent implements OnInit {
       { name: 'Table Tennis Titan', url: 'https://picsum.photos/100' },
     ];
 
-    const Ana : User = {
-      id: 1,
-      name: 'Ana',
-      status: 'Online',
-      wins: 10,
-      matches: 15,
-      level: 1.00,
-      color: 'blue',
-      avatar: 'https://picsum.photos/100',
-      friends: [],
-    };
 
-    const Bob : User = {
-      id: 2,
-      name: 'Bob',
-      status: 'Online',
-      wins: 5,
-      matches: 15,
-      level: 1.00,
-      color: 'red',
-      avatar: 'https://picsum.photos/100',
-      friends: [],
-    };
-
-    const Carl : User = {
-      id: 3,
-      name: 'Carl',
-      status: 'Offline',
-      wins: 2,
-      matches: 5,
-      level: 1.00,
-      color: 'green',
-      avatar: 'https://picsum.photos/100',
-      friends: [],
-    };
 
     this.matches = [
-      { opponent: Ana, dateTime: '2021-04-01T12:00:00', myScore: 10, opponentScore: 5 },
-      { opponent: Bob, dateTime: '2021-04-02T12:00:00', myScore: 5, opponentScore: 10 },
-      { opponent: Carl, dateTime: '2021-04-03T12:00:00', myScore: 2, opponentScore: 3 },
+      { opponent: dummyUsers[0], dateTime: '2021-04-01T12:00:00', myScore: 10, opponentScore: 5 },
+      { opponent: dummyUsers[1], dateTime: '2021-04-02T12:00:00', myScore: 5, opponentScore: 10 },
+      { opponent: dummyUsers[2], dateTime: '2021-04-03T12:00:00', myScore: 2, opponentScore: 3 },
     ];
   }
+
+  getFloorLevel = () => Math.floor(this.myUser.level);
 }

@@ -1,15 +1,25 @@
-<p class="font-bold text-2xl">Chat history</p>
-<div class="border">
+<div class="border bg-gray-800 rounded-3xl h-screen p-6 m-4">
   <div *ngFor="let message of messages">
-    <div class="flex p-2">
-      <p class="font-bold">{{ message.user }}:</p>
-      <p class="ml-2">{{ message.text }}</p>
-      <p class="italic ml-1">({{ message.dateTime }})</p>
-    </div>
+    <tcd-message [post]="message"></tcd-message>
   </div>
+  
 </div>
-<p class="flex items-center justify-center p-2 h-full">
+
+
+<!-- Input -->
+<!-- <p class="flex items-center justify-center p-2 h-full">
   Your message:
   <input class="border" type="text" [(ngModel)]="tempText" placeholder="Enter message">
   <button class="border" type="button" (click)="savePost(tempText)">Send</button>
-</p>
+</p> -->
+
+
+
+
+<!-- messages -->
+
+  <!-- <div class="flex p-2">
+    <p class="font-bold">{{ message.user.name }}:</p>
+    <p class="ml-2">{{ message.text }}</p>
+    <p class="italic ml-1">({{ message.dateTime }})</p>
+  </div> -->

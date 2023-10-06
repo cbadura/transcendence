@@ -9,7 +9,7 @@ import { User } from '../../shared/user';
 @Component({
   selector: 'tcd-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
   @ViewChild('canvas', { static: true })
@@ -26,47 +26,59 @@ export class GameComponent {
 
   private PADDLE_LEN = 100;
   private PADDLE_WIDTH = 15;
-  
+  private darkerColor!: string;
+
   constructor(private userDataService: UserDataService) {}
 
   ngOnInit() {
-    this.userSubscription = this.userDataService.user$.subscribe(
-      (user) => {
-        this.myUser = user;
-        this.paddleColor = this.myUser.color;
-      }
-    );
+    this.userSubscription = this.userDataService.user$.subscribe((user) => {
+      this.myUser = user;
+      this.paddleColor = this.myUser.color;
+    });
+
+    this.darkerColor = '#C49CE3';
   }
 
   ngAfterViewInit(): void {
-    this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-    this.ctx.fillStyle = 'black';
+    this.ctx = this.canvas.nativeElement.getContext(
+      '2d'
+    ) as CanvasRenderingContext2D;
+    this.ctx.fillStyle = this.darkerColor;
     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.drawCourt();
   }
-  
+
   startGame(): void {
-      this.paddle = new Square(this.ctx, 10,
-        this.ctx.canvas.height / 2 - 25, this.PADDLE_WIDTH, this.PADDLE_LEN);
-      this.ctx.fillStyle = this.paddleColor;
-      this.oppPaddle = new Square(this.ctx, this.ctx.canvas.width - 25,
-        this.ctx.canvas.height / 2 - 25, this.PADDLE_WIDTH, this.PADDLE_LEN);
-      this.ball = new Ball(this.ctx);
-      this.ball.resetBall();
-      this.ball.draw();
-      this.paddle.draw(this.paddleColor);
-      this.oppPaddle.draw('blue');
-      this.gameLoop();
+    this.paddle = new Square(
+      this.ctx,
+      10,
+      this.ctx.canvas.height / 2 - 25,
+      this.PADDLE_WIDTH,
+      this.PADDLE_LEN
+    );
+    this.ctx.fillStyle = this.paddleColor;
+    this.oppPaddle = new Square(
+      this.ctx,
+      this.ctx.canvas.width - 25,
+      this.ctx.canvas.height / 2 - 25,
+      this.PADDLE_WIDTH,
+      this.PADDLE_LEN
+    );
+    this.ball = new Ball(this.ctx);
+    this.ball.resetBall();
+    this.ball.draw();
+    this.paddle.draw(this.paddleColor);
+    this.oppPaddle.draw('blue');
+    this.gameLoop();
   }
 
-  gameLoop() : void {
+  gameLoop(): void {
     const itval = setInterval(() => {
       const score = this.ball.move(this.paddle.y, this.oppPaddle.y);
       if (score === 1) {
         this.userScore++;
         this.ball.resetBall();
-      }
-      else if (score == 2) {
+      } else if (score == 2) {
         this.oppScore++;
         this.ball.resetBall();
       }
@@ -74,9 +86,9 @@ export class GameComponent {
 
       if (this.userScore >= 5 || this.oppScore >= 5) {
         if (this.userScore >= 5) {
-          this.incrementUserWins();
+          this.incrementUserLevel();
         } else if (this.oppScore >= 5) {
-          this.incrementUserLosses();
+          this.decrementUserLevel();
         }
         clearInterval(itval);
       } else if (this.ball.stop) {
@@ -123,11 +135,11 @@ export class GameComponent {
   redraw() {
     const canvas = this.ctx.canvas;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    this.ctx.fillStyle = 'black';
+
+    this.ctx.fillStyle = this.darkerColor;
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
     this.drawCourt();
-    
+
     this.ctx.beginPath();
     this.paddle.draw(this.paddleColor);
     this.oppPaddle.draw('blue');
@@ -137,12 +149,12 @@ export class GameComponent {
   drawCourt() {
     const canvasWidth = this.ctx.canvas.width;
     const canvasHeight = this.ctx.canvas.height;
-    
+
     const midX = canvasWidth / 2 - 2;
     const midY = canvasHeight / 2;
 
     this.ctx.strokeStyle = this.myUser.color;
-    this.ctx.lineWidth = 2;
+    this.ctx.lineWidth = 7;
 
     // Mid line
     this.ctx.beginPath();
@@ -166,23 +178,44 @@ export class GameComponent {
 
     // Center circle
     this.ctx.beginPath();
-    this.ctx.arc(midX, midY, 80, 0, Math.PI * 2);
+    this.ctx.arc(midX, midY, 100, 0, Math.PI * 2);
     this.ctx.closePath();
+    this.ctx.fillStyle = this.darkerColor;
+    this.ctx.fill();
     this.ctx.stroke();
 
     // Score
     this.ctx.fillStyle = this.myUser.color;
-    this.ctx.font = "60pt Inter";
-    this.ctx.fillText(this.getUserScore().toString(), 3 * canvasWidth / 8, 100);
-    this.ctx.fillText(this.getOppScore().toString(), 4.5 * canvasWidth / 8, 100);
+    this.ctx.font = 'bold 60pt Sniglet';
+
+    this.ctx.fillText(
+      this.getUserScore().toString(),
+      (3 * canvasWidth) / 8,
+      450
+    );
+
+    this.ctx.fillText(
+      this.getOppScore().toString(),
+      (4.5 * canvasWidth) / 8,
+      450
+    );
+
+    //Ball Hits
+    this.ctx.fillStyle = this.myUser.color;
+    this.ctx.font = 'bold 100pt Sniglet';
+    this.ctx.fillText(
+      this.ball.getHits().toString(),
+      canvasWidth / 2 - 40,
+      300
+    );
   }
 
-  incrementUserWins() {
-    this.userDataService.incrementWins();
+  incrementUserLevel() {
+    this.userDataService.incrementLevel();
   }
 
-  incrementUserLosses() {
-    this.userDataService.incrementMatches();
+  decrementUserLevel() {
+    this.userDataService.decrementLevel();
   }
 
   ngOnDestroy(): void {
