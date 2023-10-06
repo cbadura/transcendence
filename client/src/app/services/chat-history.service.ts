@@ -19,31 +19,7 @@ export class ChatHistoryService {
   room: string = "testRoom";
 
   constructor(public datepipe: DatePipe,
-    private socket: Socket) {
-      
-    this.chatHistory = [
-      {
-        user: dummyUsers[0],
-        text: 'Hello',
-        dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
-      },
-      {
-        user: dummyUsers[1],
-        text: 'Hi',
-        dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
-      },
-      {
-        user: dummyUsers[1],
-        text: 'how is it going? I love pong! :)',
-        dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
-      },
-      {
-        user: dummyUsers[2],
-        text: 'heeeeeeey',
-        dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
-      },
-    ];
-  }
+    private socket: Socket) {}
   
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
@@ -65,8 +41,6 @@ export class ChatHistoryService {
   }
 
   sendMessage(post: Post) {
-    console.log('Client sent message');
-    console.log(post.text);
     this.socket.emit('message', post);
   }
   getMessage() {

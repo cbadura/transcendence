@@ -22,7 +22,6 @@ export class ChatComponent {
     private chatHistoryService: ChatHistoryService,
     private userDataService: UserDataService) {
     this.messages = [];
-    // this.serverPosts = [];
     this.tempText = '';
   }
 
@@ -31,7 +30,6 @@ export class ChatComponent {
     this.chatHistoryService.subscribeToMessages();
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
       (posts) => {
-        console.log('Received posts:', posts);
         this.messages = posts;
       }
     );
