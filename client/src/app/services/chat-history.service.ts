@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/user';
 import { dummyUsers } from '../temp/dummyUsers';
@@ -12,12 +13,14 @@ import { Post } from '../shared/post';
 })
 export class ChatHistoryService {
   chatHistory: Post[] = [];
-  serverPosts: string[] = [];
+  serverPosts: string[] = [
+    'first message'
+  ];
   room: string = "testRoom";
 
   constructor(public datepipe: DatePipe,
     private socket: Socket) {
-    
+      
     this.chatHistory = [
       {
         user: dummyUsers[0],
@@ -40,19 +43,21 @@ export class ChatHistoryService {
         dateTime: this.datepipe.transform((new Date), 'dd/MM/yyyy HH:mm:ss')
       },
     ];
-
-    this.serverPosts = [
-      'first message'
-    ];
-
+  }
+  
+  serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
+  serverChatObs$ = this.serverChat.asObservable();
+  
+  getServerChat(): Post[] {
+    return this.serverChat.value;
+  }
+  
+  getServerPosts() {
+    return this.serverPosts;
   }
 
   getHistory() {
     return this.chatHistory;
-  }
-
-  getServerPosts() {
-    return this.serverPosts;
   }
 
   addPost(post: Post) {
@@ -60,15 +65,22 @@ export class ChatHistoryService {
   }
 
   sendMessage(post: Post) {
+    console.log('Client sent message');
+    console.log(post.text);
     this.socket.emit('message', post);
   }
   getMessage() {
-    return this.socket.fromEvent('chatMessage').pipe(map((data: any) => data.msg));
+    let message = this.socket.fromEvent('chatMessage')
+      .pipe(map((msg: any) => {
+      return msg;
+    }));
+    return message;
   }
 
-  private subscribeToMessages() {
-    this.getMessage().subscribe(msg => {
-      this.serverPosts.push(msg);
+  subscribeToMessages() {
+    this.getMessage().subscribe( msg => {
+      this.chatHistory.push(msg);
+      this.serverChat.next(this.chatHistory);
     });
-  } 
+  }
 }

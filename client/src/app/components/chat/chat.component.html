@@ -6,16 +6,17 @@
   <div class="bg-white" *ngFor="let post of serverPosts">
     {{ post }}
   </div>
+  
+  <!-- Input -->
+  <p class="flex items-center justify-center p-2 h-full">
+    Your message:
+    <input class="border" type="text" [(ngModel)]="tempText" placeholder="Enter message">
+    <button class="border" type="button" (click)="savePost(tempText)">Send</button>
+  </p>
 
 </div>
 
 
-<!-- Input -->
-<!-- <p class="flex items-center justify-center p-2 h-full">
-  Your message:
-  <input class="border" type="text" [(ngModel)]="tempText" placeholder="Enter message">
-  <button class="border" type="button" (click)="savePost(tempText)">Send</button>
-</p> -->
 
 
 

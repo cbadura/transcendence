@@ -26,7 +26,7 @@ import { ThumbnailComponent } from './components/profile-components/thumbnail/th
 import { MatchComponent } from './components/profile-components/match/match.component';
 import { MessageComponent } from './components/chat/message/message.component';
 
-const config: SocketIoConfig = { url: 'http://10.19.242.229:3000/chat', options: {} };
+const config: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 
 @NgModule({
   declarations: [

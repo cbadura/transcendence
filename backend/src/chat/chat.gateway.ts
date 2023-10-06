@@ -7,7 +7,7 @@ import { Post } from "./IPost";
 
 @WebSocketGateway({
   cors: {
-    origins: 'http://10.19.242.229:3000'
+    origins: 'http://localhost:3000'
   },
   namespace : 'chat'
 })
@@ -24,8 +24,8 @@ export class ChatGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('message')
-  readAndSend(@MessageBody() post: string) {
-    console.log('test');
+  readAndSend(@MessageBody() post: Post) {
+    console.log(post);
     // this.server.on('newMessage', (body) => {
     //   console.log('test');
     //   const data = JSON.parse(body);
