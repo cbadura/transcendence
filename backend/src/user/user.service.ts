@@ -17,7 +17,10 @@ export class UserService {
   }
 
   async getUser(id: number): Promise<User | undefined>{
-    return await this.userRepository.findOne({ where: { id }});
+    return await this.userRepository.findOne(
+      { where: { id },
+      relations: ['achievements','achievements.achievementDefinition'],
+   });
   }
 
   async updateUser(id: number,dto: UpdateUserDto) {

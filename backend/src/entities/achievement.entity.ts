@@ -1,15 +1,17 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from './user.entity';
+import { AchievementDefinition } from './achievement-definition.entity';
 
 @Entity()
 export class Achievement {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  owner_id: number;
+  @ManyToOne(()=> User,(user)=>user.achievements)
+  owner: User;
 
-  @Column()
-  achievement_id: string;
+  @ManyToOne(()=>AchievementDefinition,(achievementDev)=>achievementDev.id)
+  achievementDefinition: AchievementDefinition;
 
   @Column()
   date_unlocked: Date;

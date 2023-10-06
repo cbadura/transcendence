@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Achievement } from './achievement.entity';
 
 @Entity()
 export class AchievementDefinition {
@@ -11,7 +12,10 @@ export class AchievementDefinition {
   @Column()
   description: string;
 
-  @Column('json')
+  @Column('json',{nullable: true})
   criteria: Record<string,any>; //can have variable amounts of key-value pairs
+
+  @OneToMany(()=>Achievement,(achievement)=>achievement.achievementDefinition)
+  achievement: Achievement[]
 
 }

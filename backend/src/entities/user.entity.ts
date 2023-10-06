@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Achievement } from './achievement.entity';
 
 @Entity()
 export class User {
@@ -24,5 +25,8 @@ export class User {
   wins: number;
 
   //RelationList
+
+  @OneToMany(()=> Achievement,(Achievement)=>Achievement.owner)
+  achievements: Achievement[]
 
 }

@@ -10,6 +10,7 @@ import { AchievementModule } from './achievement/achievement.module';
 import { SeedingModule } from './seeding/seeding.module';
 import * as path from 'path';
 import { AchievementDefinition } from './entities/achievement-definition.entity';
+import { Achievement } from './entities/achievement.entity';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -21,7 +22,7 @@ import { AchievementDefinition } from './entities/achievement-definition.entity'
       username: 'transcendence',
       password: 'transcendence',
       database: 'transcendence',
-      entities: [User,AchievementDefinition],
+      entities: [User,AchievementDefinition,Achievement],
       synchronize: true,
     }),
     MulterModule.register({

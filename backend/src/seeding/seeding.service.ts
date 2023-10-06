@@ -18,10 +18,10 @@ export class SeedingService implements OnModuleInit{
 
     async seedAchievementDefinitions(){
         const AchievementDevs = [
-            { name: 'First Matchasdasdasdas', description: ' Play 1 Match boomer adasdasdasdas', criteria: { matches: 1, } },
-            { name: 'Addictasdasdas', description: ' Play 5 Matches boomer adasdasdas', criteria: { matches: 5, } },
-            { name: 'Winnerasdasdasdasdasdasdasd', description: ' Win 5 Matches boomer this iasasdadasdasdasdass anii', criteria: { wins: 5, } },
-            { name: 'new title wowooooo', description: ' Win 5 Matches boomer this is anii', criteria: { wins: 5, killme: 13123121 } },
+            { name: 'First Match', description: ' Play 1 Match', criteria: { matches: 1, } },
+            { name: 'Addict', description: ' Play 5 Matches', criteria: { matches: 5, } },
+            { name: 'Winner', description: ' Win 5 Matches', criteria: { wins: 5, } },
+            { name: '1v1me', description: 'Play against a friend' },
         ];
         
         const existingData = await this.achievementDefinitionRepository.find();
