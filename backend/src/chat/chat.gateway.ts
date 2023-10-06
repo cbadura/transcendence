@@ -7,7 +7,7 @@ import { Post } from "./IPost";
 
 @WebSocketGateway({
   cors: {
-    origins: 'http://10.11.6.3:3000'
+    origins: 'http://10.19.242.229:3000'
   },
   namespace : 'chat'
 })
@@ -24,7 +24,7 @@ export class ChatGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('message')
-  readAndSend(@MessageBody() post: Post) {
+  readAndSend(@MessageBody() post: string) {
     console.log('test');
     // this.server.on('newMessage', (body) => {
     //   console.log('test');
@@ -36,9 +36,10 @@ export class ChatGateway implements OnModuleInit {
     // })
     // console.log(body);
     // const data = JSON.parse(JSON.stringify(body));
-    console.log(post.room);
-    console.log(post.text);
-    this.server.to(post.room).emit('chatMessage', `${post.user}: ${post.text}`);
+    // console.log(post.room);
+    // console.log(post.text);
+    // this.server.to('testRoom').emit('chatMessage', post);
+    this.server.emit('chatMessage', post);
 
     // console.log(body);
     // this.server.emit('chatMessage', body);
