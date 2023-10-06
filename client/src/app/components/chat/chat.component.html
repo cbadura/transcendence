@@ -3,6 +3,10 @@
     <tcd-message [post]="message"></tcd-message>
   </div>
   
+  <div class="bg-white" *ngFor="let post of serverPosts">
+    {{ post }}
+  </div>
+
 </div>
 
 

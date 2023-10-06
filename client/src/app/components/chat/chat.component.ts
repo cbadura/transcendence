@@ -12,6 +12,7 @@ import { Post } from '../../shared/post';
 })
 export class ChatComponent {
   messages!: Post[];
+  serverPosts!: string[];
   tempText!: string;
 
   constructor(
@@ -19,11 +20,13 @@ export class ChatComponent {
     private chatHistoryService: ChatHistoryService,
     private userDataService: UserDataService) {
     this.messages = [];
+    this. serverPosts = [];
     this.tempText = '';
   }
 
   ngOnInit() {
     this.messages = this.chatHistoryService.getHistory();
+    this.serverPosts = this.chatHistoryService.getServerPosts();
   }
 
   savePost(message: string) {
