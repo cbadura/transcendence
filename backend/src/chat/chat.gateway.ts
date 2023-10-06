@@ -1,5 +1,5 @@
 import { OnModuleInit } from "@nestjs/common";
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Namespace, Server, Socket} from "socket.io";
 import { Post } from "./IPost";
 import { ChatService } from "./chat.service";
@@ -27,12 +27,14 @@ export class ChatGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('message')
-  readAndSend(@MessageBody() post: Post) {
-    console.log(post);
-    console.log(`[${post.room}][${post.user}]: ${post.text}`);
-    this.server.to(post.room).emit('chatMessage', post);
-    this.server.emit('chatMessage', post);
-        
+  readAndSend(@MessageBody() post: Post, @ConnectedSocket() client: Socket) {
+    if (client.rooms.has(post.room)) {
+      this.server.to(post.room).emit('chatMessage', post);
+      console.log(`[${post.room}][${post.user}]: ${post.text}`);
+    } else
+      console.log(`[${client.id}] is not in room [${post.room}]`);
+    // this.server.emit('chatMessage', post);
+  
   }
 
 
