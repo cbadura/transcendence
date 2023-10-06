@@ -3,7 +3,9 @@ import { DatePipe } from '@angular/common';
 
 import { ChatHistoryService } from '../../services/chat-history.service';
 import { UserDataService } from '../../services/user-data.service';
-import { Post } from '../../shared/post';
+
+import { Post } from 'src/app/shared/post';
+import { User } from 'src/app/shared/user';
 
 @Component({
   selector: 'tcd-chat',
@@ -13,6 +15,7 @@ import { Post } from '../../shared/post';
 export class ChatComponent {
   messages!: Post[];
   tempText!: string;
+  myUser!: User;
 
   constructor(
     public datepipe: DatePipe,
@@ -20,6 +23,7 @@ export class ChatComponent {
     private userDataService: UserDataService) {
     this.messages = [];
     this.tempText = '';
+    this.myUser = this.userDataService.getUser();
   }
 
   ngOnInit() {

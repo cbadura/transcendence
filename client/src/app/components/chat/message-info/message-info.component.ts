@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Post } from 'src/app/shared/post';
 
 @Component({
   selector: 'tcd-message-info',
   templateUrl: './message-info.component.html',
-  styleUrls: ['./message-info.component.css']
 })
 export class MessageInfoComponent {
-
+@Input() post!: Post;
+@Input() isMe!: boolean;
 }

@@ -1,1 +1,15 @@
-<p>message-info works!</p>
+<div class="flex items-center gap-3 text-white pt-3">
+
+  <!-- Only render image and name for other users -->
+  <ng-container *ngIf="!isMe">
+    <tcd-thumbnail
+      [imgUrl]="post.user.avatar"
+      [size]="'2.5rem'"
+    ></tcd-thumbnail>
+    <p>{{ post.user.name }}</p>
+  </ng-container>
+
+  <!-- Render  time for all users-->
+  <p [ngClass]="{'ml-auto': isMe}">{{ post.dateTime }}</p>
+
+</div>

@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Post } from 'src/app/shared/post';
 
 @Component({
   selector: 'tcd-message-bubble',
   templateUrl: './message-bubble.component.html',
-  styleUrls: ['./message-bubble.component.css']
 })
 export class MessageBubbleComponent {
-
+  @Input() post!: Post;
+  @Input() isMe!: boolean;
 }
