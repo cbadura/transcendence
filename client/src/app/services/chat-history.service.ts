@@ -20,7 +20,7 @@ export class ChatHistoryService {
 
   constructor(public datepipe: DatePipe,
     private socket: Socket) {}
-  
+  chatns = this.socket.ioSocket.io('/chat');
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
   
@@ -44,7 +44,7 @@ export class ChatHistoryService {
     this.socket.emit('message', post);
   }
   getMessage() {
-    let message = this.socket.fromEvent('chatMessage')
+    let message = this.chatns.fromEvent('chatMessage')
       .pipe(map((msg: any) => {
       return msg;
     }));
@@ -52,7 +52,7 @@ export class ChatHistoryService {
   }
 
   subscribeToMessages() {
-    this.getMessage().subscribe( msg => {
+    this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);
     });
