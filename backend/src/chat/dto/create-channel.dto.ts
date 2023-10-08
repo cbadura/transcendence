@@ -1,5 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { EChannelMode } from '../IChannel';
+import { EChannelMode } from '../chat.interfaces';
 
 export class CreateChannelDto {
   @IsNumber()
