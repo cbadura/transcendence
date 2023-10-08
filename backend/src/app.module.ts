@@ -12,6 +12,10 @@ import { SeedingModule } from './seeding/seeding.module';
 import * as path from 'path';
 import { AchievementDefinition } from './entities/achievement-definition.entity';
 import { Achievement } from './entities/achievement.entity';
+import { MatchModule } from './match/match.module';
+import { MatchUserModule } from './match-user/match-user.module';
+import { Match } from './entities/match.entity';
+import { MatchUser } from './entities/match-user.entity';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -23,7 +27,7 @@ import { Achievement } from './entities/achievement.entity';
       username: 'transcendence',
       password: 'transcendence',
       database: 'transcendence',
-      entities: [User,AchievementDefinition,Achievement],
+      entities: [User,AchievementDefinition,Achievement,Match,MatchUser],
       synchronize: true,
     }),
     MulterModule.register({
@@ -34,6 +38,8 @@ import { Achievement } from './entities/achievement.entity';
     AchievementModule,
     SeedingModule,
     ChatModule,
+    MatchModule,
+    MatchUserModule,
   ], 
   controllers: [AppController],
   providers: [AppService],
