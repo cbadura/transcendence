@@ -7,9 +7,17 @@ export enum EChannelMode {
   PRIVATE = 'private',
 }
 
+export enum EUserRole {
+  OWNER = 'owner',
+  ADMIN = 'admin',
+  USER = 'user',
+  NONE = 'none',
+}
+
 export enum ESocketMessage {
   TRY_CREATE_CHANNEL = 'tryCreateChannel',
   CREATED_CHANNEL = 'createdChannel',
+  LIST_CHANNELS = 'listChannels',
 }
 
 export interface IBanMute {

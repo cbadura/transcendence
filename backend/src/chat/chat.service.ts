@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   EChannelMode,
   ESocketMessage,
+  EUserRole,
   IChannel,
   ISocketUser,
 } from './chat.interfaces';
@@ -10,6 +11,11 @@ import { UserService } from '../user/user.service';
 import { User } from '../entities/user.entity';
 import { Socket } from 'socket.io';
 import { WsException } from '@nestjs/websockets';
+import {
+  ChannelDto,
+  ChannelUserDto,
+  ListChannelsDto,
+} from './dto/list-channels.dto';
 
 @Injectable()
 export class ChatService {
@@ -17,6 +23,39 @@ export class ChatService {
   private clients: ISocketUser[] = [];
 
   constructor(readonly userService: UserService) {}
+
+  private getUserRole(channel: IChannel, user: ISocketUser): EUserRole {
+    if (user.user.id === channel.owner.user.id) return EUserRole.OWNER;
+    if (channel.admins.find((us) => us.user.id === user.user.id))
+      return EUserRole.ADMIN;
+    if (channel.users.find((us) => us.user.id === user.user.id))
+      return EUserRole.USER;
+    return EUserRole.NONE;
+  }
+
+  private createChannelList(user: ISocketUser): ListChannelsDto {
+    const listChannels: ListChannelsDto = new ListChannelsDto();
+    listChannels.channels = this.channels
+      .filter(
+        (ch) =>
+          ch.mode !== EChannelMode.PRIVATE ||
+          this.getUserRole(ch, user) !== EUserRole.NONE,
+      )
+      .map((ch): ChannelDto => {
+        const channel: ChannelDto = new ChannelDto();
+        channel.name = ch.name;
+        channel.mode = ch.mode;
+        channel.role = this.getUserRole(ch, user);
+        channel.users = ch.users.map((user): ChannelUserDto => {
+          const dto: ChannelUserDto = new ChannelUserDto();
+          dto.id = user.user.id;
+          dto.name = user.user.name;
+          return dto;
+        });
+        return channel;
+      });
+    return listChannels;
+  }
 
   // TODO change later userId into token and extract userId from token
   async handleConnection(socket: Socket, userId: number) {
@@ -36,6 +75,11 @@ export class ChatService {
       return;
     }
     this.clients.push(client);
+    // send channel list on connection
+    client.socket.emit(
+      ESocketMessage.LIST_CHANNELS,
+      this.createChannelList(client),
+    );
   }
 
   handleDisconnect(client: Socket) {
