@@ -8,7 +8,6 @@ import {
 } from './chat.interfaces';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UserService } from '../user/user.service';
-import { User } from '../entities/user.entity';
 import { Socket } from 'socket.io';
 import { WsException } from '@nestjs/websockets';
 import {
@@ -88,23 +87,10 @@ export class ChatService {
     );
   }
 
-  async createChannel(
-    socket: Socket,
-    channelDto: CreateChannelDto,
-  ): Promise<IChannel | undefined> {
-    if (
-      this.clients.find((client) => socket.id === client.socket.id)?.user.id !==
-      channelDto.ownerId
-    )
-      throw new WsException(
-        "Don't even try to create channels for other users :)",
-      );
-    const userOwner: User = await this.userService.getUser(channelDto.ownerId);
-    if (userOwner == undefined) throw new WsException('Invalid channel owner');
-
+  createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
     const channel: IChannel = {
       name: channelDto.name,
-      owner: { socket, user: userOwner },
+      owner: this.clients.find((client) => client.socket.id === socket.id),
       mode: channelDto.mode,
       password: undefined,
       admins: [],

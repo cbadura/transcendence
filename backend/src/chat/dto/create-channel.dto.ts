@@ -3,7 +3,8 @@ import { EChannelMode } from '../chat.interfaces';
 
 export class CreateChannelDto {
   @IsNumber()
-  ownerId: number;
+  @IsOptional()
+  ownerId?: number;
 
   @IsString()
   name: string;
