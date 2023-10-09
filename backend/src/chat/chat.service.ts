@@ -15,6 +15,7 @@ import {
   ChannelUserDto,
   ListChannelsDto,
 } from './dto/list-channels.dto';
+import { UpdateChannelDto } from './dto/update-channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -32,6 +33,9 @@ export class ChatService {
     return EUserRole.NONE;
   }
 
+  private getUserFromSocket(socket: Socket): ISocketUser {
+    return this.clients.find((client) => client.socket.id === socket.id);
+  }
   private createChannelList(user: ISocketUser): ListChannelsDto {
     const listChannels: ListChannelsDto = new ListChannelsDto();
     listChannels.channels = this.channels
@@ -90,7 +94,7 @@ export class ChatService {
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
     const channel: IChannel = {
       name: channelDto.name,
-      owner: this.clients.find((client) => client.socket.id === socket.id),
+      owner: this.getUserFromSocket(socket),
       mode: channelDto.mode,
       password: undefined,
       admins: [],
@@ -109,8 +113,6 @@ export class ChatService {
     }
     if (this.channels.find((ch) => channel.name === ch.name))
       throw new WsException('Channel with this name already exists');
-    if (!Object.values(EChannelMode).includes(channel.mode))
-      throw new WsException("Channel mode doesn't exist");
     this.channels.push(channel);
 
     // notifying user[s] about new channel creation
@@ -125,5 +127,56 @@ export class ChatService {
         client.socket.emit(ESocketMessage.CREATED_CHANNEL, channelData),
       );
     return channel;
+  }
+
+  updateChannel(socket: Socket, dto: UpdateChannelDto) {
+    const channel: IChannel = this.channels.find(
+      (ch) => dto.currName === ch.name,
+    );
+    if (!channel) throw new WsException("Channel doesn't exist");
+    if (channel.owner.user.id !== this.getUserFromSocket(socket).user.id)
+      throw new WsException('You are not allowed to update this channel');
+    if (this.channels.find((ch) => dto.name === ch.name))
+      throw new WsException('Channel with this name already exists');
+    if (dto.mode === EChannelMode.PROTECTED && !dto.password)
+      throw new WsException('Missing channel password for a protected channel');
+    const updChannel: IChannel = { ...channel, ...dto };
+    this.channels = this.channels.filter((ch) => ch.name !== dto.currName);
+    this.channels.push(updChannel);
+
+    const channelData: CreateChannelDto = new CreateChannelDto();
+    channelData.ownerId = channel.owner.user.id;
+    channelData.name = updChannel.name;
+    channelData.mode = updChannel.mode;
+
+    const updChannelData: UpdateChannelDto = {
+      ...channelData,
+      currName: dto.currName,
+    };
+    this.clients.forEach((client) => {
+      const userInChannel: boolean = !!channel.users.find(
+        (user) => user.user.id === client.user.id,
+      );
+      if (
+        channel.mode === EChannelMode.PRIVATE &&
+        updChannel.mode !== EChannelMode.PRIVATE &&
+        !userInChannel
+      )
+        client.socket.emit(ESocketMessage.CREATED_CHANNEL, channelData);
+      else if (
+        channel.mode !== EChannelMode.PRIVATE &&
+        updChannel.mode === EChannelMode.PRIVATE &&
+        !userInChannel
+      )
+        client.socket.emit(ESocketMessage.DELETED_CHANNEL, updChannelData);
+      // TODO replace updChannelData for Deleted_CH with deleteDto ^
+      else if (
+        channel.mode === EChannelMode.PRIVATE &&
+        updChannel.mode === EChannelMode.PRIVATE &&
+        !userInChannel
+      )
+        return;
+      else client.socket.emit(ESocketMessage.UPDATED_CHANNEL, updChannelData);
+    });
   }
 }

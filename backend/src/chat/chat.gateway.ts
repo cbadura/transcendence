@@ -12,6 +12,7 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 import { ESocketMessage } from './chat.interfaces';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BadRequestTransformationFilter } from './chat.filter';
+import { UpdateChannelDto } from './dto/update-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway()
@@ -31,10 +32,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.TRY_CREATE_CHANNEL)
-  async createChannel(
+  createChannel(
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: CreateChannelDto,
   ) {
-    await this.chatService.createChannel(socket, dto);
+    this.chatService.createChannel(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_UPDATE_CHANNEL)
+  updateChannel(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: UpdateChannelDto,
+  ) {
+    this.chatService.updateChannel(socket, dto);
   }
 }

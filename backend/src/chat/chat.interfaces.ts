@@ -18,6 +18,10 @@ export enum ESocketMessage {
   TRY_CREATE_CHANNEL = 'tryCreateChannel',
   CREATED_CHANNEL = 'createdChannel',
   LIST_CHANNELS = 'listChannels',
+  TRY_UPDATE_CHANNEL = 'tryUpdateChannel',
+  UPDATED_CHANNEL = 'updatedChannel',
+  TRY_DELETE_CHANNEL = 'tryDeleteChannel',
+  DELETED_CHANNEL = 'deletedChannel',
 }
 
 export interface IBanMute {
