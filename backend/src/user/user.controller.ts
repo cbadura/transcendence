@@ -97,6 +97,11 @@ export class UserController {
     return this.userService.deleteUser(id);
   }
 
+  @Get(':id/matches')
+  getUserMatches(@Param('id',ParseIntPipe) id: number){
+    return this.userService.getUserMatches(id);
+  }
+
   @Post()
   createUser(@Body() dto: CreateUserDto): Promise<User> {
     return this.userService.createUser(dto);
