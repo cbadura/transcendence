@@ -1,4 +1,4 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
+import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -95,6 +95,20 @@ export class UserController {
   @Delete(':id')
   deleteUser(@Param('id',ParseIntPipe) id: number){
     return this.userService.deleteUser(id);
+  }
+
+  @Get(':id/matches')
+  getUserMatches(@Param('id',ParseIntPipe) id: number){
+    return this.userService.getUserMatches(id);
+  }
+
+  @Get(':id/relationship')
+  getUserRelationships(@Param('id',ParseIntPipe) id: number,
+  @Query('filter') filter?: string,
+  ){
+      if (filter && filter !== 'friend' && filter !== 'blocked') 
+        throw new BadRequestException('filterField must be either "friend" or "blocked"');
+    return this.userService.getUserRelationships(id,filter);
   }
 
   @Post()

@@ -25,7 +25,7 @@ const Ana : User = {
   };
 
   const Carl : User = {
-    id: 3,
+    id: 99,
     name: 'Carl',
     status: 'Offline',
     wins: 2,

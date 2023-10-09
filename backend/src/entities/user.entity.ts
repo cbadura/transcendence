@@ -1,5 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Achievement } from './achievement.entity';
+import { MatchUser } from './match-user.entity';
+import Decimal from 'decimal.js';
 
 @Entity()
 export class User {
@@ -16,7 +18,7 @@ export class User {
   color: string
 
   @Column('decimal',{ nullable: false, precision: 6, scale: 2})
-  level: number;
+  level: Decimal;
 
   @Column({ nullable: false })
   matches: number;
@@ -28,5 +30,8 @@ export class User {
 
   @OneToMany(()=> Achievement,(Achievement)=>Achievement.owner)
   achievements: Achievement[]
+
+  @OneToMany(()=>MatchUser, (matchUser)=>matchUser.user)
+  matchHistory: MatchUser[]
 
 }

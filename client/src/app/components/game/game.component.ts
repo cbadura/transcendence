@@ -36,7 +36,7 @@ export class GameComponent {
       this.paddleColor = this.myUser.color;
     });
 
-    this.darkerColor = '#C49CE3';
+    this.darkerColor = "#" + this.LightenColor(this.myUser.color, -15);
   }
 
   ngAfterViewInit(): void {
@@ -48,11 +48,21 @@ export class GameComponent {
     this.drawCourt();
   }
 
+  LightenColor(color : string, percent : number) {
+  	var num = parseInt(color.replace("#",""), 16),
+		amt = Math.round(2.55 * percent),
+		R = (num >> 16) + amt,
+		B = (num >> 8 & 0x00FF) + amt,
+		G = (num & 0x0000FF) + amt;
+
+		return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
+};
+
   startGame(): void {
     this.paddle = new Square(
       this.ctx,
       10,
-      this.ctx.canvas.height / 2 - 25,
+      this.ctx.canvas.height / 2 - 55,
       this.PADDLE_WIDTH,
       this.PADDLE_LEN
     );
@@ -60,7 +70,7 @@ export class GameComponent {
     this.oppPaddle = new Square(
       this.ctx,
       this.ctx.canvas.width - 25,
-      this.ctx.canvas.height / 2 - 25,
+      this.ctx.canvas.height / 2 - 55,
       this.PADDLE_WIDTH,
       this.PADDLE_LEN
     );
@@ -163,7 +173,7 @@ export class GameComponent {
     this.ctx.closePath();
     this.ctx.stroke();
 
-    // Opponent's lines
+    // Opponents' lines
     this.ctx.beginPath();
     this.ctx.moveTo(this.PADDLE_WIDTH + 3, 0);
     this.ctx.lineTo(this.PADDLE_WIDTH + 3, canvasHeight);
@@ -200,14 +210,22 @@ export class GameComponent {
       450
     );
 
-    //Ball Hits
+    // Ball Hits
     this.ctx.fillStyle = this.myUser.color;
     this.ctx.font = 'bold 100pt Sniglet';
-    this.ctx.fillText(
-      this.ball.getHits().toString(),
-      canvasWidth / 2 - 40,
-      300
-    );
+    if (this.ball.getHits() < 10) {
+      this.ctx.fillText(
+        this.ball.getHits().toString(),
+        canvasWidth / 2 - 40,
+        300
+      );
+    } else {
+      this.ctx.fillText(
+        this.ball.getHits().toString(),
+        canvasWidth / 2 - 77,
+        300
+      );
+    }
   }
 
   incrementUserLevel() {

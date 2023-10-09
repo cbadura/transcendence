@@ -14,7 +14,7 @@ export class EditProfileComponent implements OnInit {
   private userSubscription!: Subscription;
   tempUserName!: string;
   tempColor!: string;
-  availableColors: string[] = ['#E7C9FF', '#00FE84', '#FED500', '#C9D5FF'];
+  availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
 
   constructor(
     private userDataService: UserDataService) {

@@ -4,12 +4,17 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Match } from 'src/entities/match.entity';
+import { MatchUser } from 'src/entities/match-user.entity';
+import { Relationship } from 'src/entities/relationship.entity';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(MatchUser) private matchUserRepository: Repository<MatchUser>,
+    @InjectRepository(Match) private matchRepository: Repository<Match>,
+    @InjectRepository(Relationship) private relationshipRepository: Repository<Relationship>,
   ) {}
 
   async getUsers(): Promise<User[]> {
@@ -67,4 +72,29 @@ export class UserService {
   async deleteUserDatabase(){
     await this.userRepository.clear();
   }
+
+
+  async getUserMatches(id: number): Promise<Match[]> {
+    const user = await this.userRepository.findOne({where: {id: id}})
+    // console.log(user);
+    const matchUsers = await this.matchUserRepository.find({where:{user: {id: user.id}},
+      relations: ['match','match.matchUsers',"match.matchUsers.user"], //might be cost intensive?
+    })
+    const matchesParticipated = matchUsers.map((matchUser)=> matchUser.match);
+    return matchesParticipated;
+  }
+
+  async getUserRelationships(id: number,filter: string): Promise<Relationship[]> {
+
+    const query = this.relationshipRepository.createQueryBuilder('relationship')
+    .where('relationship.primary_user_id = :id', { id });
+
+    //will filter results if a filter was given
+    if (filter === 'friend' || filter === 'blocked') {
+      query.andWhere(`relationship.relationship_status = :filter`, { filter });
+    }
+
+    return query.getMany();
+  }
+
 }

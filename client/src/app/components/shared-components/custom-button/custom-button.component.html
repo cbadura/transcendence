@@ -1,8 +1,10 @@
 <button
   [ngClass]="{
-    'h-10 rounded-full p-2 border border-black transition-all active:scale-95': true,
+    'rounded-full p-2 border border-black transition-all active:scale-95': true,
     'bg-black text-white': isBlack,
-    'hover:bg-black hover:text-white': !isBlack
+    'hover:bg-black hover:text-white': !isBlack,
+    'h-10': size == 'small',
+    'p-4 text-4xl' : size == 'big'
   }"
   (click)="onClick && onClick()"
   [routerLink]="customRoute"

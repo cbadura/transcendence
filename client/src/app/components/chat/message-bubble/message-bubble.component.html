@@ -1,0 +1,17 @@
+<ng-container *ngIf="!isMe">
+  <div
+    class="p-2 rounded-tr-xl rounded-br-xl rounded-bl-xl m-1 inline-block"
+    [ngStyle]="{ 'background-color': post.user.color }"
+  >
+    <p class="">{{ post.text }}</p>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="isMe">
+  <div
+    class="p-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl m-1 inline-block ml-auto"
+    [ngStyle]="{ 'background-color': post.user.color }"
+  >
+    <p class="">{{ post.text }}</p>
+  </div>

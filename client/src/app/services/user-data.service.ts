@@ -9,7 +9,7 @@ import { User } from '../shared/user';
 })
 export class UserDataService {
   private myUser: User = {
-    id: 1,
+    id: 99,
     name: 'Nadiia',
     status: 'online',
     wins: 25,
@@ -67,17 +67,3 @@ export class UserDataService {
     const user = { ...this.getUser(), matches: matches };
   }
 }
-
-// incrementLevel() {
-//   let level = this.myUser.level + 0.25;
-//   //let wins = ++this.myUser.wins;
-//   const user = { ...this.getUser(), level: level };
-//   this.userSubject.next(user);
-// }
-
-// decrementLevel() {
-//   let level = this.myUser.level + 0.05;
-//   // let losses = ++this.myUser.losses;
-//   const user = { ...this.getUser(), level: level };
-//   this.userSubject.next(user);
-// }
