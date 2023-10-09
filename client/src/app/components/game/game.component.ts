@@ -5,6 +5,7 @@ import { Square } from './square';
 import { Ball } from './ball';
 import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/user';
+import { gameConfig } from './game_config';
 
 @Component({
   selector: 'tcd-game',
@@ -24,8 +25,6 @@ export class GameComponent {
   private oppScore = 0;
   private userSubscription!: Subscription;
 
-  private PADDLE_LEN = 100;
-  private PADDLE_WIDTH = 15;
   private darkerColor!: string;
 
   constructor(private userDataService: UserDataService) {}
@@ -61,18 +60,18 @@ export class GameComponent {
   startGame(): void {
     this.paddle = new Square(
       this.ctx,
-      10,
+      gameConfig.LINE_OFFSET + gameConfig.PADDLE_WIDTH / 2,
       this.ctx.canvas.height / 2 - 55,
-      this.PADDLE_WIDTH,
-      this.PADDLE_LEN
+      gameConfig.PADDLE_WIDTH,
+      gameConfig.PADDLE_LEN
     );
     this.ctx.fillStyle = this.paddleColor;
     this.oppPaddle = new Square(
       this.ctx,
-      this.ctx.canvas.width - 25,
+      this.ctx.canvas.width - (gameConfig.LINE_OFFSET + gameConfig.PADDLE_WIDTH * 1.5),
       this.ctx.canvas.height / 2 - 55,
-      this.PADDLE_WIDTH,
-      this.PADDLE_LEN
+      gameConfig.PADDLE_WIDTH,
+      gameConfig.PADDLE_LEN
     );
     this.ball = new Ball(this.ctx);
     this.ball.resetBall();
@@ -118,26 +117,26 @@ export class GameComponent {
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
-    const max = this.ctx.canvas.height - this.PADDLE_LEN - 15;
+    const max = this.ctx.canvas.height - gameConfig.PADDLE_LEN - 15;
 
     if (event.key === 'w') {
-      if (this.paddle.y > this.PADDLE_LEN / 4) {
-        this.paddle.moveBy(-15);
+      if (this.paddle.y > gameConfig.PADDLE_LEN / 4) {
+        this.paddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
       }
     }
     if (event.key === 's') {
       if (this.paddle.y < max) {
-        this.paddle.moveBy(15);
+        this.paddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
       }
     }
     if (event.key === 'ArrowUp') {
-      if (this.oppPaddle.y > 15) {
-        this.oppPaddle.moveBy(-15);
+      if (this.oppPaddle.y > gameConfig.PADDLE_MOVE_STEP) {
+        this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
       }
     }
     if (event.key === 'ArrowDown') {
       if (this.oppPaddle.y < max) {
-        this.oppPaddle.moveBy(15);
+        this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
       }
     }
   }
@@ -175,14 +174,14 @@ export class GameComponent {
 
     // Opponents' lines
     this.ctx.beginPath();
-    this.ctx.moveTo(this.PADDLE_WIDTH + 3, 0);
-    this.ctx.lineTo(this.PADDLE_WIDTH + 3, canvasHeight);
+    this.ctx.moveTo(gameConfig.PADDLE_WIDTH + gameConfig.LINE_OFFSET, 0);
+    this.ctx.lineTo(gameConfig.PADDLE_WIDTH + gameConfig.LINE_OFFSET, canvasHeight);
     this.ctx.closePath();
     this.ctx.stroke();
 
     this.ctx.beginPath();
-    this.ctx.moveTo(canvasWidth - this.PADDLE_WIDTH - 3, 0);
-    this.ctx.lineTo(canvasWidth - this.PADDLE_WIDTH - 3, canvasHeight);
+    this.ctx.moveTo(canvasWidth - gameConfig.PADDLE_WIDTH - gameConfig.LINE_OFFSET, 0);
+    this.ctx.lineTo(canvasWidth - gameConfig.PADDLE_WIDTH - gameConfig.LINE_OFFSET, canvasHeight);
     this.ctx.closePath();
     this.ctx.stroke();
 
