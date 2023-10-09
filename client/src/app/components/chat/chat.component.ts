@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
 import { ChatHistoryService } from '../../services/chat-history.service';
@@ -12,7 +12,8 @@ import { User } from 'src/app/shared/user';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent {
+export class ChatComponent implements OnInit, AfterViewChecked {
+  @ViewChild('messagesDiv') messagesDiv!: ElementRef;
   messages!: Post[];
   tempText!: string;
   myUser!: User;
@@ -28,6 +29,18 @@ export class ChatComponent {
 
   ngOnInit() {
     this.messages = this.chatHistoryService.getHistory();
+  }
+  
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+  
+  scrollToBottom() {
+    try {
+      this.messagesDiv.nativeElement.scrollTop = this.messagesDiv.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   savePost(message: string) {

@@ -7,6 +7,7 @@
 
   <!-- Messages div -->
   <div
+  #messagesDiv
     class="overflow-y-auto h-[calc(100%-180px)] pl-9 pr-9 scrollbar-hide mt-24 pt-6 pb-8 "
   >
     <!-- Each message -->
@@ -25,13 +26,6 @@
     </div>
 
     <!-- Input field -->
-    <tcd-chat-input></tcd-chat-input>
+    <tcd-chat-input (sendMessage)="savePost($event)"></tcd-chat-input>
   </div>
 </div>
-
-<!-- Input -->
-<!-- <p class="flex items-center justify-center p-2 h-full">
-Your message:
-<input class="border" type="text" [(ngModel)]="tempText" placeholder="Enter message">
-<button class="border" type="button" (click)="savePost(tempText)">Send</button>
-</p> -->

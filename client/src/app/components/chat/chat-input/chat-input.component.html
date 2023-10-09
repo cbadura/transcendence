@@ -2,15 +2,19 @@
 <div
   class="bg-zinc-950 h-16 pr-2 rounded-2xl text-white flex justify-between items-center cursor-pointer absolute w-[95%] left-1/2 transform translate-x-[-50%] bottom-5"
 >
+
+<!-- Input -->
   <div class="h-full p-4 w-full " (click)="focusInputField()">
     <input
       #inputField
       class="h-full w-full bg-inherit outline-none cursor-pointer"
       type="text"
       placeholder="Start typing..."
+      (keyup.enter)="onSendClick()"
     />
   </div>
 
-  <tcd-chat-btn [icon]="'featherSend'"></tcd-chat-btn>
+  <!-- Buttons -->
+  <tcd-chat-btn [icon]="'featherSend'" (click)="onSendClick()"></tcd-chat-btn>
   <tcd-chat-btn [icon]="'featherUser'"></tcd-chat-btn>
 </div>
