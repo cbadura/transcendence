@@ -16,6 +16,8 @@ import { MatchModule } from './match/match.module';
 import { MatchUserModule } from './match-user/match-user.module';
 import { Match } from './entities/match.entity';
 import { MatchUser } from './entities/match-user.entity';
+import { RelationshipModule } from './relationship/relationship.module';
+import { Relationship } from './entities/relationship.entity';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -27,7 +29,7 @@ import { MatchUser } from './entities/match-user.entity';
       username: 'transcendence',
       password: 'transcendence',
       database: 'transcendence',
-      entities: [User,AchievementDefinition,Achievement,Match,MatchUser],
+      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship],
       synchronize: true,
     }),
     MulterModule.register({
@@ -40,6 +42,7 @@ import { MatchUser } from './entities/match-user.entity';
     ChatModule,
     MatchModule,
     MatchUserModule,
+    RelationshipModule,
   ], 
   controllers: [AppController],
   providers: [AppService],
