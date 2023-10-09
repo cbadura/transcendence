@@ -60,4 +60,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     };
     this.chatHistoryService.sendMessage(newPost);
   }
+
+
 }
