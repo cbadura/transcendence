@@ -6,8 +6,9 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./custom-button.component.css']
 })
 export class CustomButtonComponent {
-	@Input() buttonText: string = "Default Button Text";
+	@Input() buttonText: string = "buttonText";
 	@Input() onClick?: () => void;
 	@Input() customRoute?: string;
 	@Input() isBlack: boolean = false;
+	@Input() size: string = "small";
 }
