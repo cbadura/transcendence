@@ -16,6 +16,7 @@ import {
   ListChannelsDto,
 } from './dto/list-channels.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { DeleteChannelDto } from './dto/delete-channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -36,14 +37,20 @@ export class ChatService {
   private getUserFromSocket(socket: Socket): ISocketUser {
     return this.clients.find((client) => client.socket.id === socket.id);
   }
-  // TODO add check if private channel and user is invited
+
+  private isInvited(channel: IChannel, userId: number): boolean {
+    return !!channel.invites.find((inv) => inv.user.id === userId);
+  }
+
   private createChannelList(user: ISocketUser): ListChannelsDto {
     const listChannels: ListChannelsDto = new ListChannelsDto();
     listChannels.channels = this.channels
       .filter(
         (ch) =>
           ch.mode !== EChannelMode.PRIVATE ||
-          this.getUserRole(ch, user) !== EUserRole.NONE,
+          this.getUserRole(ch, user) !== EUserRole.NONE ||
+          this.isInvited(ch, user.user.id),
+        //this last check depends on frontend implementation
       )
       .map((ch): ChannelDto => {
         const channel: ChannelDto = new ChannelDto();
@@ -178,6 +185,25 @@ export class ChatService {
       )
         return;
       else client.socket.emit(ESocketMessage.UPDATED_CHANNEL, updChannelData);
+    });
+  }
+
+  deleteChannel(socket: Socket, dto: DeleteChannelDto) {
+    const channel: IChannel = this.channels.find(
+      (ch) => dto.channelName === ch.name,
+    );
+    if (!channel) throw new WsException("Channel doesn't exist");
+    if (channel.owner.user.id !== this.getUserFromSocket(socket).user.id)
+      throw new WsException("You don't have permission for this action");
+    this.channels = this.channels.filter((ch) => ch.name !== dto.channelName);
+
+    //notify all clients about client removal
+    this.clients.forEach((client) => {
+      const userInChannel: boolean = !!channel.users.find(
+        (user) => user.user.id === client.user.id,
+      );
+      if (channel.mode === EChannelMode.PRIVATE && !userInChannel) return;
+      client.socket.emit(ESocketMessage.DELETED_CHANNEL, dto);
     });
   }
 }
