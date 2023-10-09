@@ -7,6 +7,11 @@ export enum EChannelMode {
   PRIVATE = 'private',
 }
 
+export enum EChannelLeaveOption {
+  DELETE = 'delete',
+  KEEP = 'keep',
+}
+
 export enum EUserRole {
   OWNER = 'owner',
   ADMIN = 'admin',
@@ -22,6 +27,13 @@ export enum ESocketMessage {
   UPDATED_CHANNEL = 'updatedChannel',
   TRY_DELETE_CHANNEL = 'tryDeleteChannel',
   DELETED_CHANNEL = 'deletedChannel',
+  TRY_JOIN_CHANNEL = 'tryJoinChannel',
+  JOINED_TO_CHANNEL = 'joinedToChannel',
+  MESSAGE = 'message',
+  TRY_LEAVE_CHANNEL = 'tryLeaveChannel',
+  LEFT_CHANNEL = 'leftChannel',
+  TRY_KICK_FROM_CHANNEL = 'tryKickFromChannel',
+  KICKED_FROM_CHANNEL = 'kickedFromChannel',
 }
 
 export interface IBanMute {

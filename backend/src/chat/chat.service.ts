@@ -36,6 +36,7 @@ export class ChatService {
   private getUserFromSocket(socket: Socket): ISocketUser {
     return this.clients.find((client) => client.socket.id === socket.id);
   }
+  // TODO add check if private channel and user is invited
   private createChannelList(user: ISocketUser): ListChannelsDto {
     const listChannels: ListChannelsDto = new ListChannelsDto();
     listChannels.channels = this.channels
