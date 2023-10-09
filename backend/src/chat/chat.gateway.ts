@@ -15,7 +15,7 @@ import { BadRequestTransformationFilter } from './chat.filter';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly chatService: ChatService) {}
 
