@@ -9,7 +9,7 @@ import { User } from '../shared/user';
 })
 export class UserDataService {
   private myUser: User = {
-    id: 1,
+    id: 99,
     name: 'Nadiia',
     status: 'online',
     wins: 25,

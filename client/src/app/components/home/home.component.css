@@ -1,0 +1,32 @@
+.arrows {
+    display: inline-block;
+    animation: arrow 2s forwards infinite;
+    opacity: 0;
+}
+
+@keyframes arrow {
+    0% {
+        transform: translateX(-10px);
+        opacity: 0;
+        filter: blur(3px);
+    }
+
+    30% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    60% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(15px);
+        opacity: 0;
+    }
+
+}

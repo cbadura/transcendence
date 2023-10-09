@@ -23,13 +23,15 @@ import { StatsComponent } from './components/profile-components/stats/stats.comp
 import { AchievementComponent } from './components/profile-components/achievement/achievement.component';
 import { ThumbnailComponent } from './components/profile-components/thumbnail/thumbnail.component';
 import { MatchComponent } from './components/profile-components/match/match.component';
-import { MessageComponent } from './components/chat/message/message.component';
+import { MessageBubbleComponent } from './components/chat/message-bubble/message-bubble.component';
+import { MessageInfoComponent } from './components/chat/message-info/message-info.component';
 
 import { NgIconsModule } from '@ng-icons/core';
 import { featherSettings, featherSend, featherUser } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 @NgModule({
@@ -51,10 +53,12 @@ import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component'
     AchievementComponent,
     ThumbnailComponent,
     MatchComponent,
-    MessageComponent,
+    MessageBubbleComponent,
+    MessageInfoComponent,
     ChatHeaderComponent,
     ChatInputComponent,
-    ChatBtnComponent
+    ChatBtnComponent,
+    HomeComponent
   ],
   imports: [
     HttpClientModule,
