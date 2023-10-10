@@ -1,10 +1,12 @@
-import { Component, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { Square } from './square';
 import { Ball } from './ball';
 import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/user';
+import { gameConfig } from './game_config';
+import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/color';
 
 @Component({
   selector: 'tcd-game',
@@ -20,12 +22,10 @@ export class GameComponent {
   private oppPaddle!: Square;
   private ball!: Ball;
   private paddleColor!: string;
+  private oppPaddleColor!: string;
   private userScore = 0;
   private oppScore = 0;
   private userSubscription!: Subscription;
-
-  private PADDLE_LEN = 100;
-  private PADDLE_WIDTH = 15;
   private darkerColor!: string;
 
   constructor(private userDataService: UserDataService) {}
@@ -33,10 +33,10 @@ export class GameComponent {
   ngOnInit() {
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
-      this.paddleColor = this.myUser.color;
     });
-
-    this.darkerColor = "#" + this.LightenColor(this.myUser.color, -15);
+    this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
+    this.paddleColor = SaturatedColor(this.myUser.color, 20);
+    this.oppPaddleColor = 'black';
   }
 
   ngAfterViewInit(): void {
@@ -48,64 +48,66 @@ export class GameComponent {
     this.drawCourt();
   }
 
-  LightenColor(color : string, percent : number) {
-  	var num = parseInt(color.replace("#",""), 16),
-		amt = Math.round(2.55 * percent),
-		R = (num >> 16) + amt,
-		B = (num >> 8 & 0x00FF) + amt,
-		G = (num & 0x0000FF) + amt;
-
-		return (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1);
-};
-
   startGame(): void {
+    //   Create user paddle
     this.paddle = new Square(
       this.ctx,
-      10,
-      this.ctx.canvas.height / 2 - 55,
-      this.PADDLE_WIDTH,
-      this.PADDLE_LEN
+      gameConfig.LINE_OFFSET + gameConfig.PADDLE_WIDTH / 2,
+      this.ctx.canvas.height / 2 - gameConfig.PADDLE_LEN / 2,
+      gameConfig.PADDLE_WIDTH,
+      gameConfig.PADDLE_LEN
     );
+
+    //  Create opponent paddle
     this.ctx.fillStyle = this.paddleColor;
     this.oppPaddle = new Square(
       this.ctx,
-      this.ctx.canvas.width - 25,
-      this.ctx.canvas.height / 2 - 55,
-      this.PADDLE_WIDTH,
-      this.PADDLE_LEN
+      this.ctx.canvas.width -
+        (gameConfig.LINE_OFFSET + gameConfig.PADDLE_WIDTH * 1.5),
+      this.ctx.canvas.height / 2 - gameConfig.PADDLE_LEN / 2,
+      gameConfig.PADDLE_WIDTH,
+      gameConfig.PADDLE_LEN
     );
+
+    // Create ball
     this.ball = new Ball(this.ctx);
     this.ball.resetBall();
+
+    //   Draw initial state
     this.ball.draw();
     this.paddle.draw(this.paddleColor);
-    this.oppPaddle.draw('blue');
+    this.oppPaddle.draw(this.oppPaddleColor);
     this.gameLoop();
   }
 
   gameLoop(): void {
-    const itval = setInterval(() => {
+    const gameLoopFn = () => {
+      this.redraw();
+      this.movePaddle();
+
+      // Check for score
       const score = this.ball.move(this.paddle.y, this.oppPaddle.y);
       if (score === 1) {
         this.userScore++;
         this.ball.resetBall();
-      } else if (score == 2) {
+      } else if (score === 2) {
         this.oppScore++;
         this.ball.resetBall();
       }
-      this.redraw();
 
+      // Check for win
       if (this.userScore >= 5 || this.oppScore >= 5) {
         if (this.userScore >= 5) {
           this.incrementUserLevel();
         } else if (this.oppScore >= 5) {
           this.decrementUserLevel();
         }
-        clearInterval(itval);
-      } else if (this.ball.stop) {
-        clearInterval(itval);
-        this.gameLoop();
+      } else if (!this.ball.stop) {
+        requestAnimationFrame(gameLoopFn);
       }
-    }, 10);
+    };
+
+    requestAnimationFrame(gameLoopFn);
   }
 
   getUserScore() {
@@ -116,29 +118,58 @@ export class GameComponent {
     return this.oppScore;
   }
 
+  private movingUp: boolean = false;
+  private movingDown: boolean = false;
+  private movingUpOpp: boolean = false;
+  private movingDownOpp: boolean = false;
+
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
-    const max = this.ctx.canvas.height - this.PADDLE_LEN - 15;
-
     if (event.key === 'w') {
-      if (this.paddle.y > this.PADDLE_LEN / 4) {
-        this.paddle.moveBy(-15);
-      }
+      this.movingUp = true;
     }
     if (event.key === 's') {
-      if (this.paddle.y < max) {
-        this.paddle.moveBy(15);
-      }
+      this.movingDown = true;
     }
     if (event.key === 'ArrowUp') {
-      if (this.oppPaddle.y > 15) {
-        this.oppPaddle.moveBy(-15);
-      }
+      this.movingUpOpp = true;
     }
     if (event.key === 'ArrowDown') {
-      if (this.oppPaddle.y < max) {
-        this.oppPaddle.moveBy(15);
-      }
+      this.movingDownOpp = true;
+    }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp(event: KeyboardEvent) {
+    if (event.key === 'w') {
+      this.movingUp = false;
+    }
+    if (event.key === 's') {
+      this.movingDown = false;
+    }
+    if (event.key === 'ArrowUp') {
+      this.movingUpOpp = false;
+    }
+    if (event.key === 'ArrowDown') {
+      this.movingDownOpp = false;
+    }
+  }
+
+  movePaddle() {
+    const maxTop = 10;
+    const maxBottom = this.ctx.canvas.height - maxTop - gameConfig.PADDLE_LEN;
+
+    if (this.movingUp && this.paddle.y > maxTop) {
+      this.paddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
+    }
+    if (this.movingDown && this.paddle.y < maxBottom) {
+      this.paddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
+    }
+    if (this.movingUpOpp && this.oppPaddle.y > maxTop) {
+      this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
+    }
+    if (this.movingDownOpp && this.oppPaddle.y < maxBottom) {
+      this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
     }
   }
 
@@ -152,7 +183,7 @@ export class GameComponent {
 
     this.ctx.beginPath();
     this.paddle.draw(this.paddleColor);
-    this.oppPaddle.draw('blue');
+    this.oppPaddle.draw(this.oppPaddleColor);
     this.ball.draw();
   }
 
@@ -164,7 +195,7 @@ export class GameComponent {
     const midY = canvasHeight / 2;
 
     this.ctx.strokeStyle = this.myUser.color;
-    this.ctx.lineWidth = 7;
+    this.ctx.lineWidth = 10;
 
     // Mid line
     this.ctx.beginPath();
@@ -173,22 +204,32 @@ export class GameComponent {
     this.ctx.closePath();
     this.ctx.stroke();
 
-    // Opponents' lines
+    // Lines right
     this.ctx.beginPath();
-    this.ctx.moveTo(this.PADDLE_WIDTH + 3, 0);
-    this.ctx.lineTo(this.PADDLE_WIDTH + 3, canvasHeight);
+    this.ctx.moveTo(gameConfig.PADDLE_WIDTH + gameConfig.LINE_OFFSET, 0);
+    this.ctx.lineTo(
+      gameConfig.PADDLE_WIDTH + gameConfig.LINE_OFFSET,
+      canvasHeight
+    );
     this.ctx.closePath();
     this.ctx.stroke();
 
+    // Lines left
     this.ctx.beginPath();
-    this.ctx.moveTo(canvasWidth - this.PADDLE_WIDTH - 3, 0);
-    this.ctx.lineTo(canvasWidth - this.PADDLE_WIDTH - 3, canvasHeight);
+    this.ctx.moveTo(
+      canvasWidth - gameConfig.PADDLE_WIDTH - gameConfig.LINE_OFFSET,
+      0
+    );
+    this.ctx.lineTo(
+      canvasWidth - gameConfig.PADDLE_WIDTH - gameConfig.LINE_OFFSET,
+      canvasHeight
+    );
     this.ctx.closePath();
     this.ctx.stroke();
 
     // Center circle
     this.ctx.beginPath();
-    this.ctx.arc(midX, midY, 100, 0, Math.PI * 2);
+    this.ctx.arc(midX, midY, 150, 0, Math.PI * 2);
     this.ctx.closePath();
     this.ctx.fillStyle = this.darkerColor;
     this.ctx.fill();
@@ -198,33 +239,27 @@ export class GameComponent {
     this.ctx.fillStyle = this.myUser.color;
     this.ctx.font = 'bold 60pt Sniglet';
 
+    // Score left
     this.ctx.fillText(
       this.getUserScore().toString(),
-      (3 * canvasWidth) / 8,
-      450
+      midX - 120,
+      canvasHeight - 50
     );
 
+    // Score right
     this.ctx.fillText(
       this.getOppScore().toString(),
-      (4.5 * canvasWidth) / 8,
-      450
+      midX + 70,
+      canvasHeight - 50
     );
 
     // Ball Hits
     this.ctx.fillStyle = this.myUser.color;
     this.ctx.font = 'bold 100pt Sniglet';
     if (this.ball.getHits() < 10) {
-      this.ctx.fillText(
-        this.ball.getHits().toString(),
-        canvasWidth / 2 - 40,
-        300
-      );
+      this.ctx.fillText(this.ball.getHits().toString(), midX - 40, midY + 50);
     } else {
-      this.ctx.fillText(
-        this.ball.getHits().toString(),
-        canvasWidth / 2 - 77,
-        300
-      );
+      this.ctx.fillText(this.ball.getHits().toString(), midX - 77, midY + 50);
     }
   }
 
