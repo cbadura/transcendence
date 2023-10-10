@@ -3,6 +3,7 @@ import {
   EChannelMode,
   ESocketMessage,
   EUserRole,
+  IBanMute,
   IChannel,
   ISocketUser,
 } from './chat.interfaces';
@@ -17,6 +18,7 @@ import {
 } from './dto/list-channels.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
+import { JoinChannelDto } from './dto/join-channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -194,7 +196,7 @@ export class ChatService {
     );
     if (!channel) throw new WsException("Channel doesn't exist");
     if (channel.owner.user.id !== this.getUserFromSocket(socket).user.id)
-      throw new WsException("You don't have permission for this action");
+      throw new WsException('Permission denied: You are not a channel owner');
     this.channels = this.channels.filter((ch) => ch.name !== dto.channelName);
 
     //notify all clients about client removal
@@ -204,6 +206,54 @@ export class ChatService {
       );
       if (channel.mode === EChannelMode.PRIVATE && !userInChannel) return;
       client.socket.emit(ESocketMessage.DELETED_CHANNEL, dto);
+    });
+  }
+
+  joinChannel(socket: Socket, dto: JoinChannelDto) {
+    const channel: IChannel = this.channels.find(
+      (ch) => dto.channelName === ch.name,
+    );
+    if (!channel) throw new WsException("Channel doesn't exist");
+    const who: ISocketUser = this.getUserFromSocket(socket);
+    const userInChannel: boolean = !!channel.users.find(
+      (user) => user.user.id === who.user.id,
+    );
+    const userInvited: boolean = !!channel.invites.find(
+      (user) => user.user.id === who.user.id,
+    );
+    const userBanned: IBanMute = channel.bans.find(
+      (user) => user.user.user.id === who.user.id,
+    );
+    if (userInChannel) throw new WsException('You are already in channel');
+    if (channel.mode === EChannelMode.PRIVATE && !userInvited)
+      throw new WsException(
+        'Permission denied: You need invitation to join this channel',
+      );
+    if (
+      channel.mode === EChannelMode.PROTECTED &&
+      channel.password !== dto.password
+    )
+      throw new WsException('Permission denied: Password incorrect');
+
+    // check of ban expiration time
+    const currTimestamp: number = Math.floor(Date.now() / 1000);
+    if (userBanned && userBanned.expireTimestamp > currTimestamp)
+      throw new WsException('Permission denied: You have been banned');
+    if (userBanned && userBanned.expireTimestamp < currTimestamp)
+      channel.bans = channel.bans.filter(
+        (banned) => banned.user.user.id !== who.user.id,
+      );
+
+    channel.users.push(who);
+
+    const joinedDto: JoinChannelDto = new JoinChannelDto();
+    joinedDto.userId = who.user.id;
+    joinedDto.channelName = dto.channelName;
+
+    //notify all channel users about new one joining
+    channel.users.forEach((user) => {
+      // TODO add check if user blocked for someone
+      user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);
     });
   }
 }

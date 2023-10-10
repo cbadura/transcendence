@@ -1,7 +1,7 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 // userId not needed from frontend;
-// but must be sent from backend in responce;
+// but must be sent from backend in response;
 export class JoinChannelDto {
   @IsString()
   channelName: string;

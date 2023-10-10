@@ -14,6 +14,7 @@ import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BadRequestTransformationFilter } from './chat.filter';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
+import { JoinChannelDto } from './dto/join-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({ cors: true })
@@ -56,5 +57,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() dto: DeleteChannelDto,
   ) {
     this.chatService.deleteChannel(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_JOIN_CHANNEL)
+  joinChannel(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: JoinChannelDto,
+  ) {
+    this.chatService.joinChannel(socket, dto);
   }
 }
