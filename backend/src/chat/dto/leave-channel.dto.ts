@@ -1,12 +1,15 @@
 import { EChannelLeaveOption } from '../chat.interfaces';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
+// userId not needed from frontend;
+// but must be sent from backend in responce;
 export class leaveChannelDto {
   @IsNumber()
-  userId: number;
+  @IsOptional()
+  userId?: number;
 
   @IsString()
-  name: string;
+  channelName: string;
 
   @IsOptional()
   @IsEnum(EChannelLeaveOption)

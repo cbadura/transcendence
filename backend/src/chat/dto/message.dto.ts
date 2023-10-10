@@ -8,7 +8,10 @@ export class MessageDto {
   message: string;
 
   @IsNumber()
-  userId: number;
+  @IsOptional()
+  userId?: number;
+  // we might need to send userId to frontend,
+  // but we don't need to receive it from frontend
 
   @IsString()
   @IsOptional()

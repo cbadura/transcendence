@@ -1,9 +1,6 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class DeleteChannelDto {
-  @IsNumber()
-  userId: number;
-
   @IsString()
-  name: string;
+  channelName: string;
 }

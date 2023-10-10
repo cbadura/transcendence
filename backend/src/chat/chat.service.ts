@@ -3,6 +3,7 @@ import {
   EChannelMode,
   ESocketMessage,
   EUserRole,
+  IBanMute,
   IChannel,
   ISocketUser,
 } from './chat.interfaces';
@@ -16,6 +17,8 @@ import {
   ListChannelsDto,
 } from './dto/list-channels.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { DeleteChannelDto } from './dto/delete-channel.dto';
+import { JoinChannelDto } from './dto/join-channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -36,14 +39,20 @@ export class ChatService {
   private getUserFromSocket(socket: Socket): ISocketUser {
     return this.clients.find((client) => client.socket.id === socket.id);
   }
-  // TODO add check if private channel and user is invited
+
+  private isInvited(channel: IChannel, userId: number): boolean {
+    return !!channel.invites.find((inv) => inv.user.id === userId);
+  }
+
   private createChannelList(user: ISocketUser): ListChannelsDto {
     const listChannels: ListChannelsDto = new ListChannelsDto();
     listChannels.channels = this.channels
       .filter(
         (ch) =>
           ch.mode !== EChannelMode.PRIVATE ||
-          this.getUserRole(ch, user) !== EUserRole.NONE,
+          this.getUserRole(ch, user) !== EUserRole.NONE ||
+          this.isInvited(ch, user.user.id),
+        //this last check depends on frontend implementation
       )
       .map((ch): ChannelDto => {
         const channel: ChannelDto = new ChannelDto();
@@ -178,6 +187,73 @@ export class ChatService {
       )
         return;
       else client.socket.emit(ESocketMessage.UPDATED_CHANNEL, updChannelData);
+    });
+  }
+
+  deleteChannel(socket: Socket, dto: DeleteChannelDto) {
+    const channel: IChannel = this.channels.find(
+      (ch) => dto.channelName === ch.name,
+    );
+    if (!channel) throw new WsException("Channel doesn't exist");
+    if (channel.owner.user.id !== this.getUserFromSocket(socket).user.id)
+      throw new WsException('Permission denied: You are not a channel owner');
+    this.channels = this.channels.filter((ch) => ch.name !== dto.channelName);
+
+    //notify all clients about client removal
+    this.clients.forEach((client) => {
+      const userInChannel: boolean = !!channel.users.find(
+        (user) => user.user.id === client.user.id,
+      );
+      if (channel.mode === EChannelMode.PRIVATE && !userInChannel) return;
+      client.socket.emit(ESocketMessage.DELETED_CHANNEL, dto);
+    });
+  }
+
+  joinChannel(socket: Socket, dto: JoinChannelDto) {
+    const channel: IChannel = this.channels.find(
+      (ch) => dto.channelName === ch.name,
+    );
+    if (!channel) throw new WsException("Channel doesn't exist");
+    const who: ISocketUser = this.getUserFromSocket(socket);
+    const userInChannel: boolean = !!channel.users.find(
+      (user) => user.user.id === who.user.id,
+    );
+    const userInvited: boolean = !!channel.invites.find(
+      (user) => user.user.id === who.user.id,
+    );
+    const userBanned: IBanMute = channel.bans.find(
+      (user) => user.user.user.id === who.user.id,
+    );
+    if (userInChannel) throw new WsException('You are already in channel');
+    if (channel.mode === EChannelMode.PRIVATE && !userInvited)
+      throw new WsException(
+        'Permission denied: You need invitation to join this channel',
+      );
+    if (
+      channel.mode === EChannelMode.PROTECTED &&
+      channel.password !== dto.password
+    )
+      throw new WsException('Permission denied: Password incorrect');
+
+    // check of ban expiration time
+    const currTimestamp: number = Math.floor(Date.now() / 1000);
+    if (userBanned && userBanned.expireTimestamp > currTimestamp)
+      throw new WsException('Permission denied: You have been banned');
+    if (userBanned && userBanned.expireTimestamp < currTimestamp)
+      channel.bans = channel.bans.filter(
+        (banned) => banned.user.user.id !== who.user.id,
+      );
+
+    channel.users.push(who);
+
+    const joinedDto: JoinChannelDto = new JoinChannelDto();
+    joinedDto.userId = who.user.id;
+    joinedDto.channelName = dto.channelName;
+
+    //notify all channel users about new one joining
+    channel.users.forEach((user) => {
+      // TODO add check if user blocked for someone
+      user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);
     });
   }
 }
