@@ -92,7 +92,7 @@ export class Ball {
 		this.dirX = (Math.floor(Math.random() * 2) === 0 ? 1 : -1);;
 		this.dirY = (Math.floor(Math.random() * 2));
 		this.stop = false;
-		this.speed = 2;
+		this.speed = 5;
 		this.hits = 0;
 	}
 

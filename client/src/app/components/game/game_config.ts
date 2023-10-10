@@ -12,5 +12,5 @@ export const gameConfig : any = {
 
     LINE_OFFSET: 30,
 
-    PADDLE_MOVE_STEP: 25
+    PADDLE_MOVE_STEP: 10
 }
