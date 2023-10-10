@@ -1,12 +1,13 @@
 <header class="flex h-20 justify-between items-center font-sans font-bold text-2xl ">
-		<div class="p-2 pr-4 pl-4 h-full flex justify-center items-center cursor-pointer font-Sniglet text-3xl">
-			<a routerLink="/">PONG</a>
-		  </div>
-		<ul class="m-2 flex h-full items-center">
-			<li *ngFor="let page of pages" class=" flex items-center justify-center p-2 h-full cursor-pointer hover:text-violet-500 transition-all"
-				[class.text-violet-300]="!isCurrentPage(page)"
-				[class.text-violet-500]="isCurrentPage(page)">
-				<a routerLink="/{{ page | lowercase }}">{{ page | lowercase }}</a>
-			</li>
-		</ul>
+	<div class="p-2 pr-4 pl-4 h-full flex justify-center items-center cursor-pointer font-Sniglet text-3xl">
+		<a routerLink="/" (mouseenter)="hovered = -2" (mouseleave)="hovered = -1" [style.color]="hovered === -2 ? saturatedColor : 'black'">PONG</a>
+	</div>
+	<ul class="m-2 flex h-full items-center">
+		<li *ngFor="let page of pages; let i = index"
+			class=" flex items-center justify-center p-2 h-full cursor-pointer font-light transition-all "
+			(mouseenter)="hovered = i" (mouseleave)="hovered = -1"
+			[style.color]="(isCurrentPage(page) ? saturatedColor : (hovered === i ? saturatedColor : fadedColor))">
+			<a routerLink="/{{ page | lowercase }}">{{ page | lowercase }}</a>
+		</li>
+	</ul>
 </header>
