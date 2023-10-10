@@ -8,6 +8,8 @@ import { User } from '../../shared/user';
 import { gameConfig } from './game_config';
 import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/color';
 
+import { Match } from 'src/app/shared/match';
+
 @Component({
   selector: 'tcd-game',
   templateUrl: './game.component.html',
@@ -22,11 +24,13 @@ export class GameComponent {
   private oppPaddle!: Square;
   private ball!: Ball;
   private paddleColor!: string;
-  private oppPaddleColor!: string;
+  private oppPaddleColor: string = 'black';
   private userScore = 0;
   private oppScore = 0;
   private userSubscription!: Subscription;
   private darkerColor!: string;
+  public gameOver: boolean = false;
+  public match!: Match;
 
   constructor(private userDataService: UserDataService) {}
 
@@ -35,8 +39,14 @@ export class GameComponent {
       this.myUser = user;
     });
     this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
-    this.paddleColor = SaturatedColor(this.myUser.color, 20);
-    this.oppPaddleColor = 'black';
+	  this.paddleColor = SaturatedColor(this.myUser.color, 20);
+	  
+	//   this.match = {
+	// 	  opponent: this.myUser,
+	// 	  dateTime: new Date().toISOString(),
+	// 	  myScore: 10,
+	// 	  opponentScore: 11,
+	//   };
   }
 
   ngAfterViewInit(): void {
@@ -97,17 +107,29 @@ export class GameComponent {
 
       // Check for win
       if (this.userScore >= 5 || this.oppScore >= 5) {
-        if (this.userScore >= 5) {
-          this.incrementUserLevel();
-        } else if (this.oppScore >= 5) {
-          this.decrementUserLevel();
-        }
+        this.gameOverRoutine();
+        return;
       } else if (!this.ball.stop) {
         requestAnimationFrame(gameLoopFn);
       }
     };
 
     requestAnimationFrame(gameLoopFn);
+  }
+
+  gameOverRoutine(): void {
+    if (this.userScore >= 5) {
+      this.incrementUserLevel();
+    } else if (this.oppScore >= 5) {
+      this.decrementUserLevel();
+    }
+    this.match = {
+		opponent: this.myUser,
+		dateTime: new Date().toISOString(),
+      myScore: this.userScore,
+      opponentScore: this.oppScore,
+    };
+	this.gameOver = true;
   }
 
   getUserScore() {
