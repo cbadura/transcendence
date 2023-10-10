@@ -2,8 +2,8 @@ import { GameComponent } from "./game.component"
 
 export const gameConfig : any = {
     PADDLE_LEN: 180,
-    PADDLE_WIDTH: 20,
-    
+    PADDLE_WIDTH: 25,
+
     PADDLE_LEFT_X: 15,
     PADDLE_RIGHT_X: 15,
 

@@ -24,8 +24,8 @@ export class GameComponent {
   private userScore = 0;
   private oppScore = 0;
   private userSubscription!: Subscription;
-
   private darkerColor!: string;
+
 
   constructor(private userDataService: UserDataService) {}
 
@@ -34,7 +34,6 @@ export class GameComponent {
       this.myUser = user;
       this.paddleColor = this.myUser.color;
     });
-
     this.darkerColor = "#" + this.LightenColor(this.myUser.color, -15);
   }
 
@@ -163,7 +162,7 @@ export class GameComponent {
     const midY = canvasHeight / 2;
 
     this.ctx.strokeStyle = this.myUser.color;
-    this.ctx.lineWidth = 7;
+    this.ctx.lineWidth = 10;
 
     // Mid line
     this.ctx.beginPath();
@@ -172,13 +171,14 @@ export class GameComponent {
     this.ctx.closePath();
     this.ctx.stroke();
 
-    // Opponents' lines
+    // Lines right
     this.ctx.beginPath();
     this.ctx.moveTo(gameConfig.PADDLE_WIDTH + gameConfig.LINE_OFFSET, 0);
     this.ctx.lineTo(gameConfig.PADDLE_WIDTH + gameConfig.LINE_OFFSET, canvasHeight);
     this.ctx.closePath();
     this.ctx.stroke();
 
+    // Lines left
     this.ctx.beginPath();
     this.ctx.moveTo(canvasWidth - gameConfig.PADDLE_WIDTH - gameConfig.LINE_OFFSET, 0);
     this.ctx.lineTo(canvasWidth - gameConfig.PADDLE_WIDTH - gameConfig.LINE_OFFSET, canvasHeight);
@@ -187,7 +187,7 @@ export class GameComponent {
 
     // Center circle
     this.ctx.beginPath();
-    this.ctx.arc(midX, midY, 100, 0, Math.PI * 2);
+    this.ctx.arc(midX, midY, 150, 0, Math.PI * 2);
     this.ctx.closePath();
     this.ctx.fillStyle = this.darkerColor;
     this.ctx.fill();
@@ -197,16 +197,18 @@ export class GameComponent {
     this.ctx.fillStyle = this.myUser.color;
     this.ctx.font = 'bold 60pt Sniglet';
 
+    // Score left
     this.ctx.fillText(
       this.getUserScore().toString(),
-      (3 * canvasWidth) / 8,
-      450
+      midX - 120,
+      canvasHeight - 50
     );
 
+    // Score right
     this.ctx.fillText(
       this.getOppScore().toString(),
-      (4.5 * canvasWidth) / 8,
-      450
+      midX + 70,
+      canvasHeight - 50
     );
 
     // Ball Hits
@@ -215,14 +217,14 @@ export class GameComponent {
     if (this.ball.getHits() < 10) {
       this.ctx.fillText(
         this.ball.getHits().toString(),
-        canvasWidth / 2 - 40,
-        300
+        midX - 40,
+        midY + 50
       );
     } else {
       this.ctx.fillText(
         this.ball.getHits().toString(),
-        canvasWidth / 2 - 77,
-        300
+        midX - 77,
+        midY + 50
       );
     }
   }
