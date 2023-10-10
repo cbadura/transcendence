@@ -40,6 +40,14 @@ export class ChatService {
     return this.clients.find((client) => client.socket.id === socket.id);
   }
 
+  private getActiveChannelUsers(channel: IChannel): ISocketUser[] {
+    const active: ISocketUser[] = this.clients.filter(
+      (client) =>
+        client.user.id ===
+        channel.users.find((u) => u.user.id === client.user.id).user.id,
+    );
+    return active;
+  }
   private isInvited(channel: IChannel, userId: number): boolean {
     return !!channel.invites.find((inv) => inv.user.id === userId);
   }
@@ -245,13 +253,14 @@ export class ChatService {
       );
 
     channel.users.push(who);
+    const activeUsers: ISocketUser[] = this.getActiveChannelUsers(channel);
 
     const joinedDto: JoinChannelDto = new JoinChannelDto();
     joinedDto.userId = who.user.id;
     joinedDto.channelName = dto.channelName;
 
     //notify all channel users about new one joining
-    channel.users.forEach((user) => {
+    activeUsers.forEach((user) => {
       // TODO add check if user blocked for someone
       user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);
     });
