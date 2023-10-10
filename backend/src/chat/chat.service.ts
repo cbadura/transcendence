@@ -3,6 +3,7 @@ import {
   EChannelMode,
   ESocketMessage,
   EUserRole,
+  IBanMute,
   IChannel,
   ISocketUser,
 } from './chat.interfaces';
@@ -16,6 +17,8 @@ import {
   ListChannelsDto,
 } from './dto/list-channels.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { MessageDto } from './dto/message.dto';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class ChatService {
@@ -180,4 +183,18 @@ export class ChatService {
       else client.socket.emit(ESocketMessage.UPDATED_CHANNEL, updChannelData);
     });
   }
+
+  // sendMessage(socket: Socket, dto: MessageDto) {
+  //   const channel: IChannel = this.channels.find(
+  //     (ch) => dto.channel === ch.name,
+  //   ); // check if the channel exist
+  //   if (!channel) throw new WsException("Channel doesn't exist");
+  //   const member: User = channel.users.find((user) => this.getUserFromSocket(socket).user === user.user).user; //check if the user is a member of the channel
+  //   if (!member)
+  //     throw new WsException("User not in the channel");
+  //   const banned: IBanMute = channel.bans.find((ban) => this.getUserFromSocket(socket).user === ban.user.user);
+  //   const muted: IBanMute = 
+    
+
+  // }
 }
