@@ -156,21 +156,21 @@ export class GameComponent {
   }
 
   movePaddle() {
-    const max = this.ctx.canvas.height - gameConfig.PADDLE_LEN - 15;
+    const maxTop = 10;
+    const maxBottom = this.ctx.canvas.height - maxTop - gameConfig.PADDLE_LEN;
 
-    if (this.movingUp && this.paddle.y > gameConfig.PADDLE_LEN / 4) {
+    if (this.movingUp && this.paddle.y > maxTop) {
       this.paddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
     }
-    if (this.movingDown && this.paddle.y < max) {
+    if (this.movingDown && this.paddle.y < maxBottom) {
       this.paddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
-	}
-	  if (this.movingUpOpp && this.oppPaddle.y > gameConfig.PADDLE_LEN / 4) {
-	  this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
-	  }
-	  if (this.movingDownOpp && this.oppPaddle.y < max) {
-		  this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
-	  }	  
-    // Add similar logic for the opponent paddle
+    }
+    if (this.movingUpOpp && this.oppPaddle.y > maxTop) {
+      this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
+    }
+    if (this.movingDownOpp && this.oppPaddle.y < maxBottom) {
+      this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
+    }
   }
 
   redraw() {
