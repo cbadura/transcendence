@@ -1,5 +1,3 @@
-import { GameComponent } from "./game.component"
-
 export const gameConfig : any = {
     PADDLE_LEN: 180,
     PADDLE_WIDTH: 25,

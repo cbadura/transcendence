@@ -30,7 +30,8 @@ export class Ball {
 		this.y += this.dirY * this.speed;
 		console.log(this.hits);
 		// wall collision
-		if (this.y <= 5 || this.y >= this.ctx.canvas.height - 5) {
+		if (this.y <= gameConfig.BALL_RADIUS ||
+			this.y >= this.ctx.canvas.height - gameConfig.BALL_RADIUS) {
 			this.dirY *= -1;
 		}
 		// left paddle
