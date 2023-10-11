@@ -2,15 +2,22 @@ import { gameConfig } from './gameConfig'
 import { Game } from './interfaces/Game'
 import { User } from 'src/app/shared/user';
 import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/color';
+import {Rectangle} from './Rectangle'
 
 
 export class Render {
   private game! : Game;
   private darkerColor! : string;
+  private saturatedColor! : string;
+  private paddle1! : Rectangle;
+  private paddle2! : Rectangle;
 
   constructor(private ctx: CanvasRenderingContext2D, private user: User) {
     this.darkerColor = LightenDarkenColor(this.user.color, -10);
-    // this.paddleColor = SaturatedColor(this.myUser.color, 20);
+    this.saturatedColor = SaturatedColor(this.user.color, 20);
+    this.paddle1 = new Rectangle(this.ctx, this.saturatedColor, gameConfig.lineOffset + gameConfig.paddle.width / 2);
+    this.paddle2 = new Rectangle(this.ctx, 'black', this.ctx.canvas.width - (gameConfig.lineOffset + gameConfig.paddle.width * 1.5));
+
   }
 
 
@@ -29,9 +36,10 @@ export class Render {
         // Draw lines and scores
         this.drawCourt(this.darkerColor ,this.user.color, 10);
     
+        this.paddle1.draw(this.game.paddle1);
+        this.paddle2.draw(this.game.paddle2);
+        
         // this.ctx.beginPath();
-        // this.paddle.draw(this.paddleColor);
-        // this.oppPaddle.draw(this.oppPaddleColor);
         // this.ball.draw();
 
   }

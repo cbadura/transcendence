@@ -15,27 +15,46 @@ import { gameConfig } from "./gameConfig";
 export class Rectangle {
   private width : number;
   private height : number;
-  constructor(private ctx: CanvasRenderingContext2D, number, public color: string) {
+  constructor(private ctx: CanvasRenderingContext2D, public color: string, public x: number) {
       this.width = gameConfig.paddle.width;
-      this.height = gameConfig.paddle.height;
+      this.height = gameConfig.paddle.length;
     }
 
-   drawPaddle(x: number, y: number, width: number, height: number) {
+   draw (y: number) {
     this.ctx.fillStyle = this.color;
-    // if (width < 2 * gameConfig.paddle.width) gameConfig.paddle.width = width / 2;
-    // if (height < 2 * gameConfig.paddle.width) gameConfig.paddle.width = height / 2;
+    let radius = this.width / 2;
   
     this.ctx.beginPath();
-    this.ctx.moveTo(x + gameConfig.paddle.width, y);
-    this.ctx.arcTo(x + width, y, x + width, y + height, gameConfig.paddle.width);
-    this.ctx.arcTo(x + width, y + height, x, y + height, gameConfig.paddle.width);
-    this.ctx.arcTo(x, y + height, x, y, gameConfig.paddle.width);
-    this.ctx.arcTo(x, y, x + width, y, gameConfig.paddle.width);
+
+    // Top-left circle
+    this.ctx.arc(this.x + radius, y + radius, radius, Math.PI, 1.5 * Math.PI);
+  
+    // Top line
+    this.ctx.lineTo(this.x + this.width - radius, y);
+  
+    // Top-right circle
+    this.ctx.arc(this.x + this.width - radius, y + radius, radius, 1.5 * Math.PI, 2 * Math.PI);
+  
+    // Right line
+    this.ctx.lineTo(this.x + this.width, y + this.height - radius);
+  
+    // Bottom-right circle
+    this.ctx.arc(this.x + this.width - radius, y + this.height - radius, radius, 0, 0.5 * Math.PI);
+  
+    // Bottom line
+    this.ctx.lineTo(this.x + radius, y + this.height);
+  
+    // Bottom-left circle
+    this.ctx.arc(this.x + radius, y + this.height - radius, radius, 0.5 * Math.PI, Math.PI);
+  
+    // Left line
+    this.ctx.lineTo(this.x, y + radius);
+  
     this.ctx.closePath();
     this.ctx.fill();
   }
 
-  moveBy(distance: number) {    
-    this.y += distance;
-  }
+  // moveBy(distance: number) {    
+  //   this.y += distance;
+  // }
 }

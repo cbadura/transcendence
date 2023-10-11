@@ -25,14 +25,15 @@ export class GameComponent {
   private ctx!: CanvasRenderingContext2D;
   private myUser!: User;
   private userSubscription!: Subscription;
-  private game! : Game;
-  // private paddle!: Square;
-  // private oppPaddle!: Square;
+  public game! : Game;
+
+  // Backend
+  private movingUp: boolean = false;
+  private movingDown: boolean = false;
+  private movingUpOpp: boolean = false;
+  private movingDownOpp: boolean = false;
+
   // private ball!: Ball;
-  // private oppPaddleColor: string = 'black';
-  // private userScore = 0;
-  // private oppScore = 0;
-  public gameOver: boolean = false;
   // public match!: Match;
 
   constructor(private userDataService: UserDataService) {}
@@ -40,22 +41,16 @@ export class GameComponent {
   ngOnInit() {
       // Server side
       this.initGameObj(this.game);
+      // GET game object
 
-
+    // Get user data
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
     });
-    
-	  
-	//   this.match = {
-	// 	  opponent: this.myUser,
-	// 	  dateTime: new Date().toISOString(),
-	// 	  myScore: 10,
-	// 	  opponentScore: 11,
-	//   };
+    // Initialize dummy match object
   }
 
-  // Initialize canvas after view Init
+  // Initialize canvas and render after view Init
   ngAfterViewInit(): void {
     this.ctx = this.canvas.nativeElement.getContext(
       '2d'
@@ -64,13 +59,15 @@ export class GameComponent {
   }
   
   initGameObj(game: Game): void {
+    // Backend
     // Initialize Game object
-  
     // Default configs (could be hard-coded?)
     this.game = {
       gameOver: false,
       score2: 0,
       score1: 0,
+      paddle1: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
+      paddle2: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
     };
   }
 
@@ -80,9 +77,16 @@ export class GameComponent {
 
   gameLoop(): void {
     const gameLoopFn = () => {
+      // Frontend:
+      // get latest game object
       this.render.redraw(this.game);
-      //this.updateGame(this.game);
-      if (!this.gameOver) {
+      // Emit paddle step at each keypress (+ or -)
+      this.movePaddle()
+      
+      // Backend
+      // this.updateGame()
+
+      if (!this.game.gameOver) {
         requestAnimationFrame(gameLoopFn);
       }
     };
@@ -90,9 +94,97 @@ export class GameComponent {
     requestAnimationFrame(gameLoopFn);
   }
 
+  updateGame(id : number, step : number)
+  {
+    const maxTop = 10;
+    const maxBottom = gameConfig.canvas.height - gameConfig.paddle.length - maxTop;
+    if (id === 1)
+    {
+      const newPaddlePos = this.game.paddle1 + step;
+      if (newPaddlePos > maxTop && newPaddlePos < maxBottom)
+        this.game.paddle1 = newPaddlePos;
+    }
+    if (id === 2) //check for limit
+    {
+      const newPaddlePos = this.game.paddle2 + step;
+      if (newPaddlePos > maxTop && newPaddlePos < maxBottom)
+        this.game.paddle2 = newPaddlePos;
+    }
+  }
 
-  // startGame(): void {
-  
+  movePaddle() {
+    if (this.movingUp) {
+      this.updateGame(1, -gameConfig.paddle.step);
+    }
+    if (this.movingDown) {
+      this.updateGame(1, gameConfig.paddle.step);
+    }
+
+    // To delete after moving to backend
+    if (this.movingUpOpp) {
+      this.updateGame(2, -gameConfig.paddle.step);
+    }
+    if (this.movingDownOpp) {
+      this.updateGame(2, gameConfig.paddle.step);
+    }
+  }
+
+  // // movePaddle() {
+
+
+  // //   if (this.movingUp ) {
+  // //     this.paddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
+  // //   }
+  // //   if (this.movingDown) {
+  // //     this.paddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
+  // //   }
+  // //   if (this.movingUpOpp) {
+  // //     this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
+  // //   }
+  // //   if (this.movingDownOpp) {
+  // //     this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
+  // //   }
+  // // }
+
+ 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'w') {
+      this.movingUp = true;
+    }
+    if (event.key === 's') {
+      this.movingDown = true;
+    }
+    if (event.key === 'ArrowUp') {
+      this.movingUpOpp = true;
+    }
+    if (event.key === 'ArrowDown') {
+      this.movingDownOpp = true;
+    }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp(event: KeyboardEvent) {
+    if (event.key === 'w') {
+      this.movingUp = false;
+    }
+    if (event.key === 's') {
+      this.movingDown = false;
+    }
+    if (event.key === 'ArrowUp') {
+      this.movingUpOpp = false;
+    }
+    if (event.key === 'ArrowDown') {
+      this.movingDownOpp = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription.unsubscribe();
+  }
+}
+
+
   // gameLoop(): void {
   //   const gameLoopFn = () => {
   //     this.redraw();
@@ -119,71 +211,3 @@ export class GameComponent {
 
   //   requestAnimationFrame(gameLoopFn);
   // }
-
-
-  // private movingUp: boolean = false;
-  // private movingDown: boolean = false;
-  // private movingUpOpp: boolean = false;
-  // private movingDownOpp: boolean = false;
-
-  // @HostListener('window:keydown', ['$event'])
-  // handleKeyDown(event: KeyboardEvent) {
-  //   if (event.key === 'w') {
-  //     this.movingUp = true;
-  //   }
-  //   if (event.key === 's') {
-  //     this.movingDown = true;
-  //   }
-  //   if (event.key === 'ArrowUp') {
-  //     this.movingUpOpp = true;
-  //   }
-  //   if (event.key === 'ArrowDown') {
-  //     this.movingDownOpp = true;
-  //   }
-  // }
-
-  // @HostListener('window:keyup', ['$event'])
-  // handleKeyUp(event: KeyboardEvent) {
-  //   if (event.key === 'w') {
-  //     this.movingUp = false;
-  //   }
-  //   if (event.key === 's') {
-  //     this.movingDown = false;
-  //   }
-  //   if (event.key === 'ArrowUp') {
-  //     this.movingUpOpp = false;
-  //   }
-  //   if (event.key === 'ArrowDown') {
-  //     this.movingDownOpp = false;
-  //   }
-  // }
-
-  // // movePaddle() {
-  // //   const maxTop = 10;
-  // //   const maxBottom = this.ctx.canvas.height - maxTop - gameConfig.PADDLE_LEN;
-
-  // //   if (this.movingUp && this.paddle.y > maxTop) {
-  // //     this.paddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // //   if (this.movingDown && this.paddle.y < maxBottom) {
-  // //     this.paddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // //   if (this.movingUpOpp && this.oppPaddle.y > maxTop) {
-  // //     this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // //   if (this.movingDownOpp && this.oppPaddle.y < maxBottom) {
-  // //     this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // // }
-
-  // redraw() {
-
-  // }
-
- 
-
-
-  // ngOnDestroy(): void {
-  //   this.userSubscription.unsubscribe();
-  // }
-}
