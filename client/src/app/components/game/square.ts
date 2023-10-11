@@ -1,4 +1,4 @@
-import { gameConfig } from "./game_config";
+import { gameConfig } from "./gameConfig";
 
 export class Square {
   constructor(private ctx: CanvasRenderingContext2D,
@@ -7,7 +7,7 @@ export class Square {
 
   draw(color: string) {
     this.ctx.fillStyle = color;;
-    this.drawRoundedPaddle(this.x, this.y, this.sizeX, this.sizeY, gameConfig.PADDLE_WIDTH);  // last argument is rounding radius
+    this.drawRoundedPaddle(this.x, this.y, this.sizeX, this.sizeY, gameConfig.paddle.width);  // last argument is rounding radius
   }
 
   drawRoundedPaddle(x: number, y: number, width: number, height: number, radius: number) {
