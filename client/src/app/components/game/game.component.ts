@@ -16,15 +16,20 @@ import { Ball } from './interfaces/Ball'
 export class GameComponent {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
-  private render!: Render;
   private ctx!: CanvasRenderingContext2D;
-  private myUser!: User;
   private userSubscription!: Subscription;
+  private myUser!: User;
+
+  // Render class
+  private render!: Render;
+  // Game object
   public game! : Game;
 
-  // Backend
+  // Paddle movement
   private movingUp: boolean = false;
   private movingDown: boolean = false;
+  
+  // To delete after moving to backend:
   private movingUpOpp: boolean = false;
   private movingDownOpp: boolean = false;
 
