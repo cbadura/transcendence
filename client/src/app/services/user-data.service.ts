@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { User } from '../shared/user';
+import { map, forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class UserDataService {
       matches: 0,
       wins: 0,
       color: '#E7C9FF',
-      avatar: '/users/profilepic/default_01.jpg',
+      avatar: '',
       friends: []
     };
 
@@ -66,14 +67,21 @@ export class UserDataService {
     });
   }
 
-  getPic() {
-    this.http.get(this.serverAddress + '/users/profilepic/default_01.jpg', { responseType: 'blob' })
-    .subscribe(data => {
-        this.imageURL = URL.createObjectURL(data);
-    }, error => {
-        window.alert('Error fetching users: ' + JSON.stringify(error));
-    });
+  getPics(): Observable<string[]> {
+    const picNames = ['default_00.jpg', 'default_01.jpg', 'default_02.jpg', 'default_03.jpg', 'default_04.jpg'];
+    const requests = picNames.map(picName => 
+      this.http.get(`${this.serverAddress}/users/profilepic/${picName}`, { responseType: 'blob' })
+    );
+    return forkJoin(requests).pipe(
+      map(responses => responses.map(data => URL.createObjectURL(data)))
+    );
   }
+
+  setAvatar(url: string) {
+    console.log("Setting avatar to:", url);
+    this.myUser.avatar = url;
+    //this.userSubject.next(this.myUser);
+}
 
   getUser(): User {
     return this.userSubject.value;
@@ -85,6 +93,7 @@ export class UserDataService {
   }
 
   setColor(color: string) {
+    console.log('setting color to ', color);
     const user = { ...this.getUser(), color: color };
     this.userSubject.next(user);
   }

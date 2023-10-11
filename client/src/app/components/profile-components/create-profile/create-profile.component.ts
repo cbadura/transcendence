@@ -16,7 +16,8 @@ export class CreateProfileComponent implements OnInit {
     tempUserName!: string;
     tempColor!: string;
     availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
-  
+    imageURLs: string[] = [];
+
     constructor(
       private router: Router,
       private userDataService: UserDataService) {
@@ -33,14 +34,23 @@ export class CreateProfileComponent implements OnInit {
         };
         this.tempUserName = '';
         this.tempColor = '';
-    }
-  
-    ngOnInit() {
-      this.userSubscription = this.userDataService.user$.subscribe(
-        (user) => {
-          this.myUser = user;
-        }
-      );
+      }
+      
+      ngOnInit() {
+        this.userSubscription = this.userDataService.user$.subscribe(
+          (user) => {
+            this.myUser = user;
+          }
+          );
+
+        this.userDataService.getPics().subscribe(
+          urls => {
+              this.imageURLs = urls;
+              // update the avatar with the first image
+              // this.myUser.avatar = urls[0];
+          },
+          error => console.error('Error fetching pics:', error)
+        );
     }
   
     getUsers() {
@@ -55,6 +65,11 @@ export class CreateProfileComponent implements OnInit {
             window.alert('Error editing user: ' + JSON.stringify(error));
         });
       }
+    }
+
+    editAvatar(url: string, event: Event) {
+      this.userDataService.setAvatar(url);
+      event.stopPropagation();
     }
 
     editName(name: string) {

@@ -15,6 +15,7 @@ export class EditProfileComponent implements OnInit {
   tempUserName!: string;
   tempColor!: string;
   availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
+  imageURL!: string;
 
   constructor(
     private userDataService: UserDataService) {
@@ -39,6 +40,11 @@ export class EditProfileComponent implements OnInit {
         this.myUser = user;
       }
     );
+
+    // this.userDataService.getPic().subscribe(
+    //   url => this.imageURL = url,
+    //   error => console.error('Error fetching pic:', error)
+    // ); 
   }
 
   getUsers() {

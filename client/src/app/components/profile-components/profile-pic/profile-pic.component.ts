@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-
+import { Component, Input, Output, EventEmitter  } from '@angular/core';
 
 @Component({
   selector: 'tcd-profile-pic',
@@ -7,5 +6,10 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./profile-pic.component.css']
 })
 export class ProfilePicComponent {
-  @Input() profilePic : string = "";
+  @Input() profilePic: string = '';
+  @Output() imageClick = new EventEmitter<void>();
+
+  handleClick() {
+    this.imageClick.emit();
+  }
 }
