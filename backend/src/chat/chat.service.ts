@@ -20,6 +20,8 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
 import { JoinChannelDto } from './dto/join-channel.dto';
 import { MessageDto } from './dto/message.dto';
+import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
+import { Relationship } from 'src/entities/relationship.entity';
 
 @Injectable()
 export class ChatService {
@@ -77,6 +79,10 @@ export class ChatService {
         return channel;
       });
     return listChannels;
+  }
+
+  private getCurrentUnixTime(): number {
+    return Math.floor(new Date().getTime() / 1000 );
   }
 
   // TODO change later userId into token and extract userId from token
@@ -199,34 +205,64 @@ export class ChatService {
     });
   }
 
-  sendMessage(socket: Socket, dto: MessageDto) {
-    if (!dto.channel && !dto.receiverId || dto.channel && dto.receiverId)
-      throw new WsException("Invalid message target");
-    const sender: ISocketUser = this.clients.find((user) => user.socket === socket);
-    const messageTochannel: MessageDto = { ...dto };
-    messageTochannel.userId = sender.user.id;
-    messageTochannel.timestamp = Math.floor(new Date().getTime() / 1000 );
+  async sendMessage(socket: Socket, dto: MessageDto) {
+    if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId)) {
+      socket.emit('exception', 'Invalid message target');
+      return ;
+    }
+    const sender: ISocketUser = this.getUserFromSocket(socket);
     
+    const messageTochannel: MessageDto = { ...dto };
+    messageTochannel.senderId = sender.user.id;
+    messageTochannel.timestamp = this.getCurrentUnixTime();
+    
+    //check channle member block list - use relation entity
     if (dto.channel) {
       const channel: IChannel = this.channels.find((ch) => dto.channel === ch.name); // check if the channel exist
-      if (!channel) throw new WsException("Channel/Receiver doesn't exist");
+      if (!channel) {
+        socket.emit('exception', "Channel/Receiver doesn't exist");
+        return ;
+      }
       const members: ISocketUser[] = this.getActiveChannelUsers(channel);
-      if (!members.find((member) => member.user.id === sender.user.id)) 
-        throw new WsException("User not in the channel");
-      const banned: IBanMute = channel.bans.find((ban) => this.getUserFromSocket(socket).user === ban.user.user);
-      const muted: IBanMute = channel.mutes.find((mute) => this.getUserFromSocket(socket).user === mute.user.user);
+      if (!channel.users.find((member) => member.user.id === sender.user.id)) {
+        socket.emit('exception', "User not in the channel");
+        return ;
+      }
+      // if (!members.find((member) => member.user.id === sender.user.id))
+      //   throw new WsException("User not in the channel");
+
+      // TO DO check expire time, either global with setInterval or on demand locally
+      const banned: IBanMute = channel.bans.find((ban) => sender.user.id === ban.user.user.id);
+      const muted: IBanMute = channel.mutes.find((mute) => sender.user.id === mute.user.user.id);
       if (banned || muted)
-        throw new WsException("User not allowed to send message to this channel");
-      members.forEach((member) => member.socket.emit(ESocketMessage.MESSAGE, messageTochannel));
+      {
+        socket.emit('exception', "User not allowed to send message to this channel");
+        return ;
+      }
+      
+      members.forEach(async(member) => {
+        const blocklist: Relationship[] = await this.userService.getUserRelationships(member.user.id, 'blocked');
+        if (!blocklist.find((user) => user.relational_user_id === sender.user.id))
+          member.socket.emit(ESocketMessage.MESSAGE, messageTochannel);
+      })
 
     }
-     
+
     if (dto.receiverId) {
-      const receiver: ISocketUser = this.clients.find((user) => user.user.id === dto.receiverId);
-      if (!receiver)
-        throw new WsException("User not online");
-      receiver.socket.emit(ESocketMessage.MESSAGE, messageTochannel);
+      const receiver: ISocketUser[] = this.clients.filter((user) => user.user.id === dto.receiverId); // array of receiver in case they have multiple tab
+      if (!receiver) {
+        socket.emit('exception', "User not online");
+        return ;
+      }
+      const blocklist: Relationship[] = await this.userService.getUserRelationships(dto.receiverId, 'blocked');
+      if (!blocklist.find((user) => user.relational_user_id === sender.user.id))
+        receiver.forEach((ruser) => ruser.socket.emit(ESocketMessage.MESSAGE, messageTochannel));
+      
     }
+    
+  }
+
+  muteUser(socket: Socket, dto: BanMuteFromChannelDto) {
     
   }
 
