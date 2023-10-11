@@ -119,7 +119,7 @@ export class GameComponent {
 
   gameOverRoutine(): void {
     if (this.userScore >= 5) {
-      this.incrementUserLevel();
+      this.incrementUserLevel(); // DOES NOT WORK WITH DB USER YET
     } else if (this.oppScore >= 5) {
       this.decrementUserLevel();
     }
@@ -129,7 +129,7 @@ export class GameComponent {
       myScore: this.userScore,
       opponentScore: this.oppScore,
     };
-	this.gameOver = true;
+	  this.gameOver = true;
   }
 
   getUserScore() {
