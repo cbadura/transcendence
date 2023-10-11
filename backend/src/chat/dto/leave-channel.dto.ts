@@ -8,12 +8,15 @@ import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
  * @property {EChannelLeaveOption} option [Optional] - Channel owner can decide DELETE or KEEP when they leave the channel.
  * @property {string} transfer [Optional] - To whom the ownership will be transferred. Only valid when owner leaving and wants to KEEP the channel.
  */
+// userId not needed from frontend;
+// but must be sent from backend in responce;
 export class leaveChannelDto {
   @IsNumber()
-  userId: number;
+  @IsOptional()
+  userId?: number;
 
   @IsString()
-  name: string;
+  channelName: string;
 
   @IsOptional()
   @IsEnum(EChannelLeaveOption)

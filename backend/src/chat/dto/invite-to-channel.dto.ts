@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 
 /**
@@ -7,12 +7,15 @@ import { IsNumber, IsString } from 'class-validator';
  * @property {string} channel - The name of the channel.
  * @property {number} invitedUserId - The ID of user being invited.
  */
+// userId not needed from frontend;
+// but must be sent from backend in responce;
 export class InviteToChannelDto {
   @IsNumber()
-  userId: number;
+  @IsOptional()
+  userId?: number;
 
   @IsString()
-  channel: string;
+  channelName: string;
 
   @IsNumber()
   invitedUserId: number;

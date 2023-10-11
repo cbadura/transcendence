@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 /**
  * Dto for deleting a channel.
@@ -6,9 +6,6 @@ import { IsNumber, IsString } from 'class-validator';
  * @property {string} name - The name of channel being deleted.
  */
 export class DeleteChannelDto {
-  @IsNumber()
-  userId: number;
-
   @IsString()
-  name: string;
+  channelName: string;
 }

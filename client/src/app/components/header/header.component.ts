@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/user';
+import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/color';
 
 @Component({
   selector: 'tcd-header',
@@ -12,17 +13,24 @@ import { User } from '../../shared/user';
 })
 export class HeaderComponent implements OnInit {
   myUser!: User;
-  private userSubscription!: Subscription;
-  pages = ['Game', 'Leaderboard', 'Chat', 'Profile'];
-  
-  constructor(private router: Router,
+	private userSubscription!: Subscription;
+	public fadedColor!: string;
+	public saturatedColor!: string;
+	public hovered: number = -1;
+	pages = ['Game', 'Leaderboard', 'Chat', 'Profile'];
+	
+	constructor(private router: Router,
     private userDataService: UserDataService) {
   }
+	
+
 
   ngOnInit(): void {
     this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
-        this.myUser = user;
+			this.myUser = user;
+			this.fadedColor = LightenDarkenColor(this.myUser.color, -10);
+			this.saturatedColor = LightenDarkenColor(SaturatedColor(this.myUser.color, 20), -10);
       }
     );
   }
