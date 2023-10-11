@@ -13,6 +13,7 @@ export interface GameConfig {
   ball: {
     radius: number;
     maxBounceAngle: number;
+    color: string;
   };
   lineOffset: number;
 }
@@ -32,6 +33,7 @@ export const gameConfig: GameConfig = {
   ball: {
     radius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
+    color: 'black',
   },
   lineOffset: 30,
 };

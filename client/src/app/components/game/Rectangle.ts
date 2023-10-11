@@ -1,17 +1,4 @@
 import { gameConfig } from "./gameConfig";
-
-
-//  INITIAL X AND Y OF PADDLE COME FROM GAME OBJECT
-// P1:
-// x: gameConfig.LINE_OFFSET + gameConfig.PADDLE_WIDTH / 2,
-// y: this.ctx.canvas.height / 2 - gameConfig.PADDLE_LEN / 2
-// P2:
-// x:  this.ctx.canvas.width -(gameConfig.LINE_OFFSET + gameConfig.PADDLE_WIDTH * 1.5)
-// y: this.ctx.canvas.height / 2 - gameConfig.PADDLE_LEN / 2,
-
-
-
-
 export class Rectangle {
   private width : number;
   private height : number;

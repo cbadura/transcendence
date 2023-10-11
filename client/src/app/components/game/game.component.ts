@@ -1,22 +1,17 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { Square } from './square';
-import { Ball } from './ball';
 import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/user';
 import { gameConfig } from './gameConfig';
-import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/color';
 import { Render } from './Render'
 
-
-import { Match } from 'src/app/shared/match';
 import { Game } from './interfaces/Game'
+import { Ball } from './interfaces/Ball'
 
 @Component({
   selector: 'tcd-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
   @ViewChild('canvas', { static: true })
@@ -62,12 +57,17 @@ export class GameComponent {
     // Backend
     // Initialize Game object
     // Default configs (could be hard-coded?)
+    const ball: Ball = {
+      x: gameConfig.canvas.width / 2,
+      y: gameConfig.canvas.height / 2,
+    };
     this.game = {
       gameOver: false,
       score2: 0,
       score1: 0,
       paddle1: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
       paddle2: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
+      ball: ball,
     };
   }
 
@@ -113,6 +113,7 @@ export class GameComponent {
   }
 
   movePaddle() {
+    // Will emit events to backend
     if (this.movingUp) {
       this.updateGame(1, -gameConfig.paddle.step);
     }
@@ -128,23 +129,6 @@ export class GameComponent {
       this.updateGame(2, gameConfig.paddle.step);
     }
   }
-
-  // // movePaddle() {
-
-
-  // //   if (this.movingUp ) {
-  // //     this.paddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // //   if (this.movingDown) {
-  // //     this.paddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // //   if (this.movingUpOpp) {
-  // //     this.oppPaddle.moveBy(-gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // //   if (this.movingDownOpp) {
-  // //     this.oppPaddle.moveBy(gameConfig.PADDLE_MOVE_STEP);
-  // //   }
-  // // }
 
  
   @HostListener('window:keydown', ['$event'])
