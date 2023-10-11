@@ -16,7 +16,7 @@ export class UserDataService {
       matches: 0,
       wins: 0,
       color: '#E7C9FF',
-      avatar: './assets/avatars/av1.jpg',
+      avatar: '/users/profilepic/default_01.jpg',
       friends: []
     };
 
@@ -63,6 +63,15 @@ export class UserDataService {
         window.alert('Error creating user: ' + JSON.stringify(error));
         observer.error(error);
       });
+    });
+  }
+
+  getPic() {
+    this.http.get(this.serverAddress + '/users/profilepic/default_01.jpg', { responseType: 'blob' })
+    .subscribe(data => {
+        this.imageURL = URL.createObjectURL(data);
+    }, error => {
+        window.alert('Error fetching users: ' + JSON.stringify(error));
     });
   }
 
