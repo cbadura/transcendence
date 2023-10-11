@@ -29,6 +29,12 @@ export class ProfileComponent implements OnInit {
       }
     );
 
+    this.userDataService.getPic().subscribe(data => {
+      this.myUser.avatarLocalUrl = data.blobUrl;
+    }, error => {
+      console.error('Error fetching pic:', error);
+    });
+
     this.achievements = [
       { name: 'Paddle Master', url: 'https://picsum.photos/100' },
       { name: 'Ping Pong Champion', url: 'https://picsum.photos/100' },

@@ -16,7 +16,7 @@ export class CreateProfileComponent implements OnInit {
     tempUserName!: string;
     tempColor!: string;
     availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
-    imageURLs: string[] = [];
+    imageData: { blobUrl: string, filePath: string }[] = [];
 
     constructor(
       private router: Router,
@@ -44,10 +44,8 @@ export class CreateProfileComponent implements OnInit {
           );
 
         this.userDataService.getPics().subscribe(
-          urls => {
-              this.imageURLs = urls;
-              // update the avatar with the first image
-              // this.myUser.avatar = urls[0];
+          data => {
+              this.imageData = data;
           },
           error => console.error('Error fetching pics:', error)
         );
@@ -67,9 +65,24 @@ export class CreateProfileComponent implements OnInit {
       }
     }
 
-    editAvatar(url: string, event: Event) {
-      this.userDataService.setAvatar(url);
+    editAvatar(filePath: string, url: string, event: Event) {
+      this.userDataService.setAvatar(filePath, url);
       event.stopPropagation();
+    }
+
+
+    onFileSelected(event: any) {
+      const file: File = event.target.files[0];
+      if (file) {
+        this.userDataService.uploadProfilePic(file).subscribe(
+            response => {
+                console.log('File uploaded successfully:', response);
+            },
+            error => {
+                console.error('Error uploading file:', error);
+            }
+        );
+      }
     }
 
     editName(name: string) {

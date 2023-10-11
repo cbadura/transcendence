@@ -18,6 +18,7 @@ export class UserDataService {
       wins: 0,
       color: '#E7C9FF',
       avatar: '',
+      avatarLocalUrl: '',
       friends: []
     };
 
@@ -67,21 +68,31 @@ export class UserDataService {
     });
   }
 
-  getPics(): Observable<string[]> {
+  getPics(): Observable<{ blobUrl: string, filePath: string }[]> {
     const picNames = ['default_00.jpg', 'default_01.jpg', 'default_02.jpg', 'default_03.jpg', 'default_04.jpg'];
     const requests = picNames.map(picName => 
       this.http.get(`${this.serverAddress}/users/profilepic/${picName}`, { responseType: 'blob' })
+        .pipe(map(blob => ({ blobUrl: URL.createObjectURL(blob), filePath: picName })))
     );
-    return forkJoin(requests).pipe(
-      map(responses => responses.map(data => URL.createObjectURL(data)))
-    );
+    return forkJoin(requests);
   }
 
-  setAvatar(url: string) {
-    console.log("Setting avatar to:", url);
-    this.myUser.avatar = url;
-    //this.userSubject.next(this.myUser);
-}
+  uploadProfilePic(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post(`${this.serverAddress}/users/38/profilepic`, formData);
+  }
+
+  getPic(): Observable<{ blobUrl: string, filePath: string }> {
+    return this.http.get(`${this.serverAddress}/users/profilepic/${this.myUser.avatar}`, { responseType: 'blob' })
+        .pipe(map(blob => ({ blobUrl: URL.createObjectURL(blob), filePath: this.myUser.avatar })));
+  }
+
+  setAvatar(filePath: string, url: string) {
+    this.myUser.avatarLocalUrl = url;
+    this.myUser.avatar = '/users/profilepic/' + filePath;
+    // this.userSubject.next(this.myUser);
+  }
 
   getUser(): User {
     return this.userSubject.value;

@@ -4,13 +4,16 @@
 	<div class="flex justify-center items-center w-full space-x-5">
     <div class="image-row">
       <img 
-        class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
-        *ngFor="let url of imageURLs" 
-        [src]="url"
-        (click)="editAvatar(url, $event)"
+        class="border border-black w-20 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
+        *ngFor="let image of imageData"
+        [src]="image.blobUrl"
+        (click)="editAvatar(image.filePath, image.blobUrl, $event)"
         alt="Profile Picture">
     </div>
-    <tcd-custom-button [buttonText]="'Upload new picture'"> </tcd-custom-button>
+
+    <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
+    <!-- Custom button -->
+    <tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button>
     <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
   </div>
 
