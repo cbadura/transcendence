@@ -1,1 +1,53 @@
-<p>create-profile works!</p>
+<section class="flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto pr-4 pl-4 h-full-header">
+  
+	<!-- Edit picture section -->
+	<div class="flex justify-center items-center w-full space-x-5">
+    <tcd-profile-pic [profilePic]="myUser.avatar"></tcd-profile-pic>
+    <tcd-custom-button [buttonText]="'Upload new picture'"> </tcd-custom-button>
+    <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
+  </div>
+
+  <!-- Edit name section -->
+  <div class="w-full flex flex-col">
+    <label class="font-bold" for="name">Name</label>
+    <input
+      class="p-2 border border-black rounded-full bg-transparent outline-none"
+      name="name"
+      type="text"
+      [(ngModel)]="tempUserName"
+      placeholder="{{ myUser.name }}"
+    />
+  </div>
+
+  <!-- Edit color section -->
+  <div class="w-full flex flex-col">
+    <label class="font-bold" for="color">Color</label>
+    <div class="flex">
+      <div
+        *ngFor="let color of availableColors"
+        [ngStyle]="{ 'background-color': color }"
+        [class.border-4]="color == myUser.color"
+        (click)="editColor(color)"
+        class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Create user, return home -->
+  <div class="w-full flex justify-end">
+    <tcd-custom-button
+      [buttonText]="'Create your user'"
+      [onClick]="createUser.bind(this, tempUserName)"
+      [isBlack]="true"
+    ></tcd-custom-button>
+  </div>
+
+    <!--Test user request-->
+    <div class="w-full flex justify-end">
+      <tcd-custom-button
+        [buttonText]="'Get users'"
+        [onClick]="getUsers.bind(this)"
+        [isBlack]="true"
+      ></tcd-custom-button>
+    </div>
+</section>

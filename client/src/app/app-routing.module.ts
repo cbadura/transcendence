@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'edit-profile', component: EditProfileComponent },
   { path: 'create-profile', component: CreateProfileComponent },
-  {path: '', component: HomeComponent}
+  { path: '', component: HomeComponent}
 ];
 
 @NgModule({
