@@ -5,6 +5,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   ConnectedSocket,
+  OnGatewayInit,
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
 import { Socket } from 'socket.io';
@@ -16,10 +17,11 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
 import { JoinChannelDto } from './dto/join-channel.dto';
 import { MessageDto } from './dto/message.dto';
+import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({ cors: true })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(private readonly chatService: ChatService) {}
 
   handleConnection(client: Socket) {
@@ -31,6 +33,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     this.chatService.handleDisconnect(client);
+  }
+
+  afterInit(server: any) {
+    // setInterval(() => this.chatService.checkChannels(this.chatService.updateBanMutelist), 1000);
+    setInterval(() => {
+      this.chatService.channels.forEach((ch) => this.chatService.updateBanMutelist(ch))
+    }, 1000)
   }
 
   @UsePipes(new ValidationPipe())
@@ -76,5 +85,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() dto: MessageDto,
   ) {
     this.chatService.sendMessage(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_MUTE_FROM_CHANNEL)
+  muteUser(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: BanMuteFromChannelDto,
+  ) {
+    this.chatService.muteUser(socket, dto);
   }
 }

@@ -43,6 +43,10 @@ export class ChatService {
     return this.clients.find((client) => client.socket.id === socket.id);
   }
 
+  private getUserFromId(uid: number): ISocketUser {
+    return this.clients.find((client) => client.user.id === uid);
+  }
+
   private getActiveChannelUsers(channel: IChannel): ISocketUser[] {
     const active: ISocketUser[] = this.clients.filter(
       (client) =>
@@ -51,6 +55,11 @@ export class ChatService {
     );
     return active;
   }
+
+  private getChannelfromName(name: string): IChannel {
+    return this.channels.find((ch) => ch.name === name);
+  }
+
   private isInvited(channel: IChannel, userId: number): boolean {
     return !!channel.invites.find((inv) => inv.user.id === userId);
   }
@@ -114,6 +123,17 @@ export class ChatService {
     this.clients = this.clients.filter(
       (currentClient) => currentClient.socket.id !== client.id,
     );
+  }
+
+  checkChannels(fn: (channel: IChannel) => void) {
+    this.channels.forEach((ch) => fn(ch));
+  }
+
+  updateBanMutelist(channel: IChannel) {
+    const now: number = this.getCurrentUnixTime();
+    console.log(channel.bans);
+    channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
+    channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now)
   }
 
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
@@ -218,7 +238,7 @@ export class ChatService {
     
     //check channle member block list - use relation entity
     if (dto.channel) {
-      const channel: IChannel = this.channels.find((ch) => dto.channel === ch.name); // check if the channel exist
+      const channel: IChannel = this.getChannelfromName(dto.channel); // check if the channel exist
       if (!channel) {
         socket.emit('exception', "Channel/Receiver doesn't exist");
         return ;
@@ -262,7 +282,23 @@ export class ChatService {
     
   }
 
+  // TO DO - check user not online
   muteUser(socket: Socket, dto: BanMuteFromChannelDto) {
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
+    if (!channel) throw new WsException("Channel doesn't exist");
+    const user: ISocketUser = this.getUserFromSocket(socket);
+    const role: EUserRole = this.getUserRole(channel, user);
+    if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
+      throw new WsException("User has no permission");
+    const targetUser: ISocketUser = this.getUserFromId(dto.invitedUserId);
+    const targetRole: EUserRole = this.getUserRole(channel, targetUser);
+    if (targetRole === EUserRole.OWNER || targetRole === EUserRole.ADMIN)
+      throw new WsException("Cannot mute owner or admin");
+    channel.bans.push({
+      user: targetUser,
+      expireTimestamp: dto.expirationTimestamp
+    });
+    targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
     
   }
 
