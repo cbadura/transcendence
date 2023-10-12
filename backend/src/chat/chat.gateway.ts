@@ -6,9 +6,10 @@ import {
   OnGatewayDisconnect,
   ConnectedSocket,
   OnGatewayInit,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { ESocketMessage } from './chat.interfaces';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
@@ -20,9 +21,14 @@ import { MessageDto } from './dto/message.dto';
 import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ 
+  cors: true,
+  namespace: 'chat'
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(private readonly chatService: ChatService) {}
+  @WebSocketServer()
+  server: Namespace;
 
   handleConnection(client: Socket) {
     this.chatService.handleConnection(

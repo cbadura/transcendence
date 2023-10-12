@@ -292,7 +292,7 @@ export class ChatService {
       throw new WsException("User has no permission");
     const targetUser: ISocketUser = this.getUserFromId(dto.invitedUserId);
     const targetRole: EUserRole = this.getUserRole(channel, targetUser);
-    if (targetRole === EUserRole.OWNER || targetRole === EUserRole.ADMIN)
+    if (targetRole === EUserRole.OWNER || (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN))
       throw new WsException("Cannot mute owner or admin");
     channel.bans.push({
       user: targetUser,
