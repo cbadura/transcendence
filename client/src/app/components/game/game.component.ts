@@ -1,12 +1,14 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
+import * as io from 'socket.io-client';
 
 import { UserDataService } from '../../services/user-data.service';
-import { User } from '../../shared/user';
 import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
 import { GameControl } from './GameControl/gamecontrol';
 
+// Interfaces
+import { User } from '../../shared/user';
 import { Game } from './interfaces/Game';
 import { Ball } from './interfaces/Ball';
 import { Match } from 'src/app/shared/match';
@@ -50,11 +52,15 @@ export class GameComponent {
   }
 
   // Initialize canvas and render after view Init
-  ngAfterViewInit(): void {
+	ngAfterViewInit(): void {
+	  
+	// Initialize canvas
     this.ctx = this.canvas.nativeElement.getContext(
       '2d'
-    ) as CanvasRenderingContext2D;
-    this.render = new Render(this.ctx, this.myUser);
+	) as CanvasRenderingContext2D;
+	  
+	//   Initialize Render class - gameConfig should come from server
+    this.render = new Render(this.ctx, this.myUser, gameConfig);
   }
 
   initGameControl(): void {

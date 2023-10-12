@@ -1,4 +1,4 @@
-import { gameConfig } from '../gameConfig';
+import { GameConfig } from '../gameConfig';
 import { Game } from '../interfaces/Game';
 import { User } from 'src/app/shared/user';
 import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/color';
@@ -13,7 +13,7 @@ export class Render {
   private paddle2: Rectangle;
   private puck: Puck;
 
-  constructor(private ctx: CanvasRenderingContext2D, private user: User) {
+  constructor(private ctx: CanvasRenderingContext2D, private user: User, private gameConfig: GameConfig) {
     this.darkerColor = LightenDarkenColor(this.user.color, -10);
     this.saturatedColor = SaturatedColor(this.user.color, 20);
     this.paddle1 = new Rectangle(
@@ -50,7 +50,9 @@ export class Render {
   }
 
   drawCourt(backgroundColor: string, lineColor: string, lineWidth: number) {
-    // Define variables
+    const { gameConfig } = this;
+	  
+	  // Define variables
     const midX = gameConfig.canvas.width / 2 - 2;
     const midY = gameConfig.canvas.height / 2;
 
