@@ -293,6 +293,8 @@ export class ChatService {
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
       throw new WsException("User has no permission");
     const targetUser: ISocketUser = this.getUserFromId(dto.invitedUserId);
+    if (!targetUser)
+      throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
     const targetRole: EUserRole = this.getUserRole(channel, targetUser);
     if (targetRole === EUserRole.OWNER || (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN))
       throw new WsException("Cannot ban/mute owner or admin");
