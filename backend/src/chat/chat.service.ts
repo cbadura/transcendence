@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  EBanMute,
   EChannelMode,
   ESocketMessage,
   EUserRole,
@@ -131,7 +132,8 @@ export class ChatService {
 
   updateBanMutelist(channel: IChannel) {
     const now: number = this.getCurrentUnixTime();
-    console.log(channel.bans);
+    console.log('bans', channel.bans);
+    console.log('mutes', channel.mutes);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
     channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now)
   }
@@ -283,7 +285,7 @@ export class ChatService {
   }
 
   // TO DO - check user not online
-  muteUser(socket: Socket, dto: BanMuteFromChannelDto) {
+  banMuteUser(socket: Socket, dto: BanMuteFromChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     if (!channel) throw new WsException("Channel doesn't exist");
     const user: ISocketUser = this.getUserFromSocket(socket);
@@ -293,13 +295,24 @@ export class ChatService {
     const targetUser: ISocketUser = this.getUserFromId(dto.invitedUserId);
     const targetRole: EUserRole = this.getUserRole(channel, targetUser);
     if (targetRole === EUserRole.OWNER || (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN))
-      throw new WsException("Cannot mute owner or admin");
-    channel.bans.push({
-      user: targetUser,
-      expireTimestamp: dto.expirationTimestamp
-    });
-    targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
+      throw new WsException("Cannot ban/mute owner or admin");
+
+    if (dto.action === EBanMute.BAN) {
+      channel.bans.push({
+        user: targetUser,
+        expireTimestamp: dto.expirationTimestamp
+      });
+      targetUser.socket.emit(ESocketMessage.BANNED_FROM_CHANNEL, dto);
+      channel.users = channel.users.filter((user) => user.user.id !== targetUser.user.id);
+    }
     
+    if (dto.action === EBanMute.MUTE) {
+      channel.mutes.push({
+        user: targetUser,
+        expireTimestamp: dto.expirationTimestamp
+      });
+      targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
+    }
   }
 
   deleteChannel(socket: Socket, dto: DeleteChannelDto) {

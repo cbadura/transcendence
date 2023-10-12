@@ -99,6 +99,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: BanMuteFromChannelDto,
   ) {
-    this.chatService.muteUser(socket, dto);
+    this.chatService.banMuteUser(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_BAN_FROM_CHANNEL)
+  banUser(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: BanMuteFromChannelDto,
+  ) {
+    this.chatService.banMuteUser(socket, dto);
   }
 }

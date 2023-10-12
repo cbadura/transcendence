@@ -1,5 +1,6 @@
+import { EBanMute } from '../chat.interfaces';
 import { InviteToChannelDto } from './invite-to-channel.dto';
-import { IsNumber } from 'class-validator';
+import { IsEnum, IsNumber } from 'class-validator';
 
 /**
  * Dto for banning/muting a user from a channel.
@@ -11,4 +12,7 @@ import { IsNumber } from 'class-validator';
 export class BanMuteFromChannelDto extends InviteToChannelDto {
   @IsNumber()
   expirationTimestamp: number;
+
+  @IsEnum(EBanMute)
+  action: EBanMute;
 }
