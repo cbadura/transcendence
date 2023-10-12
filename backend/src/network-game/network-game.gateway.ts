@@ -1,12 +1,12 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage } from '@nestjs/websockets';
 import { NetworkGameService } from './network-game.service';
-import { Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 
-@WebSocketGateway()
 @WebSocketGateway({ cors: true , namespace: 'game' })
 export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly networkGameService: NetworkGameService) {}
-
+  @WebSocketServer()
+  server: Namespace;
 
   handleConnection(client: Socket) {
     console.log('Client connected');
