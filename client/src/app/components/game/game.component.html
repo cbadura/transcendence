@@ -1,11 +1,11 @@
 <div class="flex justify-center items-center h-full-header  ml-4 mr-4">
 
-	<div [class.hidden]="gameOver">
+	<div [class.hidden]="isGameOver()">
 		<canvas class="rounded-2xl w-full max-w-4xl" #canvas width="1280" height="720"></canvas>
 		<tcd-custom-button buttonText="Click to Play" (click)="startGame()"></tcd-custom-button>
 	</div>
 
-	<div *ngIf="gameOver" class="flex flex-col gap-16 items-center w-full">
+	<div *ngIf="isGameOver()" class="flex flex-col gap-16 items-center w-full">
 		<div class="font-bold font-Sniglet text-4xl">
 			<h1 [class.hidden]="match.myScore <= match.opponentScore">YOU WON!</h1>
 			<h1 [class.hidden]="match.myScore > match.opponentScore">YOU LOST!</h1>
