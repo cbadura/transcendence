@@ -43,7 +43,7 @@ export class CreateProfileComponent implements OnInit {
           }
           );
 
-        this.userDataService.getPics().subscribe(
+        this.userDataService.getProfilePics().subscribe(
           data => {
               this.imageData = data;
           },
@@ -57,7 +57,8 @@ export class CreateProfileComponent implements OnInit {
   
     createUser(name: string) {
       if (name && name.trim() !== '') {
-        this.userDataService.createUser(name, this.myUser.color).subscribe(data => {
+        this.userDataService.createUser(name, this.myUser.color).subscribe(user => {
+          console.log('User created with ID:', user.id);
           this.router.navigate(['/']);
         }, error => {
             window.alert('Error editing user: ' + JSON.stringify(error));
@@ -66,12 +67,12 @@ export class CreateProfileComponent implements OnInit {
     }
 
     editAvatar(filePath: string, url: string, event: Event) {
-      this.userDataService.setAvatar(filePath, url);
+      this.userDataService.setAvatar(filePath);
       event.stopPropagation();
     }
 
 
-    onFileSelected(event: any) {
+    /* onFileSelected(event: any) {
       const file: File = event.target.files[0];
       if (file) {
         this.userDataService.uploadProfilePic(file).subscribe(
@@ -83,7 +84,7 @@ export class CreateProfileComponent implements OnInit {
             }
         );
       }
-    }
+    } */
 
     editName(name: string) {
       if (name && name.trim() !== '') {

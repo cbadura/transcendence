@@ -10,7 +10,7 @@ import { map, forkJoin } from 'rxjs';
 })
 export class UserDataService {
   private myUser = {
-      id: 1, // HOW IS ID DEFINED BY SERVER??
+      id: 1,
       name: '',
       status: 'online', // WILL NEED TO COME FROM SERVER
       level: 0,
@@ -51,11 +51,7 @@ export class UserDataService {
     return new Observable(observer => {
       this.http.post(this.serverAddress + '/users/', newUser).subscribe(data => {
         // Update internal user data after successful server operation
-        this.myUser = {
-          ...this.myUser,
-          name: name,
-          color: color
-        };
+        this.myUser = { ...this.myUser, ...data };
         this.userSubject.next(this.myUser);  // Update the BehaviorSubject with the new user data
 
         window.alert(JSON.stringify(data));
@@ -68,7 +64,7 @@ export class UserDataService {
     });
   }
 
-  getPics(): Observable<{ blobUrl: string, filePath: string }[]> {
+  getProfilePics(): Observable<{ blobUrl: string, filePath: string }[]> {
     const picNames = ['default_00.jpg', 'default_01.jpg', 'default_02.jpg', 'default_03.jpg', 'default_04.jpg'];
     const requests = picNames.map(picName => 
       this.http.get(`${this.serverAddress}/users/profilepic/${picName}`, { responseType: 'blob' })
@@ -76,21 +72,22 @@ export class UserDataService {
     );
     return forkJoin(requests);
   }
+  
+  getUserPic(): Observable<string> {
+    return this.http.get(`${this.serverAddress}/users/profilepic/${this.myUser.avatar}`, { responseType: 'blob' })
+        .pipe(map(blob => URL.createObjectURL(blob)));
+  }
 
   uploadProfilePic(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file, file.name);
-    return this.http.post(`${this.serverAddress}/users/38/profilepic`, formData);
+    console.log('uploaded');
+    return this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData);
   }
 
-  getPic(): Observable<{ blobUrl: string, filePath: string }> {
-    return this.http.get(`${this.serverAddress}/users/profilepic/${this.myUser.avatar}`, { responseType: 'blob' })
-        .pipe(map(blob => ({ blobUrl: URL.createObjectURL(blob), filePath: this.myUser.avatar })));
-  }
 
-  setAvatar(filePath: string, url: string) {
-    this.myUser.avatarLocalUrl = url;
-    this.myUser.avatar = '/users/profilepic/' + filePath;
+  setAvatar(filePath: string) {
+    this.myUser.avatar = filePath;
     // this.userSubject.next(this.myUser);
   }
 

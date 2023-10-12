@@ -20,7 +20,11 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private userDataService: UserDataService) {
-  }
+
+    const currentUser = this.userDataService.getUser();
+    console.log('Current User ID:', currentUser.id);
+    }
+  
 
   ngOnInit() {
     this.userSubscription = this.userDataService.user$.subscribe(
@@ -29,11 +33,10 @@ export class ProfileComponent implements OnInit {
       }
     );
 
-    this.userDataService.getPic().subscribe(data => {
-      this.myUser.avatarLocalUrl = data.blobUrl;
-    }, error => {
-      console.error('Error fetching pic:', error);
-    });
+    this.userDataService.getUserPic().subscribe(
+        blobUrl => this.myUser.avatar = blobUrl,
+        error => console.error('Error fetching pic:', error)
+    );
 
     this.achievements = [
       { name: 'Paddle Master', url: 'https://picsum.photos/100' },

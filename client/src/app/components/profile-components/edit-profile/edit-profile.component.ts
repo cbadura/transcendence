@@ -41,14 +41,30 @@ export class EditProfileComponent implements OnInit {
       }
     );
 
-    // this.userDataService.getPic().subscribe(
-    //   url => this.imageURL = url,
-    //   error => console.error('Error fetching pic:', error)
-    // ); 
+    this.userDataService.getUserPic().subscribe(
+      blobUrl => this.myUser.avatar = blobUrl,
+      error => console.error('Error fetching pic:', error)
+    );
   }
 
   getUsers() {
     this.userDataService.getUsers();
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+        this.userDataService.uploadProfilePic(file).subscribe(
+            response => {
+                console.log('File uploaded successfully:', response);
+                // Assuming the server returns the file path in a field named 'filePath'
+                this.userDataService.setAvatar(response.filePath);
+            },
+            error => {
+                console.error('Error uploading file:', error);
+            }
+        );
+    }
   }
 
 
