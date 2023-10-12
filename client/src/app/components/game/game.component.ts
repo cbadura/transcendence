@@ -81,15 +81,15 @@ export class GameComponent {
   startGame(): void {
     this.gameLoop();
   }
-	
-	fillMatchData(game: Game): void {
-		this.match = {
-			opponent: this.myUser, //change to real opponent
-			myScore: game.score1,
-			opponentScore: game.score2,
-			dateTime: new Date().toISOString(),
-		};
-	}
+
+  fillMatchData(game: Game): void {
+    this.match = {
+      opponent: this.myUser, //change to real opponent
+      myScore: game.score1,
+      opponentScore: game.score2,
+      dateTime: new Date().toISOString(),
+    };
+  }
 
   gameLoop(): void {
     const gameLoopFn = () => {
@@ -102,11 +102,11 @@ export class GameComponent {
       // Emit paddle step at each keypress (+ or -)
       this.movePaddle();
 
-		if (this.isGameOver()) {
-			this.fillMatchData(this.gameControl.getGame());
-			return;
-	}
-	requestAnimationFrame(gameLoopFn);
+      if (this.isGameOver()) {
+        this.fillMatchData(this.gameControl.getGame());
+        return;
+      }
+      requestAnimationFrame(gameLoopFn);
     };
 
     requestAnimationFrame(gameLoopFn);
