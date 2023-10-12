@@ -1,4 +1,4 @@
-import { gameConfig } from "./gameConfig";
+import { gameConfig } from "../gameConfig";
 export class Rectangle {
   private width : number;
   private height : number;

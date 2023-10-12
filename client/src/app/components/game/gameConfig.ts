@@ -14,8 +14,10 @@ export interface GameConfig {
     radius: number;
     maxBounceAngle: number;
     color: string;
+    speed: number;
   };
-  lineOffset: number;
+	lineOffset: number;
+	maxScore: number;
 }
 
 export const gameConfig: GameConfig = {
@@ -34,6 +36,8 @@ export const gameConfig: GameConfig = {
     radius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
     color: 'black',
+    speed: 5,
   },
-  lineOffset: 30,
+	lineOffset: 30,
+	maxScore: 5,  	
 };

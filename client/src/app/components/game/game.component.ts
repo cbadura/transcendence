@@ -4,10 +4,12 @@ import { Subscription } from 'rxjs';
 import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/user';
 import { gameConfig } from './gameConfig';
-import { Render } from './Render'
+import { Render } from './Render/Render';
+import { GameControl } from './GameControl/gamecontrol';
 
-import { Game } from './interfaces/Game'
-import { Ball } from './interfaces/Ball'
+import { Game } from './interfaces/Game';
+import { Ball } from './interfaces/Ball';
+import { Match } from 'src/app/shared/match';
 
 @Component({
   selector: 'tcd-game',
@@ -18,36 +20,33 @@ export class GameComponent {
   canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
-  private myUser!: User;
+  public myUser!: User;
+  public match!: Match;
 
   // Render class
   private render!: Render;
-  // Game object
-  public game! : Game;
+  // GameControl class
+  private gameControl!: GameControl;
 
   // Paddle movement
   private movingUp: boolean = false;
   private movingDown: boolean = false;
-  
+
   // To delete after moving to backend:
   private movingUpOpp: boolean = false;
   private movingDownOpp: boolean = false;
 
-  // private ball!: Ball;
-  // public match!: Match;
-
   constructor(private userDataService: UserDataService) {}
 
   ngOnInit() {
-      // Server side
-      this.initGameObj(this.game);
-      // GET game object
+    // Server side
+    this.initGameControl();
+    // GET game object
 
     // Get user data
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
     });
-    // Initialize dummy match object
   }
 
   // Initialize canvas and render after view Init
@@ -57,16 +56,17 @@ export class GameComponent {
     ) as CanvasRenderingContext2D;
     this.render = new Render(this.ctx, this.myUser);
   }
-  
-  initGameObj(game: Game): void {
+
+  initGameControl(): void {
     // Backend
     // Initialize Game object
     // Default configs (could be hard-coded?)
-    const ball: Ball = {
+    let ball: Ball = {
       x: gameConfig.canvas.width / 2,
       y: gameConfig.canvas.height / 2,
+      hits: 0,
     };
-    this.game = {
+    let game: Game = {
       gameOver: false,
       score2: 0,
       score1: 0,
@@ -74,68 +74,62 @@ export class GameComponent {
       paddle2: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
       ball: ball,
     };
+    // Initialize GameControl class
+    this.gameControl = new GameControl(game);
   }
 
-  startGame() : void {
+  startGame(): void {
     this.gameLoop();
   }
+	
+	fillMatchData(game: Game): void {
+		this.match = {
+			opponent: this.myUser, //change to real opponent
+			myScore: game.score1,
+			opponentScore: game.score2,
+			dateTime: new Date().toISOString(),
+		};
+	}
 
   gameLoop(): void {
     const gameLoopFn = () => {
+      // Backend
+      this.gameControl.routine();
+
       // Frontend:
       // get latest game object
-      this.render.redraw(this.game);
+      this.render.redraw(this.gameControl.getGame());
       // Emit paddle step at each keypress (+ or -)
-      this.movePaddle()
-      
-      // Backend
-      // this.updateGame()
+      this.movePaddle();
 
-      if (!this.game.gameOver) {
-        requestAnimationFrame(gameLoopFn);
-      }
+		if (this.isGameOver()) {
+			this.fillMatchData(this.gameControl.getGame());
+			return;
+	}
+	requestAnimationFrame(gameLoopFn);
     };
 
     requestAnimationFrame(gameLoopFn);
   }
 
-  updateGame(id : number, step : number)
-  {
-    const maxTop = 10;
-    const maxBottom = gameConfig.canvas.height - gameConfig.paddle.length - maxTop;
-    if (id === 1)
-    {
-      const newPaddlePos = this.game.paddle1 + step;
-      if (newPaddlePos > maxTop && newPaddlePos < maxBottom)
-        this.game.paddle1 = newPaddlePos;
-    }
-    if (id === 2) //check for limit
-    {
-      const newPaddlePos = this.game.paddle2 + step;
-      if (newPaddlePos > maxTop && newPaddlePos < maxBottom)
-        this.game.paddle2 = newPaddlePos;
-    }
-  }
-
   movePaddle() {
     // Will emit events to backend
     if (this.movingUp) {
-      this.updateGame(1, -gameConfig.paddle.step);
+      this.gameControl.movePaddle(1, -gameConfig.paddle.step);
     }
     if (this.movingDown) {
-      this.updateGame(1, gameConfig.paddle.step);
+      this.gameControl.movePaddle(1, gameConfig.paddle.step);
     }
 
     // To delete after moving to backend
     if (this.movingUpOpp) {
-      this.updateGame(2, -gameConfig.paddle.step);
+      this.gameControl.movePaddle(2, -gameConfig.paddle.step);
     }
     if (this.movingDownOpp) {
-      this.updateGame(2, gameConfig.paddle.step);
+      this.gameControl.movePaddle(2, gameConfig.paddle.step);
     }
   }
 
- 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'w') {
@@ -168,35 +162,11 @@ export class GameComponent {
     }
   }
 
+  isGameOver(): boolean {
+    return this.gameControl.getGame().gameOver;
+  }
+
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
   }
 }
-
-
-  // gameLoop(): void {
-  //   const gameLoopFn = () => {
-  //     this.redraw();
-  //     this.movePaddle();
-
-  //     // Check for score
-  //     const score = this.ball.move(this.paddle.y, this.oppPaddle.y);
-  //     if (score === 1) {
-  //       this.userScore++;
-  //       this.ball.resetBall();
-  //     } else if (score === 2) {
-  //       this.oppScore++;
-  //       this.ball.resetBall();
-  //     }
-
-  //     // Check for win
-  //     if (this.userScore >= 5 || this.oppScore >= 5) {
-  //       this.gameOverRoutine();
-  //       return;
-  //     } else if (!this.ball.stop) {
-  //       requestAnimationFrame(gameLoopFn);
-  //     }
-  //   };
-
-  //   requestAnimationFrame(gameLoopFn);
-  // }
