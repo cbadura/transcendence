@@ -41,12 +41,9 @@ export class ChatService {
   }
 
   private getUserSocketsByID(id: number): Socket[] {
-    const filter: ISocketUser[] = this.clients.filter(
-      (client) => client.user.id === id,
-    );
-    let userSockets: Socket[];
-    filter.forEach((user) => userSockets.push(user.socket));
-    return userSockets;
+    return this.clients
+      .filter((client) => client.user.id === id)
+      .map((user) => user.socket);
   }
 
   private getActiveChannelUsers(channel: IChannel): ISocketUser[] {
