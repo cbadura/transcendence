@@ -6,12 +6,14 @@ import { GameControl } from './gameControl';
 
 import { gameConfig } from './gameConfig';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';
+import { GameRoom } from './interfaces/GameRoom';
 
 @Injectable()
 export class NetworkGameService {
     constructor(readonly userService: UserService) {}
-    private clients: ISocketUser[] = [];
-    private myGameControl: GameControl;
+    private defaultPongQueue: ISocketUser[] = [];
+    private gameRooms: GameRoom[] = [];
+    // private myGameControl: GameControl;
 
 
     async handleConnection(socket: Socket, userId: number) {
@@ -31,42 +33,25 @@ export class NetworkGameService {
           socket.disconnect(true);
           return;
         }
-        this.clients.push(client);
-        // send channel list on connection
-        console.log('wow')
-        // client.socket.emit(
-        //   ESocketMessage.LIST_CHANNELS,
-        //   this.createChannelList(client),
-        // );
+        this.defaultPongQueue.push(client);
+
         this.printConnectedSockets();
 
-        if(this.clients.length == 2){
-          this.initGame();
-          this.StartGameLoop();
-          //send evaluation here
-          for (let i = 0; i < this.clients.length; i++) {
-            this.clients[i].socket.emit(ESocketGameMessage.GAME_ENDED, this.myGameControl.getGame());
-          }
-
+        if(this.defaultPongQueue.length >= 2){
+          const newRoom = new GameRoom();
+          newRoom.clients.push(this.defaultPongQueue[0])
+          newRoom.clients.push(this.defaultPongQueue[1])
+          newRoom.game = new GameControl(this.createDefaultPongGame());
+          this.gameRooms.push(newRoom);
+          newRoom.StartGame();
+          
+          //remove the 2 users from the queue
+          this.defaultPongQueue.splice(0,2);
         }
       }
 
-      private printConnectedSockets(){
-        console.log('Connected Clients:')
-        for (let i = 0; i < this.clients.length; i++) {
-          console.log('element [',i,'] = ',this.clients[i].user.id);
-      }
-      }
-
-      handleDisconnect(client: Socket) {
-        this.clients = this.clients.filter(
-          (currentClient) => currentClient.socket.id !== client.id,
-        );
-      }
-
-
-      private initGame(){
-        let game = {
+      createDefaultPongGame() {
+        return   ({
           gameOver: false,
           score2: 0,
           score1: 0,
@@ -77,29 +62,34 @@ export class NetworkGameService {
             y: gameConfig.canvas.height / 2,
             hits: 0,
           },
-        };
-        this.myGameControl = new GameControl(game);
+        })
+      }
+
+      private printConnectedSockets(){
+        console.log('Connected Clients:')
+        for (let i = 0; i < this.defaultPongQueue.length; i++) {
+          console.log('element [',i,'] = ',this.defaultPongQueue[i].user.id);
+      }
+      }
+
+      //probably should also check if a user disconnects while in match.
+      handleDisconnect(client: Socket) {
+        this.defaultPongQueue = this.defaultPongQueue.filter(
+          (currentClient) => currentClient.socket.id !== client.id,
+        );
       }
 
 
-      private StartGameLoop() {
-        const tickRate = 1000 / 30;
-        setInterval(()=>{
-
-          if(!this.myGameControl.getGame().gameOver)
-            this.updateGameState();
-        },tickRate)
-      }
-
-      private updateGameState(){
-        this.myGameControl.routine();
-        console.log(this.myGameControl.getGame());
-        for (let i = 0; i < this.clients.length; i++) {
-          this.clients[i].socket.emit(ESocketGameMessage.UPDATE_GAME_INFO, this.myGameControl.getGame());
-        }
-      }
       movePaddle(data: [number,number]) {
 
-        this.myGameControl.movePaddle(data[0],data[1]);
+        for (let i = 0; i < this.gameRooms.length; i++) {
+          for (let j = 0; j < this.gameRooms[i].clients.length; j++) {
+                if(this.gameRooms[i].clients[j].user.id == data[0]){
+                    this.gameRooms[i].updatePlayerPosition(data);
+                }            
+          }
+        }
+
+        // this.myGameControl.movePaddle(data[0],data[1]);
       }
 }
