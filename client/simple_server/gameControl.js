@@ -27,8 +27,6 @@ const gameBall = require('./gameBall');
 
   // In the backend to be called on each frame
 	 routine() {
-		 console.log("routine")
-		 console.log(this.game)
 	  this.gameBall.move(this.game);
 	  if (this.checkGameOver()) {
 		 this.game.gameOver = true;

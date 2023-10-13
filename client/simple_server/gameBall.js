@@ -51,11 +51,11 @@ const gameConfig = require('./gameConfig');
   }
 
   adjustSpeed() {
-    if (this.speed > 0) {
-      this.speed += 0.2;
-    } else {
-      this.speed -= 0.2;
-    }
+    // if (this.speed > 0) {
+    //   this.speed += 0.2;
+    // } else {
+    //   this.speed -= 0.2;
+    // }
   }
 
   checkScore(game) {
@@ -72,8 +72,6 @@ const gameConfig = require('./gameConfig');
 
   move(game) {
 	  const { resetPosition, canvasWidth } = this;
-	  console.log("BALL")
-	  console.log(game)
     // Move ball
     game.ball.x += this.dirX * this.speed;
     game.ball.y += this.dirY * this.speed;
@@ -98,7 +96,7 @@ const gameConfig = require('./gameConfig');
       game.ball.x = canvasWidth - resetPosition;
       game.ball.hits++;
     }
-
+    this.speed = 5;
     this.checkScore(game);
   }
 

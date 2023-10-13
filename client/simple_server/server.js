@@ -29,8 +29,8 @@ let game = {
 	},
 };
 
-console.log("game");
-console.log(game);
+// console.log("game");
+// console.log(game);
 let myGameControl = new gameControl(game);
 
 // WebSocket connection for chat
@@ -41,10 +41,10 @@ io.on("connection", (socket) => {
   const emitGame = () => {
     myGameControl.routine();
     io.emit("game", myGameControl.getGame());
-    console.log("game emitted");
+   // console.log("game emitted");
 
     // Schedule the next emit after 5 seconds
-    setTimeout(emitGame, 5000);
+    setTimeout(emitGame, 100);
   };
 
   // Initial call to start the periodic emitting
@@ -52,7 +52,8 @@ io.on("connection", (socket) => {
 
   // Add a listener for the 'paddle' event
   socket.on("paddle", (id, step) => {
-    console.log(`Received 'paddle' event with id: ${id}, step: ${step}`);
+    // wconsole.log(`Received 'paddle' event with id: ${id}, step: ${step}`);
+    myGameControl.movePaddle(id, step);
   });
 
   socket.on("disconnect", () => {
