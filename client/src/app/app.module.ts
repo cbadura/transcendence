@@ -35,6 +35,7 @@ import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component'
 import { HomeComponent } from './components/home/home.component';
 import { ChatSocketModule } from './chat-socket/chat-socket.module';
 import { GameSocketModule } from './game-socket/game-socket.module';
+import { ChannelsComponent } from './components/channels/channels.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game', options: {} };
@@ -63,7 +64,8 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChatHeaderComponent,
     ChatInputComponent,
     ChatBtnComponent,
-    HomeComponent
+    HomeComponent,
+    ChannelsComponent
   ],
   imports: [
     HttpClientModule,
