@@ -248,7 +248,8 @@ export class ChatService {
       );
     if (
       channel.mode === EChannelMode.PROTECTED &&
-      channel.password !== dto.password
+      channel.password !== dto.password &&
+      !userInvited
     )
       throw new WsException('Permission denied: Password incorrect');
 
