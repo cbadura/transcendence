@@ -17,7 +17,7 @@ export class UserDataService {
       matches: 0,
       wins: 0,
       color: '#E7C9FF',
-      avatar: '',
+      avatar: 'a',
       avatarLocalUrl: '',
       friends: []
     };
@@ -84,7 +84,6 @@ export class UserDataService {
     console.log('uploaded');
     return this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData);
   }
-
 
   setAvatar(filePath: string) {
     this.myUser.avatar = filePath;
