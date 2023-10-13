@@ -18,6 +18,7 @@ import { Match } from './entities/match.entity';
 import { MatchUser } from './entities/match-user.entity';
 import { RelationshipModule } from './relationship/relationship.module';
 import { Relationship } from './entities/relationship.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -43,6 +44,7 @@ import { Relationship } from './entities/relationship.entity';
     MatchModule,
     MatchUserModule,
     RelationshipModule,
+    AuthModule,
   ], 
   controllers: [AppController],
   providers: [AppService],
