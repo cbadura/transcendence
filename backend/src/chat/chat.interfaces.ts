@@ -50,7 +50,7 @@ export interface IBanMute {
   userId: number;
   expireTimestamp: number;
 }
-//TODO later replace user in ISocketUser into id only
+
 export interface ISocketUser {
   userId: number;
   socket: Socket;

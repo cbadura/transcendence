@@ -102,6 +102,16 @@ export class ChatService {
     return Math.floor(new Date().getTime() / 1000);
   }
 
+  private broadcastToAllUserSockets(
+    uid: number,
+    socketMssage: string,
+    data: any,
+  ) {
+    this.getUserSocketsByID(uid).forEach((socket) => {
+      socket.emit(socketMssage, data);
+    });
+  }
+
   // TODO change later userId into token and extract userId from token
   async handleConnection(socket: Socket, userId: number) {
     if (isNaN(userId)) {
@@ -176,9 +186,10 @@ export class ChatService {
     channelData.mode = channel.mode;
 
     if (EChannelMode.PRIVATE === channel.mode) {
-      const ownerSockets: Socket[] = this.getUserSocketsByID(channel.ownerId);
-      ownerSockets.forEach((socket) =>
-        socket.emit(ESocketMessage.CREATED_CHANNEL, channelData),
+      this.broadcastToAllUserSockets(
+        channel.ownerId,
+        ESocketMessage.CREATED_CHANNEL,
+        channelData,
       );
     } else
       this.clients.forEach((client) =>
@@ -239,26 +250,38 @@ export class ChatService {
   }
 
   async sendMessage(socket: Socket, dto: MessageDto) {
+    const sender: number = this.getUserIdFromSocket(socket);
     if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId)) {
-      socket.emit('exception', 'Invalid message target');
+      this.broadcastToAllUserSockets(
+        sender,
+        'exception',
+        'Invalid message target',
+      );
       return;
     }
-    const sender: number = this.getUserIdFromSocket(socket);
 
-    const messageTochannel: MessageDto = { ...dto };
-    messageTochannel.senderId = sender;
-    messageTochannel.timestamp = this.getCurrentUnixTime();
+    const messageToChannel: MessageDto = { ...dto };
+    messageToChannel.senderId = sender;
+    messageToChannel.timestamp = this.getCurrentUnixTime();
 
     //check channle member block list - use relation entity
     if (dto.channel) {
       const channel: IChannel = this.getChannelfromName(dto.channel); // check if the channel exist
       if (!channel) {
-        socket.emit('exception', "Channel/Receiver doesn't exist");
+        this.broadcastToAllUserSockets(
+          sender,
+          'exception',
+          "Channel/Receiver doesn't exist",
+        );
         return;
       }
       const members: ISocketUser[] = this.getActiveChannelUsers(channel);
       if (!channel.users.find((member) => member === sender)) {
-        socket.emit('exception', 'User not in the channel');
+        this.broadcastToAllUserSockets(
+          sender,
+          'exception',
+          'User not in the channel',
+        );
         return;
       }
       // if (!members.find((member) => member.user.id === sender.user.id))
@@ -272,34 +295,37 @@ export class ChatService {
         (mute) => sender === mute.userId,
       );
       if (banned || muted) {
-        socket.emit(
+        this.broadcastToAllUserSockets(
+          sender,
           'exception',
           'User not allowed to send message to this channel',
         );
         return;
       }
 
-      members.forEach(async (member) => {
-        const blocklist: Relationship[] =
-          await this.userService.getUserRelationships(member.userId, 'blocked');
-        if (!blocklist.find((user) => user.relational_user_id === sender))
-          member.socket.emit(ESocketMessage.MESSAGE, messageTochannel);
+      members.forEach((member) => {
+        const blocklist: Promise<Relationship[]> =
+          this.userService.getUserRelationships(member.userId, 'blocked');
+        blocklist.then((list) => {
+          if (!list.find((user) => user.relational_user_id === sender))
+            member.socket.emit(ESocketMessage.MESSAGE, messageToChannel);
+        });
       });
     }
-    // TODO use getUserSocketsByID() to get all sockets, which belong to receiver
+
     if (dto.receiverId) {
       const receiver: ISocketUser[] = this.clients.filter(
         (user) => user.userId === dto.receiverId,
       ); // array of receiver in case they have multiple tab
       if (!receiver) {
-        socket.emit('exception', 'User not online');
+        this.broadcastToAllUserSockets(sender, 'exception', 'User not online');
         return;
       }
       const blocklist: Relationship[] =
         await this.userService.getUserRelationships(dto.receiverId, 'blocked');
       if (!blocklist.find((user) => user.relational_user_id === sender))
         receiver.forEach((ruser) => {
-          ruser.socket.emit(ESocketMessage.MESSAGE, messageTochannel);
+          ruser.socket.emit(ESocketMessage.MESSAGE, messageToChannel);
         });
     }
   }
@@ -326,8 +352,13 @@ export class ChatService {
         userId: targetUser.userId,
         expireTimestamp: dto.expirationTimestamp,
       });
-      // TODO use getUserSocketsByID() to get all sockets, which belong to target user
-      targetUser.socket.emit(ESocketMessage.BANNED_FROM_CHANNEL, dto);
+
+      this.broadcastToAllUserSockets(
+        targetUser.userId,
+        ESocketMessage.BANNED_FROM_CHANNEL,
+        dto,
+      );
+      // targetUser.socket.emit(ESocketMessage.BANNED_FROM_CHANNEL, dto);
       channel.users = channel.users.filter(
         (user) => user !== targetUser.userId,
       );
@@ -337,8 +368,13 @@ export class ChatService {
         userId: targetUser.userId,
         expireTimestamp: dto.expirationTimestamp,
       });
-      // TODO use getUserSocketsByID() to get all sockets, which belong to target user
-      targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
+
+      this.broadcastToAllUserSockets(
+        targetUser.userId,
+        ESocketMessage.MUTED_FROM_CHANNEL,
+        dto,
+      );
+      // targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
     }
   }
 
@@ -359,13 +395,18 @@ export class ChatService {
     )
       throw new WsException('Cannot kick owner or admin');
 
-    // TODO use getUserSocketsByID() to get all sockets, which belong to target user
-    targetUser.socket.emit(ESocketMessage.KICKED_FROM_CHANNEL, dto);
-    channel.users.filter((user) => user !== targetUser.userId);
+    this.broadcastToAllUserSockets(
+      targetUser.userId,
+      ESocketMessage.KICKED_FROM_CHANNEL,
+      dto,
+    );
+    //targetUser.socket.emit(ESocketMessage.KICKED_FROM_CHANNEL, dto);
+    channel.users = channel.users.filter((user) => user !== targetUser.userId);
   }
 
   // invite only, think about accept invite/join/update channel list
   // good morning check again tmr
+  // Good morning, Cosmo :)
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     if (!channel) throw new WsException("Channel doesn't exist");
@@ -381,8 +422,12 @@ export class ChatService {
     if (channel.invites.find((user) => user === targetUser.userId))
       throw new WsException('Target user already on invite list');
 
-    // TODO use getUserSocketsByID() to get all sockets, which belong to target user
-    targetUser.socket.emit(ESocketMessage.INVITED_TO_CHANNEL, dto);
+    this.broadcastToAllUserSockets(
+      targetUser.userId,
+      ESocketMessage.INVITED_TO_CHANNEL,
+      dto,
+    );
+    //targetUser.socket.emit(ESocketMessage.INVITED_TO_CHANNEL, dto);
     channel.invites.push(targetUser.userId);
   }
 
