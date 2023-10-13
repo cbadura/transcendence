@@ -28,10 +28,10 @@ export class ChatService {
   constructor(readonly userService: UserService) {}
 
   private getUserRole(channel: IChannel, user: ISocketUser): EUserRole {
-    if (user.user.id === channel.owner.user.id) return EUserRole.OWNER;
-    if (channel.admins.find((us) => us.user.id === user.user.id))
+    if (user.user.id === channel.owner) return EUserRole.OWNER;
+    if (channel.admins.find((admin) => admin === user.user.id))
       return EUserRole.ADMIN;
-    if (channel.users.find((us) => us.user.id === user.user.id))
+    if (channel.users.find((userid) => userid === user.user.id))
       return EUserRole.USER;
     return EUserRole.NONE;
   }
@@ -43,13 +43,12 @@ export class ChatService {
   private getActiveChannelUsers(channel: IChannel): ISocketUser[] {
     const active: ISocketUser[] = this.clients.filter(
       (client) =>
-        client.user.id ===
-        channel.users.find((u) => u.user.id === client.user.id).user.id,
+        client.user.id === channel.users.find((u) => u === client.user.id),
     );
     return active;
   }
   private isInvited(channel: IChannel, userId: number): boolean {
-    return !!channel.invites.find((inv) => inv.user.id === userId);
+    return !!channel.invites.find((invited) => invited === userId);
   }
 
   private createChannelList(user: ISocketUser): ListChannelsDto {
@@ -69,8 +68,8 @@ export class ChatService {
         channel.role = this.getUserRole(ch, user);
         channel.users = ch.users.map((user): ChannelUserDto => {
           const dto: ChannelUserDto = new ChannelUserDto();
-          dto.id = user.user.id;
-          dto.name = user.user.name;
+          dto.id = user;
+          // TODO add banned/muted and timers
           return dto;
         });
         return channel;
@@ -89,7 +88,6 @@ export class ChatService {
       socket,
       user: await this.userService.getUser(userId),
     };
-    //console.log(JSON.stringify(client.user));
     if (client.user == undefined) {
       socket.emit('exception', "User doesn't exist");
       socket.disconnect(true);
@@ -112,7 +110,7 @@ export class ChatService {
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
     const channel: IChannel = {
       name: channelDto.name,
-      owner: this.getUserFromSocket(socket),
+      owner: this.getUserFromSocket(socket).user.id,
       mode: channelDto.mode,
       password: undefined,
       admins: [],
@@ -135,9 +133,10 @@ export class ChatService {
 
     // notifying user[s] about new channel creation
     const channelData: CreateChannelDto = new CreateChannelDto();
-    channelData.ownerId = channel.owner.user.id;
+    channelData.ownerId = channel.owner;
     channelData.name = channel.name;
     channelData.mode = channel.mode;
+    // TODO get all user sockets
     if (EChannelMode.PRIVATE === channel.mode)
       channel.owner.socket.emit(ESocketMessage.CREATED_CHANNEL, channelData);
     else
@@ -152,7 +151,7 @@ export class ChatService {
       (ch) => dto.currName === ch.name,
     );
     if (!channel) throw new WsException("Channel doesn't exist");
-    if (channel.owner.user.id !== this.getUserFromSocket(socket).user.id)
+    if (channel.owner !== this.getUserFromSocket(socket).user.id)
       throw new WsException('You are not allowed to update this channel');
     if (this.channels.find((ch) => dto.name === ch.name))
       throw new WsException('Channel with this name already exists');
@@ -163,7 +162,7 @@ export class ChatService {
     this.channels.push(updChannel);
 
     const channelData: CreateChannelDto = new CreateChannelDto();
-    channelData.ownerId = channel.owner.user.id;
+    channelData.ownerId = channel.owner;
     channelData.name = updChannel.name;
     channelData.mode = updChannel.mode;
 
@@ -173,7 +172,7 @@ export class ChatService {
     };
     this.clients.forEach((client) => {
       const userInChannel: boolean = !!channel.users.find(
-        (user) => user.user.id === client.user.id,
+        (user) => user === client.user.id,
       );
       if (
         channel.mode === EChannelMode.PRIVATE &&
@@ -203,14 +202,14 @@ export class ChatService {
       (ch) => dto.channelName === ch.name,
     );
     if (!channel) throw new WsException("Channel doesn't exist");
-    if (channel.owner.user.id !== this.getUserFromSocket(socket).user.id)
+    if (channel.owner !== this.getUserFromSocket(socket).user.id)
       throw new WsException('Permission denied: You are not a channel owner');
     this.channels = this.channels.filter((ch) => ch.name !== dto.channelName);
 
     //notify all clients about client removal
     this.clients.forEach((client) => {
       const userInChannel: boolean = !!channel.users.find(
-        (user) => user.user.id === client.user.id,
+        (user) => user === client.user.id,
       );
       if (channel.mode === EChannelMode.PRIVATE && !userInChannel) return;
       client.socket.emit(ESocketMessage.DELETED_CHANNEL, dto);
@@ -224,13 +223,13 @@ export class ChatService {
     if (!channel) throw new WsException("Channel doesn't exist");
     const who: ISocketUser = this.getUserFromSocket(socket);
     const userInChannel: boolean = !!channel.users.find(
-      (user) => user.user.id === who.user.id,
+      (user) => user === who.user.id,
     );
     const userInvited: boolean = !!channel.invites.find(
-      (user) => user.user.id === who.user.id,
+      (user) => user === who.user.id,
     );
     const userBanned: IBanMute = channel.bans.find(
-      (user) => user.user.user.id === who.user.id,
+      (banmute) => banmute.user === who.user.id,
     );
     if (userInChannel) throw new WsException('You are already in channel');
     if (channel.mode === EChannelMode.PRIVATE && !userInvited)
@@ -249,10 +248,10 @@ export class ChatService {
       throw new WsException('Permission denied: You have been banned');
     if (userBanned && userBanned.expireTimestamp < currTimestamp)
       channel.bans = channel.bans.filter(
-        (banned) => banned.user.user.id !== who.user.id,
+        (banned) => banned.user !== who.user.id,
       );
 
-    channel.users.push(who);
+    channel.users.push(who.user.id);
     const activeUsers: ISocketUser[] = this.getActiveChannelUsers(channel);
 
     const joinedDto: JoinChannelDto = new JoinChannelDto();
@@ -261,7 +260,6 @@ export class ChatService {
 
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
-      // TODO add check if user blocked for someone
       user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);
     });
   }

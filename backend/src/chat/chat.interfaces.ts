@@ -37,10 +37,10 @@ export enum ESocketMessage {
 }
 
 export interface IBanMute {
-  user: ISocketUser;
+  user: number; //id
   expireTimestamp: number;
 }
-
+//TODO later replace user in ISocketUser into id only
 export interface ISocketUser {
   user: User;
   socket: Socket;
@@ -50,10 +50,10 @@ export interface IChannel {
   name: string;
   mode: EChannelMode;
   password: string;
-  owner: ISocketUser;
-  admins: ISocketUser[];
-  users: ISocketUser[];
-  invites: ISocketUser[];
+  owner: number; //id
+  admins: number[]; //ids
+  users: number[]; //ids
+  invites: number[]; //ids
   bans: IBanMute[];
   mutes: IBanMute[];
 }

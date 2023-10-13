@@ -2,8 +2,10 @@ import { EChannelMode, EUserRole } from '../chat.interfaces';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 export class ChannelUserDto {
-  @IsString()
-  name: string;
+  //@IsString()
+  //name: string;
+
+  //TODO add is banned, ismuted and timers
 
   @IsNumber()
   id: number;
