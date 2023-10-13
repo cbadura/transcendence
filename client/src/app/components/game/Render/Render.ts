@@ -99,13 +99,40 @@ export class Render {
         'bold 100pt Sniglet',
         this.game.ball.hits.toString()
       );
-    } else {
+    } else if (this.game.ball.hits < 100) {
       this.drawString(
         midX - 77,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',
         this.game.ball.hits.toString()
+      );
+    }
+    else if (this.game.ball.hits < 1000) {
+      this.drawString(
+        midX - 120,
+        midY + 50,
+        lineColor,
+        'bold 100pt Sniglet',
+        this.game.ball.hits.toString()
+      );
+    }
+    else if (this.game.ball.hits < 10000) {
+      this.drawString(
+        midX - 125,
+        midY + 40,
+        lineColor,
+        'bold 80pt Sniglet',
+        this.game.ball.hits.toString()
+      );
+    }
+    else {
+      this.drawString(
+        midX - 125,
+        midY + 35,
+        lineColor,
+        'bold 65pt Sniglet',
+        '1000+'
       );
     }
   }
