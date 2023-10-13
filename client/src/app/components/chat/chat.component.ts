@@ -31,6 +31,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
+    // const chatns = this.chatHistoryService.connect();
     this.messages = this.chatHistoryService.getHistory();
     this.chatHistoryService.subscribeToMessages();
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
