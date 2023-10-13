@@ -37,7 +37,7 @@ import { ChatSocketModule } from './chat-socket/chat-socket.module';
 import { GameSocketModule } from './game-socket/game-socket.module';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
-const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/', options: {} };
+const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
 //const gameConfig: SocketIoConfig = { url: 'http://10.11.7.3:3000/', options: {} };
 
 
