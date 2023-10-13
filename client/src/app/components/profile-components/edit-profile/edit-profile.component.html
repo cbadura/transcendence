@@ -3,8 +3,8 @@
 	<!-- Edit picture section -->
 	<div class="flex justify-center items-center w-full space-x-5">
     <tcd-profile-pic [profilePic]="myUser.avatar"></tcd-profile-pic>
-    <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
-    <tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button>
+    <!-- <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;"> -->
+    <!-- <tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button> -->
     <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
   </div>
 

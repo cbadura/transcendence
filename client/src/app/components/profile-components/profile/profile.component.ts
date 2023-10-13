@@ -14,6 +14,7 @@ import { Match } from 'src/app/shared/match';
 })
 export class ProfileComponent implements OnInit {
   myUser!: User;
+  avatarURL!: string;
   private userSubscription!: Subscription;
   achievements: Achievement[] = [];
   matches: Match[] = [];
@@ -30,12 +31,10 @@ export class ProfileComponent implements OnInit {
     this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
         this.myUser = user;
-      }
-    );
+        this.avatarURL = `http://localhost:3000/users/profilepic/profilepic_user_${this.myUser.id}.jpg`; // ${this.myUser.avatar}
+       // console.log('PROFILE', this.myUser.avatar);
 
-    this.userDataService.getUserPic().subscribe(
-        blobUrl => this.myUser.avatar = blobUrl,
-        error => console.error('Error fetching pic:', error)
+      }
     );
 
     this.achievements = [

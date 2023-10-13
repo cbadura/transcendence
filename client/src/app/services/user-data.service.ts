@@ -10,14 +10,14 @@ import { map, forkJoin } from 'rxjs';
 })
 export class UserDataService {
   private myUser = {
-      id: 0,
+      id: 1,
       name: '',
       status: '', // WILL NEED TO COME FROM SERVER
       level: 0,
       matches: 0,
       wins: 0,
       color: '',
-      avatar: '',
+      avatar: 'a',
       avatarLocalUrl: '',
       friends: []
     };
@@ -41,11 +41,11 @@ export class UserDataService {
     });
   }
 
-  createUser(name: string, color: string): Observable<any> {
+  createUser(name: string, color: string, file: File | undefined): Observable<any> {
     const newUser = {
-      ...this.myUser,
       name: name,
-      color: color
+      color: color,
+      avatar: ''
     };
     
     return new Observable(observer => {
@@ -57,6 +57,8 @@ export class UserDataService {
         window.alert(JSON.stringify(data));
         observer.next(data);
         observer.complete();
+        if (file)
+          this.uploadProfilePic(file);
       }, error => {
         window.alert('Error creating user: ' + JSON.stringify(error));
         observer.error(error);
@@ -78,11 +80,18 @@ export class UserDataService {
         .pipe(map(blob => URL.createObjectURL(blob)));
   }
 
-  uploadProfilePic(file: File): Observable<any> {
+  uploadProfilePic(file: File) {
     const formData = new FormData();
     formData.append('file', file, file.name);
     console.log('uploaded');
-    return this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData);
+    this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData).subscribe(data => {
+      console.log('UPLOAD', JSON.stringify(data));
+    }, error => {
+      console.log(error);
+      let pic = error.url;
+      console.log('pic', pic);
+      this.myUser = { ...this.myUser, avatar: pic };
+    });
   }
 
 

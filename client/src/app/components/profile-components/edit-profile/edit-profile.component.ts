@@ -41,17 +41,17 @@ export class EditProfileComponent implements OnInit {
       }
     );
 
-    this.userDataService.getUserPic().subscribe(
+    /* this.userDataService.getUserPic().subscribe(
       blobUrl => this.myUser.avatar = blobUrl,
       error => console.error('Error fetching pic:', error)
-    );
+    ); */
   }
 
   getUsers() {
     this.userDataService.getUsers();
   }
 
-  onFileSelected(event: any) {
+  /* onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
         this.userDataService.uploadProfilePic(file).subscribe(
@@ -65,7 +65,7 @@ export class EditProfileComponent implements OnInit {
             }
         );
     }
-  }
+  } */
 
 
   editName(name: string) {

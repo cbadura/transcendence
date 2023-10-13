@@ -15,6 +15,7 @@ export class CreateProfileComponent implements OnInit {
   private userSubscription!: Subscription;
   tempUserName!: string;
   tempColor!: string;
+  tempFile!: File;
   availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
   imageData: { blobUrl: string, filePath: string }[] = [];
 
@@ -44,15 +45,22 @@ export class CreateProfileComponent implements OnInit {
     this.userDataService.getUsers();
   }
 
-  createUser(name: string) {
-    if (name && name.trim() !== '') {
-      this.userDataService.createUser(name, this.tempColor).subscribe(user => {
-        console.log('User created with ID:', user.id);
-        this.router.navigate(['/']);
-      }, error => {
-        window.alert('Error editing user: ' + JSON.stringify(error));
-      });
+  createUser = () => {
+    if (!this.tempUser || !this.tempColor) {
+      window.alert('Please fill in name and color');
+      return;
     }
+
+    this.userDataService.createUser(this.tempUserName, this.tempColor, this.tempFile).subscribe(user => {
+      console.log('User created with ID:', user.id);
+    }, error => {
+      window.alert('Error editing user: ' + JSON.stringify(error));
+    });
+    
+/*     if (this.tempFile) {
+      this.userDataService.uploadProfilePic(this.tempFile);
+    } */
+    this.router.navigate(['/']);
   }
 
   editAvatar(filePath: string, url: string, event: Event) {
@@ -60,30 +68,20 @@ export class CreateProfileComponent implements OnInit {
     event.stopPropagation();
   }
 
-
-  /* onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.userDataService.uploadProfilePic(file).subscribe(
-          response => {
-              console.log('File uploaded successfully:', response);
-          },
-          error => {
-              console.error('Error uploading file:', error);
-          }
-      );
-    }
-  } */
-
   editName(name: string) {
     if (name && name.trim() !== '') {
-      this.userDataService.setName(name);
+      this.tempUserName = name;
     }
   }
 
   editColor(color: string) {
     this.tempColor = color;
+    console.log('new temp color', this.tempColor);
     //this.userDataService.setColor(color);
+  }
+
+  onFileSelected(event: any) {
+    this.tempFile = event.target.files[0];
   }
 
   ngOnDestroy(): void {
