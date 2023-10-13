@@ -40,6 +40,15 @@ export class ChatService {
     return this.clients.find((client) => client.socket.id === socket.id);
   }
 
+  private getUserSocketsByID(id: number): Socket[] {
+    const filter: ISocketUser[] = this.clients.filter(
+      (client) => client.user.id === id,
+    );
+    let userSockets: Socket[];
+    filter.forEach((user) => userSockets.push(user.socket));
+    return userSockets;
+  }
+
   private getActiveChannelUsers(channel: IChannel): ISocketUser[] {
     const active: ISocketUser[] = this.clients.filter(
       (client) =>
@@ -51,6 +60,7 @@ export class ChatService {
     return !!channel.invites.find((invited) => invited === userId);
   }
 
+  //TODO add is banned, is muted and timers in channel list
   private createChannelList(user: ISocketUser): ListChannelsDto {
     const listChannels: ListChannelsDto = new ListChannelsDto();
     listChannels.channels = this.channels
@@ -136,10 +146,13 @@ export class ChatService {
     channelData.ownerId = channel.owner;
     channelData.name = channel.name;
     channelData.mode = channel.mode;
-    // TODO get all user sockets
-    if (EChannelMode.PRIVATE === channel.mode)
-      channel.owner.socket.emit(ESocketMessage.CREATED_CHANNEL, channelData);
-    else
+
+    if (EChannelMode.PRIVATE === channel.mode) {
+      const ownerSockets: Socket[] = this.getUserSocketsByID(channel.owner);
+      ownerSockets.forEach((socket) =>
+        socket.emit(ESocketMessage.CREATED_CHANNEL, channelData),
+      );
+    } else
       this.clients.forEach((client) =>
         client.socket.emit(ESocketMessage.CREATED_CHANNEL, channelData),
       );
