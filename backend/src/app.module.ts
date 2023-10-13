@@ -19,17 +19,19 @@ import { MatchUser } from './entities/match-user.entity';
 import { RelationshipModule } from './relationship/relationship.module';
 import { Relationship } from './entities/relationship.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule} from '@nestjs/config';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
   imports: [
+    ConfigModule.forRoot({ envFilePath: '.env'}),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5432,
-      username: 'transcendence',
-      password: 'transcendence',
-      database: 'transcendence',
+      port: Number.parseInt(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
       entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship],
       synchronize: true,
     }),
