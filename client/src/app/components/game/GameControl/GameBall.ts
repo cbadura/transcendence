@@ -52,11 +52,11 @@ export class GameBall {
   }
 
   adjustSpeed(): void {
-    if (this.speed > 0) {
-      this.speed += 0.2;
-    } else {
-      this.speed -= 0.2;
-    }
+    // if (this.speed > 0) {
+    //   this.speed += 0.2;
+    // } else {
+    //   this.speed -= 0.2;
+    // }
   }
 
   checkScore(game: Game) {

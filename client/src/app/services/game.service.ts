@@ -21,8 +21,6 @@ export class GameService {
 	getGame() {
 		let game = this.gameSocket.fromEvent('game')
 			.pipe(map((game: any) => {
-				console.log("game.service.ts");
-				console.log(game);
 			return game;
 			}));
 		return game;
@@ -30,13 +28,12 @@ export class GameService {
 
 	sendPaddle(id : number, step : number) {
 		this.gameSocket.emit('paddle', id, step);
+		console.log("sendPaddle", id, step);
 	}
 
 	subscribeToGame() {
 		this.gameSocket.on('game', (game: Game) => {
-			console.log("subscribeToGame");
-			console.log(game);
-			this.serverGame.next(game);
+					this.serverGame.next(game);
 		});
 	}
 }
