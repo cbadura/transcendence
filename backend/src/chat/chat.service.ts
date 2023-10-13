@@ -23,6 +23,8 @@ import { JoinChannelDto } from './dto/join-channel.dto';
 import { MessageDto } from './dto/message.dto';
 import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
 import { Relationship } from 'src/entities/relationship.entity';
+import { KickFromChannelDto } from './dto/kick-from-channel.dto';
+import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -284,15 +286,17 @@ export class ChatService {
     
   }
 
-  // TO DO - check user not online
   banMuteUser(socket: Socket, dto: BanMuteFromChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel) throw new WsException("Channel doesn't exist");
+    if (!channel)
+      throw new WsException("Channel doesn't exist");
     const user: ISocketUser = this.getUserFromSocket(socket);
+    if (!user)
+      throw new WsException("Unexpected error");
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
       throw new WsException("User has no permission");
-    const targetUser: ISocketUser = this.getUserFromId(dto.invitedUserId);
+    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
     if (!targetUser)
       throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
     const targetRole: EUserRole = this.getUserRole(channel, targetUser);
@@ -315,6 +319,52 @@ export class ChatService {
       });
       targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
     }
+  }
+
+  kickUser(socket: Socket, dto: KickFromChannelDto) {
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
+    if (!channel)
+      throw new WsException("Channel doesn't exist");
+    const user: ISocketUser = this.getUserFromSocket(socket);
+    if (!user)
+      throw new WsException("Unexpected error");
+    const role: EUserRole = this.getUserRole(channel, user);
+    if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
+      throw new WsException("User has no permission");
+    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
+    if (!targetUser)
+      throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
+    const targetRole: EUserRole = this.getUserRole(channel, targetUser);
+    if (targetRole === EUserRole.OWNER || (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN))
+      throw new WsException("Cannot kick owner or admin");
+
+    targetUser.socket.emit(ESocketMessage.KICKED_FROM_CHANNEL, dto);
+    channel.users.filter((user) => user.user.id !== targetUser.user.id);
+  }
+
+  // invite only, think about accept invite/join/update channel list
+  // good morning check again tmr
+  inviteUser(socket: Socket, dto: InviteToChannelDto) {
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
+    if (!channel)
+      throw new WsException("Channel doesn't exist");
+    const user: ISocketUser = this.getUserFromSocket(socket);
+    if (!user)
+      throw new WsException("Unexpected error");
+    const role: EUserRole = this.getUserRole(channel, user);
+    if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
+      throw new WsException("User has no permission");
+    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
+    if (!targetUser)
+      throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
+    if (channel.users.find((user) => user.user.id === targetUser.user.id))
+      throw new WsException("Target user already in the channel");
+    if (channel.invites.find((user) => user.user.id === targetUser.user.id))
+      throw new WsException("Target user already on invite list");
+
+    targetUser.socket.emit(ESocketMessage.INVITED_TO_CHANNEL, dto);
+    channel.invites.push(targetUser);
+
   }
 
   deleteChannel(socket: Socket, dto: DeleteChannelDto) {

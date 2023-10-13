@@ -19,6 +19,8 @@ import { DeleteChannelDto } from './dto/delete-channel.dto';
 import { JoinChannelDto } from './dto/join-channel.dto';
 import { MessageDto } from './dto/message.dto';
 import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
+import { KickFromChannelDto } from './dto/kick-from-channel.dto';
+import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({ 
@@ -109,5 +111,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @MessageBody() dto: BanMuteFromChannelDto,
   ) {
     this.chatService.banMuteUser(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_KICK_FROM_CHANNEL)
+  kickUser(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: KickFromChannelDto,
+  ) {
+    this.chatService.kickUser(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_KICK_FROM_CHANNEL)
+  inviteUser(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: InviteToChannelDto,
+  ) {
+    this.chatService.inviteUser(socket, dto);
   }
 }

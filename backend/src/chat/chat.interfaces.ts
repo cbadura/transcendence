@@ -32,6 +32,8 @@ export enum ESocketMessage {
   MESSAGE = 'message',
   TRY_LEAVE_CHANNEL = 'tryLeaveChannel',
   LEFT_CHANNEL = 'leftChannel',
+  TRY_INVITE_TO_CHANNEL = 'tryInviteToChannel',
+  INVITED_TO_CHANNEL = 'invitedToChannel',
   TRY_MUTE_FROM_CHANNEL = 'tryMuteFromChannel',
   MUTED_FROM_CHANNEL = 'mutedFromChannel',
   TRY_KICK_FROM_CHANNEL = 'tryKickFromChannel',
