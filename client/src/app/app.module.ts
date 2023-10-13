@@ -37,7 +37,7 @@ import { ChatSocketModule } from './chat-socket/chat-socket.module';
 import { GameSocketModule } from './game-socket/game-socket.module';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
-// const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game', options: {} };
+const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/', options: {} };
 
 @NgModule({
   declarations: [
@@ -77,7 +77,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
   providers: [
     UserDataService,
     DatePipe,
-    // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
+    { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
     { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],
   bootstrap: [AppComponent]

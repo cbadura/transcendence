@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import * as io from 'socket.io-client';
 
 import { UserDataService } from '../../services/user-data.service';
+import { GameService } from 'src/app/services/game.service';
 import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
 import { GameControl } from './GameControl/gamecontrol';
@@ -21,7 +22,8 @@ export class GameComponent {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
-  private userSubscription!: Subscription;
+	private userSubscription!: Subscription;
+	private gameSubscription!: Subscription;
   public myUser!: User;
   public match!: Match;
 
@@ -38,17 +40,44 @@ export class GameComponent {
   private movingUpOpp: boolean = false;
   private movingDownOpp: boolean = false;
 
-  constructor(private userDataService: UserDataService) {}
+  constructor(private userDataService: UserDataService, private gameService : GameService) {}
 
   ngOnInit() {
     // Server side
     this.initGameControl();
     // GET game object
-
+	//   this.gameService.getGame().subscribe((game: Game) => {
+	// 	  console.log(game);
+	//   }	);
     // Get user data
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
-    });
+	});
+	  
+	  this.gameService.subscribeToGame();
+	  this.gameSubscription = this.gameService.serverGameObs$.subscribe(
+	  (game) => {
+		// this.render.redraw(game);
+		// if (this.isGameOver()) {
+		//   this.fillMatchData(game);
+		//   return;
+			  // }
+			  console.log("Game received in compoent");
+			  console.log(game);
+	  }
+	);
+	  
+	this.logPaddle1();
+
+  }
+	
+  logPaddle1() {
+	const gameData = this.gameService.getGame();
+	if (gameData) {
+	  console.log('gameData:', gameData)
+	} else {
+	  console.log('Game data not available yet.');
+	}
   }
 
   // Initialize canvas and render after view Init
