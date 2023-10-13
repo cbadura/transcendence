@@ -63,7 +63,7 @@ export class ChatHistoryService {
   }
 
   subscribeToMessages() {
-    this.getMessage().subscribe( msg => {
+    this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);
     });
