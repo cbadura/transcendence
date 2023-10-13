@@ -45,11 +45,9 @@ export class NetworkGameService {
           this.StartGameLoop();
           //send evaluation here
           for (let i = 0; i < this.clients.length; i++) {
-            this.myGameControl.routine();
-            // console.log(this.myGameControl.getGame());
             this.clients[i].socket.emit(ESocketGameMessage.GAME_ENDED, this.myGameControl.getGame());
-            
           }
+
         }
       }
 

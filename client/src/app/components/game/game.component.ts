@@ -39,7 +39,10 @@ export class GameComponent {
   private movingUpOpp: boolean = false;
   private movingDownOpp: boolean = false;
 
-  constructor(private userDataService: UserDataService, private gameService: GameService) { }
+  constructor(
+    private userDataService: UserDataService,
+    private gameService: GameService,
+     ) { }
 
   ngOnInit() {
 
@@ -84,7 +87,14 @@ export class GameComponent {
 
 
   startGame(): void {
+    this.gameService.createGameSocket();
     
+  }
+
+  playAgain(): void {
+    //clean up prev field
+    this.gameService.disconnectGameSocket();
+    this.startGame();
   }
 
   fillMatchData(game: Game): void {
@@ -149,6 +159,7 @@ export class GameComponent {
   }
 
   isGameOver(): boolean {
+    console.log('checking for gameover')
     if (!this.game)
       return false;
     return this.game.gameOver;
