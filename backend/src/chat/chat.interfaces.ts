@@ -1,4 +1,3 @@
-import { User } from '../entities/user.entity';
 import { Socket } from 'socket.io';
 
 export enum EChannelMode {
@@ -37,12 +36,12 @@ export enum ESocketMessage {
 }
 
 export interface IBanMute {
-  user: number; //id
+  userId: number;
   expireTimestamp: number;
 }
 //TODO later replace user in ISocketUser into id only
 export interface ISocketUser {
-  user: User;
+  userId: number;
   socket: Socket;
 }
 
@@ -50,7 +49,7 @@ export interface IChannel {
   name: string;
   mode: EChannelMode;
   password: string;
-  owner: number; //id
+  ownerId: number;
   admins: number[]; //ids
   users: number[]; //ids
   invites: number[]; //ids
