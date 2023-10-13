@@ -5,7 +5,7 @@ import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/user';
 import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
-import { GameControl } from './GameControl/gamecontrol';
+import { GameControl } from './GameControl/GameControl';
 
 import { Game } from './interfaces/Game';
 import { Ball } from './interfaces/Ball';
