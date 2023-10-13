@@ -10,13 +10,13 @@ import { map, forkJoin } from 'rxjs';
 })
 export class UserDataService {
   private myUser = {
-      id: 1,
+      id: 0,
       name: '',
-      status: 'online', // WILL NEED TO COME FROM SERVER
+      status: '', // WILL NEED TO COME FROM SERVER
       level: 0,
       matches: 0,
       wins: 0,
-      color: '#E7C9FF',
+      color: '',
       avatar: '',
       avatarLocalUrl: '',
       friends: []

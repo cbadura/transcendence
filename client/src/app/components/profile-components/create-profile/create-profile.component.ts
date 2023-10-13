@@ -11,93 +11,83 @@ import { User } from '../../../shared/user';
   styleUrls: ['./create-profile.component.css']
 })
 export class CreateProfileComponent implements OnInit {
-    myUser: User;
-    private userSubscription!: Subscription;
-    tempUserName!: string;
-    tempColor!: string;
-    availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
-    imageData: { blobUrl: string, filePath: string }[] = [];
+  tempUser!: User;
+  private userSubscription!: Subscription;
+  tempUserName!: string;
+  tempColor!: string;
+  availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
+  imageData: { blobUrl: string, filePath: string }[] = [];
 
-    constructor(
-      private router: Router,
-      private userDataService: UserDataService) {
-        this.myUser = {
-          id: 0,
-          name: '',
-          status: '',
-          matches: 0,
-          wins: 0,
-          color: '',
-          avatar: '',
-        friends: [],
-        level: 0,
-        };
-        this.tempUserName = '';
-        this.tempColor = '';
+  constructor(
+    private router: Router,
+    private userDataService: UserDataService) {
+    this.tempUserName = '';
+    this.tempColor = '';
+  }
+
+  ngOnInit() {
+    this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.tempUser = user;
       }
-      
-      ngOnInit() {
-        this.userSubscription = this.userDataService.user$.subscribe(
-          (user) => {
-            this.myUser = user;
-          }
-          );
+    );
 
-        this.userDataService.getProfilePics().subscribe(
-          data => {
-              this.imageData = data;
-          },
-          error => console.error('Error fetching pics:', error)
-        );
-    }
-  
-    getUsers() {
-      this.userDataService.getUsers();
-    }
-  
-    createUser(name: string) {
-      if (name && name.trim() !== '') {
-        this.userDataService.createUser(name, this.myUser.color).subscribe(user => {
-          console.log('User created with ID:', user.id);
-          this.router.navigate(['/']);
-        }, error => {
-            window.alert('Error editing user: ' + JSON.stringify(error));
-        });
-      }
-    }
+    this.userDataService.getProfilePics().subscribe(
+      data => {
+        this.imageData = data;
+      },
+      error => console.error('Error fetching pics:', error)
+    );
+  }
 
-    editAvatar(filePath: string, url: string, event: Event) {
-      this.userDataService.setAvatar(filePath);
-      event.stopPropagation();
-    }
+  getUsers() {
+    this.userDataService.getUsers();
+  }
 
-
-    /* onFileSelected(event: any) {
-      const file: File = event.target.files[0];
-      if (file) {
-        this.userDataService.uploadProfilePic(file).subscribe(
-            response => {
-                console.log('File uploaded successfully:', response);
-            },
-            error => {
-                console.error('Error uploading file:', error);
-            }
-        );
-      }
-    } */
-
-    editName(name: string) {
-      if (name && name.trim() !== '') {
-        this.userDataService.setName(name);
-      }
-    }
-  
-    editColor(color: string) {
-      this.userDataService.setColor(color);
-    }
-  
-    ngOnDestroy(): void {
-      this.userSubscription.unsubscribe();
+  createUser(name: string) {
+    if (name && name.trim() !== '') {
+      this.userDataService.createUser(name, this.tempColor).subscribe(user => {
+        console.log('User created with ID:', user.id);
+        this.router.navigate(['/']);
+      }, error => {
+        window.alert('Error editing user: ' + JSON.stringify(error));
+      });
     }
   }
-  
+
+  editAvatar(filePath: string, url: string, event: Event) {
+    this.userDataService.setAvatar(filePath);
+    event.stopPropagation();
+  }
+
+
+  /* onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.userDataService.uploadProfilePic(file).subscribe(
+          response => {
+              console.log('File uploaded successfully:', response);
+          },
+          error => {
+              console.error('Error uploading file:', error);
+          }
+      );
+    }
+  } */
+
+  editName(name: string) {
+    if (name && name.trim() !== '') {
+      this.userDataService.setName(name);
+    }
+  }
+
+  editColor(color: string) {
+    this.tempColor = color;
+    //this.userDataService.setColor(color);
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription.unsubscribe();
+  }
+}
+

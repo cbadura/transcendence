@@ -24,7 +24,7 @@
       name="name"
       type="text"
       [(ngModel)]="tempUserName"
-      placeholder="{{ myUser.name }}"
+      placeholder="{{ tempUser.name }}"
     />
   </div>
 
@@ -35,7 +35,7 @@
       <div
         *ngFor="let color of availableColors"
         [ngStyle]="{ 'background-color': color }"
-        [class.border-4]="color == myUser.color"
+        [class.border-4]="color == tempUser.color"
         (click)="editColor(color)"
         class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
       ></div>
