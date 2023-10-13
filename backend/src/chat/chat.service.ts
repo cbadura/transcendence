@@ -33,11 +33,11 @@ export class ChatService {
 
   constructor(readonly userService: UserService) {}
 
-  private getUserRole(channel: IChannel, user: ISocketUser): EUserRole {
-    if (user.userId === channel.ownerId) return EUserRole.OWNER;
-    if (channel.admins.find((admin) => admin === user.userId))
+  private getUserRole(channel: IChannel, userId: number): EUserRole {
+    if (userId === channel.ownerId) return EUserRole.OWNER;
+    if (channel.admins.find((admin) => admin === userId))
       return EUserRole.ADMIN;
-    if (channel.users.find((userid) => userid === user.userId))
+    if (channel.users.find((userid) => userid === userId))
       return EUserRole.USER;
     return EUserRole.NONE;
   }
@@ -53,7 +53,7 @@ export class ChatService {
   }
 
   private getUserFromId(uid: number): ISocketUser {
-    return this.clients.find((client) => client.user.id === uid);
+    return this.clients.find((client) => client.userId === uid);
   }
 
   private getActiveChannelUsers(channel: IChannel): ISocketUser[] {
@@ -78,7 +78,7 @@ export class ChatService {
       .filter(
         (ch) =>
           ch.mode !== EChannelMode.PRIVATE ||
-          this.getUserRole(ch, user) !== EUserRole.NONE ||
+          this.getUserRole(ch, user.userId) !== EUserRole.NONE ||
           this.isInvited(ch, user.userId),
         //this last check depends on frontend implementation
       )
@@ -86,7 +86,7 @@ export class ChatService {
         const channel: ChannelDto = new ChannelDto();
         channel.name = ch.name;
         channel.mode = ch.mode;
-        channel.role = this.getUserRole(ch, user);
+        channel.role = this.getUserRole(ch, user.userId);
         channel.users = ch.users.map((user): ChannelUserDto => {
           const dto: ChannelUserDto = new ChannelUserDto();
           dto.id = user;
@@ -99,7 +99,7 @@ export class ChatService {
   }
 
   private getCurrentUnixTime(): number {
-    return Math.floor(new Date().getTime() / 1000 );
+    return Math.floor(new Date().getTime() / 1000);
   }
 
   // TODO change later userId into token and extract userId from token
@@ -141,7 +141,7 @@ export class ChatService {
     console.log('bans', channel.bans);
     console.log('mutes', channel.mutes);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
-    channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now)
+    channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now);
   }
 
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
@@ -241,139 +241,149 @@ export class ChatService {
   async sendMessage(socket: Socket, dto: MessageDto) {
     if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId)) {
       socket.emit('exception', 'Invalid message target');
-      return ;
+      return;
     }
-    const sender: ISocketUser = this.getUserFromSocket(socket);
-    
+    const sender: number = this.getUserIdFromSocket(socket);
+
     const messageTochannel: MessageDto = { ...dto };
-    messageTochannel.senderId = sender.user.id;
+    messageTochannel.senderId = sender;
     messageTochannel.timestamp = this.getCurrentUnixTime();
-    
+
     //check channle member block list - use relation entity
     if (dto.channel) {
       const channel: IChannel = this.getChannelfromName(dto.channel); // check if the channel exist
       if (!channel) {
         socket.emit('exception', "Channel/Receiver doesn't exist");
-        return ;
+        return;
       }
       const members: ISocketUser[] = this.getActiveChannelUsers(channel);
-      if (!channel.users.find((member) => member.user.id === sender.user.id)) {
-        socket.emit('exception', "User not in the channel");
-        return ;
+      if (!channel.users.find((member) => member === sender)) {
+        socket.emit('exception', 'User not in the channel');
+        return;
       }
       // if (!members.find((member) => member.user.id === sender.user.id))
       //   throw new WsException("User not in the channel");
 
       // TO DO check expire time, either global with setInterval or on demand locally
-      const banned: IBanMute = channel.bans.find((ban) => sender.user.id === ban.user.user.id);
-      const muted: IBanMute = channel.mutes.find((mute) => sender.user.id === mute.user.user.id);
-      if (banned || muted)
-      {
-        socket.emit('exception', "User not allowed to send message to this channel");
-        return ;
+      const banned: IBanMute = channel.bans.find(
+        (ban) => sender === ban.userId,
+      );
+      const muted: IBanMute = channel.mutes.find(
+        (mute) => sender === mute.userId,
+      );
+      if (banned || muted) {
+        socket.emit(
+          'exception',
+          'User not allowed to send message to this channel',
+        );
+        return;
       }
-      
-      members.forEach(async(member) => {
-        const blocklist: Relationship[] = await this.userService.getUserRelationships(member.user.id, 'blocked');
-        if (!blocklist.find((user) => user.relational_user_id === sender.user.id))
+
+      members.forEach(async (member) => {
+        const blocklist: Relationship[] =
+          await this.userService.getUserRelationships(member.userId, 'blocked');
+        if (!blocklist.find((user) => user.relational_user_id === sender))
           member.socket.emit(ESocketMessage.MESSAGE, messageTochannel);
-      })
-
+      });
     }
-
+    // TODO use getUserSocketsByID() to get all sockets, which belong to receiver
     if (dto.receiverId) {
-      const receiver: ISocketUser[] = this.clients.filter((user) => user.user.id === dto.receiverId); // array of receiver in case they have multiple tab
+      const receiver: ISocketUser[] = this.clients.filter(
+        (user) => user.userId === dto.receiverId,
+      ); // array of receiver in case they have multiple tab
       if (!receiver) {
-        socket.emit('exception', "User not online");
-        return ;
+        socket.emit('exception', 'User not online');
+        return;
       }
-      const blocklist: Relationship[] = await this.userService.getUserRelationships(dto.receiverId, 'blocked');
-      if (!blocklist.find((user) => user.relational_user_id === sender.user.id))
-        receiver.forEach((ruser) => ruser.socket.emit(ESocketMessage.MESSAGE, messageTochannel));
-      
+      const blocklist: Relationship[] =
+        await this.userService.getUserRelationships(dto.receiverId, 'blocked');
+      if (!blocklist.find((user) => user.relational_user_id === sender))
+        receiver.forEach((ruser) => {
+          ruser.socket.emit(ESocketMessage.MESSAGE, messageTochannel);
+        });
     }
-    
   }
 
   banMuteUser(socket: Socket, dto: BanMuteFromChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel)
-      throw new WsException("Channel doesn't exist");
-    const user: ISocketUser = this.getUserFromSocket(socket);
-    if (!user)
-      throw new WsException("Unexpected error");
+    if (!channel) throw new WsException("Channel doesn't exist");
+    const user: number = this.getUserIdFromSocket(socket);
+    if (!user) throw new WsException('Unexpected error');
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
-      throw new WsException("User has no permission");
+      throw new WsException('User has no permission');
     const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
-    if (!targetUser)
-      throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
-    const targetRole: EUserRole = this.getUserRole(channel, targetUser);
-    if (targetRole === EUserRole.OWNER || (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN))
-      throw new WsException("Cannot ban/mute owner or admin");
+    if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
+    const targetRole: EUserRole = this.getUserRole(channel, targetUser.userId);
+    if (
+      targetRole === EUserRole.OWNER ||
+      (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN)
+    )
+      throw new WsException('Cannot ban/mute owner or admin');
 
     if (dto.action === EBanMute.BAN) {
       channel.bans.push({
-        user: targetUser,
-        expireTimestamp: dto.expirationTimestamp
+        userId: targetUser.userId,
+        expireTimestamp: dto.expirationTimestamp,
       });
+      // TODO use getUserSocketsByID() to get all sockets, which belong to target user
       targetUser.socket.emit(ESocketMessage.BANNED_FROM_CHANNEL, dto);
-      channel.users = channel.users.filter((user) => user.user.id !== targetUser.user.id);
+      channel.users = channel.users.filter(
+        (user) => user !== targetUser.userId,
+      );
     }
-    
     if (dto.action === EBanMute.MUTE) {
       channel.mutes.push({
-        user: targetUser,
-        expireTimestamp: dto.expirationTimestamp
+        userId: targetUser.userId,
+        expireTimestamp: dto.expirationTimestamp,
       });
+      // TODO use getUserSocketsByID() to get all sockets, which belong to target user
       targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
     }
   }
 
   kickUser(socket: Socket, dto: KickFromChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel)
-      throw new WsException("Channel doesn't exist");
-    const user: ISocketUser = this.getUserFromSocket(socket);
-    if (!user)
-      throw new WsException("Unexpected error");
+    if (!channel) throw new WsException("Channel doesn't exist");
+    const user: number = this.getUserIdFromSocket(socket);
+    if (!user) throw new WsException('Unexpected error');
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
-      throw new WsException("User has no permission");
+      throw new WsException('User has no permission');
     const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
-    if (!targetUser)
-      throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
-    const targetRole: EUserRole = this.getUserRole(channel, targetUser);
-    if (targetRole === EUserRole.OWNER || (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN))
-      throw new WsException("Cannot kick owner or admin");
+    if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
+    const targetRole: EUserRole = this.getUserRole(channel, targetUser.userId);
+    if (
+      targetRole === EUserRole.OWNER ||
+      (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN)
+    )
+      throw new WsException('Cannot kick owner or admin');
 
+    // TODO use getUserSocketsByID() to get all sockets, which belong to target user
     targetUser.socket.emit(ESocketMessage.KICKED_FROM_CHANNEL, dto);
-    channel.users.filter((user) => user.user.id !== targetUser.user.id);
+    channel.users.filter((user) => user !== targetUser.userId);
   }
 
   // invite only, think about accept invite/join/update channel list
   // good morning check again tmr
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel)
-      throw new WsException("Channel doesn't exist");
-    const user: ISocketUser = this.getUserFromSocket(socket);
-    if (!user)
-      throw new WsException("Unexpected error");
+    if (!channel) throw new WsException("Channel doesn't exist");
+    const user: number = this.getUserIdFromSocket(socket);
+    if (!user) throw new WsException('Unexpected error');
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
-      throw new WsException("User has no permission");
+      throw new WsException('User has no permission');
     const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
-    if (!targetUser)
-      throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
-    if (channel.users.find((user) => user.user.id === targetUser.user.id))
-      throw new WsException("Target user already in the channel");
-    if (channel.invites.find((user) => user.user.id === targetUser.user.id))
-      throw new WsException("Target user already on invite list");
+    if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
+    if (channel.users.find((user) => user === targetUser.userId))
+      throw new WsException('Target user already in the channel');
+    if (channel.invites.find((user) => user === targetUser.userId))
+      throw new WsException('Target user already on invite list');
 
+    // TODO use getUserSocketsByID() to get all sockets, which belong to target user
     targetUser.socket.emit(ESocketMessage.INVITED_TO_CHANNEL, dto);
-    channel.invites.push(targetUser);
-
+    channel.invites.push(targetUser.userId);
   }
 
   deleteChannel(socket: Socket, dto: DeleteChannelDto) {

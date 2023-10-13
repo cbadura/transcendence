@@ -38,13 +38,12 @@ export enum ESocketMessage {
   TRY_KICK_FROM_CHANNEL = 'tryKickFromChannel',
   KICKED_FROM_CHANNEL = 'kickedFromChannel',
   TRY_BAN_FROM_CHANNEL = 'tryBanFromChannel',
-  BANNED_FROM_CHANNEL = 'bannedFromChannel'
-
+  BANNED_FROM_CHANNEL = 'bannedFromChannel',
 }
 
 export enum EBanMute {
   BAN = 'ban',
-  MUTE = 'mute'
+  MUTE = 'mute',
 }
 
 export interface IBanMute {
