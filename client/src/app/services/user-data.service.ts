@@ -73,10 +73,10 @@ export class UserDataService {
     return forkJoin(requests);
   }
   
-  getUserPic(): Observable<string> {
+  /* getUserPic(): Observable<string> {
     return this.http.get(`${this.serverAddress}/users/profilepic/${this.myUser.avatar}`, { responseType: 'blob' })
         .pipe(map(blob => URL.createObjectURL(blob)));
-  }
+  } */
 
   uploadProfilePic(file: File): Observable<any> {
     const formData = new FormData();

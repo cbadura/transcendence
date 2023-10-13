@@ -4,10 +4,9 @@
 	<div class="flex justify-center items-center w-full space-x-5">
     <div class="image-row">
       <img 
-        class="border border-black w-20 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
+        class="border border-black w-20 aspect-square rounded-lg active:scale-95"
         *ngFor="let image of imageData"
         [src]="image.blobUrl"
-        (click)="editAvatar(image.filePath, image.blobUrl, $event)"
         alt="Profile Picture">
     </div>
 

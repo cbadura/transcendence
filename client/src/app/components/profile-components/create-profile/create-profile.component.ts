@@ -40,6 +40,7 @@ export class CreateProfileComponent implements OnInit {
         this.userSubscription = this.userDataService.user$.subscribe(
           (user) => {
             this.myUser = user;
+            console.log(user);
           }
           );
 

@@ -41,10 +41,10 @@ export class EditProfileComponent implements OnInit {
       }
     );
 
-    this.userDataService.getUserPic().subscribe(
+    /* this.userDataService.getUserPic().subscribe(
       blobUrl => this.myUser.avatar = blobUrl,
       error => console.error('Error fetching pic:', error)
-    );
+    ); */
   }
 
   getUsers() {
