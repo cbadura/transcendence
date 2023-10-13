@@ -33,12 +33,12 @@ export class CreateProfileComponent implements OnInit {
       }
     );
 
-    this.userDataService.getProfilePics().subscribe(
+   /*  this.userDataService.getProfilePics().subscribe(
       data => {
         this.imageData = data;
       },
       error => console.error('Error fetching pics:', error)
-    );
+    ); */
   }
 
   getUsers() {

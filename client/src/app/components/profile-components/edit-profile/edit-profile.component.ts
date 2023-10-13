@@ -27,7 +27,6 @@ export class EditProfileComponent implements OnInit {
         wins: 0,
         color: '',
         avatar: '',
-		  friends: [],
 		  level: 0,
       };
       this.tempUserName = '';

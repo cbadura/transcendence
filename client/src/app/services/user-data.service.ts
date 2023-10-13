@@ -18,8 +18,6 @@ export class UserDataService {
       wins: 0,
       color: '',
       avatar: 'a',
-      avatarLocalUrl: '',
-      friends: []
     };
 
   private serverAddress: string = 'http://localhost:3000';
@@ -74,11 +72,6 @@ export class UserDataService {
     );
     return forkJoin(requests);
   }
-  
-  getUserPic(): Observable<string> {
-    return this.http.get(`${this.serverAddress}/users/profilepic/${this.myUser.avatar}`, { responseType: 'blob' })
-        .pipe(map(blob => URL.createObjectURL(blob)));
-  }
 
   uploadProfilePic(file: File) {
     const formData = new FormData();
@@ -88,12 +81,32 @@ export class UserDataService {
       console.log('UPLOAD', JSON.stringify(data));
     }, error => {
       console.log(error);
-      let pic = error.url;
-      console.log('pic', pic);
-      this.myUser = { ...this.myUser, avatar: pic };
     });
   }
 
+  fetchUserById(id: number): Observable<User> {
+    const url = `http://localhost:3000/users/${id}`;
+    
+    return this.http.get<User>(url).pipe(
+      map((user: User) => ({
+        ...user,
+        avatar: `http://localhost:3000${user.avatar}` // Replace with the new avatar URL
+      }))
+    );
+  }
+
+  editUserById(id: number) {
+    const updatedUser = {
+      name: 'edited Name'
+    };
+    this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error editing user: ' + JSON.stringify(error));
+    });
+  }
+
+  /* OLDER FUNCTIONS */
 
   setAvatar(filePath: string) {
     this.myUser.avatar = filePath;
