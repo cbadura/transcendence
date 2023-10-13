@@ -27,11 +27,13 @@ export class ProfileComponent implements OnInit {
   
 
   ngOnInit() {
-    this.userSubscription = this.userDataService.user$.subscribe(
+    /* this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
         this.myUser = user;
       }
-    );
+    ); */
+
+    this.myUser = this.userDataService.getMyUser();
 
     /* this.userDataService.getUserPic().subscribe(
         blobUrl => this.myUser.avatar = blobUrl,

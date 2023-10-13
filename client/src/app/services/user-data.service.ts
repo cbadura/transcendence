@@ -18,7 +18,6 @@ export class UserDataService {
       wins: 0,
       color: '#E7C9FF',
       avatar: 'a',
-      avatarLocalUrl: '',
       friends: []
     };
 
@@ -83,6 +82,36 @@ export class UserDataService {
     formData.append('file', file, file.name);
     console.log('uploaded');
     return this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData);
+  }
+
+  getMyUser(): User {
+    this.http.get<any>(this.serverAddress + '/users/' + this.myUser.id).subscribe(data => {
+      window.alert(JSON.stringify(data));
+      this.myUser = data;
+      // this.userSubject.next(this.myUser);
+    }, error => {
+      window.alert('Error fetching user: ' + JSON.stringify(error));
+    });
+    return this.myUser;
+  }
+
+  getUserById(id: number) {
+    this.http.get(this.serverAddress + '/users/' + id).subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error fetching user: ' + JSON.stringify(error));
+    });
+  }
+
+  editUserById(id: number) {
+    const updatedUser = {
+      name: 'edited Name'
+    };
+    this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error editing user: ' + JSON.stringify(error));
+    });
   }
 
   setAvatar(filePath: string) {
