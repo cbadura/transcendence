@@ -1,16 +1,16 @@
 import {
-  WebSocketGateway,
-  SubscribeMessage,
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  ConnectedSocket,
   OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
 import { Socket } from 'socket.io';
 import { CreateChannelDto } from './dto/create-channel.dto';
-import { ESocketMessage } from './chat.interfaces';
+import { EBanMute, ESocketMessage } from './chat.interfaces';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BadRequestTransformationFilter } from './chat.filter';
 import { UpdateChannelDto } from './dto/update-channel.dto';
@@ -100,7 +100,7 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: BanMuteFromChannelDto,
   ) {
-    this.chatService.banMuteUser(socket, dto);
+    this.chatService.banMuteUser(socket, dto, EBanMute.MUTE);
   }
 
   @UsePipes(new ValidationPipe())
@@ -109,7 +109,7 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: BanMuteFromChannelDto,
   ) {
-    this.chatService.banMuteUser(socket, dto);
+    this.chatService.banMuteUser(socket, dto, EBanMute.BAN);
   }
 
   @UsePipes(new ValidationPipe())

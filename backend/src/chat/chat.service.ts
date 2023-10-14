@@ -323,7 +323,7 @@ export class ChatService {
     }
   }
 
-  banMuteUser(socket: Socket, dto: BanMuteFromChannelDto) {
+  banMuteUser(socket: Socket, dto: BanMuteFromChannelDto, action: EBanMute) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     if (!channel) throw new WsException("Channel doesn't exist");
     const user: number = this.getUserIdFromSocket(socket);
@@ -340,7 +340,7 @@ export class ChatService {
     )
       throw new WsException('Cannot ban/mute owner or admin');
 
-    if (dto.action === EBanMute.BAN) {
+    if (action === EBanMute.BAN) {
       channel.bans.push({
         userId: targetUser.userId,
         expireTimestamp: dto.expirationTimestamp,
@@ -356,7 +356,7 @@ export class ChatService {
         (user) => user !== targetUser.userId,
       );
     }
-    if (dto.action === EBanMute.MUTE) {
+    if (action === EBanMute.MUTE) {
       channel.mutes.push({
         userId: targetUser.userId,
         expireTimestamp: dto.expirationTimestamp,
