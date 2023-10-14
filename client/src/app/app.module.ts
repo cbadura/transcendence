@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Socket, SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { Socket, SocketIoConfig } from 'ngx-socket-io';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -35,6 +35,7 @@ import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component'
 import { HomeComponent } from './components/home/home.component';
 import { ChatSocketModule } from './chat-socket/chat-socket.module';
 import { GameSocketModule } from './game-socket/game-socket.module';
+import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game', options: {} };
@@ -63,7 +64,8 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChatHeaderComponent,
     ChatInputComponent,
     ChatBtnComponent,
-    HomeComponent
+    HomeComponent,
+    CreateProfileComponent
   ],
   imports: [
     HttpClientModule,

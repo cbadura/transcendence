@@ -6,7 +6,6 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
   @IsOptional()
   @IsString()
   avatar: string=`/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;

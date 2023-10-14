@@ -2,12 +2,19 @@
   
 	<!-- Edit picture section -->
 	<div class="flex justify-center items-center w-full space-x-5">
-    <tcd-profile-pic [profilePic]="myUser.avatar"></tcd-profile-pic>
-    <!-- <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;"> -->
-    <!-- <tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button> -->
+    <!-- <div class="image-row">
+      <img 
+        class="border border-black w-20 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
+        *ngFor="let image of imageData"
+        [src]="image.blobUrl"
+        (click)="editAvatar(image.filePath, image.blobUrl, $event)"
+        alt="Profile Picture">
+    </div> -->
+
+    <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
+    <tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button>
     <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
   </div>
-
 
   <!-- Edit name section -->
   <div class="w-full flex flex-col">
@@ -17,7 +24,7 @@
       name="name"
       type="text"
       [(ngModel)]="tempUserName"
-      placeholder="{{ myUser.name }}"
+      placeholder="{{ tempUser.name }}"
     />
   </div>
 
@@ -28,29 +35,28 @@
       <div
         *ngFor="let color of availableColors"
         [ngStyle]="{ 'background-color': color }"
-        [class.border-4]="color == myUser.color"
+        [class.border-4]="color == tempColor"
         (click)="editColor(color)"
         class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
       ></div>
     </div>
   </div>
 
-  <!--Test user request-->
+  <!-- Create user, return home -->
   <div class="w-full flex justify-end">
     <tcd-custom-button
-      [buttonText]="'Get users'"
-      [onClick]="getUsers.bind(this)"
+      [buttonText]="'Create your user'"
+      [onClick]="createUser"
       [isBlack]="true"
     ></tcd-custom-button>
   </div>
 
-  <!-- Save button -->
-  <div class="w-full flex justify-end">
-    <tcd-custom-button
-      [buttonText]="'Save changes'"
-      [onClick]="editName.bind(this, tempUserName)"
-      [customRoute]="'/profile'"
-      [isBlack]="true"
-    ></tcd-custom-button>
-  </div>
+    <!--Test user request-->
+    <div class="w-full flex justify-end">
+      <tcd-custom-button
+        [buttonText]="'Get users'"
+        [onClick]="getUsers.bind(this)"
+        [isBlack]="true"
+      ></tcd-custom-button>
+    </div>
 </section>

@@ -1,24 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { User } from '../shared/user';
+import { map, forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserDataService {
-  private myUser: User = {
-    id: 99,
-    name: 'Nadiia',
-    status: 'online',
-    wins: 25,
-    matches: 30,
-    level: 6.83,
-    color: '#E7C9FF',
-    avatar: './assets/avatars/av1.jpg',
-    friends: []
-  };
+  private myUser = {
+      id: 1,
+      name: '',
+      status: '', // WILL NEED TO COME FROM SERVER
+      level: 0,
+      matches: 0,
+      wins: 0,
+      color: '',
+      avatar: 'a',
+    };
+
+  private serverAddress: string = 'http://localhost:3000';
+  imageURL: string = '';
 
   constructor(
     private http: HttpClient
@@ -27,12 +30,87 @@ export class UserDataService {
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
+  /* API calls */
   getUsers() {
-    this.http.get('http://localhost:3000/users').subscribe(data => {
+    this.http.get(this.serverAddress + '/users').subscribe(data => {
       window.alert(JSON.stringify(data));
     }, error => {
       window.alert('Error fetching users: ' + JSON.stringify(error));
     });
+  }
+
+  createUser(name: string, color: string, file: File | undefined): Observable<any> {
+    const newUser = {
+      name: name,
+      color: color,
+      avatar: ''
+    };
+    
+    return new Observable(observer => {
+      this.http.post(this.serverAddress + '/users/', newUser).subscribe(data => {
+        // Update internal user data after successful server operation
+        this.myUser = { ...this.myUser, ...data };
+        this.userSubject.next(this.myUser);  // Update the BehaviorSubject with the new user data
+
+        window.alert(JSON.stringify(data));
+        observer.next(data);
+        observer.complete();
+        if (file)
+          this.uploadProfilePic(file);
+      }, error => {
+        window.alert('Error creating user: ' + JSON.stringify(error));
+        observer.error(error);
+      });
+    });
+  }
+
+  getProfilePics(): Observable<{ blobUrl: string, filePath: string }[]> {
+    const picNames = ['default_00.jpg', 'default_01.jpg', 'default_02.jpg', 'default_03.jpg', 'default_04.jpg'];
+    const requests = picNames.map(picName => 
+      this.http.get(`${this.serverAddress}/users/profilepic/${picName}`, { responseType: 'blob' })
+        .pipe(map(blob => ({ blobUrl: URL.createObjectURL(blob), filePath: picName })))
+    );
+    return forkJoin(requests);
+  }
+
+  uploadProfilePic(file: File) {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    console.log('uploaded');
+    this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData).subscribe(data => {
+      console.log('UPLOAD', JSON.stringify(data));
+    }, error => {
+      console.log(error);
+    });
+  }
+
+  fetchUserById(id: number): Observable<User> {
+    const url = `http://localhost:3000/users/${id}`;
+    
+    return this.http.get<User>(url).pipe(
+      map((user: User) => ({
+        ...user,
+        avatar: `http://localhost:3000${user.avatar}` // Replace with the new avatar URL
+      }))
+    );
+  }
+
+  editUserById(id: number) {
+    const updatedUser = {
+      name: 'edited Name'
+    };
+    this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(data => {
+      window.alert(JSON.stringify(data));
+    }, error => {
+      window.alert('Error editing user: ' + JSON.stringify(error));
+    });
+  }
+
+  /* OLDER FUNCTIONS */
+
+  setAvatar(filePath: string) {
+    this.myUser.avatar = filePath;
+    // this.userSubject.next(this.myUser);
   }
 
   getUser(): User {
@@ -45,19 +123,18 @@ export class UserDataService {
   }
 
   setColor(color: string) {
+    console.log('setting color to ', color);
     const user = { ...this.getUser(), color: color };
     this.userSubject.next(user);
   }
 
   incrementLevel() {
     let level = this.myUser.level + 0.25;
-    //let wins = ++this.myUser.wins;
     const user = { ...this.getUser(), level: level };
     this.userSubject.next(user);
   }
   decrementLevel() {
     let level = this.myUser.level + 0.05;
-    // let losses = ++this.myUser.losses;
     const user = { ...this.getUser(), level: level };
     this.userSubject.next(user);
   }
