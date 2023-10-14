@@ -1,14 +1,29 @@
 import { EChannelMode, EUserRole } from '../chat.interfaces';
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class ChannelUserDto {
-  //@IsString()
-  //name: string;
-
-  //TODO add is banned, ismuted and timers
-
   @IsNumber()
   id: number;
+
+  @IsBoolean()
+  isBanned: boolean;
+
+  @IsBoolean()
+  isMuted: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  banExpTime?: number;
+
+  @IsNumber()
+  @IsOptional()
+  muteExpTime?: number;
 }
 
 /**
@@ -18,6 +33,7 @@ export class ChannelUserDto {
  * @property {EUserRole} role - The user's role in this channel.
  * @property {ChannelUserDto[]} users - List of users in this channel.
  */
+
 export class ChannelDto {
   @IsString()
   name: string;

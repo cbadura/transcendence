@@ -82,15 +82,22 @@ export class ChatService {
           this.isInvited(ch, user.userId),
         //this last check depends on frontend implementation
       )
-      .map((ch): ChannelDto => {
+      .map((c): ChannelDto => {
         const channel: ChannelDto = new ChannelDto();
-        channel.name = ch.name;
-        channel.mode = ch.mode;
-        channel.role = this.getUserRole(ch, user.userId);
-        channel.users = ch.users.map((user): ChannelUserDto => {
+        channel.name = c.name;
+        channel.mode = c.mode;
+        channel.role = this.getUserRole(c, user.userId);
+        channel.users = c.users.map((u): ChannelUserDto => {
           const dto: ChannelUserDto = new ChannelUserDto();
-          dto.id = user;
-          // TODO add banned/muted and timers
+          dto.id = u;
+          dto.isBanned = !!c.bans.find((ban) => ban.userId === u);
+          if (dto.isBanned)
+            dto.banExpTime = c.bans.find((b) => b.userId === u).expireTimestamp;
+          dto.isMuted = !!c.mutes.find((m) => m.userId === u);
+          if (dto.isMuted) {
+            const muted: IBanMute = c.mutes.find((mute) => mute.userId === u);
+            dto.muteExpTime = muted.expireTimestamp;
+          }
           return dto;
         });
         return channel;
