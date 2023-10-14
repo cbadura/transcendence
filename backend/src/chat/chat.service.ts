@@ -252,11 +252,7 @@ export class ChatService {
   async sendMessage(socket: Socket, dto: MessageDto) {
     const sender: number = this.getUserIdFromSocket(socket);
     if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId)) {
-      this.broadcastToAllUserSockets(
-        sender,
-        'exception',
-        'Invalid message target',
-      );
+      socket.emit('exception', 'Invalid message target');
       return;
     }
 
@@ -268,20 +264,12 @@ export class ChatService {
     if (dto.channel) {
       const channel: IChannel = this.getChannelfromName(dto.channel); // check if the channel exist
       if (!channel) {
-        this.broadcastToAllUserSockets(
-          sender,
-          'exception',
-          "Channel/Receiver doesn't exist",
-        );
+        socket.emit('exception', "Channel doesn't exist");
         return;
       }
       const members: ISocketUser[] = this.getActiveChannelUsers(channel);
       if (!channel.users.find((member) => member === sender)) {
-        this.broadcastToAllUserSockets(
-          sender,
-          'exception',
-          'User not in the channel',
-        );
+        socket.emit('exception', 'You are not in the channel');
         return;
       }
       // if (!members.find((member) => member.user.id === sender.user.id))
@@ -295,10 +283,9 @@ export class ChatService {
         (mute) => sender === mute.userId,
       );
       if (banned || muted) {
-        this.broadcastToAllUserSockets(
-          sender,
+        socket.emit(
           'exception',
-          'User not allowed to send message to this channel',
+          'You are not allowed to send message to this channel',
         );
         return;
       }
@@ -318,7 +305,7 @@ export class ChatService {
         (user) => user.userId === dto.receiverId,
       ); // array of receiver in case they have multiple tab
       if (!receiver) {
-        this.broadcastToAllUserSockets(sender, 'exception', 'User not online');
+        socket.emit('exception', 'User is not online');
         return;
       }
       const blocklist: Relationship[] =
