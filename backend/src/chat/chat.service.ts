@@ -67,7 +67,6 @@ export class ChatService {
     return !!channel.invites.find((invited) => invited === userId);
   }
 
-  //TODO add is banned, is muted and timers in channel list
   private createChannelList(user: ISocketUser): ListChannelsDto {
     const listChannels: ListChannelsDto = new ListChannelsDto();
     listChannels.channels = this.channels
@@ -316,10 +315,16 @@ export class ChatService {
       }
       const blocklist: Relationship[] =
         await this.userService.getUserRelationships(dto.receiverId, 'blocked');
-      if (!blocklist.find((user) => user.relational_user_id === sender))
+      if (!blocklist.find((user) => user.relational_user_id === sender)) {
         receiver.forEach((ruser) => {
           ruser.socket.emit(ESocketMessage.MESSAGE, messageToChannel);
         });
+        this.broadcastToAllUserSockets(
+          sender,
+          ESocketMessage.MESSAGE,
+          messageToChannel,
+        );
+      }
     }
   }
 
@@ -346,12 +351,9 @@ export class ChatService {
         expireTimestamp: dto.expirationTimestamp,
       });
 
-      this.broadcastToAllUserSockets(
-        targetUser.userId,
-        ESocketMessage.BANNED_FROM_CHANNEL,
-        dto,
-      );
-      // targetUser.socket.emit(ESocketMessage.BANNED_FROM_CHANNEL, dto);
+      this.getActiveChannelUsers(channel).forEach((client) => {
+        client.socket.emit(ESocketMessage.BANNED_FROM_CHANNEL, dto);
+      });
       channel.users = channel.users.filter(
         (user) => user !== targetUser.userId,
       );
@@ -367,7 +369,11 @@ export class ChatService {
         ESocketMessage.MUTED_FROM_CHANNEL,
         dto,
       );
-      // targetUser.socket.emit(ESocketMessage.MUTED_FROM_CHANNEL, dto);
+      this.broadcastToAllUserSockets(
+        user,
+        ESocketMessage.MUTED_FROM_CHANNEL,
+        dto,
+      );
     }
   }
 
@@ -393,7 +399,9 @@ export class ChatService {
       ESocketMessage.KICKED_FROM_CHANNEL,
       dto,
     );
-    //targetUser.socket.emit(ESocketMessage.KICKED_FROM_CHANNEL, dto);
+    this.getActiveChannelUsers(channel).forEach((client) => {
+      client.socket.emit(ESocketMessage.KICKED_FROM_CHANNEL, dto);
+    });
     channel.users = channel.users.filter((user) => user !== targetUser.userId);
   }
 
@@ -420,7 +428,11 @@ export class ChatService {
       ESocketMessage.INVITED_TO_CHANNEL,
       dto,
     );
-    //targetUser.socket.emit(ESocketMessage.INVITED_TO_CHANNEL, dto);
+    this.broadcastToAllUserSockets(
+      user,
+      ESocketMessage.INVITED_TO_CHANNEL,
+      dto,
+    );
     channel.invites.push(targetUser.userId);
   }
 
