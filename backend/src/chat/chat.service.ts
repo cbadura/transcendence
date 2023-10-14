@@ -39,7 +39,8 @@ export class ChatService {
   }
 
   private getUserIdFromSocket(socket: Socket): number {
-    return this.clients.find((client) => client.socket.id === socket.id).userId;
+    return this.clients.find((client) => client.socket.id === socket.id)
+      ?.userId;
   }
 
   private getUserSocketsByID(id: number): Socket[] {
@@ -157,7 +158,7 @@ export class ChatService {
 
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
     const channel: IChannel = {
-      name: channelDto.name,
+      name: channelDto.channelName,
       ownerId: this.getUserIdFromSocket(socket),
       mode: channelDto.mode,
       password: undefined,
@@ -183,7 +184,7 @@ export class ChatService {
     // notifying user[s] about new channel creation
     const channelData: CreateChannelDto = new CreateChannelDto();
     channelData.ownerId = channel.ownerId;
-    channelData.name = channel.name;
+    channelData.channelName = channel.name;
     channelData.mode = channel.mode;
 
     if (EChannelMode.PRIVATE === channel.mode) {
@@ -208,7 +209,7 @@ export class ChatService {
       throw new WsException('You are not allowed to update this channel');
     if (
       this.channels.find(
-        (ch) => dto.name === ch.name && dto.currName !== dto.name,
+        (ch) => dto.channelName === ch.name && dto.currName !== dto.channelName,
       )
     )
       throw new WsException('Channel with this name already exists');
@@ -220,7 +221,7 @@ export class ChatService {
 
     const channelData: CreateChannelDto = new CreateChannelDto();
     channelData.ownerId = channel.ownerId;
-    channelData.name = updChannel.name;
+    channelData.channelName = updChannel.name;
     channelData.mode = updChannel.mode;
 
     const updChannelData: UpdateChannelDto = {
