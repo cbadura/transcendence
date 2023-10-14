@@ -205,7 +205,11 @@ export class ChatService {
     if (!channel) throw new WsException("Channel doesn't exist");
     if (channel.ownerId !== this.getUserIdFromSocket(socket))
       throw new WsException('You are not allowed to update this channel');
-    if (this.channels.find((ch) => dto.name === ch.name))
+    if (
+      this.channels.find(
+        (ch) => dto.name === ch.name && dto.currName !== dto.name,
+      )
+    )
       throw new WsException('Channel with this name already exists');
     if (dto.mode === EChannelMode.PROTECTED && !dto.password)
       throw new WsException('Missing channel password for a protected channel');
