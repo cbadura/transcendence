@@ -35,7 +35,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   handleConnection(client: Socket) {
     this.chatService.handleConnection(
       client,
-      +client?.handshake?.query?.userId,
+      // +client?.handshake?.query?.userId,
+      1
     );
   }
 
