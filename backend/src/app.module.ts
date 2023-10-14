@@ -20,6 +20,7 @@ import { RelationshipModule } from './relationship/relationship.module';
 import { Relationship } from './entities/relationship.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule} from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -38,6 +39,7 @@ import { ConfigModule} from '@nestjs/config';
     MulterModule.register({
       dest: './uploads/'
     }),
+    PassportModule.register({ session: true }),
     UserModule,
     AchievementDefinitionModule,
     AchievementModule,

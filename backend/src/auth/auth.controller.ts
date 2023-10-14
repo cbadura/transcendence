@@ -1,6 +1,6 @@
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { ftAuthGuard } from './auth.guard';
-import { PassportModule } from '@nestjs/passport'
 
 @Controller('auth')
 export class AuthController {
@@ -10,8 +10,11 @@ export class AuthController {
   login() {}
 
   @Get('redirect')
-  redirect(@Res() res: Response) {
-    res.status;
+  @UseGuards(ftAuthGuard)
+  redirect(/*@Res() res: Response*/@Query() qpara: any) {
+    // res.status(200).send('hi');
+    console.log(qpara.code);
+    
   }
 
   @Get('status')

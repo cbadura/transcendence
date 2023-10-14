@@ -1,21 +1,25 @@
-import { Strategy } from 'passport-oauth2'
 import { PassportStrategy } from '@nestjs/passport'
+import { Strategy, Profile } from 'passport-42'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
-export class ftStrategy extends PassportStrategy(Strategy) {
+export class ftStrategy extends PassportStrategy(Strategy, '42') {
   constructor() {
     super({
-      authorizationURL: 'https://api.intra.42.fr/oauth/authorize',
-      tokenURL: 'https://api.intra.42.fr/oauth/token',
       clientID: process.env.TCD_UID,
       clientSecret: process.env.TCD_SECRET,
       callbackURL: process.env.TCD_CALLBACKURL,
-      scope: ['public']
+      scope: ['public'],
+      passReqToCallback: true,
     });
   }
 
-  async validate(accessToken: string, refreshToken: string) {
-    console.log(accessToken, refreshToken);
+  async validate(wtf: string, accessToken: string, refreshToken: string, profile: Profile) {
+    // console.log(accessToken, refreshToken);
+    console.log(accessToken);
+    console.log(refreshToken);
+    console.log(profile);
+    const {id, username, displayName} = profile;
+    console.log(id, username, displayName);
   }
 }
