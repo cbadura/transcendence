@@ -6,10 +6,9 @@ import {
   OnGatewayDisconnect,
   ConnectedSocket,
   OnGatewayInit,
-  WebSocketServer,
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { Namespace, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { ESocketMessage } from './chat.interfaces';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
@@ -23,14 +22,14 @@ import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
-@WebSocketGateway({ 
+@WebSocketGateway({
   cors: true,
-  namespace: 'chat'
+  namespace: 'chat',
 })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+export class ChatGateway
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
+{
   constructor(private readonly chatService: ChatService) {}
-  @WebSocketServer()
-  server: Namespace;
 
   handleConnection(client: Socket) {
     this.chatService.handleConnection(
@@ -43,11 +42,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     this.chatService.handleDisconnect(client);
   }
 
-  afterInit(server: any) {
+  afterInit() {
     // setInterval(() => this.chatService.checkChannels(this.chatService.updateBanMutelist), 1000);
     setInterval(() => {
       this.chatService.channels.forEach((ch) => this.chatService.updateBanMutelist(ch))
-    }, 1000)
+    }, 1000);
   }
 
   @UsePipes(new ValidationPipe())
@@ -123,7 +122,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   }
 
   @UsePipes(new ValidationPipe())
-  @SubscribeMessage(ESocketMessage.TRY_KICK_FROM_CHANNEL)
+  @SubscribeMessage(ESocketMessage.TRY_INVITE_TO_CHANNEL)
   inviteUser(
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: InviteToChannelDto,
