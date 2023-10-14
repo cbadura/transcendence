@@ -477,6 +477,7 @@ export class ChatService {
     const joinedDto: JoinChannelDto = new JoinChannelDto();
     joinedDto.userId = who;
     joinedDto.channelName = dto.channelName;
+    joinedDto.channelUsersIds = channel.users;
 
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
