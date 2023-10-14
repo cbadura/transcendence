@@ -6,5 +6,6 @@ declare namespace NodeJS {
     POSTGRES_PORT?: string;
     TCD_UID?: string;
     TCD_SECRET?: string;
+    TCD_CALLBACKURL?: string;
   }
 }

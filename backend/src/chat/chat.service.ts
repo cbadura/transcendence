@@ -39,7 +39,7 @@ export class ChatService {
   }
 
   private getUserIdFromSocket(socket: Socket): number {
-    return this.clients.find((client) => client.socket.id === socket.id).userId;
+    return this.clients.find((client) => client.socket.id === socket.id)?.userId;
   }
 
   private getUserSocketsByID(id: number): Socket[] {
