@@ -34,6 +34,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     // const chatns = this.chatHistoryService.connect();
     this.messages = this.chatHistoryService.getHistory();
     this.chatHistoryService.subscribeToMessages();
+    this.chatHistoryService.listChannels();
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
       (posts) => {
         this.messages = posts;
@@ -54,13 +55,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   savePost(message: string) {
-    const newPost: Post = {
-        user: this.userDataService.getUser(),
-        text: message,
-        dateTime: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
+    const newPost = {
+        message: message,
+        senderAvatar: '',
+        timestamp: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
     };
     this.chatHistoryService.sendMessage(newPost);
   }
-
 
 }

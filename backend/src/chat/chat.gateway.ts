@@ -33,7 +33,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
   handleConnection(client: Socket) {
     this.chatService.handleConnection(
       client,
-      +client?.handshake?.query?.userId,
+      //+client?.handshake?.query?.userId,
+      1,
     );
   }
 
@@ -90,6 +91,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: MessageDto,
   ) {
+    console.log('here');
     this.chatService.sendMessage(socket, dto);
   }
 

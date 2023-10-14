@@ -1,9 +1,11 @@
-import { DatePipe } from "@angular/common";
 import { User } from "./user";
 
 export interface Post {
-    user: User;
-    text: string;
-    room?: string;
-    dateTime: string | null;
+    senderId?: number;
+    senderName?: string;
+    senderColor?: string;
+    senderAvatar: string;
+    message: string;
+    channel?: string;
+    timestamp: string | null;
 }

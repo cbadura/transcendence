@@ -17,11 +17,11 @@
     
     <!-- Render message info conditionally -->
     <ng-container
-    *ngIf="i === 0 || message.user.id !== messages[i - 1].user.id"
+    *ngIf="i === 0 || message.senderId !== messages[i - 1].senderId"
     >
-    <tcd-message-info [post]="message" [isMe]="myUser.id == message.user.id" ></tcd-message-info>
+    <tcd-message-info [post]="message" [isMe]="myUser.id == message.senderId" ></tcd-message-info>
   </ng-container>
-  <tcd-message-bubble [post]="message" [isMe]="myUser.id == message.user.id" class="flex"></tcd-message-bubble>
+  <tcd-message-bubble [post]="message" [isMe]="myUser.id == message.senderId" class="flex"></tcd-message-bubble>
   
 </div>
 
@@ -29,5 +29,6 @@
 <tcd-chat-input (sendMessage)="savePost($event)"></tcd-chat-input>
 </div>
 </div>
-
+<!-- Create channel -->
+<tcd-create-channel></tcd-create-channel>
 </div>

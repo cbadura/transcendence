@@ -50,22 +50,49 @@ export class ChatHistoryService {
   addPost(post: Post) {
     this.chatHistory.push(post);
   }
+  
+  subscribeToMessages() {
+    this.getMessage().subscribe( (msg : any) => {
+      this.chatHistory.push(msg);
+      this.serverChat.next(this.chatHistory);
+    });
+  }
 
+  /* SOCKET.IO functions */
   sendMessage(post: Post) {
-    this.chatSocket.emit('message', post);
+    //console.log(post.message);
+    //post.channel = 'new channel';
+
+    let newPost = {
+      message: 'hiiii',
+      channel: 'new channel',
+    }
+    this.chatSocket.emit('message', newPost);
   }
   getMessage() {
-    let message = this.chatSocket.fromEvent('chatMessage')
+    let message = this.chatSocket.fromEvent('message')
       .pipe(map((msg: any) => {
+      console.log('MSG', msg);
       return msg;
     }));
     return message;
   }
 
-  subscribeToMessages() {
-    this.getMessage().subscribe( (msg : any) => {
-      this.chatHistory.push(msg);
-      this.serverChat.next(this.chatHistory);
+  createChannel() {
+    let post = {
+      name: 'new channel',
+      mode: 'public'
+    };
+    console.log('POST', post);
+    this.chatSocket.emit('tryCreateChannel', post);
+  } 
+
+  /* display all channels stored in server; is called OnInit in ChatComponent */
+  listChannels() {
+    let channels = this.chatSocket.fromEvent('listChannels')
+    //console.log('CHANNELS', channels.for);
+    channels.forEach(ch => {
+      console.log('CHANNEL', ch)
     });
   }
 }
