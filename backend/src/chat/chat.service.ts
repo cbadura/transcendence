@@ -12,11 +12,7 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 import { UserService } from '../user/user.service';
 import { Socket } from 'socket.io';
 import { WsException } from '@nestjs/websockets';
-import {
-  ChannelDto,
-  ChannelUserDto,
-  ListChannelsDto,
-} from './dto/list-channels.dto';
+import { ChannelDto, ListChannelsDto } from './dto/list-channels.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
 import { JoinChannelDto } from './dto/join-channel.dto';
@@ -82,24 +78,23 @@ export class ChatService {
           this.isInvited(ch, user.userId),
         //this last check depends on frontend implementation
       )
-      .map((c): ChannelDto => {
+      .map((ch): ChannelDto => {
         const channel: ChannelDto = new ChannelDto();
-        channel.name = c.name;
-        channel.mode = c.mode;
-        channel.role = this.getUserRole(c, user.userId);
-        channel.users = c.users.map((u): ChannelUserDto => {
-          const dto: ChannelUserDto = new ChannelUserDto();
-          dto.id = u;
-          dto.isBanned = !!c.bans.find((ban) => ban.userId === u);
-          if (dto.isBanned)
-            dto.banExpTime = c.bans.find((b) => b.userId === u).expireTimestamp;
-          dto.isMuted = !!c.mutes.find((m) => m.userId === u);
-          if (dto.isMuted) {
-            const muted: IBanMute = c.mutes.find((mute) => mute.userId === u);
-            dto.muteExpTime = muted.expireTimestamp;
-          }
-          return dto;
-        });
+        channel.name = ch.name;
+        channel.mode = ch.mode;
+        channel.role = this.getUserRole(ch, user.userId);
+        channel.isBanned = !!ch.bans.find((ban) => ban.userId === user.userId);
+        if (channel.isBanned)
+          channel.banExpTime = ch.bans.find(
+            (b) => b.userId === user.userId,
+          ).expireTimestamp;
+        channel.isMuted = !!ch.mutes.find((m) => m.userId === user.userId);
+        if (channel.isMuted) {
+          channel.muteExpTime = ch.mutes.find(
+            (mute) => mute.userId === user.userId,
+          ).expireTimestamp;
+        }
+        channel.usersIds = ch.users;
         return channel;
       });
     return listChannels;
