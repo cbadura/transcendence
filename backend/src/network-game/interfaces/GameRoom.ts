@@ -21,9 +21,7 @@ export class GameRoom {
     updateGameState() {
         this.game.routine();
         console.log(this.game.getGame().ball);
-        for (let i = 0; i < this.clients.length; i++) {
-            this.clients[i].socket.emit(ESocketGameMessage.UPDATE_GAME_INFO, this.game.getGame());
-        }
+        this.notifyClients(ESocketGameMessage.UPDATE_GAME_INFO,this.game.getGame())
     }
 
     //converting user ID to pedal ID
@@ -37,6 +35,13 @@ export class GameRoom {
             console.log('THis data was received, but it matches neither clients',data)
             console.log('client [0] = ', this.clients[0].user.id)
             console.log('client [1] = ', this.clients[1].user.id)
+        }
+    }
+
+    //wrapper for looping through all clients and sending a specific message
+    private notifyClients(message: ESocketGameMessage, ...args){
+        for (let i = 0; i < this.clients.length; i++) {
+            this.clients[i].socket.emit(message, ...args);
         }
     }
 }

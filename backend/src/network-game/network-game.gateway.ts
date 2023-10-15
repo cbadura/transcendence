@@ -20,7 +20,7 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
   handleDisconnect(client: Socket) {
     console.log('Client disconnected');
-    this.networkGameService.handleDisconnect(client);
+    this.networkGameService.handleDisconnect(client); 
   }
 
   @SubscribeMessage(ESocketGameMessage.TRY_MOVE_PADDLE) //probably change message to 'move'

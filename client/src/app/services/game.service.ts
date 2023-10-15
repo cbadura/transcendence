@@ -33,7 +33,7 @@ export class GameService {
 	}
 
 	getGame() {
-		let game = this.gameSocket?.fromEvent('game')
+		let game = this.gameSocket?.fromEvent('updateGame')
 			.pipe(map((game: any) => {
 			return game;
 			}));
@@ -41,12 +41,12 @@ export class GameService {
 	}
 
 	sendPaddle(id : number, step : number) {
-		this.gameSocket?.emit('paddle', id, step);
+		this.gameSocket?.emit('tryMovePaddle', id, step);
 		console.log("sendPaddle", id, step);
 	}
 
 	subscribeToGame() {
-		this.gameSocket?.on('game', (game: Game) => {
+		this.gameSocket?.on('updateGame', (game: Game) => {
 					this.serverGame.next(game);
 		});
 	}
