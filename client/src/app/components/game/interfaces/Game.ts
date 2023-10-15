@@ -1,14 +1,9 @@
 import { Ball } from './Ball'
 
-export interface Paddle {
-	y: number,
-	user: User
-}
-
 export interface Game {
     ball : Ball,
-    paddle1 : Paddle,
-    paddle2 : Paddle,
+    paddle1 : number,
+    paddle2 : number,
     score1: number,
     score2: number
     gameOver: boolean,
