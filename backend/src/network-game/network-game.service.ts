@@ -7,10 +7,11 @@ import { GameControl } from './gameControl';
 import { gameConfig } from './gameConfig';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';
 import { GameRoom } from './interfaces/GameRoom';
+import { MatchService } from 'src/match/match.service';
 
 @Injectable()
 export class NetworkGameService {
-    constructor(readonly userService: UserService) {}
+    constructor(readonly userService: UserService,private readonly matchService: MatchService) {}
     private defaultPongQueue: ISocketUser[] = [];
     private gameRooms: GameRoom[] = [];
     // private myGameControl: GameControl;
@@ -38,11 +39,15 @@ export class NetworkGameService {
         this.printConnectedSockets();
 
         if(this.defaultPongQueue.length >= 2){
-          const newRoom = new GameRoom();
-          newRoom.clients.push(this.defaultPongQueue[0])
-          newRoom.clients.push(this.defaultPongQueue[1])
+          const newRoom = new GameRoom(this.matchService);
+          newRoom.clients.push(this.defaultPongQueue[0]);
+          newRoom.clients.push(this.defaultPongQueue[1]);
           newRoom.game = new GameControl(this.createDefaultPongGame());
           this.gameRooms.push(newRoom);
+
+          //user[0] == peddal 1, user[1] == peddal 2
+          //note: nadiia changed the ISocketUser setup... mean i likely need to fetch the user Data there first.
+          newRoom.notifyClients(ESocketGameMessage.ROOM_CREATED,{...newRoom.game.getGame(),pedal1: newRoom.clients[0].user,pedal2: newRoom.clients[1].user})
           newRoom.StartGame();
           
           //remove the 2 users from the queue
@@ -74,9 +79,30 @@ export class NetworkGameService {
 
       //probably should also check if a user disconnects while in match.
       handleDisconnect(client: Socket) {
-        this.defaultPongQueue = this.defaultPongQueue.filter(
-          (currentClient) => currentClient.socket.id !== client.id,
-        );
+      //client could leave either the queue or a running game
+        const clientUser = this.defaultPongQueue.find((currClient) =>currClient.socket.id === client.id);
+        console.log(clientUser);
+        //search normal queue
+        if(clientUser != null){
+          this.defaultPongQueue = this.defaultPongQueue.filter(
+            (currentClient) => currentClient.socket.id !== client.id,
+            );
+        }
+        else{ //search running games
+          console.log('in else')
+          for (let i = 0; i < this.gameRooms.length; i++) {
+            console.log('room element = ',i);
+            for (let j = 0; j < this.gameRooms[i].clients.length; j++) {
+              console.log('client element = ',j);
+              // console.log(this.gameRooms[i].clients[j].socket);
+                  if(this.gameRooms[i].clients[j].socket?.id == client.id){
+                    console.log('Client disconnected with ID ', this.gameRooms[i].clients[j].user.id);
+                    this.gameRooms[i].clientDisconnected(j);
+                    return;
+                  }            
+            }
+          }
+          }
       }
 
 

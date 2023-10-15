@@ -10,6 +10,9 @@ export class Match{
     @Column()
     timestamp: Date;
 
+    @Column()
+    reason: 'score' | 'disconnect';
+
     @OneToMany(()=>MatchUser,(matchUser)=>matchUser.match, {
         cascade: ['insert'],
     })

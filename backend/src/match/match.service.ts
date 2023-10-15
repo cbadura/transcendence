@@ -25,10 +25,19 @@ export class MatchService {
 
 
 
-    //figures out who won the game and sets the outcome property of each element
+    //figures out who won the game and sets the outcome property of each element //currently works with 2 users, if we want to have more we need to loop through the users
     determineMatchOutcome(createMatchDto: CreateMatchDto): void {
-
-        if(createMatchDto.matchUsers[0].score > createMatchDto.matchUsers[1].score){
+        if(createMatchDto.matchEndReason.reason == 'disconnect'){
+            if( createMatchDto.matchUsers[0].user_id == createMatchDto.matchEndReason.disconnected_user_id){
+                createMatchDto.matchUsers[0].outcome = false;
+                createMatchDto.matchUsers[1].outcome = true;
+            }
+            else{
+                createMatchDto.matchUsers[0].outcome = true;
+                createMatchDto.matchUsers[1].outcome = false;
+            }
+        }
+        else if(createMatchDto.matchUsers[0].score > createMatchDto.matchUsers[1].score){
             createMatchDto.matchUsers[0].outcome = true;
             createMatchDto.matchUsers[1].outcome = false;
         }
@@ -46,7 +55,7 @@ export class MatchService {
             return new Decimal(0.5);
     }
 
-    async createMatch(createMatchDto: CreateMatchDto){
+    async createMatch(createMatchDto: CreateMatchDto): Promise<Match>{
 
         // console.log(createMatchDto);
         createMatchDto.matchUsers[0].user = await this.userRepository.findOne({where: {id: createMatchDto.matchUsers[0].user_id}});
@@ -58,8 +67,10 @@ export class MatchService {
         
         const match =  new Match();
         match.timestamp = new Date();
-        await this.matchRepository.save(match);
+        match.reason = createMatchDto.matchEndReason.reason;
+        const matchObject = await this.matchRepository.save(match);
         this.determineMatchOutcome(createMatchDto);
+        
         for(const participant of createMatchDto.matchUsers){
                 const matchUser = new MatchUser();
                 matchUser.match = match; 
@@ -77,8 +88,11 @@ export class MatchService {
                 })
         }
 
-        // console.log(createMatchDto);
-        return null;
+        console.log(matchObject.id);
+        return await this.matchRepository.findOne(
+            { where: { id:matchObject.id },
+            relations: ['matchUsers','matchUsers.user'],
+         });
     }
 
     async getRandomUserID(excludedUserId: number): Promise<number> {
