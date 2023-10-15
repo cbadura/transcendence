@@ -7,7 +7,7 @@ const Ana : User = {
     wins: 10,
     color: '#C9FFE5',
     avatar: 'https://picsum.photos/100',
-      friends: [],
+      // friends: [],
       level: 0,
       matches: 0
   };
@@ -19,7 +19,7 @@ const Ana : User = {
     wins: 5,
     color: '#C9CBFF',
     avatar: 'https://picsum.photos/100',
-      friends: [],
+      // friends: [],
       level: 0,
       matches: 0
   };
@@ -31,7 +31,7 @@ const Ana : User = {
     wins: 2,
     color: '#FFC9C9',
     avatar: 'https://picsum.photos/100',
-      friends: [],
+      // friends: [],
       level: 0,
       matches: 0
   };

@@ -15,6 +15,7 @@ export class EditProfileComponent implements OnInit {
   tempUserName!: string;
   tempColor!: string;
   availableColors: string[] = ['#E7C9FF', '#C9FFE5', '#C9CBFF', '#FFC9C9', '#FFFDC9', '#C9FFFC'];
+  imageURL!: string;
 
   constructor(
     private userDataService: UserDataService) {
@@ -26,7 +27,6 @@ export class EditProfileComponent implements OnInit {
         wins: 0,
         color: '',
         avatar: '',
-		  friends: [],
 		  level: 0,
       };
       this.tempUserName = '';
@@ -39,11 +39,32 @@ export class EditProfileComponent implements OnInit {
         this.myUser = user;
       }
     );
+
+    /* this.userDataService.getUserPic().subscribe(
+      blobUrl => this.myUser.avatar = blobUrl,
+      error => console.error('Error fetching pic:', error)
+    ); */
   }
 
   getUsers() {
     this.userDataService.getUsers();
   }
+
+  /* onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+        this.userDataService.uploadProfilePic(file).subscribe(
+            response => {
+                console.log('File uploaded successfully:', response);
+                // Assuming the server returns the file path in a field named 'filePath'
+                this.userDataService.setAvatar(response.filePath);
+            },
+            error => {
+                console.error('Error uploading file:', error);
+            }
+        );
+    }
+  } */
 
 
   editName(name: string) {

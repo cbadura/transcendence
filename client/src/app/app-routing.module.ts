@@ -7,6 +7,7 @@ import { ChatComponent } from './components/chat/chat.component';
 import { EditProfileComponent } from './components/profile-components/edit-profile/edit-profile.component';
 import { ProfileComponent } from './components/profile-components/profile/profile.component';
 import { HomeComponent} from './components/home/home.component';
+import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
 
 const routes: Routes = [
   { path: 'game', component: GameComponent },
@@ -14,7 +15,8 @@ const routes: Routes = [
   { path: 'chat', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'edit-profile', component: EditProfileComponent },
-  {path: '', component: HomeComponent}
+  { path: 'create-profile', component: CreateProfileComponent },
+  { path: '', component: HomeComponent}
 ];
 
 @NgModule({

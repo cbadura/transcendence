@@ -7,5 +7,5 @@ export interface User {
     wins: number;
     color: string;
     avatar: string;
-    friends: User[];
+    // friends: User[];
 }
