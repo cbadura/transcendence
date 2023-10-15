@@ -1,8 +1,22 @@
 <div class="flex justify-center items-center h-full-header  ml-4 mr-4">
 
-	<div [class.hidden]="isGameOver()">
+	<div *ngIf="status === 'new-game'"
+		class="rounded-3xl sm:w-full sm:text-7xl max-w-md aspect-square flex flex-col items-center justify-center w-1/2 text-3xl cursor-pointer text-white hover:text-black transition-all active:scale-95"
+		(click)="startGame()" [ngStyle]="{ 'background-color': highLightColor }"
+		(mouseover)="highLightColor = darkerColor" (mouseout)="highLightColor = 'black'">
+
+		<h1 class="font-light">Classic</h1>
+		<h1 class="font-Sniglet font-bold">PONG</h1>
+	</div>
+
+	<div *ngIf="status === 'waiting'" class="sm:w-full max-w-md aspect-square  w-2/3 relative">
+		<img class="w-full spin absolute" src="assets/loading.svg" alt="loading">
+		<div class="w-full rounded-full  aspect-square"
+		[ngStyle]="{ 'background-color': darkerColor }"></div>
+	</div>
+
+	<div [class.hidden]="status !== 'playing'">
 		<canvas class="rounded-2xl w-full max-w-4xl" #canvas width="1280" height="720"></canvas>
-		<tcd-custom-button buttonText="Click to Play" (click)="startGame()"></tcd-custom-button>
 	</div>
 
 	<div *ngIf="isGameOver()" class="flex flex-col gap-16 items-center w-full">
