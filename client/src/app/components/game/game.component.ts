@@ -41,11 +41,10 @@ export class GameComponent {
 
   constructor(
     private userDataService: UserDataService,
-    private gameService: GameService,
-     ) { }
+    private gameService: GameService
+  ) {}
 
   ngOnInit() {
-
     // Get user data
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
@@ -55,27 +54,10 @@ export class GameComponent {
     //this.movePaddle();
 
     // Get game data
-    this.gameService.subscribeToGame();
-    this.gameSubscription = this.gameService.serverGameObs$.subscribe(
-      (game) => {
-        this.game = game;
-        if (this.game && this.render)
-        {
-          this.movePaddle();
-          if (!this.game.gameOver)
-            this.render.redraw(this.game);
-          else {
-            this.fillMatchData(this.game);
-            return;
-          }
-        }
-      }
-    );
   }
 
   // Initialize canvas and render after view Init
   ngAfterViewInit(): void {
-
     // Initialize canvas
     this.ctx = this.canvas.nativeElement.getContext(
       '2d'
@@ -85,10 +67,27 @@ export class GameComponent {
     this.render = new Render(this.ctx, this.myUser, gameConfig);
   }
 
-
   startGame(): void {
-    this.gameService.createGameSocket();
-    
+    console.log(this.myUser);
+    this.gameService.createGameSocket(this.myUser.id);
+    console.log('gameSocket created');
+    console.log('gameover:', this.isGameOver());
+
+    this.gameService.subscribeToGame();
+    this.gameSubscription = this.gameService.serverGameObs$.subscribe(
+      (game) => {
+        this.game = game;
+        console.log('game', game);
+        if (this.game && this.render) {
+          this.movePaddle();
+          if (!this.game.gameOver) this.render.redraw(this.game);
+          else {
+            this.fillMatchData(this.game);
+            return;
+          }
+        }
+      }
+    );
   }
 
   playAgain(): void {
@@ -106,23 +105,13 @@ export class GameComponent {
     };
   }
 
-
   movePaddle() {
-
     // Will emit events to backend
     if (this.movingUp) {
-      this.gameService.sendPaddle(1, -gameConfig.paddle.step);
+      this.gameService.sendPaddle(this.myUser.id, -gameConfig.paddle.step);
     }
     if (this.movingDown) {
-      this.gameService.sendPaddle(1, gameConfig.paddle.step);
-    }
-
-    // To delete after moving to backend
-    if (this.movingUpOpp) {
-      this.gameService.sendPaddle(2, -gameConfig.paddle.step);
-    }
-    if (this.movingDownOpp) {
-      this.gameService.sendPaddle(2, gameConfig.paddle.step);
+      this.gameService.sendPaddle(this.myUser.id, gameConfig.paddle.step);
     }
   }
 
@@ -159,9 +148,8 @@ export class GameComponent {
   }
 
   isGameOver(): boolean {
-    console.log('checking for gameover')
-    if (!this.game)
-      return false;
+    //console.log('checking for gameover')
+    if (!this.game) return false;
     return this.game.gameOver;
   }
 

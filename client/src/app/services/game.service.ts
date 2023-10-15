@@ -14,10 +14,10 @@ export class GameService {
 	
 	serverGame = new BehaviorSubject<Game>(this.game);
 	serverGameObs$ = this.serverGame.asObservable();
-
-	createGameSocket(): void {
+	createGameSocket(userId : number): void {
+		const url = 'http://localhost:3000/game?userId=' + userId;
 		if (!this.gameSocket) {
-		  this.gameSocket = new Socket({ url: 'http://localhost:3000/game?userId=1', options: {} });
+		  this.gameSocket = new Socket({ url: url, options: {} });
 		}
 	  }
 
@@ -47,6 +47,7 @@ export class GameService {
 
 	subscribeToGame() {
 		this.gameSocket?.on('updateGame', (game: Game) => {
+			console.log("game", game);
 					this.serverGame.next(game);
 		});
 	}
