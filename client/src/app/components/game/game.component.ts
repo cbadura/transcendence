@@ -6,7 +6,10 @@ import { UserDataService } from '../../services/user-data.service';
 import { GameService } from 'src/app/services/game.service';
 import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
-import { SaturatedColor, LightenDarkenColor } from '../../shared/functions/color';
+import {
+  SaturatedColor,
+  LightenDarkenColor,
+} from '../../shared/functions/color';
 
 // Interfaces
 import { User } from '../../shared/interfaces/user';
@@ -25,6 +28,7 @@ export class GameComponent {
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
   private gameSubscription!: Subscription;
+  private startCountdownSubscription!: Subscription;
   public myUser!: User;
   public match!: Match;
   public status: string = 'new-game';
@@ -56,9 +60,6 @@ export class GameComponent {
       this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
     });
 
-    // Add event emitters
-    //this.movePaddle();
-
     // Get game data
   }
 
@@ -78,6 +79,12 @@ export class GameComponent {
     this.status = 'waiting';
     this.gameService.createGameSocket(this.myUser.id);
     console.log('gameSocket created');
+
+    this.gameService.subscribeToRoomCreated();
+    this.startCountdownSubscription =
+      this.gameService.serverCountdownObs$.subscribe((startTimer: number) => {
+        console.log('startTimer', startTimer);
+      });
 
     this.gameService.subscribeToGame();
     this.gameSubscription = this.gameService.serverGameObs$.subscribe(
@@ -107,8 +114,8 @@ export class GameComponent {
       paddle2: 0,
       ball: {
         x: 0,
-		  y: 0,
-		hits: 0,
+        y: 0,
+        hits: 0,
       },
       score1: 0,
       score2: 0,
