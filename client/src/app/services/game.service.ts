@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Game } from '../components/game/interfaces/Game';
 import { Socket } from 'ngx-socket-io';
+import { ESocketGameMessage } from '../shared/ESocketGameMessage';
 
 @Injectable({
   providedIn: 'root'
@@ -32,21 +33,20 @@ export class GameService {
 		return this.serverGame.value;
 	}
 
-	getGame() {
-		let game = this.gameSocket?.fromEvent('updateGame')
-			.pipe(map((game: any) => {
-			return game;
-			}));
-		return game;
-	}
+	// getGame() {
+	// 	let game = this.gameSocket?.fromEvent(ESocketGameMessage.UPDATE_GAME_INFO)
+	// 		.pipe(map((game: any) => {
+	// 		return game;
+	// 		}));
+	// 	return game;
+	// }
 
 	sendPaddle(id : number, step : number) {
-		this.gameSocket?.emit('tryMovePaddle', id, step);
-		console.log("sendPaddle", id, step);
+		this.gameSocket?.emit(ESocketGameMessage.TRY_MOVE_PADDLE, id, step);
 	}
 
 	subscribeToGame() {
-		this.gameSocket?.on('updateGame', (game: Game) => {
+		this.gameSocket?.on(ESocketGameMessage.UPDATE_GAME_INFO, (game: Game) => {
 			console.log("game", game);
 					this.serverGame.next(game);
 		});
