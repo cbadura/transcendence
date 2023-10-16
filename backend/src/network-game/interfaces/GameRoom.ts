@@ -20,7 +20,7 @@ export class GameRoom {
 
     updateGameState() {
         this.game.routine();
-        console.log(this.game.getGame().ball);
+		console.log(this.game.getGame().ball);
         this.notifyClients(ESocketGameMessage.UPDATE_GAME_INFO,this.game.getGame())
     }
 
@@ -40,7 +40,7 @@ export class GameRoom {
 
     //wrapper for looping through all clients and sending a specific message
     private notifyClients(message: ESocketGameMessage, ...args){
-        for (let i = 0; i < this.clients.length; i++) {
+		for (let i = 0; i < this.clients.length; i++) {
             this.clients[i].socket.emit(message, ...args);
         }
     }
