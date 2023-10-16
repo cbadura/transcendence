@@ -11,8 +11,7 @@ export class GameControl {
   // In backend to be called on "CLIENT_MOVE_PADDLE" event
   movePaddle(id: number, step: number): void {
     const maxTop = 1;
-    const maxBottom =
-      gameConfig.canvas.height - gameConfig.paddle.length - maxTop;
+    const maxBottom = gameConfig.canvas.height - gameConfig.paddle.length - maxTop;
     if (id === 1) {
       const newPaddlePos = this.game.paddle1 + step;
       if (newPaddlePos > maxTop && newPaddlePos < maxBottom)

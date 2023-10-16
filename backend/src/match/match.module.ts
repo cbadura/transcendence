@@ -10,5 +10,6 @@ import { MatchUser } from 'src/entities/match-user.entity';
   providers: [MatchService,],
   controllers: [MatchController],
   imports: [TypeOrmModule.forFeature([Match,User,MatchUser])],
+  exports: [MatchService],
 })
 export class MatchModule {}
