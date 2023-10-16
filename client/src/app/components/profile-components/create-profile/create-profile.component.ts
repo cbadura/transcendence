@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Location} from '@angular/common';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -11,6 +12,7 @@ import { User } from '../../../shared/user';
   styleUrls: ['./create-profile.component.css']
 })
 export class CreateProfileComponent implements OnInit {
+  myUser!: User;
   tempUser!: User;
   private userSubscription!: Subscription;
   tempUserName!: string;
@@ -21,7 +23,8 @@ export class CreateProfileComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private userDataService: UserDataService) {
+    private userDataService: UserDataService,
+    private location: Location) {
     this.tempUserName = '';
     this.tempColor = '';
   }
@@ -33,12 +36,22 @@ export class CreateProfileComponent implements OnInit {
       }
     );
 
-   /*  this.userDataService.getProfilePics().subscribe(
+    this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+        this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
+          this.myUser = data;
+          console.log('Profile', data);
+        });
+      }
+    );
+
+    this.userDataService.getProfilePics().subscribe(
       data => {
         this.imageData = data;
       },
       error => console.error('Error fetching pics:', error)
-    ); */
+    );
   }
 
   getUsers() {
@@ -56,14 +69,10 @@ export class CreateProfileComponent implements OnInit {
     }, error => {
       window.alert('Error editing user: ' + JSON.stringify(error));
     });
-    
-/*     if (this.tempFile) {
-      this.userDataService.uploadProfilePic(this.tempFile);
-    } */
-    this.router.navigate(['/']);
+    this.location.back();
   }
 
-  editAvatar(filePath: string, url: string, event: Event) {
+ /*  editAvatar(filePath: string, url: string, event: Event) {
     this.userDataService.setAvatar(filePath);
     event.stopPropagation();
   }
@@ -72,7 +81,7 @@ export class CreateProfileComponent implements OnInit {
     if (name && name.trim() !== '') {
       this.tempUserName = name;
     }
-  }
+  } */
 
   editColor(color: string) {
     this.tempColor = color;
