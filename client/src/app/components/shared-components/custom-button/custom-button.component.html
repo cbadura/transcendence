@@ -1,7 +1,7 @@
 <button
   [ngClass]="{
     'rounded-full p-2 border border-black transition-all active:scale-95': true,
-    'bg-black text-white': isBlack,
+    'bg-black text-white hover:bg-zinc-800': isBlack,
     'hover:bg-black hover:text-white': !isBlack,
     'h-10': size == 'small',
     'p-4 text-4xl' : size == 'big'

@@ -6,7 +6,6 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
 import { ChatComponent } from './components/chat/chat.component';
 import { EditProfileComponent } from './components/profile-components/edit-profile/edit-profile.component';
 import { ProfileComponent } from './components/profile-components/profile/profile.component';
-import { HomeComponent} from './components/home/home.component';
 import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
 import { HomeComponent } from './components/home/home.component';
 import { ChannelsComponent } from './components/channels/channels.component';

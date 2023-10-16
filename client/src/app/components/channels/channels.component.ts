@@ -1,4 +1,9 @@
 import { Component } from '@angular/core';
+import { ChatHistoryService } from 'src/app/services/chat-history.service';
+import { Channel } from 'src/app/shared/chat/Channel';
+import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
+import { EUserRole } from 'src/app/shared/macros/EUserRole';
+import { dummyChannels } from 'src/app/temp/dummyChannels';
 
 @Component({
   selector: 'tcd-channels',
@@ -6,5 +11,43 @@ import { Component } from '@angular/core';
   styleUrls: ['./channels.component.css']
 })
 export class ChannelsComponent {
-  pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
+  public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
+  public selectedPage = 'My channels';
+  public dummyChannels: Channel[] = dummyChannels;
+  public filteredChannels: Channel[] = [];
+  public ownChannels: Channel[] = [];
+  public adminChannels: Channel[] = [];
+
+
+  constructor(
+    private chatHistoryService: ChatHistoryService) {
+      this.filterChannels();
+  
+    }
+
+
+  createChannel() {
+    this.chatHistoryService.createChannel();
+  }
+
+  selectChannel(channel: string) {
+    console.log(channel);
+    this.selectedPage = channel;
+    this.filterChannels();
+  }
+
+  filterChannels() {
+    const {selectedPage} = this;
+    if (selectedPage === 'Public')
+      this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PUBLIC);
+    else if (selectedPage === 'Private')
+      this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
+    else if (selectedPage === 'Protected')
+      this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
+    else if (selectedPage === 'My channels')
+    {
+      this.ownChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.OWNER);
+      this.adminChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.ADMIN);
+    }
+    }
 }

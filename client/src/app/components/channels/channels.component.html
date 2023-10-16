@@ -1,7 +1,56 @@
+<section
+  class="flex items-center flex-col max-w-screen-md ml-auto mr-auto gap-8 p-4 mt-10"
+>
+  <!-- Create Channel -->
+  <tcd-custom-button
+    [buttonText]="'Create channel'"
+    [isBlack]="true"
+    [size]="'big'"
+    [onClick]="createChannel"
+  ></tcd-custom-button>
 
-<section class="flex  items-center flex-col max-w-screen-md ml-auto mr-auto gap-4 p-4 h-full-header" >
+  <!-- Tabs -->
+  <div class="flex gap-4">
+    <tcd-custom-button
+      *ngFor="let page of pages"
+      [buttonText]="page"
+      (click)="selectChannel(page)"
+      [isBlack]="selectedPage === page"
+    ></tcd-custom-button>
+  </div>
 
-<p>channels works!</p>
+  <!-- Public, Private, Protected channels -->
+  <div
+    *ngIf="
+      selectedPage === 'Public' ||
+      selectedPage === 'Private' ||
+      selectedPage === 'Protected'
+    "
+    class="border border-zinc-800 bg-zinc-800 rounded-3xl w-full"
+  >
+    <!-- Channel card -->
+    <tcd-channel-card
+      *ngFor="let channel of filteredChannels"
+      [channel]="channel"
+    ></tcd-channel-card>
+  </div>
 
-<tcd-custom-button [buttonText]="'Create channel'" [isBlack]="true" [size]="'big'"></tcd-custom-button>
+  <div *ngIf="selectedPage === 'My channels'" class="w-full pb-4">
+    <p class="font-bold p-4">Channels I own</p>
+    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+      <tcd-channel-card
+      *ngFor="let channel of ownChannels"
+      [channel]="channel"
+      [editMode]="true"
+    ></tcd-channel-card>
+    </div>
+    <p class="font-bold p-4">Channels I administrate</p>
+    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+      <tcd-channel-card
+      *ngFor="let channel of adminChannels"
+      [channel]="channel"
+      [editMode]="true"
+    ></tcd-channel-card>
+    </div>
+  </div>
 </section>

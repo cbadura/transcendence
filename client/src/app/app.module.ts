@@ -28,7 +28,7 @@ import { MessageBubbleComponent } from './components/chat/message-bubble/message
 import { MessageInfoComponent } from './components/chat/message-info/message-info.component';
 
 import { NgIconsModule } from '@ng-icons/core';
-import { featherSettings, featherSend, featherUser } from '@ng-icons/feather-icons';
+import { featherSettings, featherSend, featherUser, featherUsers } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
@@ -38,6 +38,7 @@ import { GameSocketModule } from './game-socket/game-socket.module';
 import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
 import { CreateChannelComponent } from './components/chat/create-channel/create-channel.component';
 import { ChannelsComponent } from './components/channels/channels.component';
+import { ChannelCardComponent } from './components/channels/channel-card/channel-card.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game', options: {} };
@@ -68,8 +69,9 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChatBtnComponent,
     HomeComponent,
     CreateProfileComponent,
-    CreateChannelComponent
-    ChannelsComponent
+    CreateChannelComponent,
+    ChannelsComponent,
+    ChannelCardComponent
   ],
   imports: [
     HttpClientModule,
@@ -78,7 +80,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     FormsModule,
     ChatSocketModule,
     GameSocketModule,
-    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser }),
+    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser, featherUsers }),
   ],
   providers: [
     UserDataService,
