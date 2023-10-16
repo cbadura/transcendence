@@ -10,7 +10,7 @@ import { map, forkJoin } from 'rxjs';
 })
 export class UserDataService {
   private myUser = {
-      id: 1,
+      id: 0,
       name: '',
       status: '', // WILL NEED TO COME FROM SERVER
       level: 0,
@@ -45,23 +45,42 @@ export class UserDataService {
       color: color,
       avatar: ''
     };
-    
-    return new Observable(observer => {
-      this.http.post(this.serverAddress + '/users/', newUser).subscribe(data => {
-        // Update internal user data after successful server operation
-        this.myUser = { ...this.myUser, ...data };
-        this.userSubject.next(this.myUser);  // Update the BehaviorSubject with the new user data
-
-        window.alert(JSON.stringify(data));
-        observer.next(data);
-        observer.complete();
-        if (file)
-          this.uploadProfilePic(file);
-      }, error => {
-        window.alert('Error creating user: ' + JSON.stringify(error));
-        observer.error(error);
+    if (this.myUser.id < 1) {
+      
+      return new Observable(observer => {
+        this.http.post(this.serverAddress + '/users/', newUser).subscribe(data => {
+          // Update internal user data after successful server operation
+          this.myUser = { ...this.myUser, ...data };
+          this.userSubject.next(this.myUser);  // Update the BehaviorSubject with the new user data
+  
+          window.alert(JSON.stringify(data));
+          observer.next(data);
+          observer.complete();
+          if (file)
+            this.uploadProfilePic(file);
+        }, error => {
+          window.alert('Error creating user: ' + JSON.stringify(error));
+          observer.error(error);
+        });
       });
-    });
+    } else {
+      return new Observable(observer => {
+        this.http.put(this.serverAddress + '/users/' + this.myUser.id, newUser).subscribe(data => {
+          // Update internal user data after successful server operation
+          this.myUser = { ...this.myUser, ...data };
+          this.userSubject.next(this.myUser);  // Update the BehaviorSubject with the new user data
+  
+          window.alert(JSON.stringify(data));
+          observer.next(data);
+          observer.complete();
+          if (file)
+            this.uploadProfilePic(file);
+        }, error => {
+          window.alert('Error editing user: ' + JSON.stringify(error));
+          observer.error(error);
+        });
+      });
+    }
   }
 
   getProfilePics(): Observable<{ blobUrl: string, filePath: string }[]> {

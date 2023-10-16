@@ -37,13 +37,12 @@ export class EditProfileComponent implements OnInit {
     this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
         this.myUser = user;
+        this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
+          this.myUser = data;
+          console.log('Edit Profile', data);
+        });
       }
     );
-
-    /* this.userDataService.getUserPic().subscribe(
-      blobUrl => this.myUser.avatar = blobUrl,
-      error => console.error('Error fetching pic:', error)
-    ); */
   }
 
   getUsers() {
