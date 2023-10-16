@@ -8,15 +8,20 @@ import { EditProfileComponent } from './components/profile-components/edit-profi
 import { ProfileComponent } from './components/profile-components/profile/profile.component';
 import { HomeComponent} from './components/home/home.component';
 import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
+import { HomeComponent } from './components/home/home.component';
+import { ChannelsComponent } from './components/channels/channels.component';
+
 
 const routes: Routes = [
+  { path: '', component: HomeComponent },
   { path: 'game', component: GameComponent },
   { path: 'leaderboard', component: LeaderboardComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'edit-profile', component: EditProfileComponent },
   { path: 'create-profile', component: CreateProfileComponent },
-  { path: '', component: HomeComponent}
+  { path: 'channels', component: ChannelsComponent },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

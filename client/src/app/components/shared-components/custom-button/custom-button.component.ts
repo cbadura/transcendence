@@ -2,8 +2,7 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'tcd-custom-button',
-  templateUrl: './custom-button.component.html',
-  styleUrls: ['./custom-button.component.css']
+  templateUrl: './custom-button.component.html'
 })
 export class CustomButtonComponent {
 	@Input() buttonText: string = "buttonText";
