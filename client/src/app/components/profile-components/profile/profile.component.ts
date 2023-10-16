@@ -30,10 +30,12 @@ export class ProfileComponent implements OnInit {
     this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
         this.myUser = user;
-        this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
-          this.myUser = data;
-          console.log('Profile', data);
-        });
+        if (this.myUser && this.myUser.id) {
+          this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
+            this.myUser = data;
+            console.log('Profile', data);
+          });
+        }
       }
     );
 
