@@ -39,6 +39,7 @@ import { CreateProfileComponent } from './components/profile-components/create-p
 import { CreateChannelComponent } from './components/chat/create-channel/create-channel.component';
 import { ChannelsComponent } from './components/channels/channels.component';
 import { ChannelCardComponent } from './components/channels/channel-card/channel-card.component';
+import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game', options: {} };
@@ -71,7 +72,8 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     CreateProfileComponent,
     CreateChannelComponent,
     ChannelsComponent,
-    ChannelCardComponent
+    ChannelCardComponent,
+    EditChannelComponent
   ],
   imports: [
     HttpClientModule,

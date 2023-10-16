@@ -9,6 +9,7 @@ import { ProfileComponent } from './components/profile-components/profile/profil
 import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
 import { HomeComponent } from './components/home/home.component';
 import { ChannelsComponent } from './components/channels/channels.component';
+import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
 
 
 const routes: Routes = [
@@ -20,7 +21,8 @@ const routes: Routes = [
   { path: 'edit-profile', component: EditProfileComponent },
   { path: 'create-profile', component: CreateProfileComponent },
   { path: 'channels', component: ChannelsComponent },
-  { path: '**', redirectTo: '' },
+  { path: 'channels/edit/:channel', component: EditChannelComponent },
+  // { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

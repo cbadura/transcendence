@@ -19,6 +19,6 @@
 </div>
 
   <!-- Edit button -->
-  <tcd-chat-btn [routerLink]="['/']" *ngIf="editMode" [icon]="'featherSettings'"></tcd-chat-btn>
+  <tcd-chat-btn (click)="navigateToEditChannel($event, channel)" *ngIf="editMode" [icon]="'featherSettings'"></tcd-chat-btn>
 
 </div>

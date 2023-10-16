@@ -8,7 +8,6 @@ import { dummyChannels } from 'src/app/temp/dummyChannels';
 @Component({
   selector: 'tcd-channels',
   templateUrl: './channels.component.html',
-  styleUrls: ['./channels.component.css']
 })
 export class ChannelsComponent {
   public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
@@ -35,6 +34,8 @@ export class ChannelsComponent {
     this.selectedPage = channel;
     this.filterChannels();
   }
+
+
 
   filterChannels() {
     const {selectedPage} = this;
