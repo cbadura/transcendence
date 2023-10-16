@@ -39,8 +39,11 @@ export class ChatService {
   }
 
   private getUserIdFromSocket(socket: Socket): number {
-    return this.clients.find((client) => client.socket.id === socket.id)
-      ?.userId;
+    const user: ISocketUser = this.clients.find(
+      (client) => client.socket.id === socket.id,
+    );
+    if (!user) throw new WsException('Unexpected error');
+    return user.userId;
   }
 
   private getUserSocketsByID(id: number): Socket[] {
@@ -61,7 +64,9 @@ export class ChatService {
   }
 
   private getChannelfromName(name: string): IChannel {
-    return this.channels.find((ch) => ch.name === name);
+    const channel: IChannel = this.channels.find((ch) => ch.name === name);
+    if (!channel) throw new WsException("Channel doesn't exist");
+    return channel;
   }
 
   private isInvited(channel: IChannel, userId: number): boolean {
@@ -201,10 +206,7 @@ export class ChatService {
   }
 
   updateChannel(socket: Socket, dto: UpdateChannelDto) {
-    const channel: IChannel = this.channels.find(
-      (ch) => dto.currName === ch.name,
-    );
-    if (!channel) throw new WsException("Channel doesn't exist");
+    const channel: IChannel = this.getChannelfromName(dto.currName);
     if (channel.ownerId !== this.getUserIdFromSocket(socket))
       throw new WsException('You are not allowed to update this channel');
     if (
@@ -257,10 +259,8 @@ export class ChatService {
 
   async sendMessage(socket: Socket, dto: MessageDto) {
     const sender: number = this.getUserIdFromSocket(socket);
-    if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId)) {
-      socket.emit('exception', 'Invalid message target');
-      return;
-    }
+    if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId))
+      throw new WsException('Invalid message target');
 
     const messageToChannel: MessageDto = { ...dto };
     messageToChannel.senderId = sender;
@@ -268,20 +268,11 @@ export class ChatService {
 
     //check channle member block list - use relation entity
     if (dto.channel) {
-      const channel: IChannel = this.getChannelfromName(dto.channel); // check if the channel exist
-      if (!channel) {
-        socket.emit('exception', "Channel doesn't exist");
-        return;
-      }
+      const channel: IChannel = this.getChannelfromName(dto.channel);
       const members: ISocketUser[] = this.getActiveChannelUsers(channel);
-      if (!channel.users.find((member) => member === sender)) {
-        socket.emit('exception', 'You are not in the channel');
-        return;
-      }
-      // if (!members.find((member) => member.user.id === sender.user.id))
-      //   throw new WsException("User not in the channel");
+      if (!channel.users.find((member) => member === sender))
+        throw new WsException('You are not in the channel');
 
-      // TO DO check expire time, either global with setInterval or on demand locally
       const banned: IBanMute = channel.bans.find(
         (ban) => sender === ban.userId,
       );
@@ -289,11 +280,9 @@ export class ChatService {
         (mute) => sender === mute.userId,
       );
       if (banned || muted) {
-        socket.emit(
-          'exception',
+        throw new WsException(
           'You are not allowed to send message to this channel',
         );
-        return;
       }
 
       members.forEach((member) => {
@@ -310,10 +299,7 @@ export class ChatService {
       const receiver: ISocketUser[] = this.clients.filter(
         (user) => user.userId === dto.receiverId,
       ); // array of receiver in case they have multiple tab
-      if (!receiver) {
-        socket.emit('exception', 'User is not online');
-        return;
-      }
+      if (!receiver) throw new WsException('User is not online');
       const blocklist: Relationship[] =
         await this.userService.getUserRelationships(dto.receiverId, 'blocked');
       if (!blocklist.find((user) => user.relational_user_id === sender)) {
@@ -331,13 +317,11 @@ export class ChatService {
 
   banMuteUser(socket: Socket, dto: BanMuteFromChannelDto, action: EBanMute) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel) throw new WsException("Channel doesn't exist");
     const user: number = this.getUserIdFromSocket(socket);
-    if (!user) throw new WsException('Unexpected error');
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
       throw new WsException('User has no permission');
-    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
+    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId); // this function looks in online users, you need to look in channel users instead.
     if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
     const targetRole: EUserRole = this.getUserRole(channel, targetUser.userId);
     if (
@@ -380,13 +364,11 @@ export class ChatService {
 
   kickUser(socket: Socket, dto: KickFromChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel) throw new WsException("Channel doesn't exist");
     const user: number = this.getUserIdFromSocket(socket);
-    if (!user) throw new WsException('Unexpected error');
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
       throw new WsException('User has no permission');
-    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
+    const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId); // this function looks in online users, you need to look in channel users instead.
     if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
     const targetRole: EUserRole = this.getUserRole(channel, targetUser.userId);
     if (
@@ -411,14 +393,12 @@ export class ChatService {
   // Good morning, Cosmo :)
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
-    if (!channel) throw new WsException("Channel doesn't exist");
     const user: number = this.getUserIdFromSocket(socket);
-    if (!user) throw new WsException('Unexpected error');
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
       throw new WsException('User has no permission');
     const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
-    if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
+    if (!targetUser) throw new WsException('User not online');
     if (channel.users.find((user) => user === targetUser.userId))
       throw new WsException('Target user already in the channel');
     if (channel.invites.find((user) => user === targetUser.userId))
@@ -438,10 +418,7 @@ export class ChatService {
   }
 
   deleteChannel(socket: Socket, dto: DeleteChannelDto) {
-    const channel: IChannel = this.channels.find(
-      (ch) => dto.channelName === ch.name,
-    );
-    if (!channel) throw new WsException("Channel doesn't exist");
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
     if (channel.ownerId !== this.getUserIdFromSocket(socket))
       throw new WsException('Permission denied: You are not a channel owner');
     this.channels = this.channels.filter((ch) => ch.name !== dto.channelName);
@@ -457,10 +434,7 @@ export class ChatService {
   }
 
   joinChannel(socket: Socket, dto: JoinChannelDto) {
-    const channel: IChannel = this.channels.find(
-      (ch) => dto.channelName === ch.name,
-    );
-    if (!channel) throw new WsException("Channel doesn't exist");
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
     const who: number = this.getUserIdFromSocket(socket);
     const userInChannel: boolean = !!channel.users.find((user) => user === who);
     const userInvited: boolean = !!channel.invites.find((user) => user === who);

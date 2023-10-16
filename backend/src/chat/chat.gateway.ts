@@ -5,7 +5,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
-  WebSocketGateway
+  WebSocketGateway,
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
 import { Socket } from 'socket.io';
@@ -87,11 +87,11 @@ export class ChatGateway
 
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.MESSAGE)
-  sendMessage(
+  async sendMessage(
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: MessageDto,
   ) {
-    this.chatService.sendMessage(socket, dto);
+    await this.chatService.sendMessage(socket, dto);
   }
 
   @UsePipes(new ValidationPipe())
