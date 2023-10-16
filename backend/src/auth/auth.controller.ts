@@ -11,10 +11,8 @@ export class AuthController {
 
   @Get('redirect')
   @UseGuards(ftAuthGuard)
-  redirect(/*@Res() res: Response*/@Query() qpara: any) {
-    // res.status(200).send('hi');
-    console.log(qpara.code);
-    
+  redirect(@Res() res: Response) {
+    res.status(200).send('hi');    
   }
 
   @Get('status')

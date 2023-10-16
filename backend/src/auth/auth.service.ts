@@ -9,15 +9,16 @@ import { Repository } from 'typeorm';
 export class AuthService {
   
   constructor(
-    /*@InjectRepository(User) private userRepo: Repository<User>,*/
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly userService: UserService) {}
 
-  async validateUser(userId: number) {
-    // const user = await this.userRepo.findOne({where: {id}})
-    const user: User = await this.userService.getUser(userId);
+  async validateUser({id, username}) {
+    const user: User = await this.userRepo.findOne({where: {ftid: id}})
+    // const user: User = await this.userService.getUser(userId);
     if (user) return user;
     const newUser = new CreateUserDto;
-    newUser.name = "test";
+    newUser.name = username;
+    newUser.ftid = id;
     return this.userService.createUser(newUser);
   }
 
@@ -25,7 +26,7 @@ export class AuthService {
     
   }
 
-  findUser(userId: number) {
-    
+  findUser(ftid: number): Promise<User | undefined> {
+    return this.userRepo.findOne({ where:{ftid} });
   }
 }
