@@ -6,7 +6,7 @@ import { UserDataService } from '../../services/user-data.service';
 import { GameService } from 'src/app/services/game.service';
 import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
-import {SaturatedColor, LightenDarkenColor} from '../../shared/color';
+import { SaturatedColor, LightenDarkenColor } from '../../shared/color';
 
 // Interfaces
 import { User } from '../../shared/user';
@@ -16,8 +16,8 @@ import { Match } from 'src/app/shared/match';
 
 @Component({
   selector: 'tcd-game',
-	templateUrl: './game.component.html',
-	styleUrls: ['./game.component.css'],
+  templateUrl: './game.component.html',
+  styleUrls: ['./game.component.css'],
 })
 export class GameComponent {
   @ViewChild('canvas', { static: true })
@@ -38,10 +38,10 @@ export class GameComponent {
   private movingUp: boolean = false;
   private movingDown: boolean = false;
 
-	// Colors
-	public saturatedColor!: string;
-	public highLightColor: string = 'black';
-	public darkerColor!: string;
+  // Colors
+  public saturatedColor!: string;
+  public highLightColor: string = 'black';
+  public darkerColor!: string;
 
   constructor(
     private userDataService: UserDataService,
@@ -51,9 +51,9 @@ export class GameComponent {
   ngOnInit() {
     // Get user data
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
-		this.myUser = user;
-		this.saturatedColor = SaturatedColor(this.myUser.color, 50);
-		this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
+      this.myUser = user;
+      this.saturatedColor = SaturatedColor(this.myUser.color, 50);
+      this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
     });
 
     // Add event emitters
@@ -78,20 +78,19 @@ export class GameComponent {
     this.status = 'waiting';
     this.gameService.createGameSocket(this.myUser.id);
     console.log('gameSocket created');
-    console.log('gameover:', this.isGameOver());
 
     this.gameService.subscribeToGame();
     this.gameSubscription = this.gameService.serverGameObs$.subscribe(
       (game) => {
-			this.game = game;
-			console.log('status:', this.status);
+        this.game = game;
+        console.log('status:', this.status);
         if (this.game && this.render) {
           this.movePaddle();
           if (!this.game.gameOver) {
             this.status = 'playing';
             this.render.redraw(this.game);
-		  } else {
-			this.status = 'gameover';
+          } else {
+            this.status = 'gameover';
             this.fillMatchData(this.game);
             return;
           }
@@ -102,6 +101,19 @@ export class GameComponent {
 
   playAgain(): void {
     //clean up prev field
+    this.status = 'new-game';
+    this.game = {
+      paddle1: 0,
+      paddle2: 0,
+      ball: {
+        x: 0,
+		  y: 0,
+		hits: 0,
+      },
+      score1: 0,
+      score2: 0,
+      gameOver: false,
+    };
     this.gameService.disconnectGameSocket();
     this.startGame();
   }
@@ -143,12 +155,6 @@ export class GameComponent {
     if (event.key === 'ArrowDown') {
       this.movingDown = false;
     }
-  }
-
-  isGameOver(): boolean {
-    //console.log('checking for gameover')
-    if (!this.game) return false;
-    return this.game.gameOver;
   }
 
   ngOnDestroy(): void {
