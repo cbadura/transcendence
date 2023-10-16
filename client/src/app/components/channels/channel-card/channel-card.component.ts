@@ -14,6 +14,6 @@ export class ChannelCardComponent {
 
   navigateToEditChannel(event: Event, channel: Channel) {
     event.stopPropagation(); // Stop event propagation
-    this.router.navigate(['channels/edit', 'bla', channel]);
+    this.router.navigate(['channels/edit', 'channel', channel]);
   }
 }

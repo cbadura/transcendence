@@ -11,19 +11,23 @@ export class EditChannelComponent {
   public modes: EChannelMode [] = [EChannelMode.PUBLIC, EChannelMode.PRIVATE, EChannelMode.PROTECTED];
   // public channel!: Channel;
   public tempChannel!: Channel;
+  public tempPassword!: string;
   private channel!: Channel;
   constructor(private route: ActivatedRoute) {}
 
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      console.log(params);
-      
-      this.channel = JSON.parse(params['channel']);
-      this.tempChannel = {...this.channel};
+      // This is a hack because I could not pass only the channel object
+      // I had to pass the channel property of the object as well
+      // Here I am extracting the channel property and assigning it to the channel object
+     const { channel, ...rest } = params;
+    this.channel = rest as Channel;
+     this.tempChannel =  { ...this.channel };
     });
   }
   selectMode(mode: EChannelMode) {
     this.tempChannel.mode = mode;
+    console.log(this.tempChannel);
   }
 }

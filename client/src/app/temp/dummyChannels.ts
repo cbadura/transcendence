@@ -30,7 +30,7 @@ export const dummyChannels: Channel[] = [
       {
         name: '🔒 Channel 4',
         mode: EChannelMode.PROTECTED,
-        role: EUserRole.USER,
+        role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
         usersIds: [1, 2, 3, 4, 5, 6],

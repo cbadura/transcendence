@@ -7,11 +7,11 @@
 <div class="w-full flex flex-col gap-2">
     <label class="font-bold" for="name">Channel name</label>
     <input
-    class="p-2 border border-black rounded-full bg-transparent outline-none"
+    class="default-input"
     name="name"
     type="text"
     [(ngModel)]="tempChannel.name"
-    placeholder="current channel name"
+    placeholder="tempChannel.name"
     />
 </div>
 
@@ -23,7 +23,25 @@
     </div>
 </div>
 
+<!-- Password -->
+<div class="w-full flex flex-col gap-2">
+    <label [ngStyle]="{'color': tempChannel.mode !== 'protected' ? 'gray' : 'inherit'}" class="font-bold" for="name">Password</label>
+    <input
+      [disabled]="tempChannel.mode !== 'protected'"
+      class="default-input"
+      [ngStyle]="{borderColor: tempChannel.mode !== 'protected' ? 'gray' : 'black'}"
+      name="name"
+      type="password"
+      [(ngModel)]="tempPassword"
+      placeholder=""
+    />
+  </div>
 
+
+  <div class="flex justify-between w-full">
+<tcd-custom-button [buttonText]="'Delete channel'" ></tcd-custom-button>
+<tcd-custom-button [buttonText]="'Save changes'" [isBlack]="true"></tcd-custom-button>
+  </div>
    
 
 </section>
