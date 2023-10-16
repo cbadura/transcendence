@@ -8,9 +8,10 @@ import { CreateMatchDto } from "src/match/dto/create-match.dto";
 
 export class GameRoom {
 
-    constructor(private readonly matchService: MatchService) {}
+    constructor(private readonly matchService: MatchService,private roomAccess: 'private' | 'public' ='public') {}
 
-    state: EGameRoomState = EGameRoomState.IDLE
+    private state: EGameRoomState = EGameRoomState.IDLE;
+    
     game: GameControl = null;
     clients: ISocketUser[] = [];
     startTimer: number = 3;
@@ -34,7 +35,7 @@ export class GameRoom {
                         //create match result entry
                         let resultReason = 'score';
                         if(this.state == EGameRoomState.DISCONNECT)
-                        resultReason = 'disconnect';
+                            resultReason = 'disconnect';
                         this.state = EGameRoomState.FINISHED;
 
                         let matchRes = {
@@ -70,7 +71,7 @@ export class GameRoom {
 
     updateGameState() {
         this.game.routine();
-		console.log(this.game.getGame().ball);
+		// console.log(this.game.getGame().ball);
         this.notifyClients(ESocketGameMessage.UPDATE_GAME_INFO,this.game.getGame())
     }
 
@@ -100,6 +101,29 @@ export class GameRoom {
         this.clients[clientIndex].socket.disconnect();
         this.clients[clientIndex].socket = null;
         this.disconnectedUser = this.clients[clientIndex].user.id;
-        this.state = EGameRoomState.DISCONNECT; 
+        if( this.state != EGameRoomState.FINISHED )
+            this.state = EGameRoomState.DISCONNECT; 
+    }
+
+    getGameRoomStateString(){
+        switch (this.state) {
+            case EGameRoomState.IDLE:
+                return 'IDLE';
+            case EGameRoomState.RUNNING:
+                return 'RUNNING';
+            case EGameRoomState.DISCONNECT:
+                return 'DISCONNECT';
+            case EGameRoomState.FINISHED:
+                return 'FINISHED';
+            default:
+                break;
+        }
+    }
+    getGameRoomState(){
+        return this.state;
+    }
+
+    getRoomAccess(){
+        return this.roomAccess;
     }
 }
