@@ -20,6 +20,7 @@ import { MessageDto } from './dto/message.dto';
 import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
 import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
+import { LeaveChannelDto } from './dto/leave-channel.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
@@ -128,5 +129,14 @@ export class ChatGateway
     @MessageBody() dto: InviteToChannelDto,
   ) {
     this.chatService.inviteUser(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_LEAVE_CHANNEL)
+  leaveChannel(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: LeaveChannelDto,
+  ) {
+    this.chatService.leaveChannel(socket, dto);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   EBanMute,
+  EChannelLeaveOption,
   EChannelMode,
   ESocketMessage,
   EUserRole,
@@ -21,6 +22,7 @@ import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
 import { Relationship } from 'src/entities/relationship.entity';
 import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
+import { LeaveChannelDto } from './dto/leave-channel.dto';
 
 @Injectable()
 export class ChatService {
@@ -471,6 +473,60 @@ export class ChatService {
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
       user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);
+    });
+  }
+
+  leaveChannel(socket: Socket, dto: LeaveChannelDto) {
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
+    const who: number = this.getUserIdFromSocket(socket);
+    const userInChannel: boolean = !!channel.users.find((user) => user === who);
+    if (!userInChannel) throw new WsException('You are not in this channel');
+    if (channel.ownerId === who && !dto.option)
+      throw new WsException(
+        'You must specify if you want to delete channel or transfer ownership',
+      );
+
+    if (channel.ownerId === who && dto.option === EChannelLeaveOption.DELETE) {
+      const deleteChannelDto = new DeleteChannelDto();
+      deleteChannelDto.channelName = dto.channelName;
+      this.deleteChannel(socket, deleteChannelDto);
+      return;
+    }
+
+    const leftDto: LeaveChannelDto = new LeaveChannelDto();
+    leftDto.channelName = dto.channelName;
+    leftDto.userId = who;
+
+    if (channel.ownerId === who && dto.option === EChannelLeaveOption.KEEP) {
+      if (channel.users.length === 1)
+        throw new WsException('You cannot keep an empty channel without owner');
+      if (dto.transferId) {
+        const transfer: number = channel.users.find(
+          (user) => user === dto.transferId,
+        );
+        if (!transfer)
+          throw new WsException(
+            'You can transfer ownership only to a user who is a part of this channel',
+          );
+        leftDto.transferId = transfer;
+      } else {
+        if (channel.admins.length > 0) {
+          leftDto.transferId = channel.admins[0];
+          channel.admins = channel.admins.filter(
+            (a) => a !== leftDto.transferId,
+          );
+        } else leftDto.transferId = channel.users[1];
+      }
+      // TODO notify transfer client about becoming a channel owner (?)
+      //  in case frontend will not want to add check (leftDto.transferId === myId)
+      //  to make user an owner from frontend side
+    }
+    channel.users = channel.users.filter((uid) => uid !== who);
+
+    const activeUsers: ISocketUser[] = this.getActiveChannelUsers(channel);
+    //notify active channel users about the one leaving
+    activeUsers.forEach((user) => {
+      user.socket.emit(ESocketMessage.LEFT_CHANNEL, leftDto);
     });
   }
 }
