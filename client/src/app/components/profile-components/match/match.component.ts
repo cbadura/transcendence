@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Match } from 'src/app/shared/match';
-import { User } from 'src/app/shared/user';
+import { Match } from 'src/app/shared/interfaces/match';
+import { User } from 'src/app/shared/interfaces/user';
 
 @Component({
   selector: 'tcd-match',

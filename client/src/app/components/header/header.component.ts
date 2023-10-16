@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../services/user-data.service';
-import { User } from '../../shared/user';
-import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/color';
+import { User } from '../../shared/interfaces/user';
+import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/functions/color';
 
 @Component({
   selector: 'tcd-header',

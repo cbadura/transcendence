@@ -34,7 +34,6 @@ import { ChatInputComponent } from './components/chat/chat-input/chat-input.comp
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
 import { HomeComponent } from './components/home/home.component';
 import { ChatSocketModule } from './chat-socket/chat-socket.module';
-import { GameSocketModule } from './game-socket/game-socket.module';
 import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
@@ -74,7 +73,6 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
 		AppRoutingModule,
     FormsModule,
     ChatSocketModule,
-    GameSocketModule,
     NgIconsModule.withIcons({ featherSettings, featherSend, featherUser }),
   ],
   providers: [

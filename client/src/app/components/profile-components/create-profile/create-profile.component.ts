@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { UserDataService } from '../../../services/user-data.service';
-import { User } from '../../../shared/user';
+import { User } from '../../../shared/interfaces/user';
 
 @Component({
   selector: 'tcd-create-profile',

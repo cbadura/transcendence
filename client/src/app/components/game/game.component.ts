@@ -6,13 +6,13 @@ import { UserDataService } from '../../services/user-data.service';
 import { GameService } from 'src/app/services/game.service';
 import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
-import { SaturatedColor, LightenDarkenColor } from '../../shared/color';
+import { SaturatedColor, LightenDarkenColor } from '../../shared/functions/color';
 
 // Interfaces
-import { User } from '../../shared/user';
-import { Game } from './interfaces/Game';
-import { Ball } from './interfaces/Ball';
-import { Match } from 'src/app/shared/match';
+import { User } from '../../shared/interfaces/user';
+import { Game } from '../../shared/interfaces/game/Game';
+import { Ball } from '../../shared/interfaces/game/Ball';
+import { Match } from 'src/app/shared/interfaces/match';
 
 @Component({
   selector: 'tcd-game',

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Achievement } from 'src/app/shared/achievement';
+import { Achievement } from 'src/app/shared/interfaces/achievement';
 
 @Component({
   selector: 'tcd-achievement',

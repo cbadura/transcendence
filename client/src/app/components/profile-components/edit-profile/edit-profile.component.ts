@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../../services/user-data.service';
-import { User } from '../../../shared/user';
+import { User } from '../../../shared/interfaces/user';
 
 @Component({
   selector: 'tcd-edit-profile',

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Post } from 'src/app/shared/post';
+import { Post } from 'src/app/shared/interfaces/post';
 
 @Component({
   selector: 'tcd-message-info',

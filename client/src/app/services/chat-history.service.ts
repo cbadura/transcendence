@@ -4,8 +4,8 @@ import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 
-import { User } from '../shared/user';
-import { Post } from '../shared/post';
+import { User } from '../shared/interfaces/user';
+import { Post } from '../shared/interfaces/post';
 
 @Injectable({
   providedIn: 'root'

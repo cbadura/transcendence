@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 
-import { User } from '../shared/user';
+import { User } from '../shared/interfaces/user';
 import { map, forkJoin } from 'rxjs';
 
 @Injectable({

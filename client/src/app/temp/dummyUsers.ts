@@ -1,4 +1,4 @@
-import { User } from "../shared/user";
+import { User } from "../shared/interfaces/user";
 
 const Ana : User = {
     id: 1,

@@ -3,9 +3,9 @@ import { Subscription } from 'rxjs';
 
 import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
-import { User } from 'src/app/shared/user';
-import { Achievement } from 'src/app/shared/achievement';
-import { Match } from 'src/app/shared/match';
+import { User } from 'src/app/shared/interfaces/user';
+import { Achievement } from 'src/app/shared/interfaces/achievement';
+import { Match } from 'src/app/shared/interfaces/match';
 
 @Component({
   selector: 'tcd-profile',

@@ -1,7 +1,7 @@
 import { GameConfig } from '../gameConfig';
-import { Game } from '../interfaces/Game';
-import { User } from 'src/app/shared/user';
-import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/color';
+import { Game } from '../../../shared/interfaces/game/Game';
+import { User } from 'src/app/shared/interfaces/user';
+import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/functions/color';
 import { Rectangle } from './Rectangle';
 import { Puck } from './Puck';
 

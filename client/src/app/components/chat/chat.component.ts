@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 import { ChatHistoryService } from '../../services/chat-history.service';
 import { UserDataService } from '../../services/user-data.service';
 
-import { Post } from 'src/app/shared/post';
-import { User } from 'src/app/shared/user';
+import { Post } from 'src/app/shared/interfaces/post';
+import { User } from 'src/app/shared/interfaces/user';
 
 @Component({
   selector: 'tcd-chat',

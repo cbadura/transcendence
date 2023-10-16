@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Game } from '../components/game/interfaces/Game';
+import { Game } from '../shared/interfaces/game/Game';
 import { Socket } from 'ngx-socket-io';
-import { ESocketGameMessage } from '../shared/ESocketGameMessage';
+import { ESocketGameMessage } from '../shared/macros/ESocketGameMessage';
 
 @Injectable({
   providedIn: 'root'
