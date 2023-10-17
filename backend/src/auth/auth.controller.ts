@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
-import { ftAuthGuard } from './auth.guard';
+import { Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { AuthenticatedGuard, ftAuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +16,10 @@ export class AuthController {
   }
 
   @Get('status')
-  status() {}
+  @UseGuards(AuthenticatedGuard)
+  status() {
+    return 'okok';
+  }
 
   @Get('logout')
   logout() {}

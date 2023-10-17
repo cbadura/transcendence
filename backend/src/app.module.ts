@@ -21,6 +21,7 @@ import { Relationship } from './entities/relationship.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule} from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { ESession } from './entities/session.entity';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -33,7 +34,7 @@ import { PassportModule } from '@nestjs/passport';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship],
+      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship, ESession],
       synchronize: true,
     }),
     MulterModule.register({
