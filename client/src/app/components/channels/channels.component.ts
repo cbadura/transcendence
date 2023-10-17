@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { tap } from 'rxjs';
+
 import { ChatHistoryService } from 'src/app/services/chat-history.service';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
@@ -13,6 +15,7 @@ export class ChannelsComponent {
   public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
   public selectedPage = 'My channels';
   public dummyChannels: Channel[] = dummyChannels;
+  public serverChannels: Channel[] = [];
   public filteredChannels: Channel[] = [];
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
@@ -20,10 +23,15 @@ export class ChannelsComponent {
 
   constructor(
     private chatHistoryService: ChatHistoryService) {
+  }
+    
+  ngOnInit() {
+    this.chatHistoryService.listChannels().subscribe(channels => {
+      this.serverChannels = channels;
+      console.log(this.serverChannels);
       this.filterChannels();
-  
-    }
-
+    });
+  }
 
   createChannel() {
     this.chatHistoryService.createChannel();
@@ -35,12 +43,14 @@ export class ChannelsComponent {
     this.filterChannels();
   }
 
-
-
   filterChannels() {
     const {selectedPage} = this;
-    if (selectedPage === 'Public')
-      this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PUBLIC);
+    if (selectedPage === 'Public' && this.serverChannels) {
+      // this.filteredChannels = this.serverChannels;
+      this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PUBLIC);
+      this.filteredChannels[0].usersIds = [0];
+      // console.log('FILTERED', this.filteredChannels);
+    }
     else if (selectedPage === 'Private')
       this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
     else if (selectedPage === 'Protected')

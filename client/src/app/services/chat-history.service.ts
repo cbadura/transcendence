@@ -2,20 +2,22 @@ import { Injectable, Inject } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { User } from '../shared/user';
 import { Post } from '../shared/post';
+import { Channel } from '../shared/chat/Channel';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatHistoryService {
   chatHistory: Post[] = [];
+  channels: Channel[] = [];
   serverPosts: string[] = [
     'first message'
   ];
-  room: string = "testRoom";
+  // room: string = "testRoom";
 
   constructor(public datepipe: DatePipe,
     @Inject('chatSocket') private chatSocket: Socket) {}
@@ -88,11 +90,17 @@ export class ChatHistoryService {
   } 
 
   /* display all channels stored in server; is called OnInit in ChatComponent */
-  listChannels() {
-    let channels = this.chatSocket.fromEvent('listChannels')
-    //console.log('CHANNELS', channels.for);
-    channels.forEach(ch => {
-      console.log('CHANNEL', ch)
-    });
-  }
+  // listChannels(): Object {
+  //   let channels = this.chatSocket.fromEvent('listChannels');
+  //   //console.log('CHANNELS', channels.for);
+  //   channels.forEach(ch => {
+  //     console.log('CHANNEL', ch)
+  //   });
+  //   return channels;
+  // }
+
+  listChannels(): Observable<Channel[]> {
+    return this.chatSocket.fromEvent('listChannels').pipe(
+      map((response: any) => response.channels)
+    );}
 }
