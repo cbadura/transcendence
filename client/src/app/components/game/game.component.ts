@@ -9,13 +9,14 @@ import { Render } from './Render/Render';
 import {
   SaturatedColor,
   LightenDarkenColor,
-} from '../../shared/functions/color';
+} from 'src/app/shared/functions/color';
 
 // Interfaces
-import { User } from '../../shared/interfaces/user';
-import { Game } from '../../shared/interfaces/game/Game';
-import { Ball } from '../../shared/interfaces/game/Ball';
+import { User } from 'src/app/shared/interfaces/user';
+import { Game } from 'src/app/shared/interfaces/game/Game';
+import { Ball } from 'src/app/shared/interfaces/game/Ball';
 import { Match } from 'src/app/shared/interfaces/match';
+import { ESocketGameMessage } from 'src/app/shared/macros/ESocketGameMessage';
 
 @Component({
   selector: 'tcd-game',
@@ -80,16 +81,30 @@ export class GameComponent {
     this.gameService.createGameSocket(this.myUser.id);
     console.log('gameSocket created');
 
-    this.gameService.subscribeToRoomCreated();
-    this.startCountdownSubscription =
-      this.gameService.serverCountdownObs$.subscribe((startTimer: number) => {
-        console.log('startTimer', startTimer);
-      });
+    this.gameService.subscribeToEvents();
+	  this.gameService.getEventData().subscribe((event) => {
+		
+		//   ROOM_CREATED
+		if (event.eventType === ESocketGameMessage.ROOM_CREATED) {
+			console.log("ROOM CREATED IN GAME COMPONENT")
+			this.game = event.data.game;
+			console.log(event.data);
+			console.log(event.data.pedal1);
+			console.log(event.data.pedal2);
+			//Initialize render with game and users
+			console.log("FINISHE ROOM CREATED")
+		  }
 
-    this.gameService.subscribeToGame();
-    this.gameSubscription = this.gameService.serverGameObs$.subscribe(
-      (game) => {
-        this.game = game;
+		  //   START_COUNTDOWN
+		  if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
+			  console.log("START COUNTDOWN IN GAME COMPONENT")
+			  let countdown = event.data.countdown;
+			  console.log(countdown);
+		  }
+		  
+		//   UPDATE_GAME_INFO
+		  if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
+        this.game = event.data.game;
         console.log('status:', this.status);
         if (this.game && this.render) {
           this.movePaddle();
@@ -103,7 +118,7 @@ export class GameComponent {
           }
         }
       }
-    );
+    });
   }
 
   playAgain(): void {

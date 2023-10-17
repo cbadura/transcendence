@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
+
 import { map } from 'rxjs/operators';
 import { Game } from '../shared/interfaces/game/Game';
 import { Socket } from 'ngx-socket-io';
@@ -10,14 +12,12 @@ import { User } from '../shared/interfaces/user';
   providedIn: 'root',
 })
 export class GameService {
-	game!: Game;
-	countdown!: number;
+  game!: Game;
+  countdown!: number;
   private gameSocket: Socket | null = null;
   // constructor(@Inject('gameSocket') private gameSocket: Socket) { }
 
-  serverGame = new BehaviorSubject<Game>(this.game);
-	serverGameObs$ = this.serverGame.asObservable();
-	serverCountdownObs$ = new BehaviorSubject<number>(this.countdown);
+  eventSubject = new Subject<{ eventType: string; data: any }>();
 
   createGameSocket(userId: number): void {
     const url = 'http://localhost:3000/game?userId=' + userId;
@@ -33,41 +33,37 @@ export class GameService {
     }
   }
 
-//   getServerGame(): Game {
-//     return this.serverGame.value;
-//   }
-
   sendPaddle(id: number, step: number) {
     this.gameSocket?.emit(ESocketGameMessage.TRY_MOVE_PADDLE, id, step);
   }
 
-  subscribeToRoomCreated() {
+  subscribeToEvents() {
     this.gameSocket?.on(
       ESocketGameMessage.ROOM_CREATED,
-		(game: Game, pedal1: User, pedal2: User) => {
-			console.log("received ROOM_CREATED");
-		  console.log('game', game);
-		  console.log('pedal1', pedal1);
-		  console.log('pedal2', pedal2);
-        this.serverGame.next(game);
+      (data : any) => {
+        this.eventSubject.next({
+          eventType: ESocketGameMessage.ROOM_CREATED,
+          data:  data,
+        });
       }
-    );
-  }
-	
-	subscribeToStartCountdown() {
-		this.gameSocket?.on(
-			ESocketGameMessage.START_COUNTDOWN,
-			(startTimer: number) => {
-				console.log("received START_COUNTDOWN");
-				console.log('startTimer', startTimer);
-				this.serverCountdownObs$.next(startTimer);
-			}
-		);
-	}
+	);
+	  
+	  this.gameSocket?.on(ESocketGameMessage.START_COUNTDOWN, (countdown: number) => {
+		  this.eventSubject.next({
+		eventType: ESocketGameMessage.START_COUNTDOWN,
+		data: { countdown },
+	  });
+	});		
 
-  subscribeToGame() {
     this.gameSocket?.on(ESocketGameMessage.UPDATE_GAME_INFO, (game: Game) => {
-      this.serverGame.next(game);
+      this.eventSubject.next({
+        eventType: ESocketGameMessage.UPDATE_GAME_INFO,
+        data: { game },
+      });
     });
+  }
+
+  getEventData() {
+    return this.eventSubject.asObservable();
   }
 }
