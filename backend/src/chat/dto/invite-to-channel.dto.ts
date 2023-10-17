@@ -18,5 +18,5 @@ export class InviteToChannelDto {
   channelName: string;
 
   @IsNumber()
-  invitedUserId: number;
+  targetUserId: number;
 }

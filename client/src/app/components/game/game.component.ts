@@ -10,6 +10,7 @@ import {
   SaturatedColor,
   LightenDarkenColor,
 } from 'src/app/shared/functions/color';
+// import { GameControl } from './GameControl/GameControl'; //seems to not exist anymore
 
 // Interfaces
 import { User } from 'src/app/shared/interfaces/user';

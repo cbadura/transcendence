@@ -21,21 +21,20 @@ export class NetworkGameService {
 
 
     async handleConnection(socket: Socket, userId: number) {
-        if (isNaN(userId)) {
-          socket.emit('exception', 'Invalid user id');
-          socket.disconnect(true);
-          return;
-        }
-        const client: ISocketUser = {
-          socket,
-          user: await this.userService.getUser(userId),
-        };
-        //console.log(JSON.stringify(client.user));
-        if (client.user == undefined) {
-          socket.emit('exception', "User doesn't exist");
-          socket.disconnect(true);
-          return;
-        }
+      if (isNaN(userId)) {
+        socket.emit('exception', 'Invalid user id');
+        socket.disconnect(true);
+        return;
+      }
+      if ((await this.userService.getUser(userId)) == undefined) {
+        socket.emit('exception', "User doesn't exist");
+        socket.disconnect(true);
+        return;
+      }
+      const client: ISocketUser = {
+        socket,
+        userId: userId,
+      };
         this.defaultPongQueue.push(client);
 
         this.printConnectedSockets();
@@ -47,7 +46,7 @@ export class NetworkGameService {
       }
       
       //creates room from queue
-      createGameRoomFromQueue() {
+      async createGameRoomFromQueue() {
         const roomID = this.InsertRoom(new GameRoom(this.matchService,'public'))
         console.log('roomID =',roomID)
         //if roomID == -1 no room left
@@ -59,7 +58,9 @@ export class NetworkGameService {
         
         //user[0] == peddal 1, user[1] == peddal 2
         //note: nadiia changed the ISocketUser setup... mean i likely need to fetch the user Data there first.
-        newRoom.notifyClients(ESocketGameMessage.ROOM_CREATED,{room_id: roomID,...newRoom.game.getGame(),pedal1: newRoom.clients[0].user,pedal2: newRoom.clients[1].user})
+        const pedal1User = await this.userService.getUser(newRoom.clients[0].userId) //should be improved
+        const pedal2User = await this.userService.getUser(newRoom.clients[1].userId)
+        newRoom.notifyClients(ESocketGameMessage.ROOM_CREATED,{room_id: roomID,...newRoom.game.getGame(),pedal1: pedal1User,pedal2: pedal2User})
         newRoom.StartGame();
         this.defaultPongQueue.splice(0,2);
 
@@ -97,7 +98,7 @@ export class NetworkGameService {
       private printConnectedSockets(){
         console.log('Connected Clients:')
         for (let i = 0; i < this.defaultPongQueue.length; i++) {
-          console.log('element [',i,'] = ',this.defaultPongQueue[i].user.id);
+          console.log('element [',i,'] = ',this.defaultPongQueue[i].userId);
       }
       }
 
@@ -132,7 +133,7 @@ export class NetworkGameService {
 
         for (let i = 0; i < this.gameRooms.length; i++) {
           for (let j = 0; j < this.gameRooms[i]?.clients.length; j++) {
-                if(this.gameRooms[i].clients[j].user.id == data[0]){
+                if(this.gameRooms[i].clients[j].userId == data[0]){
                     this.gameRooms[i].updatePlayerPosition(data);
                 }            
           }

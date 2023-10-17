@@ -24,9 +24,6 @@ export class MessageDto {
   @IsOptional()
   senderAvatar?: string;
 
-  // we might need to send userId to frontend,
-  // but we don't need to receive it from frontend
-
   @IsString()
   @IsOptional()
   channel?: string;

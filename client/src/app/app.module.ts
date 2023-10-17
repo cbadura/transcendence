@@ -34,7 +34,8 @@ import { ChatInputComponent } from './components/chat/chat-input/chat-input.comp
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
 import { HomeComponent } from './components/home/home.component';
 import { ChatSocketModule } from './chat-socket/chat-socket.module';
-import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
+// import { GameSocketModule } from './game-socket/game-socket.module'; //doesnt exist anymore?
+import { CreateProfileComponent } from './components/profile-components/create-edit-profile/create-edit-profile.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };

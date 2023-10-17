@@ -3,11 +3,11 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 /**
  * Dto for joining a channel.
  * @property {string} channelName - The name of the channel to join.
- * @property {number} userId - The ID of the user requesting to join the channel.
+ * @property {number} userId [Optional] - The ID of the user requesting to join the channel. Must be sent as confirmation.
  * @property {string} password [Optional] - The password for protected channel.
+ * @property {number[]} channelUsersIds [Optional] - List of channel users id. Must be sent as confirmation.
  */
-// userId not needed from frontend;
-// but must be sent from backend in response;
+
 export class JoinChannelDto {
   @IsString()
   channelName: string;
@@ -19,4 +19,7 @@ export class JoinChannelDto {
   @IsString()
   @IsOptional()
   password?: string;
+
+  @IsOptional()
+  channelUsersIds?: number[];
 }

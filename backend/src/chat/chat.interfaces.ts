@@ -1,4 +1,3 @@
-import { User } from '../entities/user.entity';
 import { Socket } from 'socket.io';
 
 export enum EChannelMode {
@@ -32,19 +31,28 @@ export enum ESocketMessage {
   MESSAGE = 'message',
   TRY_LEAVE_CHANNEL = 'tryLeaveChannel',
   LEFT_CHANNEL = 'leftChannel',
+  TRY_INVITE_TO_CHANNEL = 'tryInviteToChannel',
+  INVITED_TO_CHANNEL = 'invitedToChannel',
   TRY_MUTE_FROM_CHANNEL = 'tryMuteFromChannel',
   MUTED_FROM_CHANNEL = 'mutedFromChannel',
   TRY_KICK_FROM_CHANNEL = 'tryKickFromChannel',
   KICKED_FROM_CHANNEL = 'kickedFromChannel',
+  TRY_BAN_FROM_CHANNEL = 'tryBanFromChannel',
+  BANNED_FROM_CHANNEL = 'bannedFromChannel',
+}
+
+export enum EBanMute {
+  BAN = 'ban',
+  MUTE = 'mute',
 }
 
 export interface IBanMute {
-  user: ISocketUser;
+  userId: number;
   expireTimestamp: number;
 }
 
 export interface ISocketUser {
-  user: User;
+  userId: number;
   socket: Socket;
 }
 
@@ -52,10 +60,10 @@ export interface IChannel {
   name: string;
   mode: EChannelMode;
   password: string;
-  owner: ISocketUser;
-  admins: ISocketUser[];
-  users: ISocketUser[];
-  invites: ISocketUser[];
+  ownerId: number;
+  admins: number[]; //ids
+  users: number[]; //ids
+  invites: number[]; //ids
   bans: IBanMute[];
   mutes: IBanMute[];
 }

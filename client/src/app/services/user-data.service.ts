@@ -11,9 +11,9 @@ import { map, forkJoin } from 'rxjs';
 })
 export class UserDataService {
   private myUser = {
-      id: 1,
+      id: 0,
       name: '',
-      status: '', // WILL NEED TO COME FROM SERVER
+      status: 'online', // WILL NEED TO COME FROM SERVER
       level: 0,
       matches: 0,
       wins: 0,
@@ -40,29 +40,39 @@ export class UserDataService {
     });
   }
 
-  createUser(name: string, color: string, file: File | undefined): Observable<any> {
+  createEditUser(name: string, color: string, file: File | undefined): Observable<any> {
     const newUser = {
-      name: name,
-      color: color,
-      avatar: ''
+        name: name,
+        color: color,
     };
-    
-    return new Observable(observer => {
-      this.http.post(this.serverAddress + '/users/', newUser).subscribe(data => {
-        // Update internal user data after successful server operation
-        this.myUser = { ...this.myUser, ...data };
-        this.userSubject.next(this.myUser);  // Update the BehaviorSubject with the new user data
 
-        window.alert(JSON.stringify(data));
-        observer.next(data);
-        observer.complete();
-        if (file)
-          this.uploadProfilePic(file);
-      }, error => {
-        window.alert('Error creating user: ' + JSON.stringify(error));
-        observer.error(error);
-      });
+    const isCreatingNewUser = this.myUser.id < 1;
+    const httpMethod = isCreatingNewUser ? 'post' : 'put';
+    const url = isCreatingNewUser ? `${this.serverAddress}/users/` : `${this.serverAddress}/users/${this.myUser.id}`;
+
+    if (!file) {
+      (newUser as any).avatar = this.myUser.avatar;
+    }
+    return new Observable(observer => {
+        this.http[httpMethod](url, newUser).subscribe(data => {
+            this.updateUserData(data);
+            if (file) {
+              this.uploadProfilePic(file);
+            }
+            observer.next(data);
+            observer.complete();
+        }, error => {
+            const errorMessage = isCreatingNewUser ? 'Error creating user: ' : 'Error editing user: ';
+            window.alert(errorMessage + JSON.stringify(error));
+            observer.error(error);
+        });
     });
+  }
+
+  private updateUserData(data: any) {
+      this.myUser = { ...this.myUser, ...data };
+      this.userSubject.next(this.myUser);
+      // window.alert(JSON.stringify(data));
   }
 
   getProfilePics(): Observable<{ blobUrl: string, filePath: string }[]> {
@@ -101,7 +111,7 @@ export class UserDataService {
       name: 'edited Name'
     };
     this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(data => {
-      window.alert(JSON.stringify(data));
+      // window.alert(JSON.stringify(data));
     }, error => {
       window.alert('Error editing user: ' + JSON.stringify(error));
     });
@@ -109,10 +119,10 @@ export class UserDataService {
 
   /* OLDER FUNCTIONS */
 
-  setAvatar(filePath: string) {
+  /* setAvatar(filePath: string) {
     this.myUser.avatar = filePath;
     // this.userSubject.next(this.myUser);
-  }
+  } */
 
   getUser(): User {
     return this.userSubject.value;

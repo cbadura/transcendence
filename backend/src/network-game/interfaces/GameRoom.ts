@@ -44,8 +44,8 @@ export class GameRoom {
                             'disconnected_user_id': this.disconnectedUser
                             },
                             "matchUsers":[
-                                {"user_id": this.clients[0].user.id,"score": this.game.getGame().score1},
-                                {"user_id": this.clients[1].user.id,"score": this.game.getGame().score2}
+                                {"user_id": this.clients[0].userId,"score": this.game.getGame().score1},
+                                {"user_id": this.clients[1].userId,"score": this.game.getGame().score2}
                             ]
                             } as CreateMatchDto;
                         this.matchService.createMatch(matchRes)
@@ -77,15 +77,15 @@ export class GameRoom {
 
     //converting user ID to pedal ID //user[0] == peddal 1, user[1] == peddal 2
     updatePlayerPosition(data: [number,number]) {
-        if(this.clients.length == 2 && this.clients[0].user.id == data[0]){
+        if(this.clients.length == 2 && this.clients[0].userId == data[0]){
             this.game.movePaddle(1,data[1]);
         }
-        else if(this.clients.length == 2 && this.clients[1].user.id == data[0])
+        else if(this.clients.length == 2 && this.clients[1].userId == data[0])
             this.game.movePaddle(2,data[1]);
         else{
             console.log('THis data was received, but it matches neither clients',data)
-            console.log('client [0] = ', this.clients[0].user.id)
-            console.log('client [1] = ', this.clients[1].user.id)
+            console.log('client [0] = ', this.clients[0].userId)
+            console.log('client [1] = ', this.clients[1].userId)
         }
     }
 
@@ -100,7 +100,7 @@ export class GameRoom {
         console.log('in client disconnected')
         this.clients[clientIndex].socket.disconnect();
         this.clients[clientIndex].socket = null;
-        this.disconnectedUser = this.clients[clientIndex].user.id;
+        this.disconnectedUser = this.clients[clientIndex].userId;
         if( this.state != EGameRoomState.FINISHED )
             this.state = EGameRoomState.DISCONNECT; 
     }

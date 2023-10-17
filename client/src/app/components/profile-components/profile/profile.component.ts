@@ -23,17 +23,18 @@ export class ProfileComponent implements OnInit {
 
     const currentUser = this.userDataService.getUser();
     console.log('Current User ID:', currentUser.id);
-    }
-  
+  }
 
   ngOnInit() {
     this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
         this.myUser = user;
-        this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
-          this.myUser = data;
-          console.log('Profile', data);
-        });
+        if (this.myUser && this.myUser.id) {
+          this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
+            this.myUser = data;
+            console.log('Profile', data);
+          });
+        }
       }
     );
 
