@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import {Location} from '@angular/common';
+import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
 
 import { UserDataService } from '../../../services/user-data.service';
 import { User } from '../../../shared/user';
 
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
 @Component({
-  selector: 'tcd-create-profile',
-  templateUrl: './create-profile.component.html',
-  styleUrls: ['./create-profile.component.css']
+  selector: 'tcd-create-edit-profile',
+  templateUrl: './create-edit-profile.component.html',
+  styleUrls: ['./create-edit-profile.component.css']
 })
 export class CreateProfileComponent implements OnInit {
   myUser!: User;
@@ -22,7 +23,6 @@ export class CreateProfileComponent implements OnInit {
   imageData: { blobUrl: string, filePath: string }[] = [];
 
   constructor(
-    private router: Router,
     private userDataService: UserDataService,
     private location: Location) {
     this.tempUserName = '';
@@ -46,6 +46,9 @@ export class CreateProfileComponent implements OnInit {
       }
     );
 
+    this.tempUserName = this.tempUser.name;
+    this.tempColor = this.tempUser.color;
+
     this.userDataService.getProfilePics().subscribe(
       data => {
         this.imageData = data;
@@ -57,36 +60,23 @@ export class CreateProfileComponent implements OnInit {
   getUsers() {
     this.userDataService.getUsers();
   }
-
-  createUser = () => {
+  
+  createOrEditUser = async () => {
     if (!this.tempUser || !this.tempColor) {
       window.alert('Please fill in name and color');
       return;
     }
-
-    this.userDataService.createUser(this.tempUserName, this.tempColor, this.tempFile).subscribe(user => {
+    this.userDataService.createEditUser(this.tempUserName, this.tempColor, this.tempFile).subscribe(user => {
       console.log('User created with ID:', user.id);
     }, error => {
       window.alert('Error editing user: ' + JSON.stringify(error));
     });
+    await delay(500);
     this.location.back();
   }
 
- /*  editAvatar(filePath: string, url: string, event: Event) {
-    this.userDataService.setAvatar(filePath);
-    event.stopPropagation();
-  }
-
-  editName(name: string) {
-    if (name && name.trim() !== '') {
-      this.tempUserName = name;
-    }
-  } */
-
   editColor(color: string) {
     this.tempColor = color;
-    console.log('new temp color', this.tempColor);
-    //this.userDataService.setColor(color);
   }
 
   onFileSelected(event: any) {

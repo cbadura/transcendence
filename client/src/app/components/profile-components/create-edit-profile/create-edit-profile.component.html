@@ -12,8 +12,8 @@
       <img 
         class="border border-black w-20 aspect-square transition-all rounded-lg"
         *ngFor="let image of imageData"
-        [src]="image.blobUrl"
-        alt="Profile Picture">
+          [src]="image.blobUrl"
+          alt="Profile Picture">
     </div>
 
     <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
@@ -51,7 +51,7 @@
   <div class="w-full flex justify-end">
     <tcd-custom-button
       [buttonText]="'Save changes'"
-      [onClick]="createUser"
+      [onClick]="createOrEditUser"
       [isBlack]="true"
     ></tcd-custom-button>
   </div>
