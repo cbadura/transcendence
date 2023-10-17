@@ -408,6 +408,7 @@ export class ChatService {
   // invite only, think about accept invite/join/update channel list
   // good morning check again tmr
   // Good morning, Cosmo :)
+  // Good evening, I am hungry
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     if (!channel) throw new WsException("Channel doesn't exist");

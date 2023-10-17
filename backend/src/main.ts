@@ -26,7 +26,7 @@ async function bootstrap() {
     resave: false,
     saveUninitialized: false,
     store: new TypeormStore({
-      cleanupLimit: 10,
+      cleanupLimit: 10, //remove 10 expired session on new entry
     }).connect(sessionRepo),
   })
   );
