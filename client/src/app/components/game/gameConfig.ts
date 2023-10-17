@@ -38,6 +38,6 @@ export const gameConfig: GameConfig = {
     color: 'black',
     speed: 5,
   },
-	lineOffset: 30,
+	lineOffset: 50,
 	maxScore: 5,  	
 };

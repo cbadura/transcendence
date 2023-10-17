@@ -13,17 +13,17 @@ export class Render {
   private paddle2: Rectangle;
   private puck: Puck;
 
-  constructor(private ctx: CanvasRenderingContext2D, private user: User, private gameConfig: GameConfig) {
+  constructor(private ctx: CanvasRenderingContext2D, private user: User, private gameConfig: GameConfig, user1: User, user2: User) {
     this.darkerColor = LightenDarkenColor(this.user.color, -10);
     this.saturatedColor = SaturatedColor(this.user.color, 20);
     this.paddle1 = new Rectangle(
       this.ctx,
-      this.saturatedColor,
+      user1,
       gameConfig.lineOffset + gameConfig.paddle.width / 2
     );
     this.paddle2 = new Rectangle(
       this.ctx,
-      'black',
+      user2,
       this.ctx.canvas.width -
         (gameConfig.lineOffset + gameConfig.paddle.width * 1.5)
     );
@@ -90,10 +90,10 @@ export class Render {
       'bold 60pt Sniglet',
       this.game.score2.toString()
     );
-    // Ball hits (todo)
+    // Ball hits
     if (this.game.ball.hits < 10) {
       this.drawString(
-        midX - 40,
+        midX - 20,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',
@@ -101,7 +101,7 @@ export class Render {
       );
     } else if (this.game.ball.hits < 100) {
       this.drawString(
-        midX - 77,
+        midX - 35,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',
@@ -110,7 +110,7 @@ export class Render {
     }
     else if (this.game.ball.hits < 1000) {
       this.drawString(
-        midX - 120,
+        midX - 60,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',

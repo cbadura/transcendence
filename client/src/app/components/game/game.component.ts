@@ -70,9 +70,6 @@ export class GameComponent {
     this.ctx = this.canvas.nativeElement.getContext(
       '2d'
     ) as CanvasRenderingContext2D;
-
-    //   Initialize Render class - gameConfig should come from server
-    this.render = new Render(this.ctx, this.myUser, gameConfig);
   }
 
   startGame(): void {
@@ -82,30 +79,32 @@ export class GameComponent {
     console.log('gameSocket created');
 
     this.gameService.subscribeToEvents();
-	  this.gameService.getEventData().subscribe((event) => {
-		
-		//   ROOM_CREATED
-		if (event.eventType === ESocketGameMessage.ROOM_CREATED) {
-			console.log("ROOM CREATED IN GAME COMPONENT")
-			this.game = event.data.game;
-			console.log(event.data);
-			console.log(event.data.pedal1);
-			console.log(event.data.pedal2);
-			//Initialize render with game and users
-			console.log("FINISHE ROOM CREATED")
-		  }
-
-		  //   START_COUNTDOWN
-		  if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
-			  console.log("START COUNTDOWN IN GAME COMPONENT")
-			  let countdown = event.data.countdown;
-			  console.log(countdown);
-		  }
-		  
-		//   UPDATE_GAME_INFO
-		  if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
+    this.gameService.getEventData().subscribe((event) => {
+      //   ROOM_CREATED
+      if (event.eventType === ESocketGameMessage.ROOM_CREATED) {
+        console.log('ROOM CREATED IN GAME COMPONENT');
         this.game = event.data.game;
-        console.log('status:', this.status);
+        console.log(event.data);
+        console.log(event.data.pedal1);
+        console.log(event.data.pedal2);
+        //Initialize render with game and users
+
+        //   Initialize Render class - gameConfig should come from server
+        this.render = new Render(this.ctx, this.myUser, gameConfig, event.data.pedal1, event.data.pedal2);
+        console.log('FINISHE ROOM CREATED');
+      }
+
+      //   START_COUNTDOWN
+      if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
+        console.log('START COUNTDOWN IN GAME COMPONENT');
+        let countdown = event.data.countdown;
+        console.log(countdown);
+      }
+
+      //   UPDATE_GAME_INFO
+      if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
+        this.game = event.data.game;
+        //console.log('status:', this.status);
         if (this.game && this.render) {
           this.movePaddle();
           if (!this.game.gameOver) {
