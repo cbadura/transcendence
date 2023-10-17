@@ -56,12 +56,21 @@
     ></tcd-custom-button>
   </div>
 
-    <!--Test user request-->
-    <div class="w-full flex justify-end">
-      <tcd-custom-button
-        [buttonText]="'Get users'"
-        [onClick]="getUsers.bind(this)"
-        [isBlack]="true"
-      ></tcd-custom-button>
-    </div>
+  <!-- Create/edit user -->
+  <div class="w-full flex justify-end">
+    <tcd-custom-button
+      [buttonText]="'Go back'"
+      [isBlack]="true"
+      (click)="goBack()"
+    ></tcd-custom-button>
+  </div>
+
+  <!--Test user request-->
+  <div class="w-full flex justify-end">
+    <tcd-custom-button
+      [buttonText]="'Get users'"
+      [onClick]="getUsers.bind(this)"
+      [isBlack]="true"
+    ></tcd-custom-button>
+  </div>
 </section>
