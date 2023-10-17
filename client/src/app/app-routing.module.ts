@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'chat', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   // { path: 'edit-profile', component: EditProfileComponent },
-  { path: 'create-edit-profile', component: CreateProfileComponent },
+  { path: 'create-profile', component: CreateProfileComponent },
   { path: '', component: HomeComponent}
 ];
 
