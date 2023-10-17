@@ -4,18 +4,22 @@ import { ESocketGameMessage } from "./ESocketGameMessage";
 import { EGameRoomState } from "./EGameRoomState";
 import { MatchService } from "src/match/match.service";
 import { CreateMatchDto } from "src/match/dto/create-match.dto";
+import { gameConfig } from "../gameConfig";
 
 
 export class GameRoom {
 
-    constructor(private readonly matchService: MatchService,private roomAccess: 'private' | 'public' ='public') {}
+    constructor(private readonly matchService: MatchService, private roomAccess: 'private' | 'public' ='public',gameType: 'default' | 'special' ='default') {
+        this.game = (this.createGameControl(gameType))
+        this.gameType = gameType;
+    }
 
     private state: EGameRoomState = EGameRoomState.IDLE;
     
     game: GameControl = null;
     clients: ISocketUser[] = [];
     startTimer: number = 3;
-
+    gameType;
     private disconnectedUser: number = -1; //this is shit needs to be imprved
 
 
@@ -126,4 +130,25 @@ export class GameRoom {
     getRoomAccess(){
         return this.roomAccess;
     }
+
+    //NEEDS TO BE CHANGED ONCE OTHER QUEUE WORKS
+    private createGameControl(gameType: 'default' | 'special'): GameControl{
+        const config = (gameType == 'default' ? this.createDefaultPongGame() : this.createDefaultPongGame())
+        return new GameControl(config);
+    }
+
+    private createDefaultPongGame() {
+        return   ({
+          gameOver: false,
+          score2: 0,
+          score1: 0,
+          paddle1: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
+          paddle2: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
+          ball: {
+            x: gameConfig.canvas.width / 2,
+            y: gameConfig.canvas.height / 2,
+            hits: 0,
+          },
+        })
+      }
 }

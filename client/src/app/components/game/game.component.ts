@@ -86,12 +86,12 @@ export class GameComponent {
         console.log('ROOM CREATED IN GAME COMPONENT');
         this.game = event.data.game;
         console.log(event.data);
-        console.log(event.data.pedal1);
-        console.log(event.data.pedal2);
+        console.log(event.data.game.paddle1);
+        console.log(event.data.game.paddle2);
         //Initialize render with game and users
 
         //   Initialize Render class - gameConfig should come from server
-        this.render = new Render(this.ctx, this.myUser, gameConfig, event.data.pedal1, event.data.pedal2);
+        this.render = new Render(this.ctx, this.myUser, gameConfig, event.data.userInfo.user1,  event.data.userInfo.user2);
         console.log('FINISHE ROOM CREATED');
       }
 

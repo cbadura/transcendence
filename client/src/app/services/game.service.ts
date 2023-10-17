@@ -24,6 +24,7 @@ export class GameService {
     if (!this.gameSocket) {
       this.gameSocket = new Socket({ url: url, options: {} });
     }
+    this.gameSocket.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: "default"}) //temp fix the create same behavior as before
   }
 
   disconnectGameSocket(): void {
