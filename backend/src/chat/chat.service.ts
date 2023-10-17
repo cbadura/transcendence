@@ -556,7 +556,7 @@ export class ChatService {
     const userInChannel: boolean = !!channel.users.find((user) => user === who);
     if (!userInChannel) throw new WsException('User is not in this channel');
     const isAdmin: boolean = !!channel.admins.find((a) => a === dto.userId);
-    if (channel.ownerId === who)
+    if (channel.ownerId !== who)
       throw new WsException('Permission denied: You are not a channel owner');
     if (!isAdmin) throw new WsException('User is not an admin in this channel');
     channel.admins = channel.admins.filter((a) => a !== dto.userId);
