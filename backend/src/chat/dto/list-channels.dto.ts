@@ -39,7 +39,12 @@ export class ChannelDto {
   @IsOptional()
   muteExpTime?: number;
 
+  @IsNumber({}, { each: true })
   usersIds: number[];
+
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  adminIds?: number[]; //TODO show only for owner
 }
 
 export class ListChannelsDto {

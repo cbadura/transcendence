@@ -23,6 +23,7 @@ import { Relationship } from 'src/entities/relationship.entity';
 import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 import { LeaveChannelDto } from './dto/leave-channel.dto';
+import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
 
 @Injectable()
 export class ChatService {
@@ -527,6 +528,44 @@ export class ChatService {
     //notify active channel users about the one leaving
     activeUsers.forEach((user) => {
       user.socket.emit(ESocketMessage.LEFT_CHANNEL, leftDto);
+    });
+  }
+
+  addAdmin(socket: Socket, dto: AddRemoveAdminDto) {
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
+    const who: number = this.getUserIdFromSocket(socket);
+    const userInChannel: boolean = !!channel.users.find((user) => user === who);
+    if (!userInChannel) throw new WsException('User is not in this channel');
+    const isAdmin: boolean = !!channel.admins.find((a) => a === dto.userId);
+    if (channel.ownerId === who)
+      throw new WsException('Permission denied: You are not a channel owner');
+    if (isAdmin)
+      throw new WsException('User is already an admin in this channel');
+    channel.admins.push(dto.userId);
+    this.getUserSocketsByID(who).forEach((u) => {
+      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+    });
+    this.getUserSocketsByID(dto.userId).forEach((u) => {
+      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+    });
+  }
+
+  removeAdmin(socket: Socket, dto: AddRemoveAdminDto) {
+    const channel: IChannel = this.getChannelfromName(dto.channelName);
+    const who: number = this.getUserIdFromSocket(socket);
+    const userInChannel: boolean = !!channel.users.find((user) => user === who);
+    if (!userInChannel) throw new WsException('User is not in this channel');
+    const isAdmin: boolean = !!channel.admins.find((a) => a === dto.userId);
+    if (channel.ownerId === who)
+      throw new WsException('Permission denied: You are not a channel owner');
+    // TODO merge add/remove into one function (?)
+    if (!isAdmin) throw new WsException('User is not an admin in this channel');
+    channel.admins = channel.admins.filter((a) => a !== dto.userId);
+    this.getUserSocketsByID(who).forEach((u) => {
+      u.emit(ESocketMessage.REMOVED_ADMIN, dto);
+    });
+    this.getUserSocketsByID(dto.userId).forEach((u) => {
+      u.emit(ESocketMessage.REMOVED_ADMIN, dto);
     });
   }
 }

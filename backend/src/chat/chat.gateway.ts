@@ -21,6 +21,7 @@ import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
 import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 import { LeaveChannelDto } from './dto/leave-channel.dto';
+import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
@@ -138,5 +139,23 @@ export class ChatGateway
     @MessageBody() dto: LeaveChannelDto,
   ) {
     this.chatService.leaveChannel(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_ADD_ADMIN)
+  addAdmin(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: AddRemoveAdminDto,
+  ) {
+    this.chatService.addAdmin(socket, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_REMOVE_ADMIN)
+  removeAdmin(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() dto: AddRemoveAdminDto,
+  ) {
+    this.chatService.removeAdmin(socket, dto);
   }
 }
