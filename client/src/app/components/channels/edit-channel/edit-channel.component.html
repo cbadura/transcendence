@@ -1,48 +1,36 @@
-<section
-  class="flex flex-col gap-8 items-center max-w-screen-md  h-full ml-auto mr-auto pr-4 pl-4"
->
+<section class="flex flex-col gap-8 items-center max-w-screen-md  h-full ml-auto mr-auto pr-4 pl-4">
 
-
-<!-- Channel name -->
-<div class="w-full flex flex-col gap-2">
+  <!-- Channel name -->
+  <div class="w-full flex flex-col gap-2">
     <label class="font-bold" for="name">Channel name</label>
-    <input
-    class="default-input"
-    name="name"
-    type="text"
-    [(ngModel)]="tempChannel.name"
-    placeholder="tempChannel.name"
-    />
-</div>
+    <input class="default-input" name="name" type="text" [(ngModel)]="tempChannel.name"
+      placeholder="tempChannel.name" />
+  </div>
 
-<!-- Mode -->
-<div class="w-full flex flex-col gap-2">
+  <!-- Mode -->
+  <div class="w-full flex flex-col gap-2">
     <label class="font-bold " for="name">Mode</label>
     <div class="flex gap-4  w-full justify-start">
-        <tcd-custom-button *ngFor="let mode of modes" [buttonText]="mode" [isBlack]="tempChannel.mode=== mode" (click)="selectMode(mode)"></tcd-custom-button>
+      <tcd-custom-button *ngFor="let mode of modes" [buttonText]="mode" [isBlack]="tempChannel.mode=== mode"
+        (click)="selectMode(mode)"></tcd-custom-button>
     </div>
-</div>
+  </div>
 
-<!-- Password -->
-<div class="w-full flex flex-col gap-2">
-    <label [ngStyle]="{'color': tempChannel.mode !== 'protected' ? 'gray' : 'inherit'}" class="font-bold" for="name">Password</label>
-    <input
-      [disabled]="tempChannel.mode !== 'protected'"
-      class="default-input"
-      [ngStyle]="{borderColor: tempChannel.mode !== 'protected' ? 'gray' : 'black'}"
-      name="name"
-      type="password"
-      [(ngModel)]="tempPassword"
-      placeholder=""
-    />
+  <!-- Password -->
+  <div class="w-full flex flex-col gap-2">
+    <label [ngStyle]="{'color': tempChannel.mode !== 'protected' ? 'gray' : 'inherit'}" class="font-bold"
+      for="name">Password</label>
+    <input [disabled]="tempChannel.mode !== 'protected'" class="default-input"
+      [ngStyle]="{borderColor: tempChannel.mode !== 'protected' ? 'gray' : 'black'}" name="name" type="password"
+      [(ngModel)]="tempPassword" placeholder="" />
   </div>
 
 
   <div class="flex justify-between w-full">
-<tcd-custom-button [buttonText]="'Delete channel'" ></tcd-custom-button>
-<tcd-custom-button [buttonText]="'Save changes'" [isBlack]="true"></tcd-custom-button>
+    <tcd-custom-button [buttonText]="'Delete channel'"></tcd-custom-button>
+    <tcd-custom-button [buttonText]="'Save changes'" [isBlack]="true"></tcd-custom-button>
   </div>
-   
+
 
 </section>
 <!-- ml-auto mr-auto pr-4 pl-4 -->

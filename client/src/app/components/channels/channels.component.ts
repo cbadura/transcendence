@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { tap } from 'rxjs';
 
 import { ChatHistoryService } from 'src/app/services/chat-history.service';
 import { Channel } from 'src/app/shared/chat/Channel';
@@ -19,7 +18,6 @@ export class ChannelsComponent {
   public filteredChannels: Channel[] = [];
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
-
 
   constructor(
     private chatHistoryService: ChatHistoryService) {
@@ -48,17 +46,16 @@ export class ChannelsComponent {
     if (selectedPage === 'Public' && this.serverChannels) {
       // this.filteredChannels = this.serverChannels;
       this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PUBLIC);
-      this.filteredChannels[0].usersIds = [0];
+      this.filteredChannels[0].usersIds = [2];
       // console.log('FILTERED', this.filteredChannels);
     }
     else if (selectedPage === 'Private')
       this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
     else if (selectedPage === 'Protected')
       this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
-    else if (selectedPage === 'My channels')
-    {
+    else if (selectedPage === 'My channels') {
       this.ownChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.ADMIN);
     }
-    }
+  }
 }
