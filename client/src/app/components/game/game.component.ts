@@ -74,7 +74,6 @@ export class GameComponent {
   }
 
   startGame(): void {
-    console.log(this.myUser);
     this.status = 'waiting';
     this.gameService.createGameSocket(this.myUser.id);
     console.log('gameSocket created');
@@ -85,31 +84,31 @@ export class GameComponent {
       if (event.eventType === ESocketGameMessage.ROOM_CREATED) {
         console.log('ROOM CREATED IN GAME COMPONENT');
         this.game = event.data.game;
-        console.log(event.data);
-        console.log(event.data.game.paddle1);
-        console.log(event.data.game.paddle2);
-        //Initialize render with game and users
-
-        //   Initialize Render class - gameConfig should come from server
-        this.render = new Render(this.ctx, this.myUser, gameConfig, event.data.userInfo.user1,  event.data.userInfo.user2);
-        console.log('FINISHE ROOM CREATED');
+        this.render = new Render(
+          this.ctx,
+          gameConfig,
+          event.data.game,
+          event.data.userInfo.user1,
+          event.data.userInfo.user2,
+          this.myUser.id
+        );
       }
 
       //   START_COUNTDOWN
       if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
         console.log('START COUNTDOWN IN GAME COMPONENT');
-        let countdown = event.data.countdown;
-        console.log(countdown);
+		  console.log(event.data);
+		  this.status = 'playing';
+		  this.render.setCountdown(event.data.countdown);
+        //let countdown = event.data.countdown;
       }
 
       //   UPDATE_GAME_INFO
       if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
         this.game = event.data.game;
-        //console.log('status:', this.status);
         if (this.game && this.render) {
           this.movePaddle();
-          if (!this.game.gameOver) {
-            this.status = 'playing';
+          if (!this.game.gameOver) {;
             this.render.redraw(this.game);
           } else {
             this.status = 'gameover';

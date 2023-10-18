@@ -1,21 +1,28 @@
 import { GameConfig } from '../gameConfig';
 import { Game } from '../../../shared/interfaces/game/Game';
 import { User } from 'src/app/shared/interfaces/user';
-import { SaturatedColor, LightenDarkenColor } from 'src/app/shared/functions/color';
+import { LightenDarkenColor } from 'src/app/shared/functions/color';
 import { Rectangle } from './Rectangle';
 import { Puck } from './Puck';
 
 export class Render {
-  private game!: Game;
+  private userColor: string;
   private darkerColor: string;
-  private saturatedColor: string;
   private paddle1: Rectangle;
   private paddle2: Rectangle;
   private puck: Puck;
+  private countdown!: number;
 
-  constructor(private ctx: CanvasRenderingContext2D, private user: User, private gameConfig: GameConfig, user1: User, user2: User) {
-    this.darkerColor = LightenDarkenColor(this.user.color, -10);
-    this.saturatedColor = SaturatedColor(this.user.color, 20);
+  constructor(
+    private ctx: CanvasRenderingContext2D,
+    private gameConfig: GameConfig,
+    private game: Game,
+    user1: User,
+    user2: User,
+    private id: number
+  ) {
+    this.userColor = user1.id === id ? user1.color : user2.color;
+    this.darkerColor = LightenDarkenColor(this.userColor, -10);
     this.paddle1 = new Rectangle(
       this.ctx,
       user1,
@@ -28,6 +35,8 @@ export class Render {
         (gameConfig.lineOffset + gameConfig.paddle.width * 1.5)
     );
     this.puck = new Puck(this.ctx);
+    console.log('Render constructor');
+    console.log('this.game', this.game);
   }
 
   redraw(newGame: Game): void {
@@ -42,17 +51,21 @@ export class Render {
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw lines and scores
-    this.drawCourt(this.darkerColor, this.user.color, 10);
+    this.drawCourt(this.darkerColor, this.userColor, 10);
 
-    this.paddle1.draw(this.game.paddle1);
-    this.paddle2.draw(this.game.paddle2);
-    this.puck.draw(this.game.ball.x, this.game.ball.y);
+    if (this.countdown > 0) this.drawCountdown();
+    else {
+      this.drawScores(this.userColor);
+      this.paddle1.draw(this.game.paddle1);
+      this.paddle2.draw(this.game.paddle2);
+      this.puck.draw(this.game.ball.x, this.game.ball.y);
+    }
   }
 
   drawCourt(backgroundColor: string, lineColor: string, lineWidth: number) {
     const { gameConfig } = this;
-	  
-	  // Define variables
+
+    // Define variables
     const midX = gameConfig.canvas.width / 2 - 2;
     const midY = gameConfig.canvas.height / 2;
 
@@ -74,9 +87,18 @@ export class Render {
     );
     // Center circle
     this.drawCircle(midX, midY, 150, backgroundColor, lineColor);
+  }
+
+  drawScores(lineColor: string) {
+    // Define variables
+    const { gameConfig } = this;
+    const midX = gameConfig.canvas.width / 2 - 2;
+    const midY = gameConfig.canvas.height / 2;
+
+    this.ctx.textAlign = 'center';
     // Score 1
     this.drawString(
-      midX - 120,
+      midX - 60,
       gameConfig.canvas.height - 50,
       lineColor,
       'bold 60pt Sniglet',
@@ -84,56 +106,31 @@ export class Render {
     );
     // Score 2
     this.drawString(
-      midX + 70,
+      midX + 60,
       gameConfig.canvas.height - 50,
       lineColor,
       'bold 60pt Sniglet',
       this.game.score2.toString()
     );
     // Ball hits
-    if (this.game.ball.hits < 10) {
+    if (this.game.ball.hits < 1000) {
       this.drawString(
-        midX - 20,
+        midX,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',
         this.game.ball.hits.toString()
       );
-    } else if (this.game.ball.hits < 100) {
+    } else if (this.game.ball.hits < 10000) {
       this.drawString(
-        midX - 35,
-        midY + 50,
-        lineColor,
-        'bold 100pt Sniglet',
-        this.game.ball.hits.toString()
-      );
-    }
-    else if (this.game.ball.hits < 1000) {
-      this.drawString(
-        midX - 60,
-        midY + 50,
-        lineColor,
-        'bold 100pt Sniglet',
-        this.game.ball.hits.toString()
-      );
-    }
-    else if (this.game.ball.hits < 10000) {
-      this.drawString(
-        midX - 125,
+        midX,
         midY + 40,
         lineColor,
         'bold 80pt Sniglet',
         this.game.ball.hits.toString()
       );
-    }
-    else {
-      this.drawString(
-        midX - 125,
-        midY + 35,
-        lineColor,
-        'bold 65pt Sniglet',
-        '1000+'
-      );
+    } else {
+      this.drawString(midX, midY + 35, lineColor, 'bold 65pt Sniglet', '1000+');
     }
   }
 
@@ -167,5 +164,35 @@ export class Render {
     this.ctx.fillStyle = color;
     this.ctx.font = font;
     this.ctx.fillText(text, x, y);
+  }
+
+  drawCountdown() {
+    const { gameConfig } = this;
+    const midX = gameConfig.canvas.width / 2 - 2;
+    const midY = gameConfig.canvas.height / 2;
+    this.ctx.clearRect(0, 0, gameConfig.canvas.width, gameConfig.canvas.height);
+    this.drawString(
+      midX,
+      midY + 50,
+      'black',
+      'bold 100pt Sniglet',
+      this.countdown.toString()
+    );
+  }
+
+  setCountdown(countdown: number) {
+    console.log('SET COUNTDOWN IN RENDER');
+    this.countdown = countdown;
+    this.redraw(this.game);
+    const countdownInterval = setInterval(() => {
+      this.countdown--;
+      this.redraw(this.game);
+      console.log('COUNTDOWN: ' + this.countdown);
+      console.log('GAME: ' + this.game);
+
+      if (this.countdown === 0) {
+        clearInterval(countdownInterval);
+      }
+    }, 1000);
   }
 }
