@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { ChatHistoryService } from 'src/app/services/chat-history.service';
+import { ChannelService } from 'src/app/services/channel.service';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
 import { EUserRole } from 'src/app/shared/macros/EUserRole';
@@ -25,13 +25,15 @@ export class ChannelsComponent {
 
   constructor(
     private router: Router,
-    private chatHistoryService: ChatHistoryService) {
+    private channelService: ChannelService) {
   }
     
   ngOnInit() {
     console.log('ON INIT');
-    this.chatHistoryService.subscribeToEvents();
-    this.eventSubscription = this.chatHistoryService.getEventData().subscribe((event) => {
+    console.log('SERVICE CHANNELS', this.channelService.getChannel());
+    // this.chatHistoryService.subscribeToEvents();
+    // this.eventSubscription = this.chatHistoryService.getEventData().subscribe((event) => {
+    this.eventSubscription = this.channelService.getEventData().subscribe((event) => {
       if (event.eventType === 'listChannels') {
         this.serverChannels = event.data.channels;
       }

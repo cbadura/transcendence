@@ -4,7 +4,6 @@ import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
-import { User } from '../shared/user';
 import { Post } from '../shared/post';
 import { Channel } from '../shared/chat/Channel';
 
@@ -119,10 +118,5 @@ export class ChatHistoryService {
     return this.chatSocket.fromEvent('listChannels').pipe(
       map((response: any) => response.channels)
   );}
-  
-  /* listChannels(): Observable<Channel[]> {
-    return this.chatSocket.fromEvent('listChannels').pipe(
-      map((response: any) => response.channels)
-    );} */
 
 }
