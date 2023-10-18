@@ -1,4 +1,5 @@
-import { ISocketUser } from "src/chat/chat.interfaces";
+// import { ISocketUser } from "src/chat/chat.interfaces";
+import { IGameSocketUser } from "./IGameSocketUser";
 import { GameControl } from "../gameControl";
 import { ESocketGameMessage } from "./ESocketGameMessage";
 import { EGameRoomState } from "./EGameRoomState";
@@ -17,7 +18,7 @@ export class GameRoom {
     private state: EGameRoomState = EGameRoomState.IDLE;
     
     game: GameControl = null;
-    clients: ISocketUser[] = []; 
+    clients: IGameSocketUser[] = []; 
     startTimer: number = 3;
     gameType;
     private disconnectedUser: number = -1; //this is shit needs to be imprved
@@ -56,11 +57,6 @@ export class GameRoom {
                         .then((matchResults) =>{
                             this.notifyClients(ESocketGameMessage.GAME_ENDED,matchResults);
                             console.log(matchResults);
-
-                            //disconnecting the other client i we want to enabel re-Queueing we should not disconnect here,needs to be discussed with front end
-                            // for (let i = 0; i < this.clients.length; i++) {
-                            //     this.clients[i].socket?.disconnect();
-                            // }
                         })
                         .catch()
                     }
@@ -70,6 +66,7 @@ export class GameRoom {
             else {
                 this.notifyClients(ESocketGameMessage.GAME_ABORTED,{reason: 'disconnect'});
                 console.log('CLIENT DISCONNECTED WHILE TIMER STARTED RUNNING');
+                this.state = EGameRoomState.FINISHED;
             }
         }, this.startTimer * 1000)
     }
@@ -101,11 +98,10 @@ export class GameRoom {
         }
     }
 
-    clientDisconnected(clientIndex: number){
+    clientDisconnected(userId: number){
         console.log('in client disconnected')
-        // this.clients[clientIndex].socket.disconnect(); //should not happen here
-        // this.clients[clientIndex].socket = null;
-        this.disconnectedUser = this.clients[clientIndex].userId;
+        this.disconnectedUser = userId;
+
         if( this.state != EGameRoomState.FINISHED )
             this.state = EGameRoomState.DISCONNECT; 
     }

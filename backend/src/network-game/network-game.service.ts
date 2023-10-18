@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { ISocketUser } from 'src/chat/chat.interfaces';
+// import { ISocketUser } from 'src/chat/chat.interfaces';
+import { EUserStatus, IGameSocketUser } from './interfaces/IGameSocketUser';
 import { UserService } from 'src/user/user.service';
 import { GameControl } from './gameControl';
 
@@ -17,9 +18,9 @@ export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
     }
-    private clients: ISocketUser[] = [];
-    private defaultQueue: ISocketUser[] = [];
-    private specialQueue: ISocketUser[] = [];
+    private clients: IGameSocketUser[] = [];
+    private defaultQueue: IGameSocketUser[] = [];
+    private specialQueue: IGameSocketUser[] = [];
     private gameRooms: (GameRoom | null)[] = new Array(1000).fill(null);
     // private myGameControl: GameControl;
 
@@ -35,18 +36,25 @@ export class NetworkGameService {
         socket.disconnect(true);
         return;
       }
-      const client: ISocketUser = {
-        socket,
-        userId: userId,
-      };
-        this.clients.push(client);
-        this.printConnectedSockets();
+      if( this.clients.find((socketUser)=>socketUser.userId == userId) != undefined){
+        console.log('Client with User ID',userId, 'already connected');
+        // socket.emit('exception', "You are already");
+        socket.disconnect(true);
+        return
+      }
 
+        const client: IGameSocketUser = {
+          socket,
+          userId: userId,
+          status: EUserStatus.ONLINE,
+          room_id: -1,
+        };
+        this.clients.push(client);
       }
       
       //creates room from queue
       async createGameRoomFromQueue(gameType: 'default' | 'special') {
-        const queue: ISocketUser[] = (gameType == 'default'? this.defaultQueue : this.specialQueue);
+        const queue: IGameSocketUser[] = (gameType == 'default'? this.defaultQueue : this.specialQueue);
         if(queue.length < 2){
           console.log(gameType,'queue Does not have enough Users to create Room');
           return
@@ -59,11 +67,15 @@ export class NetworkGameService {
         
         newRoom.clients.push(queue[0]);
         newRoom.clients.push(queue[1]);
-        console.log('Queue length = ',queue.length);
-        console.log('newRoom clients length = ', newRoom.clients.length);
+        newRoom.clients[0].status = EUserStatus.IN_MATCH;
+        newRoom.clients[1].status = EUserStatus.IN_MATCH;
+        newRoom.clients[0].room_id = roomID;
+        newRoom.clients[1].room_id = roomID;
+
+        // console.log('Queue length = ',queue.length);
+        // console.log('newRoom clients length = ', newRoom.clients.length);
         
         //user[0] == peddal 1, user[1] == peddal 2
-        //note: nadiia changed the ISocketUser setup... mean i likely need to fetch the user Data there first.
         const pedal1User = await this.userService.getUser(newRoom.clients[0].userId) //should be improved
         const pedal2User = await this.userService.getUser(newRoom.clients[1].userId)
         const roominfo : GameRoomInfoDto = new GameRoomInfoDto(roomID,newRoom.game.getGame(),new GameRoomUserInfo(pedal1User,pedal2User))
@@ -100,23 +112,13 @@ export class NetworkGameService {
 
         // search List of Connected Users. Note this would also need to handle what happens if they are currently in a match
         if(clientUser != null){
+          if(clientUser.room_id != -1){ //let room know that user left
+            this.gameRooms[clientUser.room_id]?.clientDisconnected(clientUser.userId);
+          }
           this.clients = this.clients.filter(
             (currentClient) => currentClient.socket.id !== client.id,
             );
         }
-
-        //Shouldnt be Here, needs to be handled before removing the client from the global Socket List
-        // else{ //search running games
-        //   console.log('Trying to find disconnecting User in running game')
-        //   for (let i = 0; i < this.gameRooms.length; i++) {
-        //     for (let j = 0; j < this.gameRooms[i]?.clients.length; j++) {
-        //           if(this.gameRooms[i].clients[j].socket?.id == client.id){
-        //             this.gameRooms[i].clientDisconnected(j);
-        //             return;
-        //           }            
-        //     }
-        //   }
-        //   }
       }
 
 
@@ -137,14 +139,27 @@ export class NetworkGameService {
         const currUser = this.getISocketUserFromSocket(client);
         if(currUser == null) { //Do some error checking boii
           console.log("in Join queue currUser is NULL");
+          return;
         } 
 
         if(dto.gameType == 'default') {
+            if(this.defaultQueue.find( (user)=>user.socket.id == client.id) != null){
+              console.log('User is already Queueing for Default Queue.')
+              return;
+            }
+
             this.defaultQueue.push(currUser);
+            currUser.status = EUserStatus.IN_QUEUE;
             console.log('Queue length = ',this.defaultQueue.length);
           }
         else if(dto.gameType == 'special') {
+            if(this.specialQueue.find( (user)=>user.socket.id == client.id) != null){
+              console.log('User is already Queueing for Special Queue.')
+              return;
+            }
+
             this.specialQueue.push(currUser);
+            currUser.status = EUserStatus.IN_QUEUE;
             }
 
         if(this.gameRooms.filter(room => room !== null).length < 1000) {
@@ -172,20 +187,20 @@ export class NetworkGameService {
           this.printConnectedSockets();
           console.log(`---------- Currentlu Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
-            console.log("Element [",i,'] =',this.defaultQueue[i].userId);
+            console.log("Element [",i,'] =',this.defaultQueue[i].userId); 
           }
-
-
-
-
-
-
           //game rooms
           console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
           for (let i = 0; i < this.gameRooms.length; i++) {
               if( this.gameRooms[i] != null) {
-                console.log('Room [',i,']',this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),this.gameRooms[i]?.getGameRoomStateString());
+                const game = this.gameRooms[i]?.game.getGame();
+                console.log('Room [',i,']',this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
+                this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0].userId,'vs',this.gameRooms[i]?.clients[1].userId,
+                game.score1,':',game.score2);
+
                 if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
+                  this.gameRooms[i].clients[0].status = EUserStatus.ONLINE;
+                  this.gameRooms[i].clients[1].status = EUserStatus.ONLINE;
                   console.log('Cleaning Up room with ID ',i);
                   this.gameRooms[i] = null;
                 }
@@ -196,13 +211,13 @@ export class NetworkGameService {
       }
 
 
-      private getISocketUserFromSocket(client: Socket): ISocketUser | undefined{
+      private getISocketUserFromSocket(client: Socket): IGameSocketUser | undefined{
         return this.clients.find((socketUser)=>socketUser.socket.id == client.id);
       }
 
       private printConnectedSockets(){
           for (let i = 0; i < this.clients.length; i++) {
-            console.log('element [',i,'] = ',this.clients[i].userId);
+            console.log('element [',i,'] =',this.clients[i].userId,this.clients[i].status);
         }
       }
 }
