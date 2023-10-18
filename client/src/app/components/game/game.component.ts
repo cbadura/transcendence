@@ -82,7 +82,7 @@ export class GameComponent {
     this.gameService.subscribeToEvents();
     this.gameService.getEventData().subscribe((event) => {
       //   ROOM_CREATED
-      if (event.eventType === ESocketGameMessage.ROOM_CREATED) {
+      if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
         console.log('ROOM CREATED IN GAME COMPONENT');
         this.game = event.data.game;
         this.render = new Render(

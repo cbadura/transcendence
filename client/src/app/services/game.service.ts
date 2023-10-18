@@ -43,10 +43,10 @@ export class GameService {
 
   subscribeToEvents() {
     this.gameSocket?.on(
-      ESocketGameMessage.ROOM_CREATED,
+      ESocketGameMessage.LOBBY_COMPLETED,
       (data : any) => {
         this.eventSubject.next({
-          eventType: ESocketGameMessage.ROOM_CREATED,
+          eventType: ESocketGameMessage.LOBBY_COMPLETED,
           data:  data,
         });
       }

@@ -12,6 +12,9 @@ import { MatchService } from 'src/match/match.service';
 import { EGameRoomState } from './interfaces/EGameRoomState';
 import { JoinQueueDto } from './dto/join-queue.dto';
 import { GameRoomInfoDto, GameRoomUserInfo } from './dto/game-room-info.dto';
+import { CreatePrivateRoomDto } from './dto/create-private-room.dto';
+import { privateRoomInvitationInfo } from './dto/private-room-info.dto';
+import { JoinRoomDto } from './dto/join-room.dto';
 
 @Injectable()
 export class NetworkGameService {
@@ -53,34 +56,23 @@ export class NetworkGameService {
       }
       
       //creates room from queue
-      async createGameRoomFromQueue(gameType: 'default' | 'special') {
+      createGameRoomFromQueue(gameType: 'default' | 'special') {
         const queue: IGameSocketUser[] = (gameType == 'default'? this.defaultQueue : this.specialQueue);
         if(queue.length < 2){
           console.log(gameType,'queue Does not have enough Users to create Room');
           return
         }
 
-        const roomID = this.InsertRoom(new GameRoom(this.matchService,'public',gameType))
-        const newRoom = this.gameRooms[roomID];
+        const roomID = this.InsertRoom(new GameRoom(this.matchService,this.userService,'public',gameType))
         console.log('roomID =',roomID)
+        if(roomID == -1) {
+          console.log('Room could not be created. All Rooms are currently occupied')
+          return
+        }
+        const newRoom = this.gameRooms[roomID];
         //if roomID == -1 no room left
-        
-        newRoom.clients.push(queue[0]);
-        newRoom.clients.push(queue[1]);
-        newRoom.clients[0].status = EUserStatus.IN_MATCH;
-        newRoom.clients[1].status = EUserStatus.IN_MATCH;
-        newRoom.clients[0].room_id = roomID;
-        newRoom.clients[1].room_id = roomID;
-
-        // console.log('Queue length = ',queue.length);
-        // console.log('newRoom clients length = ', newRoom.clients.length);
-        
-        //user[0] == peddal 1, user[1] == peddal 2
-        const pedal1User = await this.userService.getUser(newRoom.clients[0].userId) //should be improved
-        const pedal2User = await this.userService.getUser(newRoom.clients[1].userId)
-        const roominfo : GameRoomInfoDto = new GameRoomInfoDto(roomID,newRoom.game.getGame(),new GameRoomUserInfo(pedal1User,pedal2User))
-        newRoom.notifyClients(ESocketGameMessage.ROOM_CREATED,roominfo)
-        newRoom.StartGame();
+        newRoom.insertUserToRoom(queue[0]);
+        newRoom.insertUserToRoom(queue[1]);
         queue.splice(0,2);
 
       }
@@ -93,15 +85,75 @@ export class NetworkGameService {
           if(this.gameRooms[i] == null){
             console.log('Found a gameROom which is finshed. Overwriting existing one with new one')
             this.gameRooms[i] = newRoom;
+            this.gameRooms[i].room_id = i;
             return i;
           }
         }
         return -1;
       }
 
+      async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ){
+        const instigator = this.getISocketUserFromSocket(client);
+        if(instigator == null){
+          console.log('exception','Instigator (You) are not registered')
+          return;
+        }
+        //could check if user is online and not in a match
+        const recipient = this.getISocketUserFromUserId(dto.recipient_user_id);
+        if(recipient == null){
+          console.log('exception','Recipient is not registered')
+          return;
+        }
+        if(recipient.status != EUserStatus.ONLINE){
+          console.log('exception','Recipient is currently',recipient.status);
+          return;
+        }
+
+        const roomID = this.InsertRoom(new GameRoom(this.matchService,this.userService,'private',dto.gameType))
+        if(roomID == -1) {
+          console.log('Room could not be created. All Rooms are currently occupied')
+          instigator.socket.emit('exception','Room could not be created. All Rooms are currently occupied')
+          return
+        }
+        const newRoom = this.gameRooms[roomID];
+        instigator.socket.emit(ESocketGameMessage.ROOM_CREATED,{room_id: roomID})
+        const invitationInfo: privateRoomInvitationInfo = {
+          room_id: roomID,
+          gameType: dto.gameType,
+          inviting_user: await this.userService.getUser(instigator.userId),
+        };
+        recipient.socket.emit(ESocketGameMessage.RECEIVE_ROOM_INVITE,invitationInfo);
+        newRoom.insertUserToRoom(instigator);
+
+      }
 
 
+      JoinPrivateRoom(client: Socket, dto: JoinRoomDto, ) {
 
+        const user = this.getISocketUserFromSocket(client);
+        const room = this.gameRooms[dto.room_id];
+        if(user == null){
+          console.log('exception','You are not registered')
+          return;
+        }
+        if( room == null){
+          console.log('Room no longer exists');
+          user.socket.emit('exception','Room no longer exists');
+          return
+        }
+        if(room.CanUserJoin(user.userId) == false){
+          console.log('You have no permission to join this room');
+          user.socket.emit('exception','You have no permission to join this room');
+          return
+        }
+        if(dto.response == false){
+          room.abortGame('declined invitation');
+          return;
+        }
+        room.insertUserToRoom(user);
+
+
+      }
 
       //probably should also check if a user disconnects while in match.
       handleDisconnect(client: Socket) {
@@ -187,7 +239,7 @@ export class NetworkGameService {
           this.printConnectedSockets();
           console.log(`---------- Currentlu Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
-            console.log("Element [",i,'] =',this.defaultQueue[i].userId); 
+            console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 
           }
           //game rooms
           console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
@@ -195,12 +247,18 @@ export class NetworkGameService {
               if( this.gameRooms[i] != null) {
                 const game = this.gameRooms[i]?.game.getGame();
                 console.log('Room [',i,']',this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
-                this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0].userId,'vs',this.gameRooms[i]?.clients[1].userId,
+                this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0]?.userId,'vs',this.gameRooms[i]?.clients[1]?.userId,
                 game.score1,':',game.score2);
 
                 if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
-                  this.gameRooms[i].clients[0].status = EUserStatus.ONLINE;
-                  this.gameRooms[i].clients[1].status = EUserStatus.ONLINE;
+                  if(this.gameRooms[i].clients[0] != null){
+                    this.gameRooms[i].clients[0].status = EUserStatus.ONLINE;
+                    this.gameRooms[i].clients[0].room_id = -1;
+                  }
+                  if(this.gameRooms[i].clients[1] != null){
+                    this.gameRooms[i].clients[1].status = EUserStatus.ONLINE;
+                    this.gameRooms[i].clients[1].room_id = -1;
+                  }
                   console.log('Cleaning Up room with ID ',i);
                   this.gameRooms[i] = null;
                 }
@@ -213,6 +271,10 @@ export class NetworkGameService {
 
       private getISocketUserFromSocket(client: Socket): IGameSocketUser | undefined{
         return this.clients.find((socketUser)=>socketUser.socket.id == client.id);
+      }
+
+      private getISocketUserFromUserId(userId: number): IGameSocketUser | undefined{
+        return this.clients.find((socketUser)=>socketUser.userId == userId);
       }
 
       private printConnectedSockets(){
