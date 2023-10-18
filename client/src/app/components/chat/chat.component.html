@@ -12,24 +12,20 @@
   #messagesDiv
   class="overflow-y-auto h-[calc(100%-180px)] pl-9 pr-9 scrollbar-hide mt-24 pt-6 pb-8 "
   >
-  <!-- Each message -->
-  <div *ngFor="let message of messages; let i = index">
+    <!-- Each message -->
+    <div *ngFor="let message of messages; let i = index">
+      
+      <!-- Render message info conditionally -->
+      <ng-container
+      *ngIf="i === 0 || message.senderId !== messages[i - 1].senderId"
+      >
+      <tcd-message-info [post]="message" [isMe]="myUser.id == message.senderId" ></tcd-message-info>
+    </ng-container>
+    <tcd-message-bubble [post]="message" [isMe]="myUser.id == message.senderId" class="flex"></tcd-message-bubble>
     
-    <!-- Render message info conditionally -->
-    <ng-container
-    *ngIf="i === 0 || message.senderId !== messages[i - 1].senderId"
-    >
-    <tcd-message-info [post]="message" [isMe]="myUser.id == message.senderId" ></tcd-message-info>
-  </ng-container>
-  <tcd-message-bubble [post]="message" [isMe]="myUser.id == message.senderId" class="flex"></tcd-message-bubble>
-  
-</div>
+    </div>
 
-<!-- Input field -->
-<tcd-chat-input (sendMessage)="savePost($event)"></tcd-chat-input>
-</div>
-</div>
-
-<!-- Create channel -->
-<tcd-create-channel></tcd-create-channel>
+    <!-- Input field -->
+    <tcd-chat-input (sendMessage)="savePost($event)"></tcd-chat-input>
+  </div>
 </div>

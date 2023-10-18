@@ -8,7 +8,7 @@ import { Socket, SocketIoConfig } from 'ngx-socket-io';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
-import { EditProfileComponent } from './components/profile-components/edit-profile/edit-profile.component';
+// import { EditProfileComponent } from './components/profile-components/edit-profile/edit-profile.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
@@ -28,7 +28,7 @@ import { MessageBubbleComponent } from './components/chat/message-bubble/message
 import { MessageInfoComponent } from './components/chat/message-info/message-info.component';
 
 import { NgIconsModule } from '@ng-icons/core';
-import { featherSettings, featherSend, featherUser, featherUsers } from '@ng-icons/feather-icons';
+import { featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
@@ -36,7 +36,6 @@ import { HomeComponent } from './components/home/home.component';
 import { ChatSocketModule } from './chat-socket/chat-socket.module';
 import { GameSocketModule } from './game-socket/game-socket.module';
 import { CreateProfileComponent } from './components/profile-components/create-profile/create-profile.component';
-import { CreateChannelComponent } from './components/chat/create-channel/create-channel.component';
 import { ChannelsComponent } from './components/channels/channels.component';
 import { ChannelCardComponent } from './components/channels/channel-card/channel-card.component';
 import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
@@ -48,7 +47,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
   declarations: [
     AppComponent,
     HeaderComponent,
-    EditProfileComponent,
+    // EditProfileComponent,
     GameComponent,
     ChatComponent,
     LeaderboardComponent,
@@ -70,7 +69,6 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChatBtnComponent,
     HomeComponent,
     CreateProfileComponent,
-    CreateChannelComponent,
     ChannelsComponent,
     ChannelCardComponent,
     EditChannelComponent
@@ -82,7 +80,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     FormsModule,
     ChatSocketModule,
     GameSocketModule,
-    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser, featherUsers }),
+    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare }),
   ],
   providers: [
     UserDataService,
