@@ -14,24 +14,27 @@ import { User } from '../shared/interfaces/user';
 export class GameService {
   game!: Game;
   countdown!: number;
-  private gameSocket: Socket | null = null;
-  // constructor(@Inject('gameSocket') private gameSocket: Socket) { }
+  gameSocket: Socket | null = null; //will be set on gameComponent Initialize (by that time a socket should already exist)
 
   eventSubject = new Subject<{ eventType: string; data: any }>();
 
-  createGameSocket(userId: number): void {
-    const url = 'http://localhost:3000/game?userId=' + userId;
-    if (!this.gameSocket) {
-      this.gameSocket = new Socket({ url: url, options: {} });
-    }
-    this.gameSocket.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: "default"}) //temp fix the create same behavior as before
+  JoinQueue(userId: number): void {
+
+    
+    this.gameSocket?.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: "default"}) //temp fix the create same behavior as before
   }
 
+  //user should not disconnect anymore
   disconnectGameSocket(): void {
-    if (this.gameSocket) {
-      this.gameSocket.disconnect();
-      this.gameSocket = null;
-    }
+    // if (this.gameSocket) {
+    //   this.gameSocket.disconnect();
+    //   this.gameSocket = null;
+    // }
+  }
+
+  //this function should be called if a use is queueing but switches to another tab. Or we have explicitly a button to stop queueing
+  leaveQueue(){
+    this.gameSocket?.emit(ESocketGameMessage.TRY_LEAVE_QUEUE)
   }
 
   sendPaddle(id: number, step: number) {

@@ -187,8 +187,6 @@ export class NetworkGameService {
                 console.log('Room [',i,']',this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),this.gameRooms[i]?.getGameRoomStateString());
                 if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
                   console.log('Cleaning Up room with ID ',i);
-                  this.gameRooms[i].clients[0].socket?.disconnect(); //meh code
-                  this.gameRooms[i].clients[1].socket?.disconnect();
                   this.gameRooms[i] = null;
                 }
               }

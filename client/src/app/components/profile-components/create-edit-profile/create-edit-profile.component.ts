@@ -68,6 +68,8 @@ export class CreateProfileComponent implements OnInit {
     }
     this.userDataService.createEditUser(this.tempUserName, this.tempColor, this.tempFile).subscribe(user => {
       console.log('User created with ID:', user.id);
+      //create Socket Connection
+      this.userDataService.CreateSocketConnections();
     }, error => {
       window.alert('Error editing user: ' + JSON.stringify(error));
     });
