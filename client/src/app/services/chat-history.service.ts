@@ -15,7 +15,7 @@ export class ChatHistoryService {
   serverPosts: string[] = [
     'first message'
   ];
-  room: string = "testRoom";
+  // room: string = "testRoom";
 
   constructor(public datepipe: DatePipe,
     @Inject('chatSocket') private chatSocket: Socket) {}
