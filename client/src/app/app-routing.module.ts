@@ -22,6 +22,7 @@ const routes: Routes = [
   { path: 'create-profile', component: CreateProfileComponent },
   { path: 'channels', component: ChannelsComponent },
   { path: 'channels/edit/:channel', component: EditChannelComponent },
+  { path: 'channels/edit', component: EditChannelComponent },
   // { path: '**', redirectTo: '' },
 ];
 

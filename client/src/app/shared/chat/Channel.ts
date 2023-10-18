@@ -9,5 +9,5 @@ export interface Channel {
     isMuted: boolean;
     banExpTime?: number;
     muteExpTime?: number;
-    usersIds: number[];
+    users: number[];
 }

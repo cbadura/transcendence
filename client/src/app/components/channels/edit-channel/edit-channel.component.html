@@ -28,7 +28,7 @@
 
   <div class="flex justify-between w-full">
     <tcd-custom-button [buttonText]="'Delete channel'"></tcd-custom-button>
-    <tcd-custom-button [buttonText]="'Save changes'" [isBlack]="true"></tcd-custom-button>
+    <tcd-custom-button [buttonText]="'Save changes'" (click)="handleClick()" [isBlack]="true"></tcd-custom-button>
   </div>
 
 

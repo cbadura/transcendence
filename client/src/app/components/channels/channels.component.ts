@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { ChatHistoryService } from 'src/app/services/chat-history.service';
 import { Channel } from 'src/app/shared/chat/Channel';
@@ -18,21 +20,34 @@ export class ChannelsComponent {
   public filteredChannels: Channel[] = [];
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
+  private eventSubscription!: Subscription;
+  
 
   constructor(
+    private router: Router,
     private chatHistoryService: ChatHistoryService) {
   }
     
   ngOnInit() {
-    this.chatHistoryService.listChannels().subscribe(channels => {
+    console.log('ON INIT');
+    this.chatHistoryService.subscribeToEvents();
+    this.eventSubscription = this.chatHistoryService.getEventData().subscribe((event) => {
+      if (event.eventType === 'listChannels') {
+        this.serverChannels = event.data.channels;
+      }
+
+      if (event.eventType === 'createdChannel')
+      {
+        this.serverChannels.push(event.data);
+        console.log('updated channels list', event.data);
+      }
+      this.filterChannels();
+    })
+    /* this.chatHistoryService.listChannels().subscribe(channels => {
       this.serverChannels = channels;
       console.log(this.serverChannels);
       this.filterChannels();
-    });
-  }
-
-  createChannel() {
-    this.chatHistoryService.createChannel();
+    }); */
   }
 
   selectChannel(channel: string) {
@@ -46,7 +61,6 @@ export class ChannelsComponent {
     if (selectedPage === 'Public' && this.serverChannels) {
       // this.filteredChannels = this.serverChannels;
       this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PUBLIC);
-      this.filteredChannels[0].usersIds = [2];
       // console.log('FILTERED', this.filteredChannels);
     }
     else if (selectedPage === 'Private')
@@ -57,5 +71,11 @@ export class ChannelsComponent {
       this.ownChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.ADMIN);
     }
+  }
+
+
+
+  ngOnDestroy(): void {
+    this.eventSubscription.unsubscribe();
   }
 }

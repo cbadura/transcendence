@@ -9,7 +9,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🎉 Channel 2',
@@ -17,7 +17,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌟 Channel 3',
@@ -25,7 +25,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🔒 Channel 4',
@@ -33,7 +33,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🎈 Channel 5',
@@ -41,7 +41,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🌴 Channel 6',
@@ -49,7 +49,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🍔 Channel 7',
@@ -57,7 +57,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🚁 Channel 8',
@@ -65,7 +65,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌈 Channel 9',
@@ -73,7 +73,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🚢 Channel 10',
@@ -81,7 +81,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🏖️ Channel 11',
@@ -89,7 +89,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🚗 Channel 12',
@@ -97,7 +97,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🍕 Channel 13',
@@ -105,7 +105,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🌌 Channel 14',
@@ -113,7 +113,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🎃 Channel 15',
@@ -121,7 +121,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🍭 Channel 16',
@@ -129,7 +129,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🎇 Channel 17',
@@ -137,7 +137,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🚀 Channel 18',
@@ -145,7 +145,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌄 Channel 19',
@@ -153,7 +153,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🌾 Channel 20',
@@ -161,7 +161,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌺 Channel 21',
@@ -169,7 +169,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🍦 Channel 22',
@@ -177,7 +177,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🚤 Channel 23',
@@ -185,7 +185,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🍩 Channel 24',
@@ -193,7 +193,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🎸 Channel 25',
@@ -201,7 +201,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🍺 Channel 26',
@@ -209,7 +209,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌮 Channel 27',
@@ -217,7 +217,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🎯 Channel 28',
@@ -225,7 +225,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🚁 Channel 29',
@@ -233,7 +233,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🏖️ Channel 30',
@@ -241,7 +241,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🚢 Channel 31',
@@ -249,7 +249,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🌅 Channel 32',
@@ -257,7 +257,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌃 Channel 33',
@@ -265,7 +265,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🚓 Channel 34',
@@ -273,7 +273,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🚀 Channel 35',
@@ -281,7 +281,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.OWNER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🍕 Channel 36',
@@ -289,7 +289,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🌆 Channel 37',
@@ -297,7 +297,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.NONE,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🍎 Channel 38',
@@ -305,7 +305,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
       {
         name: '🚖 Channel 39',
@@ -313,7 +313,7 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.ADMIN,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3],
+        users: [1, 2, 3],
       },
       {
         name: '🚀 Channel 40',
@@ -321,6 +321,6 @@ export const dummyChannels: Channel[] = [
         role: EUserRole.USER,
         isBanned: false,
         isMuted: false,
-        usersIds: [1, 2, 3, 4, 5, 6],
+        users: [1, 2, 3, 4, 5, 6],
       },
     ]    

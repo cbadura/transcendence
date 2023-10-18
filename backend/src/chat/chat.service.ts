@@ -119,6 +119,7 @@ export class ChatService {
     );
   }
 
+
   handleDisconnect(client: Socket) {
     this.clients = this.clients.filter(
       (currentClient) => currentClient.socket.id !== client.id,
