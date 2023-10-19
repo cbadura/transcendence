@@ -3,6 +3,7 @@ import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, Subject, Observable, map } from 'rxjs';
 
 import { Channel } from '../shared/chat/Channel';
+import { EUserRole } from '../shared/macros/EUserRole';
 
 @Injectable({
   providedIn: 'root'
@@ -12,15 +13,18 @@ export class ChannelService {
   eventSubject = new Subject<{ eventType: string; data: any}>();
 
   constructor(
-    @Inject('chatSocket') private chatSocket: Socket) {}
+    @Inject('chatSocket') private chatSocket: Socket) {
+      this.subscribeToEvents();
+    }
 
   serverChannels = new BehaviorSubject<Channel[]>(this.channels);
   serverChatObs$ = this.serverChannels.asObservable();
 
-  getServerChannels(): Channel[] {
+  /* getServerChannels(): Channel[] {
     return this.serverChannels.value;
-  }
+  } */
 
+  /* SOCKET.IO calls */
   getChannel() {
     let channel = this.chatSocket.fromEvent('createdChannel')
       .pipe(map((channel: any) => {
@@ -35,6 +39,7 @@ export class ChannelService {
       this.channels.push(msg);
       this.serverChannels.next(this.channels);
     });
+    console.log('SUBSCRIBED', this.serverChannels);
   }
 
   createChannel(name: string) {
@@ -52,21 +57,23 @@ export class ChannelService {
       (data: any) => {
         console.log('LIST', data);
         this.channels = data;
-        this.eventSubject.next({
-          eventType: 'listChannels',
-          data: data
-        });
+        this.serverChannels.next(this.channels);
     });
 
     this.chatSocket?.on(
       'createdChannel',
       (data: any) => {
         console.log('CREATED', data);
-        this.channels.push(data);
-        this.eventSubject.next({
-          eventType: 'listChannels',
-          data: data
-        });
+        let channel: Channel = {
+          name: data.channelName,
+          mode: data.mode,
+          role: EUserRole.OWNER,
+          isBanned: false,
+          isMuted: false,
+          users: [1] 
+        }
+        this.channels.push(channel);
+        this.serverChannels.next(this.channels);
     });
   }
 

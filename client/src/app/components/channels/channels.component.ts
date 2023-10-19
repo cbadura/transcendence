@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
 
 import { ChannelService } from 'src/app/services/channel.service';
 import { Channel } from 'src/app/shared/chat/Channel';
@@ -20,19 +19,22 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   public filteredChannels: Channel[] = [];
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
-  private eventSubscription!: Subscription;
+  private channelSubscription!: Subscription;
   
 
   constructor(
-    private router: Router,
     private channelService: ChannelService) {
   }
     
   ngOnInit() {
     console.log('ON INIT');
-    console.log('SERVICE CHANNELS', this.channelService.getChannel());
-    // this.chatHistoryService.subscribeToEvents();
-    // this.eventSubscription = this.chatHistoryService.getEventData().subscribe((event) => {
+    this.channelSubscription = this.channelService.serverChatObs$.subscribe(
+      (channels) => {
+        this.serverChannels = channels;
+        console.log('SERVER CHANNELS', this.serverChannels);
+      }
+    );
+    /* console.log('SERVICE CHANNELS', this.channelService.getChannel());
     this.eventSubscription = this.channelService.getEventData().subscribe((event) => {
       if (event.eventType === 'listChannels') {
         this.serverChannels = event.data.channels;
@@ -44,7 +46,8 @@ export class ChannelsComponent implements OnInit, OnDestroy {
         console.log('updated channels list', event.data);
       }
       this.filterChannels();
-    })
+    }) */
+
     /* this.chatHistoryService.listChannels().subscribe(channels => {
       this.serverChannels = channels;
       console.log(this.serverChannels);
@@ -75,9 +78,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   ngOnDestroy(): void {
-    this.eventSubscription.unsubscribe();
+    this.channelSubscription.unsubscribe();
   }
 }
