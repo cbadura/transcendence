@@ -50,6 +50,7 @@ export class GameRoom {
                         this.state = EGameRoomState.FINISHED;
 
                         let matchRes = {
+                            "matchType": this.gameType,
                             "matchEndReason": {
                             "reason": resultReason,
                             'disconnected_user_id': this.disconnectedUser

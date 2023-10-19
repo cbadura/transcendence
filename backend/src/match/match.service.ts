@@ -68,6 +68,7 @@ export class MatchService {
         const match =  new Match();
         match.timestamp = new Date();
         match.reason = createMatchDto.matchEndReason.reason;
+        match.matchType = createMatchDto.matchType;
         const matchObject = await this.matchRepository.save(match);
         this.determineMatchOutcome(createMatchDto);
         

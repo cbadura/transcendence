@@ -174,8 +174,15 @@ export class NetworkGameService {
       }
 
 
-      movePaddle(data: [number,number]) {
-
+      movePaddle(client: Socket,data: [number,number]) {
+        const user = this.getISocketUserFromSocket(client);
+        console.log('user.userId',user.userId);
+        console.log('data[0] ',data[0]);
+        if(data[0] !=user.userId) {
+          console.log('User with ID',user.userId,'Tried to move the paddle of User with ID',data[0])
+          user.socket.emit('exception','You are not allowed to move another persons paddle');
+          return
+        }
         for (let i = 0; i < this.gameRooms.length; i++) {
           for (let j = 0; j < this.gameRooms[i]?.clients.length; j++) {
                 if(this.gameRooms[i].clients[j].userId == data[0]){

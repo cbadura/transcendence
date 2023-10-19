@@ -58,7 +58,7 @@ export const specialGameConfig: GameConfig = {
     radius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
     color: 'red',
-    speed: 5,
+    speed: 10,
   },
 	lineOffset: 30,
 	maxScore: 5,  	
