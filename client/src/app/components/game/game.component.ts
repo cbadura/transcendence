@@ -151,10 +151,10 @@ export class GameComponent {
   movePaddle() {
     // Will emit events to backend
     if (this.movingUp) {
-      this.gameService.sendPaddle(this.myUser.id, -gameConfig.paddle.step);
+      this.gameService.sendPaddle(this.myUser.id, -1);
     }
     if (this.movingDown) {
-      this.gameService.sendPaddle(this.myUser.id, gameConfig.paddle.step);
+      this.gameService.sendPaddle(this.myUser.id, 1);
     }
   }
 

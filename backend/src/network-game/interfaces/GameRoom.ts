@@ -84,10 +84,10 @@ export class GameRoom {
     //converting user ID to pedal ID //user[0] == peddal 1, user[1] == peddal 2
     updatePlayerPosition(data: [number,number]) {
         if(this.clients.length == 2 && this.clients[0].userId == data[0]){
-            this.game.movePaddle(1,data[1]);
+            this.game.movePaddle(1,data[1] );
         }
         else if(this.clients.length == 2 && this.clients[1].userId == data[0])
-            this.game.movePaddle(2,data[1]);
+            this.game.movePaddle(2,data[1] );
         else{
             console.log('THis data was received, but it matches neither clients',data)
             console.log('client [0] = ', this.clients[0].userId)
