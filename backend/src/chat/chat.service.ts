@@ -228,6 +228,7 @@ export class ChatService {
     const updChannelData: UpdateChannelDto = {
       ...channelData,
       currName: dto.currName,
+      channelName: dto.channelName,
     };
     this.clients.forEach((client) => {
       const userInChannel: boolean = !!channel.users.find(

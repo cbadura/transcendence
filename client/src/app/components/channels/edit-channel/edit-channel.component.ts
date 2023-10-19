@@ -16,6 +16,7 @@ export class EditChannelComponent implements OnInit {
   public tempPassword!: string;
   private channel!: Channel;
   private emptyChannel: boolean = false;
+  private oldName: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +33,7 @@ export class EditChannelComponent implements OnInit {
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
       this.tempChannel =  { ...this.channel };
+      this.oldName = this.tempChannel.name;
       if (!this.tempChannel.name) {
         console.log('EMPTY');
         this.emptyChannel = true;
@@ -53,6 +55,11 @@ export class EditChannelComponent implements OnInit {
       this.router.navigate(['/channels']);
     } else {
       console.log('NOT CREATED');
+      this.channelService.updateChannel(this.tempChannel, this.tempPassword, this.oldName)
     }
+  }
+
+  deleteChannel() {
+    this.channelService.deleteChannel(this.tempChannel.name);
   }
 }

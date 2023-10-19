@@ -32,8 +32,9 @@
     <tcd-channel-card
       *ngFor="let channel of filteredChannels"
       [channel]="channel"
-    ></tcd-channel-card>
-  </div>
+      ></tcd-channel-card>
+      
+    </div>
 
   <div *ngIf="selectedPage === 'My channels'" class="w-full pb-4">
     <p class="font-bold p-4">Channels I own</p>
@@ -54,3 +55,4 @@
     </div>
   </div>
 </section>
+

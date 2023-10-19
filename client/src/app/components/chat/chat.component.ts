@@ -1,12 +1,14 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 import { ChatHistoryService } from '../../services/chat-history.service';
 import { UserDataService } from '../../services/user-data.service';
 
 import { Post } from 'src/app/shared/interfaces/post';
 import { User } from 'src/app/shared/interfaces/user';
+import { Channel } from 'src/app/shared/chat/Channel';
 
 @Component({
   selector: 'tcd-chat',
@@ -20,11 +22,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   tempText!: string;
   private postSubscription!: Subscription;
   myUser!: User;
+  channel!: Channel;
 
   constructor(
     public datepipe: DatePipe,
     private chatHistoryService: ChatHistoryService,
-    private userDataService: UserDataService) {
+    private userDataService: UserDataService,
+    private route: ActivatedRoute
+    ) {
     this.messages = [];
     this.tempText = '';
     this.myUser = this.userDataService.getUser();
@@ -40,6 +45,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.messages = posts;
       }
     );
+
+    this.route.params.subscribe(params => {
+      console.log('PARAMS', params)
+      const { channel, ...rest } = params;
+      this.channel = rest as Channel;
+    });
   }
 
   ngAfterViewChecked() {
@@ -57,10 +68,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   savePost(message: string) {
     const newPost = {
         message: message,
+        channel: this.channel.name,
         senderAvatar: '',
-        timestamp: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
+        timestamp: new Date().getTime() / 1000
+        /* this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? '' */
     };
     this.chatHistoryService.sendMessage(newPost);
   }
-
 }

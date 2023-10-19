@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'game', component: GameComponent },
   { path: 'leaderboard', component: LeaderboardComponent },
   { path: 'chat', component: ChatComponent },
+  { path: 'chat/:channel', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   // { path: 'edit-profile', component: EditProfileComponent },
   { path: 'create-profile', component: CreateProfileComponent },

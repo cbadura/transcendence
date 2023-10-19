@@ -1,6 +1,7 @@
 <div
   class="flex items-center justify-between bg-black m-4 p-4 rounded-3xl text-white cursor-pointer transition-all  hover:bg-zinc-700"
   [routerLink]="['/chat']"
+  (click)="navigateToChat($event, channel)"
 >
 
 <!-- Left side -->
@@ -20,5 +21,6 @@
 
   <!-- Edit button -->
   <tcd-chat-btn (click)="navigateToEditChannel($event, channel)" *ngIf="editMode" [icon]="'featherSettings'"></tcd-chat-btn>
+  <tcd-chat-btn (click)="joinChannel($event)" *ngIf="editMode" [icon]="'featherPlusSquare'"></tcd-chat-btn>
 
 </div>
