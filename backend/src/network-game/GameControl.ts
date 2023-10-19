@@ -46,6 +46,11 @@ export class GameControl {
   getGame(): Game {
     return this.game;
   }
+  
+  //forcibly ends a game for whatever reason
+  forceSetGameOver(){
+    this.game.gameOver = true;
+  }
 
   private createDefaultPongGame() {
     return   ({

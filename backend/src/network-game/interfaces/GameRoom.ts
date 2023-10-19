@@ -43,6 +43,7 @@ export class GameRoom {
                 
                     if(this.game.getGame().gameOver || this.state == EGameRoomState.DISCONNECT){
                         clearInterval(gameLoop);
+                        this.game.forceSetGameOver(); 
                         //create match result entry
                         let resultReason = 'score';
                         if(this.state == EGameRoomState.DISCONNECT)
