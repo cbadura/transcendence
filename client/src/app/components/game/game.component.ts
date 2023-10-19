@@ -36,6 +36,7 @@ export class GameComponent {
   private render!: Render;
   // GameControl class
   private game!: Game;
+  private gameType: 'default' | 'special' = 'default';
 
   // Paddle movement
   private movingUp: boolean = false;
@@ -71,9 +72,10 @@ export class GameComponent {
     ) as CanvasRenderingContext2D;
   }
 
-  startGame(): void {
+  startGame(gameType: 'default' | 'special'): void {
+    this.gameType = gameType;
     this.status = 'waiting';
-    this.gameService.JoinQueue(this.myUser.id);
+    this.gameService.JoinQueue(this.myUser.id,gameType);
     console.log('gameSocket created');
 
     this.gameService.subscribeToEvents();
@@ -135,7 +137,7 @@ export class GameComponent {
       score2: 0,
       gameOver: false,
     };
-    this.startGame(); 
+    this.startGame(this.gameType); 
   }
 
   fillMatchData(game: Game): void {

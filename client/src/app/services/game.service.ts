@@ -17,10 +17,8 @@ export class GameService {
 
   eventSubject = new Subject<{ eventType: string; data: any }>();
 
-  JoinQueue(userId: number): void {
-
-    
-    this.gameSocket?.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: "default"}) //temp fix the create same behavior as before
+  JoinQueue(userId: number,gameType: 'default' | 'special'): void {
+    this.gameSocket?.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: gameType}) //temp fix the create same behavior as before
   }
 
   //user should not disconnect anymore

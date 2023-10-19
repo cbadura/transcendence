@@ -35,7 +35,7 @@ export const defaultGameConfig: GameConfig = {
   ball: {
     radius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
-    color: 'red',
+    color: 'black',
     speed: 5,
   },
 	lineOffset: 30,
@@ -57,7 +57,7 @@ export const specialGameConfig: GameConfig = {
   ball: {
     radius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
-    color: 'black',
+    color: 'red',
     speed: 5,
   },
 	lineOffset: 30,
