@@ -1,22 +1,22 @@
-import { defaultGameConfig } from './gameConfig';
+import { GameConfig } from './gameConfig';
 import { Game } from './interfaces/Game';
 
 export class GameBall {
+  constructor(private gameConfig: GameConfig) {}
   // const values
-  private ballRadius: number = defaultGameConfig.ball.radius;
-  private speed: number = defaultGameConfig.ball.speed;
+  private ballRadius: number = this.gameConfig.ball.radius;
+  private speed: number = this.gameConfig.ball.speed;
   private hitPosition: number =
-    defaultGameConfig.lineOffset + defaultGameConfig.paddle.width * 2 - this.ballRadius / 2;
+  this.gameConfig.lineOffset + this.gameConfig.paddle.width * 2 - this.ballRadius / 2;
   private resetPosition: number =
-    defaultGameConfig.lineOffset + defaultGameConfig.paddle.width * 2 + this.ballRadius / 2;
-  private canvasHeight: number = defaultGameConfig.canvas.height;
-  private canvasWidth: number = defaultGameConfig.canvas.width;
+    this.gameConfig.lineOffset + this.gameConfig.paddle.width * 2 + this.ballRadius / 2;
+  private canvasHeight: number = this.gameConfig.canvas.height;
+  private canvasWidth: number = this.gameConfig.canvas.width;
 
   // variables
   private dirX: number = Math.floor(Math.random() * 2) === 0 ? 1 : -1;
   private dirY: number = Math.floor(Math.random() * 2);
 
-  constructor() {}
 
   hitWall(game: Game): boolean {
     const { ballRadius, canvasHeight } = this;
@@ -31,13 +31,13 @@ export class GameBall {
       return (
         game.ball.x - ballRadius < hitPosition &&
         game.ball.y + ballRadius > game.paddle1 &&
-        game.ball.y - ballRadius < game.paddle1 + defaultGameConfig.paddle.length
+        game.ball.y - ballRadius < game.paddle1 + this.gameConfig.paddle.length
       );
     } else if (paddle === 2) {
       return (
         game.ball.x + ballRadius >= canvasWidth - hitPosition &&
         game.ball.y + ballRadius > game.paddle2 &&
-        game.ball.y - ballRadius < game.paddle2 + defaultGameConfig.paddle.length
+        game.ball.y - ballRadius < game.paddle2 + this.gameConfig.paddle.length
       );
     }
     return false;
@@ -45,9 +45,9 @@ export class GameBall {
 
   getBouncingAngle(game: Game, paddleY: number): number {
     const relativehitPoint =
-      (game.ball.y - (paddleY + defaultGameConfig.paddle.length / 2)) /
-      (defaultGameConfig.paddle.length / 2);
-    const bounceAngle = defaultGameConfig.ball.maxBounceAngle * relativehitPoint;
+      (game.ball.y - (paddleY + this.gameConfig.paddle.length / 2)) /
+      (this.gameConfig.paddle.length / 2);
+    const bounceAngle = this.gameConfig.ball.maxBounceAngle * relativehitPoint;
     return Math.sin(bounceAngle);
   }
 
@@ -109,6 +109,6 @@ export class GameBall {
     game.ball.hits = 0;
     this.dirX = Math.random() < 0.5 ? 1 : -1;
     this.dirY = Math.random() < 0.5 ? 1 : -1;
-    this.speed = 5;
+    this.speed = this.gameConfig.ball.speed;
   }
 }

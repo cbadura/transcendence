@@ -5,9 +5,9 @@ import { GameBall } from './GameBall';
 export class GameControl {
   private gameBall: GameBall;
   constructor(gameType: string) {
-    this.gameBall = new GameBall();
     this.gameConfig = (gameType == 'default' ? defaultGameConfig : specialGameConfig);
     this.game = (gameType == 'default' ? this.createDefaultPongGame() : this.createSpecialPongGame());
+    this.gameBall = new GameBall(this.gameConfig);
   }
   private game: Game;
   gameConfig: GameConfig;
@@ -46,7 +46,7 @@ export class GameControl {
   getGame(): Game {
     return this.game;
   }
-  
+
   //forcibly ends a game for whatever reason
   forceSetGameOver(){
     this.game.gameOver = true;
