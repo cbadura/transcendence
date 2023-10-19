@@ -5,7 +5,7 @@ import { ESocketGameMessage } from "./ESocketGameMessage";
 import { EGameRoomState } from "./EGameRoomState";
 import { MatchService } from "src/match/match.service";
 import { CreateMatchDto } from "src/match/dto/create-match.dto";
-import { gameConfig } from "../gameConfig";
+import { defaultGameConfig } from "../gameConfig";
 import { GameRoomInfoDto, GameRoomUserInfo } from "../dto/game-room-info.dto";
 import { UserService } from "src/user/user.service";
 
@@ -13,7 +13,7 @@ import { UserService } from "src/user/user.service";
 export class GameRoom {
 
     constructor(private readonly matchService: MatchService, private readonly userService: UserService, private roomAccess: 'private' | 'public' ='public',gameType: 'default' | 'special' ='default') {
-        this.game = (this.createGameControl(gameType))
+        this.game = new GameControl(gameType);
         this.gameType = gameType;
     }
 
@@ -136,7 +136,7 @@ export class GameRoom {
             //user[0] == peddal 1, user[1] == peddal 2
             const pedal1User = await this.userService.getUser(this.clients[0].userId) //should be improved
             const pedal2User = await this.userService.getUser(this.clients[1].userId)
-            const roominfo : GameRoomInfoDto = new GameRoomInfoDto(this.room_id,this.game.getGame(),new GameRoomUserInfo(pedal1User,pedal2User))
+            const roominfo : GameRoomInfoDto = new GameRoomInfoDto(this.room_id,this.game.getGame(),this.game.gameConfig,new GameRoomUserInfo(pedal1User,pedal2User))
             this.notifyClients(ESocketGameMessage.LOBBY_COMPLETED,roominfo)
             this.StartGame();
         }
@@ -160,24 +160,5 @@ export class GameRoom {
         this.state = EGameRoomState.FINISHED;
     }
 
-    //NEEDS TO BE CHANGED ONCE OTHER QUEUE WORKS
-    private createGameControl(gameType: 'default' | 'special'): GameControl{
-        const config = (gameType == 'default' ? this.createDefaultPongGame() : this.createDefaultPongGame())
-        return new GameControl(config);
-    }
 
-    private createDefaultPongGame() {
-        return   ({
-          gameOver: false,
-          score2: 0,
-          score1: 0,
-          paddle1: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
-          paddle2: gameConfig.canvas.height / 2 - gameConfig.paddle.length / 2,
-          ball: {
-            x: gameConfig.canvas.width / 2,
-            y: gameConfig.canvas.height / 2,
-            hits: 0,
-          },
-        })
-      }
 }

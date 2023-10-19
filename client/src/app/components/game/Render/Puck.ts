@@ -1,16 +1,15 @@
-import { gameConfig } from "../gameConfig";
+import { GameConfig } from "../../../shared/interfaces/game/gameConfig";
 
 export class Puck {
     private radius: number;
     private color: string;
 
-    constructor(private ctx: CanvasRenderingContext2D) {
+    constructor(private ctx: CanvasRenderingContext2D,gameConfig: GameConfig) {
         this.radius = gameConfig.ball.radius;
         this.color = gameConfig.ball.color;
     }
 
     draw(x: number, y: number) {
-
         this.ctx.beginPath();
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = this.color;

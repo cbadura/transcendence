@@ -5,7 +5,7 @@ import { EUserStatus, IGameSocketUser } from './interfaces/IGameSocketUser';
 import { UserService } from 'src/user/user.service';
 import { GameControl } from './gameControl';
 
-import { gameConfig } from './gameConfig';
+import { defaultGameConfig } from './gameConfig';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';
 import { GameRoom } from './interfaces/GameRoom';
 import { MatchService } from 'src/match/match.service';
@@ -212,6 +212,7 @@ export class NetworkGameService {
 
             this.specialQueue.push(currUser);
             currUser.status = EUserStatus.IN_QUEUE;
+            console.log('Queue length = ',this.specialQueue.length);
             }
 
         if(this.gameRooms.filter(room => room !== null).length < 1000) {

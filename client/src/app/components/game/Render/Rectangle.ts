@@ -1,4 +1,4 @@
-import { gameConfig } from '../gameConfig';
+import { GameConfig } from '../../../shared/interfaces/game/gameConfig';
 import { User } from 'src/app/shared/interfaces/user';
 import { SaturatedColor } from 'src/app/shared/functions/color';
 
@@ -11,10 +11,11 @@ export class Rectangle {
   constructor(
     private ctx: CanvasRenderingContext2D,
     public user: User,
-    public x: number
+    public x: number,
+    private gameConfig: GameConfig,
   ) {
-    this.width = gameConfig.paddle.width;
-    this.height = gameConfig.paddle.length;
+    this.width = this.gameConfig.paddle.width;
+    this.height = this.gameConfig.paddle.length;
     this.color = SaturatedColor(this.user.color, 20);
     this.name = user.name.toLowerCase();
   }
@@ -82,9 +83,9 @@ export class Rectangle {
     this.ctx.translate(this.x + this.width / 2, y + this.height / 2);
     this.ctx.rotate(-Math.PI / 2);
     let pos = -30;
-    if (this.x > gameConfig.canvas.width / 2)
+    if (this.x > this.gameConfig.canvas.width / 2)
       pos *= -1 + 20;
-    console.log('paddle', this.x, '>?', gameConfig.canvas.width / 2);
+    console.log('paddle', this.x, '>?', this.gameConfig.canvas.width / 2);
     console.log(pos);
     this.ctx.fillText(this.name, 0, pos);
     this.ctx.restore();

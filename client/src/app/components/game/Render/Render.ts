@@ -1,4 +1,4 @@
-import { GameConfig } from '../gameConfig';
+import { GameConfig } from '../../../shared/interfaces/game/gameConfig';
 import { Game } from '../../../shared/interfaces/game/Game';
 import { User } from 'src/app/shared/interfaces/user';
 import { LightenDarkenColor } from 'src/app/shared/functions/color';
@@ -26,15 +26,17 @@ export class Render {
     this.paddle1 = new Rectangle(
       this.ctx,
       user1,
-      gameConfig.lineOffset + gameConfig.paddle.width / 2
+      gameConfig.lineOffset + gameConfig.paddle.width / 2,
+      gameConfig
     );
     this.paddle2 = new Rectangle(
       this.ctx,
       user2,
       this.ctx.canvas.width -
-        (gameConfig.lineOffset + gameConfig.paddle.width * 1.5)
+        (gameConfig.lineOffset + gameConfig.paddle.width * 1.5),
+        gameConfig
     );
-    this.puck = new Puck(this.ctx);
+    this.puck = new Puck(this.ctx, gameConfig);
     console.log('Render constructor');
     console.log('this.game', this.game);
   }

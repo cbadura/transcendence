@@ -4,7 +4,6 @@ import * as io from 'socket.io-client';
 
 import { UserDataService } from '../../services/user-data.service';
 import { GameService } from 'src/app/services/game.service';
-import { gameConfig } from './gameConfig';
 import { Render } from './Render/Render';
 import {
   SaturatedColor,
@@ -85,7 +84,7 @@ export class GameComponent {
         this.game = event.data.game;
         this.render = new Render(
           this.ctx,
-          gameConfig,
+          event.data.gameConfig,
           event.data.game,
           event.data.userInfo.user1,
           event.data.userInfo.user2,

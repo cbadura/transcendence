@@ -1,16 +1,16 @@
-import { gameConfig } from './gameConfig';
+import { defaultGameConfig } from './gameConfig';
 import { Game } from './interfaces/Game';
 
 export class GameBall {
   // const values
-  private ballRadius: number = gameConfig.ball.radius;
-  private speed: number = gameConfig.ball.speed;
+  private ballRadius: number = defaultGameConfig.ball.radius;
+  private speed: number = defaultGameConfig.ball.speed;
   private hitPosition: number =
-    gameConfig.lineOffset + gameConfig.paddle.width * 2 - this.ballRadius / 2;
+    defaultGameConfig.lineOffset + defaultGameConfig.paddle.width * 2 - this.ballRadius / 2;
   private resetPosition: number =
-    gameConfig.lineOffset + gameConfig.paddle.width * 2 + this.ballRadius / 2;
-  private canvasHeight: number = gameConfig.canvas.height;
-  private canvasWidth: number = gameConfig.canvas.width;
+    defaultGameConfig.lineOffset + defaultGameConfig.paddle.width * 2 + this.ballRadius / 2;
+  private canvasHeight: number = defaultGameConfig.canvas.height;
+  private canvasWidth: number = defaultGameConfig.canvas.width;
 
   // variables
   private dirX: number = Math.floor(Math.random() * 2) === 0 ? 1 : -1;
@@ -31,13 +31,13 @@ export class GameBall {
       return (
         game.ball.x - ballRadius < hitPosition &&
         game.ball.y + ballRadius > game.paddle1 &&
-        game.ball.y - ballRadius < game.paddle1 + gameConfig.paddle.length
+        game.ball.y - ballRadius < game.paddle1 + defaultGameConfig.paddle.length
       );
     } else if (paddle === 2) {
       return (
         game.ball.x + ballRadius >= canvasWidth - hitPosition &&
         game.ball.y + ballRadius > game.paddle2 &&
-        game.ball.y - ballRadius < game.paddle2 + gameConfig.paddle.length
+        game.ball.y - ballRadius < game.paddle2 + defaultGameConfig.paddle.length
       );
     }
     return false;
@@ -45,9 +45,9 @@ export class GameBall {
 
   getBouncingAngle(game: Game, paddleY: number): number {
     const relativehitPoint =
-      (game.ball.y - (paddleY + gameConfig.paddle.length / 2)) /
-      (gameConfig.paddle.length / 2);
-    const bounceAngle = gameConfig.ball.maxBounceAngle * relativehitPoint;
+      (game.ball.y - (paddleY + defaultGameConfig.paddle.length / 2)) /
+      (defaultGameConfig.paddle.length / 2);
+    const bounceAngle = defaultGameConfig.ball.maxBounceAngle * relativehitPoint;
     return Math.sin(bounceAngle);
   }
 
