@@ -29,8 +29,6 @@ export class GameComponent {
   canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
-  private gameSubscription!: Subscription;
-  private startCountdownSubscription!: Subscription;
   public myUser!: User;
   public match!: Match;
   public status: string = 'new-game';

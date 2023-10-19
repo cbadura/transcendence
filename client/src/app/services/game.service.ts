@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { Subject } from 'rxjs';
 
 import { map } from 'rxjs/operators';
@@ -20,10 +19,12 @@ export class GameService {
   eventSubject = new Subject<{ eventType: string; data: any }>();
 
   createGameSocket(userId: number): void {
-    const url = 'http://localhost:3000/game?userId=' + userId;
+	  const url = 'http://localhost:3000/game?userId=' + userId;
+	  console.log('new socket url', url);
     if (!this.gameSocket) {
       this.gameSocket = new Socket({ url: url, options: {} });
-    }
+	}
+
     this.gameSocket.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: "default"}) //temp fix the create same behavior as before
   }
 
