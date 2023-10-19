@@ -150,7 +150,7 @@ export class ChatService {
 
   updateBanMutelist(channel: IChannel) {
     const now: number = this.getCurrentUnixTime();
-    console.log('bans', channel.bans);
+    //console.log('bans', channel.bans);
     console.log('mutes', channel.mutes);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
     channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now);
@@ -197,6 +197,7 @@ export class ChatService {
       this.clients.forEach((client) =>
         client.socket.emit(ESocketMessage.CREATED_CHANNEL, channelData),
       );
+    console.log(channelDto.channelName);
     return channel;
   }
 
@@ -261,6 +262,7 @@ export class ChatService {
       socket.emit('exception', 'Invalid message target');
       return;
     }
+    console.log(dto.channel, dto.message);
 
     const messageToChannel: MessageDto = { ...dto };
     messageToChannel.senderId = sender;

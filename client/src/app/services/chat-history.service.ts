@@ -2,20 +2,22 @@ import { Injectable, Inject } from '@angular/core';
 import { DatePipe } from "@angular/common";
 import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { User } from '../shared/interfaces/user';
 import { Post } from '../shared/interfaces/post';
+import { Channel } from '../shared/chat/Channel';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatHistoryService {
   chatHistory: Post[] = [];
+  channels: Channel[] = [];
   serverPosts: string[] = [
     'first message'
   ];
-  // room: string = "testRoom";
+  eventSubject = new Subject<{ eventType: string; data: any}>();
 
   constructor(public datepipe: DatePipe,
     @Inject('chatSocket') private chatSocket: Socket) {}
@@ -50,22 +52,72 @@ export class ChatHistoryService {
   addPost(post: Post) {
     this.chatHistory.push(post);
   }
-
-  sendMessage(post: Post) {
-    this.chatSocket.emit('message', post);
-  }
-  getMessage() {
-    let message = this.chatSocket.fromEvent('chatMessage')
-      .pipe(map((msg: any) => {
-      return msg;
-    }));
-    return message;
-  }
-
+  
   subscribeToMessages() {
     this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);
     });
   }
+
+  /* SOCKET.IO functions */
+  sendMessage(post: Post) {
+    //console.log(post.message);
+    //post.channel = 'new channel';
+
+    let newPost = {
+      message: 'hiiii',
+      channel: 'new channel',
+    }
+    this.chatSocket.emit('message', newPost);
+  }
+  getMessage() {
+    let message = this.chatSocket.fromEvent('message')
+      .pipe(map((msg: any) => {
+      console.log('MSG', msg);
+      return msg;
+    }));
+    return message;
+  }
+
+  /* createChannel(name: string) {
+    let post = {
+      name: name,
+      mode: 'public'
+    };
+    console.log('POST', post);
+    this.chatSocket.emit('tryCreateChannel', post);
+  }  */
+
+  subscribeToEvents() {
+    this.chatSocket?.on(
+      'listChannels',
+      (data: any) => {
+        console.log('LIST', data);
+        this.eventSubject.next({
+          eventType: 'listChannels',
+          data: data
+        });
+    });
+
+    this.chatSocket?.on(
+      'createdChannel',
+      (data: any) => {
+        console.log('CREATED', data);
+        this.eventSubject.next({
+          eventType: 'listChannels',
+          data: data
+        });
+    });
+  }
+
+  getEventData() {
+    return this.eventSubject.asObservable();
+  }
+
+  listChannels(): Observable<Channel[]> {
+    return this.chatSocket.fromEvent('listChannels').pipe(
+      map((response: any) => response.channels)
+  );}
+
 }

@@ -1,0 +1,24 @@
+<div
+  class="flex items-center justify-between bg-black m-4 p-4 rounded-3xl text-white cursor-pointer transition-all  hover:bg-zinc-700"
+  [routerLink]="['/chat']"
+>
+
+<!-- Left side -->
+<div class="">
+
+    <!-- Channel name -->
+    <p class="font-bold">{{ channel.name }}</p>
+    
+    <!-- Number of users -->
+    <div class="flex items-center gap-2">
+        <ng-icon class="cursor-pointer" name="{{ 'featherUsers' }}"></ng-icon>
+        <p>
+            {{ channel.usersIds.length }}
+        </p>
+    </div>
+</div>
+
+  <!-- Edit button -->
+  <tcd-chat-btn (click)="navigateToEditChannel($event, channel)" *ngIf="editMode" [icon]="'featherSettings'"></tcd-chat-btn>
+
+</div>

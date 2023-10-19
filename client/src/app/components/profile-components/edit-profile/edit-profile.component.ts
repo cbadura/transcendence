@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/* import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../../services/user-data.service';
@@ -45,9 +45,9 @@ export class EditProfileComponent implements OnInit {
     );
   }
 
-  getUsers() {
-    this.userDataService.getUsers();
-  }
+  // getUsers() {
+  //   this.userDataService.getUsers();
+  // }
 
   /* onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -66,7 +66,7 @@ export class EditProfileComponent implements OnInit {
   } */
 
 
-  editName(name: string) {
+/*   editName(name: string) {
     if (name && name.trim() !== '') {
       this.userDataService.setName(name);
     }
@@ -79,4 +79,4 @@ export class EditProfileComponent implements OnInit {
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
   }
-}
+} */
