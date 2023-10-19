@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
@@ -9,7 +9,7 @@ import { ChatHistoryService } from 'src/app/services/chat-history.service';
   selector: 'tcd-edit-channel',
   templateUrl: './edit-channel.component.html',
 })
-export class EditChannelComponent {
+export class EditChannelComponent implements OnInit {
   public modes: EChannelMode [] = [EChannelMode.PUBLIC, EChannelMode.PRIVATE, EChannelMode.PROTECTED];
   // public channel!: Channel;
   public tempChannel!: Channel;

@@ -12,7 +12,7 @@ import { dummyChannels } from 'src/app/temp/dummyChannels';
   selector: 'tcd-channels',
   templateUrl: './channels.component.html',
 })
-export class ChannelsComponent {
+export class ChannelsComponent implements OnInit, OnDestroy {
   public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
   public selectedPage = 'My channels';
   public dummyChannels: Channel[] = dummyChannels;
