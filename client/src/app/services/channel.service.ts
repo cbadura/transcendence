@@ -48,6 +48,12 @@ export class ChannelService {
     });
 
     this.chatSocket?.on(
+      'exception',
+      (data: any) => {
+        console.log('EXCEPTION', data);
+    });
+
+    this.chatSocket?.on(
       'createdChannel',
       (data: any) => {
         console.log('CREATED', data);
@@ -62,5 +68,14 @@ export class ChannelService {
         this.channels.push(channel);
         this.serverChannels.next(this.channels);
     });
+
+
+    // update
+    // delete
+    // mute
+    // kick
+    // ban
+    // add admin
+    // remove admin
   }
 }
