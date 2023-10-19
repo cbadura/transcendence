@@ -11,7 +11,7 @@ export interface GameConfig {
     step: number;
   };
   ball: {
-    radius: number;
+    defaultRadius: number;
     maxBounceAngle: number;
     color: string;
     speed: number;

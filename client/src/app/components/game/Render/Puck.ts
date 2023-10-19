@@ -5,7 +5,7 @@ export class Puck {
     private color: string;
 
     constructor(private ctx: CanvasRenderingContext2D,gameConfig: GameConfig) {
-        this.radius = gameConfig.ball.radius;
+        this.radius = gameConfig.ball.defaultRadius;
         this.color = gameConfig.ball.color;
     }
 

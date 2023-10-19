@@ -3,15 +3,15 @@ import { GameConfig, defaultGameConfig, specialGameConfig } from './gameConfig';
 import { GameBall } from './GameBall';
 
 export class GameControl {
-  private gameBall: GameBall;
   constructor(gameType: string) {
     this.gameConfig = (gameType == 'default' ? defaultGameConfig : specialGameConfig);
     this.game = (gameType == 'default' ? this.createDefaultPongGame() : this.createSpecialPongGame());
     this.gameBall = new GameBall(this.gameConfig);
   }
   private game: Game;
+  private gameBall: GameBall;
   gameConfig: GameConfig;
-  // In backend to be called on "CLIENT_MOVE_PADDLE" event
+
   movePaddle(id: number, direction: number): void {
     const maxTop = 1;
     const step = direction * this.gameConfig.paddle.step;
@@ -30,8 +30,8 @@ export class GameControl {
 
   // In the backend to be called on each frame
   routine(): void {
-	  this.gameBall.move(this.game);
-
+	  this.game.ball = this.gameBall.updatePosition(this.game);
+    console.log(this.game.ball);
 	  if (this.checkGameOver()) {
 		 this.game.gameOver = true;
 	  }
@@ -63,6 +63,7 @@ export class GameControl {
       ball: {
         x: this.gameConfig.canvas.width / 2,
         y: this.gameConfig.canvas.height / 2,
+        size: 1.00,
       },
     })
   }
@@ -78,6 +79,7 @@ export class GameControl {
       ball: {
         x: this.gameConfig.canvas.width / 2,
         y: this.gameConfig.canvas.height / 2,
+        size: 1.00,
       },
     })
   }

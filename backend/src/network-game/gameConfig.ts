@@ -11,7 +11,7 @@ export interface GameConfig {
     step: number;
   };
   ball: {
-    radius: number;
+    defaultRadius: number;
     maxBounceAngle: number;
     color: string;
     speed: number;
@@ -33,7 +33,7 @@ export const defaultGameConfig: GameConfig = {
     step: 10,
   },
   ball: {
-    radius: 20,
+    defaultRadius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
     color: 'black',
     speed: 5,
@@ -55,7 +55,7 @@ export const specialGameConfig: GameConfig = {
     step: 10,
   },
   ball: {
-    radius: 20,
+    defaultRadius: 20,
     maxBounceAngle: (75 * Math.PI) / 180,
     color: 'red',
     speed: 10,

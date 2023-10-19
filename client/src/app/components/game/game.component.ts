@@ -132,6 +132,7 @@ export class GameComponent {
       ball: {
         x: 0,
         y: 0,
+        size: 1.00,
       },
       score1: 0,
       score2: 0,
