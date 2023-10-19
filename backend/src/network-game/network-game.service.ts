@@ -102,10 +102,12 @@ export class NetworkGameService {
         const recipient = this.getISocketUserFromUserId(dto.recipient_user_id);
         if(recipient == null){
           console.log('exception','Recipient is not registered')
+          instigator.socket.emit('exception','Recipient is not registered');
           return;
         }
         if(recipient.status != EUserStatus.ONLINE){
           console.log('exception','Recipient is currently',recipient.status);
+          instigator.socket.emit('exception','Recipient is ',recipient.status);
           return;
         }
 

@@ -31,7 +31,7 @@ export class GameControl {
   // In the backend to be called on each frame
   routine(): void {
 	  this.game.ball = this.gameBall.updatePosition(this.game);
-    console.log(this.game.ball);
+    // console.log(this.game.ball);
 	  if (this.checkGameOver()) {
 		 this.game.gameOver = true;
 	  }
