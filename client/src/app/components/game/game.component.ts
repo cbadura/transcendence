@@ -128,10 +128,10 @@ export class GameComponent {
     this.game = {
       paddle1: 0,
       paddle2: 0,
+      hits: 0,
       ball: {
         x: 0,
         y: 0,
-        hits: 0,
       },
       score1: 0,
       score2: 0,

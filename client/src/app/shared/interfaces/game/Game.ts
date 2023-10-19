@@ -7,4 +7,5 @@ export interface Game {
     score1: number,
     score2: number
     gameOver: boolean,
+	hits: number,
 }

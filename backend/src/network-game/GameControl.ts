@@ -59,10 +59,10 @@ export class GameControl {
       score1: 0,
       paddle1: this.gameConfig.canvas.height / 2 - this.gameConfig.paddle.length / 2,
       paddle2: this.gameConfig.canvas.height / 2 - this.gameConfig.paddle.length / 2,
+      hits: 0,
       ball: {
         x: this.gameConfig.canvas.width / 2,
         y: this.gameConfig.canvas.height / 2,
-        hits: 0,
       },
     })
   }
@@ -74,10 +74,10 @@ export class GameControl {
       score1: 0,
       paddle1: this.gameConfig.canvas.height / 2 - this.gameConfig.paddle.length / 2,
       paddle2: this.gameConfig.canvas.height / 2 - this.gameConfig.paddle.length / 2,
+      hits: 0,
       ball: {
         x: this.gameConfig.canvas.width / 2,
         y: this.gameConfig.canvas.height / 2,
-        hits: 0,
       },
     })
   }

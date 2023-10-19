@@ -86,7 +86,7 @@ export class GameBall {
       this.dirY = this.getBouncingAngle(game, game.paddle1);
       this.adjustSpeed();
       game.ball.x = resetPosition;
-      game.ball.hits++;
+      game.hits++;
     }
 
     // Paddle 2
@@ -95,7 +95,7 @@ export class GameBall {
       this.dirY = this.getBouncingAngle(game, game.paddle2);
       this.adjustSpeed();
       game.ball.x = canvasWidth - resetPosition;
-      game.ball.hits++;
+      game.hits++;
     }
 
     this.checkScore(game);
@@ -106,7 +106,7 @@ export class GameBall {
 
     game.ball.x = canvasWidth / 2;
     game.ball.y = canvasHeight / 2;
-    game.ball.hits = 0;
+    game.hits = 0;
     this.dirX = Math.random() < 0.5 ? 1 : -1;
     this.dirY = Math.random() < 0.5 ? 1 : -1;
     this.speed = this.gameConfig.ball.speed;

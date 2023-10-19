@@ -115,21 +115,21 @@ export class Render {
       this.game.score2.toString()
     );
     // Ball hits
-    if (this.game.ball.hits < 1000) {
+    if (this.game.hits < 1000) {
       this.drawString(
         midX,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',
-        this.game.ball.hits.toString()
+        this.game.hits.toString()
       );
-    } else if (this.game.ball.hits < 10000) {
+    } else if (this.game.hits < 10000) {
       this.drawString(
         midX,
         midY + 40,
         lineColor,
         'bold 80pt Sniglet',
-        this.game.ball.hits.toString()
+        this.game.hits.toString()
       );
     } else {
       this.drawString(midX, midY + 35, lineColor, 'bold 65pt Sniglet', '1000+');
