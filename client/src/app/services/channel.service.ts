@@ -25,38 +25,20 @@ export class ChannelService {
   } */
 
   /* SOCKET.IO calls */
-  getChannel() {
-    let channel = this.chatSocket.fromEvent('createdChannel')
-      .pipe(map((channel: any) => {
-      console.log('CHNL', channel);
-      return channel;
-    }));
-    return channel;
-  }
 
-  subscribeToMessages() {
-    this.getChannel().subscribe( (msg : any) => {
-      this.channels.push(msg);
-      this.serverChannels.next(this.channels);
-    });
-    console.log('SUBSCRIBED', this.serverChannels);
-  }
-
-  createChannel(name: string) {
-    let post = {
-      name: name,
-      mode: 'public'
-    };
-    console.log('POST', post);
-    this.chatSocket.emit('tryCreateChannel', post);
+  createChannel(channel: Channel, password: string) {
+    console.log('CHANNEL', channel);
+    if (password) {
+      channel.password = password;
+    }
+    this.chatSocket.emit('tryCreateChannel', channel);
   } 
 
   subscribeToEvents() {
     this.chatSocket?.on(
       'listChannels',
       (data: any) => {
-        console.log('LIST', data);
-        this.channels = data;
+        this.channels = data.channels;
         this.serverChannels.next(this.channels);
     });
 
@@ -65,7 +47,7 @@ export class ChannelService {
       (data: any) => {
         console.log('CREATED', data);
         let channel: Channel = {
-          name: data.channelName,
+          name: data.name,
           mode: data.mode,
           role: EUserRole.OWNER,
           isBanned: false,
@@ -76,14 +58,4 @@ export class ChannelService {
         this.serverChannels.next(this.channels);
     });
   }
-
-  getEventData() {
-    return this.eventSubject.asObservable();
-  }
-  
-    listChannels(): Observable<Channel[]> {
-      return this.chatSocket.fromEvent('listChannels').pipe(
-        map((response: any) => response.channels)
-    );}
-
 }

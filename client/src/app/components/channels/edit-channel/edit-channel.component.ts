@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
 
-import { ChatHistoryService } from 'src/app/services/chat-history.service';
+import { ChannelService } from 'src/app/services/channel.service';
 
 @Component({
   selector: 'tcd-edit-channel',
@@ -19,7 +19,7 @@ export class EditChannelComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private chatService: ChatHistoryService,
+    private channelService: ChannelService,
     private router: Router
     ) {}
 
@@ -47,8 +47,9 @@ export class EditChannelComponent implements OnInit {
   }
 
   handleClick() {
-    if (this.emptyChannel) {
-      this.chatService.createChannel(this.tempChannel.name);
+    if (this.emptyChannel && this.tempChannel.name && this.tempChannel.mode) {
+      this.channelService.createChannel(this.tempChannel, this.tempPassword);
+      console.log('PASSWORD', this.tempPassword);
       this.router.navigate(['/channels']);
     } else {
       console.log('NOT CREATED');

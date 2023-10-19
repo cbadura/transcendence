@@ -13,7 +13,7 @@ import { dummyChannels } from 'src/app/temp/dummyChannels';
 })
 export class ChannelsComponent implements OnInit, OnDestroy {
   public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
-  public selectedPage = 'My channels';
+  public selectedPage! : string;
   public dummyChannels: Channel[] = dummyChannels;
   public serverChannels: Channel[] = [];
   public filteredChannels: Channel[] = [];
@@ -32,27 +32,10 @@ export class ChannelsComponent implements OnInit, OnDestroy {
       (channels) => {
         this.serverChannels = channels;
         console.log('SERVER CHANNELS', this.serverChannels);
+        this.selectChannel('My channels');
       }
     );
-    /* console.log('SERVICE CHANNELS', this.channelService.getChannel());
-    this.eventSubscription = this.channelService.getEventData().subscribe((event) => {
-      if (event.eventType === 'listChannels') {
-        this.serverChannels = event.data.channels;
-      }
-
-      if (event.eventType === 'createdChannel')
-      {
-        this.serverChannels.push(event.data);
-        console.log('updated channels list', event.data);
-      }
-      this.filterChannels();
-    }) */
-
-    /* this.chatHistoryService.listChannels().subscribe(channels => {
-      this.serverChannels = channels;
-      console.log(this.serverChannels);
-      this.filterChannels();
-    }); */
+   
   }
 
   selectChannel(channel: string) {
@@ -64,17 +47,17 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   filterChannels() {
     const {selectedPage} = this;
     if (selectedPage === 'Public' && this.serverChannels) {
-      // this.filteredChannels = this.serverChannels;
-      this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PUBLIC);
-      // console.log('FILTERED', this.filteredChannels);
+      this.filteredChannels = this.serverChannels?.filter(channel => channel.mode === EChannelMode.PUBLIC);
     }
     else if (selectedPage === 'Private')
-      this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
+      this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
+      // this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
     else if (selectedPage === 'Protected')
-      this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
+      this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
+      // this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
     else if (selectedPage === 'My channels') {
-      this.ownChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.OWNER);
-      this.adminChannels = this.dummyChannels.filter(channel => channel.role === EUserRole.ADMIN);
+      this.ownChannels = this.serverChannels.filter(channel => channel.role === EUserRole.OWNER);
+      this.adminChannels = this.serverChannels.filter(channel => channel.role === EUserRole.ADMIN);
     }
   }
 

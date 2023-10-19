@@ -79,14 +79,14 @@ export class ChatHistoryService {
     return message;
   }
 
-  createChannel(name: string) {
+  /* createChannel(name: string) {
     let post = {
       name: name,
       mode: 'public'
     };
     console.log('POST', post);
     this.chatSocket.emit('tryCreateChannel', post);
-  } 
+  }  */
 
   subscribeToEvents() {
     this.chatSocket?.on(
