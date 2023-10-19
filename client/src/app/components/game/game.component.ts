@@ -54,6 +54,7 @@ export class GameComponent {
 
   ngOnInit() {
     // Get user data
+    this.gameService.gameSocket = this.userDataService.gameSocket;
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
       this.saturatedColor = SaturatedColor(this.myUser.color, 50);
@@ -73,13 +74,13 @@ export class GameComponent {
 
   startGame(): void {
     this.status = 'waiting';
-    this.gameService.createGameSocket(this.myUser.id);
+    this.gameService.JoinQueue(this.myUser.id);
     console.log('gameSocket created');
 
     this.gameService.subscribeToEvents();
     this.gameService.getEventData().subscribe((event) => {
       //   ROOM_CREATED
-      if (event.eventType === ESocketGameMessage.ROOM_CREATED) {
+      if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
         console.log('ROOM CREATED IN GAME COMPONENT');
         this.game = event.data.game;
         this.render = new Render(
@@ -118,6 +119,8 @@ export class GameComponent {
     });
   }
 
+  //right now this play again will just queue up the user again.
+  // later we probably want to enable users to play agains the same opponent again
   playAgain(): void {
     //clean up prev field
     this.status = 'new-game';
@@ -133,8 +136,7 @@ export class GameComponent {
       score2: 0,
       gameOver: false,
     };
-    this.gameService.disconnectGameSocket();
-    this.startGame();
+    this.startGame(); 
   }
 
   fillMatchData(game: Game): void {
@@ -177,6 +179,7 @@ export class GameComponent {
   }
 
   ngOnDestroy(): void {
+    console.log("NG ON DESTROY CALLED ")
     this.userSubscription.unsubscribe();
   }
 }

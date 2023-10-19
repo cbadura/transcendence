@@ -3,6 +3,8 @@ import { NetworkGameService } from './network-game.service';
 import { Namespace, Socket } from 'socket.io';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';
 import { JoinQueueDto } from './dto/join-queue.dto';
+import { CreatePrivateRoomDto } from './dto/create-private-room.dto';
+import { JoinRoomDto } from './dto/join-room.dto';
 
 @WebSocketGateway({ cors: true , namespace: 'game' })
 export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -42,5 +44,19 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage(ESocketGameMessage.TRY_LEAVE_QUEUE) //should have info 
   LeaveQueue( @ConnectedSocket() client: Socket) {
     this.networkGameService.LeaveQueue(client);
+  }
+
+  @SubscribeMessage(ESocketGameMessage.TRY_CREATE_ROOM) //should have info 
+  CreatePrivateRoom(
+    @ConnectedSocket() client: Socket, 
+    @MessageBody() dto: CreatePrivateRoomDto, ) {
+    this.networkGameService.CreatePrivateRoom(client,dto);
+  }
+
+  @SubscribeMessage(ESocketGameMessage.TRY_JOIN_ROOM) //should have info 
+  JoinPrivateRoom(
+    @ConnectedSocket() client: Socket, 
+    @MessageBody() dto: JoinRoomDto, ) {
+    this.networkGameService.JoinPrivateRoom(client,dto);
   }
 }
