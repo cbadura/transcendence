@@ -44,7 +44,7 @@ export class ChannelDto {
 
   @IsNumber({}, { each: true })
   @IsOptional()
-  adminIds?: number[]; //TODO show only for owner
+  adminIds?: number[];
 }
 
 export class ListChannelsDto {

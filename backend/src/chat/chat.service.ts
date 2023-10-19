@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {
   EBanMute,
   EChannelLeaveOption,
@@ -9,21 +9,21 @@ import {
   IChannel,
   ISocketUser,
 } from './chat.interfaces';
-import { CreateChannelDto } from './dto/create-channel.dto';
-import { UserService } from '../user/user.service';
-import { Socket } from 'socket.io';
-import { WsException } from '@nestjs/websockets';
-import { ChannelDto, ListChannelsDto } from './dto/list-channels.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
-import { DeleteChannelDto } from './dto/delete-channel.dto';
-import { JoinChannelDto } from './dto/join-channel.dto';
-import { MessageDto } from './dto/message.dto';
-import { BanMuteFromChannelDto } from './dto/ban-mute-from-channel.dto';
-import { Relationship } from 'src/entities/relationship.entity';
-import { KickFromChannelDto } from './dto/kick-from-channel.dto';
-import { InviteToChannelDto } from './dto/invite-to-channel.dto';
-import { LeaveChannelDto } from './dto/leave-channel.dto';
-import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
+import {CreateChannelDto} from './dto/create-channel.dto';
+import {UserService} from '../user/user.service';
+import {Socket} from 'socket.io';
+import {WsException} from '@nestjs/websockets';
+import {ChannelDto, ListChannelsDto} from './dto/list-channels.dto';
+import {UpdateChannelDto} from './dto/update-channel.dto';
+import {DeleteChannelDto} from './dto/delete-channel.dto';
+import {JoinChannelDto} from './dto/join-channel.dto';
+import {MessageDto} from './dto/message.dto';
+import {BanMuteFromChannelDto} from './dto/ban-mute-from-channel.dto';
+import {Relationship} from 'src/entities/relationship.entity';
+import {KickFromChannelDto} from './dto/kick-from-channel.dto';
+import {InviteToChannelDto} from './dto/invite-to-channel.dto';
+import {LeaveChannelDto} from './dto/leave-channel.dto';
+import {AddRemoveAdminDto} from './dto/add-remove-admin.dto';
 
 @Injectable()
 export class ChatService {
@@ -103,6 +103,8 @@ export class ChatService {
           ).expireTimestamp;
         }
         channel.usersIds = ch.users;
+        if (channel.role === EUserRole.OWNER)
+          channel.adminIds = ch.admins;
         return channel;
       });
     return listChannels;
@@ -232,6 +234,10 @@ export class ChatService {
     const updChannelData: UpdateChannelDto = {
       ...channelData,
       currName: dto.currName,
+      channelName: dto.channelName, //TODO test more if name is empty (?)
+    };
+    const deleteDto: DeleteChannelDto = {
+      channelName: dto.channelName,
     };
     this.clients.forEach((client) => {
       const userInChannel: boolean = !!channel.users.find(
@@ -248,8 +254,8 @@ export class ChatService {
         updChannel.mode === EChannelMode.PRIVATE &&
         !userInChannel
       )
-        client.socket.emit(ESocketMessage.DELETED_CHANNEL, updChannelData);
-      // TODO replace updChannelData for Deleted_CH with deleteDto ^
+        client.socket.emit(ESocketMessage.DELETED_CHANNEL, deleteDto);
+      // TODO test ^ [should be fine though]
       else if (
         channel.mode === EChannelMode.PRIVATE &&
         updChannel.mode === EChannelMode.PRIVATE &&
