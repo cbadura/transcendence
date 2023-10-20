@@ -1,0 +1,23 @@
+<div class="flex items-center justify-between bg-black m-4 p-4 rounded-3xl text-white cursor-pointer transition-all  hover:bg-zinc-700"
+	[routerLink]="['/chat']">
+
+	<!-- Left side -->
+	<div class="flex gap-4">
+		<tcd-thumbnail [imgUrl]="user.avatar" [size]="'50px'"></tcd-thumbnail>
+		<div>
+			<p class="font-bold">{{user.name}}</p>
+			<p>level {{getFloorLevel()}}</p>
+		</div>
+	</div>
+
+	<!-- Right side -->
+	<div class="flex gap-4">
+		<tcd-custom-button *ngIf="makeAdmin"  [buttonText]="'makeAdmin'" (click)="makeAdmin($event, user)" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="removeAdmin"  [buttonText]="'removeAdmin'" (click)="removeAdmin($event, user)" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="kick"  [buttonText]="'kick'" (click)="kick($event, user)" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="ban"  [buttonText]="'ban'" (click)="ban($event, user)" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="mute"  [buttonText]="'mute'" (click)="mute($event, user)" [isBlack]="true"></tcd-custom-button>
+	</div>
+
+
+</div>

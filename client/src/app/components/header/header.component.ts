@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -12,12 +12,13 @@ import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/functions/col
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  myUser!: User;
+	@Input() noUser!: boolean;
+  	myUser!: User;
 	private userSubscription!: Subscription;
 	public fadedColor!: string;
 	public saturatedColor!: string;
 	public hovered: number = -1;
-	pages = ['Game', 'Leaderboard', 'Chat', 'Profile', 'Channels'];
+	pages = ['Game', 'Leaderboard', 'Channels', 'Profile'];
 	
 	constructor(private router: Router,
     private userDataService: UserDataService) {

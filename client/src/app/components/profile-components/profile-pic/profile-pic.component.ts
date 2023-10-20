@@ -7,9 +7,15 @@ import { Component, Input, Output, EventEmitter  } from '@angular/core';
 })
 export class ProfilePicComponent {
   @Input() profilePic: string = '';
-  @Output() imageClick = new EventEmitter<void>();
+	@Output() imageClick = new EventEmitter<void>();
+	fallbackImageSrc: string = 'https://picsum.photos/100'
 
   handleClick() {
     this.imageClick.emit();
+  }
+	
+  loadFallbackImage() {
+	  this.profilePic = this.fallbackImageSrc;
+	  console.log('Fallback image loaded');
   }
 }

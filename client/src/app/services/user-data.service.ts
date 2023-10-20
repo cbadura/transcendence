@@ -17,7 +17,7 @@ export class UserDataService {
       level: 0,
       matches: 0,
       wins: 0,
-      color: '',
+      color: '#E7C9FF',
       avatar: 'a',
     };
 
