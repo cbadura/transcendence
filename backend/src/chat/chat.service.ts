@@ -151,7 +151,7 @@ export class ChatService {
   updateBanMutelist(channel: IChannel) {
     const now: number = this.getCurrentUnixTime();
     //console.log('bans', channel.bans);
-    console.log('mutes', channel.mutes);
+    //console.log('mutes', channel.mutes);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
     channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now);
   }
@@ -217,6 +217,7 @@ export class ChatService {
     if (dto.mode === EChannelMode.PROTECTED && !dto.password)
       throw new WsException('Missing channel password for a protected channel');
     const updChannel: IChannel = { ...channel, ...dto };
+    updChannel.name = dto.channelName;
     this.channels = this.channels.filter((ch) => ch.name !== dto.currName);
     this.channels.push(updChannel);
 
@@ -227,8 +228,7 @@ export class ChatService {
 
     const updChannelData: UpdateChannelDto = {
       ...channelData,
-      currName: dto.currName,
-      channelName: dto.channelName,
+      currName: dto.currName
     };
     this.clients.forEach((client) => {
       const userInChannel: boolean = !!channel.users.find(
