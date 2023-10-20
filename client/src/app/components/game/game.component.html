@@ -1,33 +1,39 @@
 <div class="flex justify-center items-center h-full-header  ml-4 mr-4">
 
-	<div *ngIf="status === 'new-game'"
-		class="rounded-3xl sm:w-full sm:text-7xl max-w-md aspect-square flex flex-col items-center justify-center w-1/2 text-3xl cursor-pointer text-white hover:text-black transition-all active:scale-95"
-		(click)="startGame('default')" [ngStyle]="{ 'background-color': highLightColor }"
-		(mouseover)="highLightColor = darkerColor" (mouseout)="highLightColor = 'black'">
-
-		<h1 class="font-light">Classic</h1>
-		<h1 class="font-Sniglet font-bold">PONG</h1>
-	</div>
-	<!-- forgive me Luca for just copy pasting this code. This probably should be its own component -->
-	<div *ngIf="status === 'new-game'"
-		class="rounded-3xl sm:w-full sm:text-7xl max-w-md aspect-square flex flex-col items-center justify-center w-1/2 text-3xl cursor-pointer text-white hover:text-black transition-all active:scale-95"
-		(click)="startGame('special')" [ngStyle]="{ 'background-color': highLightColor }"
-		(mouseover)="highLightColor = darkerColor" (mouseout)="highLightColor = 'black'">
-
-		<h1 class="font-light">Ultimate</h1>
-		<h1 class="font-Sniglet font-bold">PONG</h1>
+	<!-- Game mode -->
+	<div *ngIf="status === 'new-game'" class="w-full flex justify-center items-center h-full gap-8">
+		<!-- Default -->
+		<tcd-game-mode class="w-full max-w-md" [mode]="'default'" (click)="startGame('default')"
+			[highLightColor]="highLightColor" [darkerColor]="darkerColor"></tcd-game-mode>
+		<!-- Ultimate -->
+		<tcd-game-mode class="w-full max-w-md" [mode]="'special'" (click)="startGame('special')"
+			[highLightColor]="highLightColor" [darkerColor]="darkerColor"></tcd-game-mode>
 	</div>
 
-	<div *ngIf="status === 'waiting'" class="sm:w-full max-w-md aspect-square  w-2/3 relative">
-		<img class="w-full spin absolute" src="assets/loading.svg" alt="loading">
-		<div class="w-full rounded-full  aspect-square"
-		[ngStyle]="{ 'background-color': darkerColor }"></div>
+	<!-- Loading -->
+	<div *ngIf="status === 'waiting'" class="flex flex-col items-center justify-center gap-4 w-full">
+		<div class="sm:w-full max-w-md aspect-square  w-2/3 relative ">
+			<img class="w-full spin absolute" src="assets/loading.svg" alt="loading">
+			<div class="w-full rounded-full aspect-square" [ngStyle]="{ 'background-color': darkerColor }"></div>
+		</div>
+		<tcd-custom-button [buttonText]="'Leave match'" (click)="leaveQueue()" [isBlack]="true"></tcd-custom-button>
 	</div>
 
+	<!-- Aborted -->
+	<div *ngIf="status === 'aborted'" class="flex flex-col items-center">
+		<div class="m-4 p-8 rounded-xl" [ngStyle]="{ 'background-color': darkerColor }">
+			<h1>Your opponent has left the match...</h1>
+		</div>
+		<tcd-custom-button buttonText="Play again" (click)="playAgain()" [isBlack]="true"></tcd-custom-button>
+	</div>
+
+	<!-- Canvas -->
 	<div [class.hidden]="status !== 'playing'">
 		<canvas class="rounded-2xl w-full max-w-4xl" #canvas width="1280" height="720"></canvas>
 	</div>
 
+
+	<!-- Game over -->
 	<div *ngIf="status === 'gameover'" class="flex flex-col gap-16 items-center w-full">
 		<div class="font-bold font-Sniglet text-4xl">
 			<h1 [class.hidden]="match.myScore <= match.opponentScore">YOU WON!</h1>

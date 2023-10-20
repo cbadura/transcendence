@@ -75,7 +75,7 @@ export class GameComponent {
   startGame(gameType: 'default' | 'special'): void {
     this.gameType = gameType;
     this.status = 'waiting';
-    this.gameService.JoinQueue(this.myUser.id,gameType);
+    this.gameService.JoinQueue(this.myUser.id, gameType);
     console.log('gameSocket created');
 
     this.gameService.subscribeToEvents();
@@ -97,9 +97,9 @@ export class GameComponent {
       //   START_COUNTDOWN
       if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
         console.log('START COUNTDOWN IN GAME COMPONENT');
-		  console.log(event.data);
-		  this.status = 'playing';
-		  this.render.setCountdown(event.data.countdown);
+        console.log(event.data);
+        this.status = 'playing';
+        this.render.setCountdown(event.data.countdown);
         //let countdown = event.data.countdown;
       }
 
@@ -108,14 +108,21 @@ export class GameComponent {
         this.game = event.data.game;
         if (this.game && this.render) {
           this.movePaddle();
-          if (!this.game.gameOver) {;
+          if (!this.game.gameOver) {
             this.render.redraw(this.game);
           } else {
+            console.log('gameover');
             this.status = 'gameover';
             this.fillMatchData(this.game);
             return;
           }
         }
+      }
+
+      // GAME_ABORTED
+		if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
+			this.status = 'aborted';
+        console.log('GAME_ABORTED', event.data);
       }
     });
   }
@@ -132,13 +139,13 @@ export class GameComponent {
       ball: {
         x: 0,
         y: 0,
-        size: 1.00,
+        size: 1.0,
       },
       score1: 0,
       score2: 0,
       gameOver: false,
     };
-    this.startGame(this.gameType); 
+    this.startGame(this.gameType);
   }
 
   fillMatchData(game: Game): void {
@@ -149,6 +156,11 @@ export class GameComponent {
       dateTime: new Date().toISOString(),
     };
   }
+
+	leaveQueue() {
+		this.gameService.leaveQueue();
+		this.status = 'new-game';
+	}
 
   movePaddle() {
     // Will emit events to backend
@@ -181,7 +193,7 @@ export class GameComponent {
   }
 
   ngOnDestroy(): void {
-    console.log("NG ON DESTROY CALLED ")
+    console.log('NG ON DESTROY CALLED ');
     this.userSubscription.unsubscribe();
   }
 }

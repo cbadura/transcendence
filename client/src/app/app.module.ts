@@ -36,6 +36,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ChatSocketModule } from './chat-socket/chat-socket.module';
 // import { GameSocketModule } from './game-socket/game-socket.module'; //doesnt exist anymore?
 import { CreateProfileComponent } from './components/profile-components/create-edit-profile/create-edit-profile.component';
+import { GameModeComponent } from './components/game/game-mode/game-mode.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -66,7 +67,8 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChatInputComponent,
     ChatBtnComponent,
     HomeComponent,
-    CreateProfileComponent
+    CreateProfileComponent,
+    GameModeComponent
   ],
   imports: [
     HttpClientModule,

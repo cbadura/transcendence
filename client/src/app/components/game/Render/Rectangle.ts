@@ -85,8 +85,6 @@ export class Rectangle {
     let pos = -30;
     if (this.x > this.gameConfig.canvas.width / 2)
       pos *= -1 + 20;
-    console.log('paddle', this.x, '>?', this.gameConfig.canvas.width / 2);
-    console.log(pos);
     this.ctx.fillText(this.name, 0, pos);
     this.ctx.restore();
   }

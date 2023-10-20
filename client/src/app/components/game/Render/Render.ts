@@ -190,8 +190,6 @@ export class Render {
       this.countdown--;
       this.redraw(this.game);
       console.log('COUNTDOWN: ' + this.countdown);
-      console.log('GAME: ' + this.game);
-
       if (this.countdown === 0) {
         clearInterval(countdownInterval);
       }

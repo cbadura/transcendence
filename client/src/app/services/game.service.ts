@@ -38,33 +38,41 @@ export class GameService {
     this.gameSocket?.emit(ESocketGameMessage.TRY_MOVE_PADDLE, id, step);
   }
 
-  subscribeToEvents() {
-    this.gameSocket?.on(
-      ESocketGameMessage.LOBBY_COMPLETED,
-      (data : any) => {
-        this.eventSubject.next({
-          eventType: ESocketGameMessage.LOBBY_COMPLETED,
-          data:  data,
-        });
-      }
-	);
+	subscribeToEvents() {
+		this.gameSocket?.on(
+			ESocketGameMessage.LOBBY_COMPLETED,
+			(data: any) => {
+				this.eventSubject.next({
+					eventType: ESocketGameMessage.LOBBY_COMPLETED,
+					data: data,
+				});
+			}
+		);
 	  
-	  this.gameSocket?.on(ESocketGameMessage.START_COUNTDOWN, (countdown: number) => {
-		  this.eventSubject.next({
-		eventType: ESocketGameMessage.START_COUNTDOWN,
-		data: { countdown },
-	  });
-	});		
+		this.gameSocket?.on(ESocketGameMessage.START_COUNTDOWN, (countdown: number) => {
+			this.eventSubject.next({
+				eventType: ESocketGameMessage.START_COUNTDOWN,
+				data: { countdown },
+			});
+		});
 
-    this.gameSocket?.on(ESocketGameMessage.UPDATE_GAME_INFO, (game: Game) => {
-      this.eventSubject.next({
-        eventType: ESocketGameMessage.UPDATE_GAME_INFO,
-        data: { game },
-      });
-    });
-  }
-
+		this.gameSocket?.on(ESocketGameMessage.UPDATE_GAME_INFO, (game: Game) => {
+			this.eventSubject.next({
+				eventType: ESocketGameMessage.UPDATE_GAME_INFO,
+				data: { game },
+			});
+		});
+	  
+		this.gameSocket?.on(ESocketGameMessage.GAME_ABORTED, (data: any) => {
+			console.log('Game Aborted in service', data);
+			this.eventSubject.next({
+				eventType: ESocketGameMessage.GAME_ABORTED,
+				data: { data },
+			});
+		});
+	}
+	  
   getEventData() {
     return this.eventSubject.asObservable();
-  }
+	  }
 }
