@@ -285,9 +285,6 @@ export class ChatService {
       throw new WsException('Invalid message target');
 
     const messageToChannel: MessageDto = await this.buildMessage(sender, dto);
-    // { ...dto };
-    // messageToChannel.senderId = sender;
-    // messageToChannel.timestamp = this.getCurrentUnixTime();
 
     //check channle member block list - use relation entity
     if (dto.channel) {
