@@ -24,7 +24,7 @@ import { Relationship } from './entities/relationship.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'db',
       port: 5432,
       username: 'transcendence',
       password: 'transcendence',
