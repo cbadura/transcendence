@@ -76,15 +76,15 @@ export class Rectangle {
   }
 
   drawName(y : number) {
-    this.ctx.font = 'bold 30pt Inter';
+    this.ctx.font = 'bold 25pt Inter';
     this.ctx.fillStyle = this.color;
     this.ctx.textAlign = 'center';
     this.ctx.save();
     this.ctx.translate(this.x + this.width / 2, y + this.height / 2);
     this.ctx.rotate(-Math.PI / 2);
-    let pos = -30;
+    let pos = -25;
     if (this.x > this.gameConfig.canvas.width / 2)
-      pos *= -1 + 20;
+      pos = pos * -1 + 20;
     this.ctx.fillText(this.name, 0, pos);
     this.ctx.restore();
   }
