@@ -11,7 +11,7 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: Profile, done: (err: Error, user: Profile) => void) {
-    done(null, user);
+    done(null, user.id);
   }
 
   async deserializeUser(profile: Profile, done: (err: Error, user: Profile) => void) {

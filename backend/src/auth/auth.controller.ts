@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard, ftAuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -13,13 +13,16 @@ export class AuthController {
 
   @Get('redirect')
   @UseGuards(ftAuthGuard)
-  redirect(@Res() res: Response) {
-    res.status(200).send('hi');    
+  redirect(@Res() res: Response, @Req() req: Request) {
+    // console.log(req.headers);
+    console.log(req.user['id']);
+    res.status(200).send(req.user['id']);
   }
 
   @Get('status')
   @UseGuards(AuthenticatedGuard)
-  status() {
+  status(@Req() req: Request) {
+    console.log(req.headers);
     return 'okok';
   }
 
@@ -29,5 +32,10 @@ export class AuthController {
   @Get('session')
   session() {
     return this.authService.getSession();
+  }
+
+  @Delete('session')
+  deleteSession() {
+    return this.authService.deleteSession();
   }
 }

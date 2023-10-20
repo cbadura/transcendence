@@ -25,10 +25,12 @@ export class ftStrategy extends PassportStrategy(Strategy, '42') {
     console.log(accessToken);
     console.log(refreshToken);
     const {id, username} = profile;
-    // console.log(id, username, displayName);
+    console.log(id, username);
     // console.log(_json);
-    console.log(cb(null, profile));
+    // console.log(cb(null, profile));
     this.authService.validateUser({id, username}); 
-    return cb(null, profile);
+    cb(null, profile);
+    // return cb(null, profile);
+
   }
 }

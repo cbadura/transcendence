@@ -12,7 +12,8 @@ export class AuthService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(ESession) private sessionRepo: Repository<ESession>,
-    private readonly userService: UserService) {}
+    private readonly userService: UserService
+    ) {}
 
   async validateUser({id, username}) {
     const user: User = await this.userRepo.findOne({where: {ftid: id}})
@@ -30,5 +31,9 @@ export class AuthService {
 
   async getSession(): Promise<ESession[]> {
     return await this.sessionRepo.find();
+  }
+
+  async deleteSession() {
+    return await this.sessionRepo.clear();
   }
 }
