@@ -145,7 +145,7 @@ export class NetworkGameService {
 
       monitorGameRooms(){
         const gameLoop = setInterval(()=>{
-          console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
+          // console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
           for (let i = 0; i < this.gameRooms.length; i++) {
               if( this.gameRooms[i] != null) {
                 console.log('Room [',i,']',this.gameRooms[i]?.getRoomAccess(),this.gameRooms[i]?.getGameRoomStateString());

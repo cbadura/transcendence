@@ -8,6 +8,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true, unique: true })
+  ftid: number;
+
   @Column()
   name: string;
 
