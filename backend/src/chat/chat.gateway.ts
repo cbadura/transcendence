@@ -149,7 +149,6 @@ export class ChatGateway
     @MessageBody() dto: AddRemoveAdminDto,
   ) {
     this.chatService.addAdmin(socket, dto);
-    //  this.chatService.addRemoveAdmin(socket, dto, ESocketMessage.TRY_ADD_ADMIN);
   }
 
   @UsePipes(new ValidationPipe())
@@ -159,10 +158,5 @@ export class ChatGateway
     @MessageBody() dto: AddRemoveAdminDto,
   ) {
     this.chatService.removeAdmin(socket, dto);
-    /* this.chatService.addRemoveAdmin(
-      socket,
-      dto,
-      ESocketMessage.TRY_REMOVE_ADMIN,
-    );*/
   }
 }
