@@ -58,7 +58,9 @@ export class ChannelsComponent implements OnInit, OnDestroy {
     else if (selectedPage === 'My channels') {
       this.ownChannels = this.serverChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.serverChannels.filter(channel => channel.role === EUserRole.ADMIN);
-    }
+	}
+	  
+	  console.log('FILTERED CHANNELS', this.filteredChannels);
   }
 
   ngOnDestroy(): void {

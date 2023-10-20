@@ -1,56 +1,43 @@
-<section
-  class="flex items-center flex-col max-w-screen-md ml-auto mr-auto gap-8 p-4 mt-10"
->
-  <!-- Create Channel -->
-  <tcd-custom-button
-    [buttonText]="'Create channel'"
-    [isBlack]="true"
-    [size]="'big'"
-    [routerLink]="'/channels/edit'"
-  ></tcd-custom-button>
+<section class="flex items-center flex-col max-w-screen-md ml-auto mr-auto gap-8 p-4 mt-10">
+	<!-- Create Channel -->
+	<tcd-custom-button [buttonText]="'Create channel'" [isBlack]="true" [size]="'big'"
+		[routerLink]="'/channels/edit'"></tcd-custom-button>
 
-  <!-- Tabs -->
-  <div class="flex gap-4">
-    <tcd-custom-button
-      *ngFor="let page of pages"
-      [buttonText]="page"
-      (click)="selectChannel(page)"
-      [isBlack]="selectedPage === page"
-    ></tcd-custom-button>
-  </div>
+	<!-- Tabs -->
+	<div class="flex gap-4">
+		<tcd-custom-button *ngFor="let page of pages" [buttonText]="page" (click)="selectChannel(page)"
+			[isBlack]="selectedPage === page"></tcd-custom-button>
+	</div>
 
-  <!-- Public, Private, Protected channels -->
-  <div
-    *ngIf="
-      selectedPage === 'Public' ||
+	<!-- Public, Private, Protected channels -->
+	<div *ngIf="
+      (selectedPage === 'Public' ||
       selectedPage === 'Private' ||
-      selectedPage === 'Protected'
-    "
-    class="border border-zinc-800 bg-zinc-800 rounded-3xl w-full"
-  >
-    <!-- Channel card -->
-    <tcd-channel-card
-      *ngFor="let channel of filteredChannels"
-      [channel]="channel"
-    ></tcd-channel-card>
-  </div>
+      selectedPage === 'Protected') && filterChannels.length > 0"
+		class="border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+		<!-- Channel card -->
+		<tcd-channel-card *ngFor="let channel of filteredChannels" [channel]="channel"></tcd-channel-card>
+	</div>
 
-  <div *ngIf="selectedPage === 'My channels'" class="w-full pb-4">
-    <p class="font-bold p-4">Channels I own</p>
-    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-      <tcd-channel-card
-      *ngFor="let channel of ownChannels"
-      [channel]="channel"
-      [editMode]="true"
-    ></tcd-channel-card>
-    </div>
-    <p class="font-bold p-4">Channels I administrate</p>
-    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-      <tcd-channel-card
-      *ngFor="let channel of adminChannels"
-      [channel]="channel"
-      [editMode]="true"
-    ></tcd-channel-card>
-    </div>
-  </div>
+	<!-- My channels -->
+	<div *ngIf="selectedPage === 'My channels' && filterChannels.length > 0" class="w-full pb-4">
+		<p class="font-bold p-4">Channels I own</p>
+		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+			<tcd-channel-card *ngFor="let channel of ownChannels" [channel]="channel"
+				[editMode]="true"></tcd-channel-card>
+		</div>
+		<p class="font-bold p-4">Channels I administrate</p>
+		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+			<tcd-channel-card *ngFor="let channel of adminChannels" [channel]="channel"
+				[editMode]="true"></tcd-channel-card>
+		</div>
+	</div>
+
+	<!-- Not found page -->
+	<div class="h-4 text-xl" *ngIf="filterChannels.length == 0">
+		<h1>
+			{{selectedPage}} <span *ngIf="selectedPage != 'DMs' && selectedPage != 'My channels'">channels</span> not found.
+		</h1>
+	</div>
+
 </section>
