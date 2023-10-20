@@ -1,5 +1,5 @@
 import { ISocketUser } from "src/chat/chat.interfaces";
-import { GameControl } from "../gameControl";
+import { GameControl } from "../GameControl";
 import { ESocketGameMessage } from "./ESocketGameMessage";
 import { EGameRoomState } from "./EGameRoomState";
 import { MatchService } from "src/match/match.service";

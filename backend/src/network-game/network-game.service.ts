@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { ISocketUser } from 'src/chat/chat.interfaces';
 import { UserService } from 'src/user/user.service';
-import { GameControl } from './gameControl';
+import { GameControl } from './GameControl';
 
 import { gameConfig } from './gameConfig';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';

@@ -24,6 +24,7 @@ import {KickFromChannelDto} from './dto/kick-from-channel.dto';
 import {InviteToChannelDto} from './dto/invite-to-channel.dto';
 import {LeaveChannelDto} from './dto/leave-channel.dto';
 import {AddRemoveAdminDto} from './dto/add-remove-admin.dto';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class ChatService {
@@ -122,6 +123,17 @@ export class ChatService {
     this.getUserSocketsByID(uid).forEach((socket) => {
       socket.emit(socketMssage, data);
     });
+  }
+
+  private async buildMessage(id: number, dto: MessageDto): Promise<MessageDto> {
+    const fullMessage: MessageDto = { ...dto };
+    const sender: User = await this.userService.getUser(id);
+    fullMessage.senderId = id;
+    fullMessage.senderAvatar = sender.avatar;
+    fullMessage.senderColor = sender.color;
+    fullMessage.senderName = sender.name;
+    fullMessage.timestamp = this.getCurrentUnixTime();
+    return (fullMessage);
   }
 
   // TODO change later userId into token and extract userId from token
@@ -271,9 +283,7 @@ export class ChatService {
     if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId))
       throw new WsException('Invalid message target');
 
-    const messageToChannel: MessageDto = { ...dto };
-    messageToChannel.senderId = sender;
-    messageToChannel.timestamp = this.getCurrentUnixTime();
+    const messageToChannel: MessageDto = await this.buildMessage(sender, dto);
 
     //check channle member block list - use relation entity
     if (dto.channel) {
@@ -400,6 +410,7 @@ export class ChatService {
   // invite only, think about accept invite/join/update channel list
   // good morning check again tmr
   // Good morning, Cosmo :)
+  // good evening, are you hungry?
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     const user: number = this.getUserIdFromSocket(socket);
