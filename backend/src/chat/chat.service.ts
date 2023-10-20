@@ -411,6 +411,7 @@ export class ChatService {
   // good morning check again tmr
   // Good morning, Cosmo :)
   // good evening, are you hungry?
+  // I actually am \(O.O)/
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     const user: number = this.getUserIdFromSocket(socket);
