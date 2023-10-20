@@ -3,7 +3,7 @@
         <h1 class="">Join the <span class="vibrate-2 font-Sniglet font-bold">PONG</span> party!</h1>
     </div>
     <div class="ml-auto m-4 flex gap-6 items-center">
-        <span class="arrows hidden sm:inline-block">>>>>>>>>>>></span>
+        <span class="arrows hidden md:inline-block">>>>>>>>>>>></span>
         <span class="arrows inline-block md:hidden">>>>>></span>
         <tcd-custom-button *ngIf="!noUser" [customRoute]="'/game'" [size]="'big'" [buttonText]="'Play now'" [isBlack]=true></tcd-custom-button>
 		<tcd-custom-button *ngIf="noUser" [customRoute]="'/signin'" [size]="'big'" [buttonText]="'Play now'" [isBlack]=true></tcd-custom-button>
