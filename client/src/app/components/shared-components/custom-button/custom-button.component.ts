@@ -10,4 +10,5 @@ export class CustomButtonComponent {
 	@Input() customRoute?: string;
 	@Input() isBlack: boolean = false;
 	@Input() size: string = "small";
+	@Input() isDisabled: boolean = false;
 }

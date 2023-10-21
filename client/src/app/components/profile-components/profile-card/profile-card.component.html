@@ -11,11 +11,11 @@
 
 	<!-- Right side -->
 	<div class="flex gap-4">
-		<tcd-custom-button *ngIf="makeAdmin"  [buttonText]="'makeAdmin'" (click)="makeAdmin($event, user)" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="removeAdmin"  [buttonText]="'removeAdmin'" (click)="removeAdmin($event, user)" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="kick"  [buttonText]="'kick'" (click)="kick($event, user)" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="ban"  [buttonText]="'ban'" (click)="ban($event, user)" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="mute"  [buttonText]="'mute'" (click)="mute($event, user)" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="makeAdmin" [isDisabled]="isDisabled('makeAdmin')" [buttonText]="'makeAdmin'" (click)="changeSelected($event,'makeAdmin')" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="removeAdmin" [isDisabled]="isDisabled('removeAdmin')" [buttonText]="'removeAdmin'" (click)="changeSelected($event,'removeAdmin')" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="kick" [isDisabled]="isDisabled('kick')" [buttonText]="'kick'" (click)="changeSelected($event,'kick')" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="ban" [isDisabled]="isDisabled('ban')" [buttonText]="'ban'" (click)="changeSelected($event,'ban')" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="mute" [isDisabled]="isDisabled('mute')"  [buttonText]="'mute'" (click)="changeSelected($event,'mute')" [isBlack]="true"></tcd-custom-button>
 	</div>
 
 
