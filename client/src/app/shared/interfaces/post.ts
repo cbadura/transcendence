@@ -5,5 +5,5 @@ export interface Post {
     senderAvatar: string;
     message: string;
     channel?: string;
-    timestamp: number | null;
+    timestamp: string;
 }

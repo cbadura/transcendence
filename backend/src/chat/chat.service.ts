@@ -132,7 +132,7 @@ export class ChatService {
     fullMessage.senderAvatar = sender.avatar;
     fullMessage.senderColor = sender.color;
     fullMessage.senderName = sender.name;
-    fullMessage.timestamp = this.getCurrentUnixTime();
+/*     fullMessage.timestamp = this.getCurrentUnixTime();*/    
     return (fullMessage);
   }
 

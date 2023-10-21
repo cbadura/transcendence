@@ -65,13 +65,6 @@ export class ChatHistoryService {
 
   /* SOCKET.IO functions */
   sendMessage(post: Post) {
-    //console.log(post.message);
-    //post.channel = 'new channel';
-
-    /* let newPost = {
-      message: 'hiiii',
-      channel: 'new channel',
-    } */
     this.chatSocket.emit('message', post);
   }
   getMessage() {

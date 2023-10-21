@@ -70,8 +70,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         message: message,
         channel: this.channel.name,
         senderAvatar: '',
-        timestamp: new Date().getTime() / 1000
-        /* this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? '' */
+        timestamp: /*  new Date().getTime() / 1000 */
+        this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
     };
     this.chatHistoryService.sendMessage(newPost);
   }
