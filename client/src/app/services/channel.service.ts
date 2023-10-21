@@ -263,7 +263,7 @@ export class ChannelService {
 
             if (ch.role === EUserRole.OWNER)
               ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-            
+            // TODO when user knows its id, if he is kicked change his role to none
           }
         });
         this.serverChannels.next(this.channels);
@@ -292,6 +292,7 @@ export class ChannelService {
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
            if (ch.role === EUserRole.OWNER)
              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+            // TODO when user knows its id, if he is kicked change his role to none
         });
         this.serverChannels.next(this.channels);
       });
@@ -323,6 +324,7 @@ export class ChannelService {
               if (data.transferId === myID)
                  ch.role = EUserRole.OWNER;
              */
+            // TODO when user knows its id, if he is kicked change his role to none
          }
        });
        this.serverChannels.next(this.channels);
@@ -335,6 +337,7 @@ export class ChannelService {
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
+            ch.role = EUserRole.ADMIN;
             ch.adminIds.push(data.userId);
           }
         });
@@ -348,6 +351,7 @@ export class ChannelService {
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
+            ch.role = EUserRole.USER;
              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);6
           }
         });
