@@ -1,48 +1,36 @@
-import { GameConfig } from '../../../shared/interfaces/game/gameConfig';
-import { Game } from '../../../shared/interfaces/game/Game';
 import { User } from 'src/app/shared/interfaces/user';
-import { LightenDarkenColor } from 'src/app/shared/functions/color';
+import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/functions/color';
 import { Rectangle } from './Rectangle';
-import { Puck } from './Puck';
+import { BallRenderInfo, GameRenderInfo } from 'src/app/components/game/Render/GameRenderInfo';
 
 export class Render {
   private userColor: string;
   private darkerColor: string;
   private paddle1: Rectangle;
   private paddle2: Rectangle;
-  private puck: Puck;
   private countdown!: number;
-
+  private initialFrame: GameRenderInfo;
   constructor(
     private ctx: CanvasRenderingContext2D,
-    private gameConfig: GameConfig,
-    private game: Game,
+    // private gameConfig: GameConfig,
+    private gameRenderInfo: GameRenderInfo,
     user1: User,
     user2: User,
     private id: number
   ) {
+    this.initialFrame =gameRenderInfo;
     this.userColor = user1.id === id ? user1.color : user2.color;
     this.darkerColor = LightenDarkenColor(this.userColor, -10);
-    this.paddle1 = new Rectangle(
-      this.ctx,
-      user1,
-      gameConfig.lineOffset + gameConfig.paddle.width / 2,
-      gameConfig
-    );
-    this.paddle2 = new Rectangle(
-      this.ctx,
-      user2,
-      this.ctx.canvas.width -
-        (gameConfig.lineOffset + gameConfig.paddle.width * 1.5),
-        gameConfig
-    );
-    this.puck = new Puck(this.ctx, gameConfig);
+    console.log('RENDER INFO',gameRenderInfo);
+    this.paddle1 = new Rectangle( this.ctx, user1, gameRenderInfo.paddles[0]);
+    this.paddle2 = new Rectangle( this.ctx, user2, gameRenderInfo.paddles[1]);
+
     console.log('Render constructor');
-    console.log('this.game', this.game);
+    console.log('this.game', this.gameRenderInfo);
   }
 
-  redraw(newGame: Game): void {
-    this.game = newGame;
+  redraw(frame: GameRenderInfo): void {
+    this.gameRenderInfo = frame;
     const canvas = this.ctx.canvas;
 
     // Clear canvas
@@ -58,32 +46,63 @@ export class Render {
     if (this.countdown > 0) this.drawCountdown();
     else {
       this.drawScores(this.userColor);
-      this.paddle1.draw(this.game.paddle1);
-      this.paddle2.draw(this.game.paddle2);
-      this.puck.draw(this.game.ball.x, this.game.ball.y);
+      this.paddle1.draw(this.gameRenderInfo.paddles[0],frame.canvas);
+      this.paddle2.draw(this.gameRenderInfo.paddles[1],frame.canvas);
+      this.drawName(this.paddle1.user, this.gameRenderInfo.paddles[0].posX - 30,this.gameRenderInfo.paddles[0].posY,  Math.PI / 2)
+      this.drawName(this.paddle2.user, this.gameRenderInfo.paddles[1].posX + 30,this.gameRenderInfo.paddles[1].posY,- Math.PI /2)
+      for (let i = 0; i < this.gameRenderInfo.balls.length; i++) {
+        this.drawBall(this.gameRenderInfo.balls[i])
+      }
     }
   }
 
+  drawName(user:User,x:number,y:number,rotation: number = 0) {
+    this.ctx.font = 'bold 25pt Inter';
+    this.ctx.fillStyle = SaturatedColor(user.color, 20);;
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.save();
+    this.ctx.translate(x,y);
+    this.ctx.rotate(rotation);
+    this.ctx.fillText(user.name, 0, 0);
+    this.ctx.restore();
+  }
+
+
+  drawBall(ball: BallRenderInfo) {
+      this.ctx.beginPath();
+      this.ctx.fillStyle = 'black'; //balls[i].color //color should be determined by renderer based on the type
+      this.ctx.strokeStyle = 'black'; //balls[i].color
+      this.ctx.lineWidth = 2;
+      this.ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+      this.ctx.stroke();
+      this.ctx.fill();
+      //drawing debug direction line
+      const mult = 50;
+      this.drawLine(ball.x, ball.y,ball.x + (ball.debugDirX * mult), ball.y + (ball.debugDirY * mult), 2, 'black');
+  }
+
+  
   drawCourt(backgroundColor: string, lineColor: string, lineWidth: number) {
-    const { gameConfig } = this;
+    const { canvas } = this.gameRenderInfo;
 
     // Define variables
-    const midX = gameConfig.canvas.width / 2 - 2;
-    const midY = gameConfig.canvas.height / 2;
+    const midX = canvas.width / 2 - 2;
+    const midY = canvas.height / 2;
 
     // Mid line
-    this.drawLine(midX, gameConfig.canvas.height, lineWidth, lineColor);
+    this.drawLine(midX,0,midX, canvas.height, lineWidth, lineColor);
     // Right line
     this.drawLine(
-      gameConfig.paddle.width + gameConfig.lineOffset,
-      gameConfig.canvas.height,
+      this.gameRenderInfo.paddles[0].posX,0,
+      this.gameRenderInfo.paddles[0].posX,canvas.height,
       lineWidth,
       lineColor
     );
     // Lines left
     this.drawLine(
-      gameConfig.canvas.width - gameConfig.paddle.width - gameConfig.lineOffset,
-      gameConfig.canvas.height,
+      this.gameRenderInfo.paddles[1].posX,0,
+      this.gameRenderInfo.paddles[1].posX,canvas.height,
       lineWidth,
       lineColor
     );
@@ -93,55 +112,55 @@ export class Render {
 
   drawScores(lineColor: string) {
     // Define variables
-    const { gameConfig } = this;
-    const midX = gameConfig.canvas.width / 2 - 2;
-    const midY = gameConfig.canvas.height / 2;
+    const { canvas } = this.gameRenderInfo;
+    const midX = canvas.width / 2 - 2;
+    const midY = canvas.height / 2;
 
     this.ctx.textAlign = 'center';
     // Score 1
     this.drawString(
       midX - 60,
-      gameConfig.canvas.height - 50,
+      canvas.height - 50,
       lineColor,
       'bold 60pt Sniglet',
-      this.game.score1.toString()
+      this.gameRenderInfo.paddles[0].score.toString()
     );
     // Score 2
     this.drawString(
       midX + 60,
-      gameConfig.canvas.height - 50,
+      canvas.height - 50,
       lineColor,
       'bold 60pt Sniglet',
-      this.game.score2.toString()
+      this.gameRenderInfo.paddles[1].score.toString()
     );
     // Ball hits
-    if (this.game.hits < 1000) {
+    if (this.gameRenderInfo.hits < 1000) {
       this.drawString(
         midX,
         midY + 50,
         lineColor,
         'bold 100pt Sniglet',
-        this.game.hits.toString()
+        this.gameRenderInfo.hits.toString()
       );
-    } else if (this.game.hits < 10000) {
+    } else if (this.gameRenderInfo.hits < 10000) {
       this.drawString(
         midX,
         midY + 40,
         lineColor,
         'bold 80pt Sniglet',
-        this.game.hits.toString()
+        this.gameRenderInfo.hits.toString()
       );
     } else {
       this.drawString(midX, midY + 35, lineColor, 'bold 65pt Sniglet', '1000+');
     }
   }
 
-  drawLine(x: number, y: number, width: number, color: string) {
+  drawLine(StartX: number, StartY: number,EndX: number, EndY: number, width: number, color: string) {
     this.ctx.lineWidth = width;
     this.ctx.strokeStyle = color;
     this.ctx.beginPath();
-    this.ctx.moveTo(x, 0);
-    this.ctx.lineTo(x, y);
+    this.ctx.moveTo(StartX, StartY);
+    this.ctx.lineTo(EndX, EndY);
     this.ctx.closePath();
     this.ctx.stroke();
   }
@@ -169,10 +188,10 @@ export class Render {
   }
 
   drawCountdown() {
-    const { gameConfig } = this;
-    const midX = gameConfig.canvas.width / 2 - 2;
-    const midY = gameConfig.canvas.height / 2;
-    this.ctx.clearRect(0, 0, gameConfig.canvas.width, gameConfig.canvas.height);
+    const { canvas } = this.gameRenderInfo;
+    const midX = canvas.width / 2 - 2;
+    const midY = canvas.height / 2;
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     this.drawString(
       midX,
       midY + 50,
@@ -182,13 +201,17 @@ export class Render {
     );
   }
 
+  reset(){
+    this.redraw(this.initialFrame);
+  }
+
   setCountdown(countdown: number) {
     console.log('SET COUNTDOWN IN RENDER');
     this.countdown = countdown;
-    this.redraw(this.game);
+    this.redraw(this.gameRenderInfo);
     const countdownInterval = setInterval(() => {
       this.countdown--;
-      this.redraw(this.game);
+      this.redraw(this.gameRenderInfo);
       console.log('COUNTDOWN: ' + this.countdown);
       if (this.countdown === 0) {
         clearInterval(countdownInterval);

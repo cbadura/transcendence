@@ -29,7 +29,6 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage(ESocketGameMessage.TRY_MOVE_PADDLE) 
   handleMove(client: Socket, data: [number,number]) {
     // Handle game logic here
-    console.log('DATA =========================',data);
     this.networkGameService.movePaddle(client,data);
   }
 

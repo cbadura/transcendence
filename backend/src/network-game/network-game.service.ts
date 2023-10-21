@@ -3,11 +3,9 @@ import { Socket } from 'socket.io';
 // import { ISocketUser } from 'src/chat/chat.interfaces';
 import { EUserStatus, IGameSocketUser } from './interfaces/IGameSocketUser';
 import { UserService } from 'src/user/user.service';
-import { GameControl } from './gameControl';
 
-import { defaultGameConfig } from './gameConfig';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';
-import { GameRoom } from './interfaces/GameRoom';
+import { GameRoom } from './GameRoom';
 import { MatchService } from 'src/match/match.service';
 import { EGameRoomState } from './interfaces/EGameRoomState';
 import { JoinQueueDto } from './dto/join-queue.dto';
@@ -19,7 +17,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 @Injectable()
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
-      this.monitorGameRooms();
+      // this.monitorGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -57,6 +55,7 @@ export class NetworkGameService {
       
       //creates room from queue
       createGameRoomFromQueue(gameType: 'default' | 'special') {
+        console.log('in here')
         const queue: IGameSocketUser[] = (gameType == 'default'? this.defaultQueue : this.specialQueue);
         if(queue.length < 2){
           console.log(gameType,'queue Does not have enough Users to create Room');
@@ -178,8 +177,8 @@ export class NetworkGameService {
 
       movePaddle(client: Socket,data: [number,number]) {
         const user = this.getISocketUserFromSocket(client);
-        console.log('user.userId',user.userId);
-        console.log('data[0] ',data[0]);
+        // console.log('user.userId',user.userId);
+        // console.log('data[0] ',data[0]);
         if(data[0] !=user.userId) {
           console.log('User with ID',user.userId,'Tried to move the paddle of User with ID',data[0])
           user.socket.emit('exception','You are not allowed to move another persons paddle');
@@ -259,7 +258,8 @@ export class NetworkGameService {
           console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
           for (let i = 0; i < this.gameRooms.length; i++) {
               if( this.gameRooms[i] != null) {
-                const game = this.gameRooms[i]?.game.getGame();
+                const game = this.gameRooms[i].game.getGameState();
+                // const game = this.gameRooms[i]?.gameControl.getGame();
                 console.log(`Room [${i}] =`,this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
                 this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0]?.userId,'vs',this.gameRooms[i]?.clients[1]?.userId,
                 game.score1,':',game.score2);

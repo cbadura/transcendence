@@ -1,24 +1,25 @@
 // import { ISocketUser } from "src/chat/chat.interfaces";
-import { EUserStatus, IGameSocketUser } from "./IGameSocketUser";
-import { GameControl } from "../gameControl";
-import { ESocketGameMessage } from "./ESocketGameMessage";
-import { EGameRoomState } from "./EGameRoomState";
+import { EUserStatus, IGameSocketUser } from "./interfaces/IGameSocketUser";
+import { ESocketGameMessage } from "./interfaces/ESocketGameMessage";
+import { EGameRoomState } from "./interfaces/EGameRoomState";
 import { MatchService } from "src/match/match.service";
 import { CreateMatchDto } from "src/match/dto/create-match.dto";
-import { defaultGameConfig } from "../gameConfig";
-import { GameRoomInfoDto, GameRoomUserInfo } from "../dto/game-room-info.dto";
+import { GameRoomInfoDto, GameRoomUserInfo } from "./dto/game-room-info.dto";
 import { UserService } from "src/user/user.service";
+import { APongGame, DefaultPongGame, SpecialPongGame } from "./gameStructure/APongGame";
 
 
 export class GameRoom {
 
     constructor(private readonly matchService: MatchService, private readonly userService: UserService, private roomAccess: 'private' | 'public' ='public',gameType: 'default' | 'special' ='default') {
-        this.game = new GameControl(gameType);
         this.gameType = gameType;
+        console.log('in Game Room')
+        this.game = this.gameType == 'default' ? new DefaultPongGame() : new SpecialPongGame();
+        console.log('after create Default Pong game')
     }
 
     room_id: number = -1;
-    game: GameControl = null;
+    game: APongGame;
     clients:  (IGameSocketUser | null)[] = []; 
     startTimer: number = 3;
     gameType;
@@ -41,9 +42,11 @@ export class GameRoom {
                 const tickRate = 1000 / 60;
                 const gameLoop = setInterval(()=>{
                 
-                    if(this.game.getGame().gameOver || this.state == EGameRoomState.DISCONNECT){
+                    if(this.game.getGameOver() || this.state == EGameRoomState.DISCONNECT){ 
                         clearInterval(gameLoop);
-                        this.game.forceSetGameOver(); 
+
+                        this.game.setGameOver(true);
+
                         //create match result entry
                         let resultReason = 'score';
                         if(this.state == EGameRoomState.DISCONNECT)
@@ -57,8 +60,8 @@ export class GameRoom {
                             'disconnected_user_id': this.disconnectedUser
                             },
                             "matchUsers":[
-                                {"user_id": this.clients[0].userId,"score": this.game.getGame().score1},
-                                {"user_id": this.clients[1].userId,"score": this.game.getGame().score2}
+                                {"user_id": this.clients[0].userId,"score": this.game.userPaddles[0].score},
+                                {"user_id": this.clients[1].userId,"score": this.game.userPaddles[0].score}
                             ]
                             } as CreateMatchDto;
                         this.matchService.createMatch(matchRes)
@@ -78,18 +81,18 @@ export class GameRoom {
     }
 
     updateGameState() {
-        this.game.routine();
-		// console.log(this.game.getGame().ball);
-        this.notifyClients(ESocketGameMessage.UPDATE_GAME_INFO,this.game.getGame())
+        this.game.gameLoop();
+        this.notifyClients(ESocketGameMessage.UPDATE_GAME_INFO,this.game.getGameState())
     }
 
     //converting user ID to pedal ID //user[0] == peddal 1, user[1] == peddal 2
     updatePlayerPosition(data: [number,number]) {
         if(this.clients.length == 2 && this.clients[0].userId == data[0]){
+            this.game.movePaddle(0,data[1] );
+        }
+        else if(this.clients.length == 2 && this.clients[1].userId == data[0]){
             this.game.movePaddle(1,data[1] );
         }
-        else if(this.clients.length == 2 && this.clients[1].userId == data[0])
-            this.game.movePaddle(2,data[1] );
         else{
             console.log('THis data was received, but it matches neither clients',data)
             console.log('client [0] = ', this.clients[0].userId)
@@ -136,10 +139,12 @@ export class GameRoom {
         this.clients.push(user);
         if(this.clients.length == this.maxClients){
             //user[0] == peddal 1, user[1] == peddal 2
-            const pedal1User = await this.userService.getUser(this.clients[0].userId) //should be improved
-            const pedal2User = await this.userService.getUser(this.clients[1].userId)
-            const roominfo : GameRoomInfoDto = new GameRoomInfoDto(this.room_id,this.game.getGame(),this.game.gameConfig,new GameRoomUserInfo(pedal1User,pedal2User))
+            const peddal1User = await this.userService.getUser(this.clients[0].userId) //should be improved
+            const peddal2User = await this.userService.getUser(this.clients[1].userId)
+
+            const roominfo : GameRoomInfoDto = new GameRoomInfoDto(this.room_id,this.game.getGameState(),new GameRoomUserInfo(peddal1User,peddal2User))
             this.notifyClients(ESocketGameMessage.LOBBY_COMPLETED,roominfo)
+            console.log('Starting game');
             this.StartGame();
         }
     }

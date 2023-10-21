@@ -13,10 +13,9 @@ import {
 
 // Interfaces
 import { User } from 'src/app/shared/interfaces/user';
-import { Game } from 'src/app/shared/interfaces/game/Game';
-import { Ball } from 'src/app/shared/interfaces/game/Ball';
 import { Match } from 'src/app/shared/interfaces/match';
 import { ESocketGameMessage } from 'src/app/shared/macros/ESocketGameMessage';
+import { GameRenderInfo } from 'src/app/components/game/Render/GameRenderInfo';
 
 @Component({
   selector: 'tcd-game',
@@ -35,7 +34,9 @@ export class GameComponent {
   // Render class
   private render!: Render;
   // GameControl class
-  private game!: Game;
+  // private game!: Game;
+  private gameRenderInfo!: GameRenderInfo;
+
   private gameType: 'default' | 'special' = 'default';
 
   // Paddle movement
@@ -83,11 +84,10 @@ export class GameComponent {
       //   ROOM_CREATED
       if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
         console.log('ROOM CREATED IN GAME COMPONENT');
-        this.game = event.data.game;
+        this.gameRenderInfo = event.data.game;
         this.render = new Render(
           this.ctx,
-          event.data.gameConfig,
-          event.data.game,
+          this.gameRenderInfo,
           event.data.userInfo.user1,
           event.data.userInfo.user2,
           this.myUser.id
@@ -105,15 +105,15 @@ export class GameComponent {
 
       //   UPDATE_GAME_INFO
       if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
-        this.game = event.data.game;
-        if (this.game && this.render) {
+        this.gameRenderInfo = event.data.gameRenderInfo;
+        if (this.gameRenderInfo && this.render) {
           this.movePaddle();
-          if (!this.game.gameOver) {
-            this.render.redraw(this.game);
+          if (!this.gameRenderInfo.gameOver) {;
+            this.render.redraw(this.gameRenderInfo);
           } else {
             console.log('gameover');
             this.status = 'gameover';
-            this.fillMatchData(this.game);
+            this.fillMatchData(this.gameRenderInfo); //this shouldnt be here. Thats not render info
             return;
           }
         }
@@ -130,29 +130,17 @@ export class GameComponent {
   //right now this play again will just queue up the user again.
   // later we probably want to enable users to play agains the same opponent again
   playAgain(): void {
-    //clean up prev field
+    //clean up prev field 
     this.status = 'new-game';
-    this.game = {
-      paddle1: 0,
-      paddle2: 0,
-      hits: 0,
-      ball: {
-        x: 0,
-        y: 0,
-        size: 1.0,
-      },
-      score1: 0,
-      score2: 0,
-      gameOver: false,
-    };
-    this.startGame(this.gameType);
+    this.render.reset();
+    this.startGame(this.gameType); 
   }
 
-  fillMatchData(game: Game): void {
+  fillMatchData(game: GameRenderInfo): void {
     this.match = {
       opponent: this.myUser, //change to real opponent
-      myScore: game.score1,
-      opponentScore: game.score2,
+      myScore: game.paddles[0].score,
+      opponentScore: game.paddles[1].score,
       dateTime: new Date().toISOString(),
     };
   }
