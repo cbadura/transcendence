@@ -8,9 +8,11 @@ import { ftStrategy } from './strategy/ft.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     PassportModule,
     UserModule,
     TypeOrmModule.forFeature([User]),

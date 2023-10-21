@@ -26,7 +26,7 @@ export class AuthController {
   @Get('protected')
   @UseGuards(jwtAuthGuard)
   status(@Req() req: Request) {
-    console.log(req.headers);
+    console.log(req.user);
     return 'status';
   }
 
