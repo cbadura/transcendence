@@ -76,7 +76,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChannelCardComponent,
     EditChannelComponent,
     ProfileCardComponent,
-    SigninComponent
+    SigninComponent,
   ],
   imports: [
     HttpClientModule,

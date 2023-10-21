@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { User } from '../shared/interfaces/user';
 import { map, forkJoin } from 'rxjs';
+import { Socket } from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,10 @@ export class UserDataService {
   constructor(
     private http: HttpClient
   ) {}
+
+  gameSocket: Socket | null = null;
+  chatSocket: Socket | null = null;
+
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
@@ -153,5 +158,19 @@ export class UserDataService {
   incrementMatches() {
     let matches = ++this.myUser.matches;
     const user = { ...this.getUser(), matches: matches };
+  }
+
+
+  CreateSocketConnections(){
+    console.log('trying to create Sockets');
+    const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
+    if (!this.gameSocket) {
+      this.gameSocket = new Socket({ url: gameUrl, options: {} });
+    }
+
+    const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
+    if (!this.gameSocket) {
+      this.chatSocket = new Socket({ url: chatUrl, options: {} });
+    }
   }
 }
