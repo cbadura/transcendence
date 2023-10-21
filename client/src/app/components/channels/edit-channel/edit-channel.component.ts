@@ -19,14 +19,16 @@ export class EditChannelComponent implements OnInit {
     EChannelMode.PROTECTED,
   ];
   // public channel!: Channel;
-  public tempChannel!: Channel;
-  public tempPassword!: string;
   public newChannel: boolean = false;
   private channel!: Channel;
   private emptyChannel: boolean = false;
   public channelAdmins: User[] = [];
-	public channelMembers: User[] = [];
-	private oldName: string = '';
+  public channelMembers: User[] = [];
+  private oldName: string = '';
+  
+  public tempChannel!: Channel;
+	public tempPassword!: string;
+	public tempUserChanges!: [{id: number, change: string}];
 //   private dummyChannel: Channel = {
 //     name: '',
 //     mode: EChannelMode.PUBLIC,
@@ -103,22 +105,58 @@ export class EditChannelComponent implements OnInit {
   }
 
   kick(event: Event, user: User) {
-    event.stopPropagation(); 
+	  event.stopPropagation(); 
+	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'kick');
+	  if (index !== -1) {
+		  this.tempUserChanges.splice(index, 1);
+	  }
+	  else {
+		  this.tempUserChanges.push({id: user.id, change: 'kick'});
+	  }
   }
 	
   ban(event: Event, user: User) {
-    event.stopPropagation(); 
+	  event.stopPropagation(); 
+	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'ban');
+	  if (index !== -1) {
+		  this.tempUserChanges.splice(index, 1);
+	  }
+	  else {
+		  this.tempUserChanges.push({id: user.id, change: 'ban'});
+	  }
   }
 
   mute(event: Event, user: User) {
-    event.stopPropagation(); 
+	  event.stopPropagation(); 
+	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'mute');
+	  if (index !== -1) {
+		  this.tempUserChanges.splice(index, 1);
+	  }
+	  else {
+		  this.tempUserChanges.push({id: user.id, change: 'mute'});
+	  }
   }
 
   makeAdmin(event: Event, user: User) {
-    event.stopPropagation(); 
+	  event.stopPropagation(); 
+	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'makeAdmin');
+	  if (index !== -1) {
+		  this.tempUserChanges.splice(index, 1);
+	  }
+	  else {
+		  this.tempUserChanges.push({id: user.id, change: 'makeAdmin'});
+	  }
   }
 
   removeAdmin(event: Event, user: User) {
-    event.stopPropagation(); 
+	  event.stopPropagation(); 
+	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'removeAdmin');
+	  if (index !== -1) {
+		  this.tempUserChanges.splice(index, 1);
+	  }
+	  else {
+		  this.tempUserChanges.push({id: user.id, change: 'removeAdmin'});
+	  }
+
   }
 }
