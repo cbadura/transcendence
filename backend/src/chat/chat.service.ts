@@ -557,6 +557,8 @@ export class ChatService {
       throw new WsException('Permission denied: You are not a channel owner');
     if (isAdmin)
       throw new WsException('User is already an admin in this channel');
+    if (channel.ownerId === dto.userId)
+      throw new WsException('You are a channel owner. You cannot demote yourself.');
     channel.admins.push(dto.userId);
     this.getUserSocketsByID(who).forEach((u) => {
       u.emit(ESocketMessage.ADDED_ADMIN, dto);
