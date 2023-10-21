@@ -11,5 +11,5 @@ export interface Channel {
     muteExpTime?: number;
     usersIds: number[];
 	password?: string;
-	adminsIds?: number[];
+	adminIds: number[];
 }

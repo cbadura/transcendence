@@ -80,6 +80,7 @@ export class EditChannelComponent implements OnInit {
       this.router.navigate(['/channels']);
     } else {
       console.log('NOT CREATED');
+      this.channelService.execActions(this.tempChannel, this.tempUserChanges);
       this.channelService.updateChannel(this.tempChannel, this.tempPassword, this.oldName)
       this.router.navigate(['/channels']);
     }
@@ -97,7 +98,7 @@ export class EditChannelComponent implements OnInit {
     this.http.get<User>(url).subscribe((data) => {
       if (data) {
         this.channelMembers.push(data);
-        if (this.channel.adminsIds?.includes(data.id)) {
+        if (this.channel.adminIds?.includes(data.id)) {
           this.channelAdmins.push(data);
         }
       }

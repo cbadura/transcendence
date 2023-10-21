@@ -6,6 +6,11 @@ import {Channel} from '../shared/chat/Channel';
 import {EUserRole} from '../shared/macros/EUserRole';
 import {ESocketMessage} from '../shared/chat/ESocketMessage';
 
+interface Change {
+  id: number,
+  change: string
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,6 +29,27 @@ export class ChannelService {
   /* getServerChannels(): Channel[] {
     return this.serverChannels.value;
   } */
+
+  execActions(channel: Channel, userChanges: Change[]) {
+    userChanges.forEach((change: Change) => {
+      if (change.change === 'kick') {
+        this.kickUser(channel.name, change.id);
+      }
+      else if (change.change === 'ban') {
+        this.banUser(channel.name, change.id, 1000);
+      }
+      else if (change.change === 'mute') {
+        this.muteUser(channel.name, change.id, 1000);
+      }
+      else if (change.change === 'makeAdmin') {
+        this.addAdmin(channel.name, change.id);
+      }
+      else if (change.change === 'removeAdmin') {
+        this.removeAdmin(channel.name, change.id);
+      }
+    });
+  }
+
 
   /* SOCKET.IO calls */
 
@@ -172,7 +198,8 @@ export class ChannelService {
           role: EUserRole.OWNER,
           isBanned: false,
           isMuted: false,
-          usersIds: [1]
+          usersIds: [1],
+          adminIds: [] 
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);
@@ -233,10 +260,10 @@ export class ChannelService {
               ch.banExpTime = data.expirationTimestamp;
             }*/
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-            /* uncomment this when you add channel admins
+
             if (ch.role === EUserRole.OWNER)
               ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-            */
+            
           }
         });
         this.serverChannels.next(this.channels);
@@ -263,10 +290,8 @@ export class ChannelService {
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-          /* uncomment this when you add channel admins
            if (ch.role === EUserRole.OWNER)
              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-           */
         });
         this.serverChannels.next(this.channels);
       });
@@ -291,10 +316,9 @@ export class ChannelService {
           if (ch.name === data.channelName)
           {
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-            /* uncomment this when you add channel admins
            if (ch.role === EUserRole.OWNER)
              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-           */
+          
             /* uncomment this part, when client will know it's id
               if (data.transferId === myID)
                  ch.role = EUserRole.OWNER;
@@ -311,9 +335,7 @@ export class ChannelService {
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
-            /* uncomment this when you add channel admins
-               ch.adminIds.push(data.userId);
-            */
+            ch.adminIds.push(data.userId);
           }
         });
         this.serverChannels.next(this.channels);
@@ -326,9 +348,7 @@ export class ChannelService {
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
-            /* uncomment this when you add channel admins
              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);6
-           */
           }
         });
         this.serverChannels.next(this.channels);
