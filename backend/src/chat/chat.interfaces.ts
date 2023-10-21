@@ -39,6 +39,10 @@ export enum ESocketMessage {
   KICKED_FROM_CHANNEL = 'kickedFromChannel',
   TRY_BAN_FROM_CHANNEL = 'tryBanFromChannel',
   BANNED_FROM_CHANNEL = 'bannedFromChannel',
+  TRY_ADD_ADMIN = 'tryAddAdmin',
+  ADDED_ADMIN = 'addedAdmin',
+  TRY_REMOVE_ADMIN = 'tryRemoveAdmin',
+  REMOVED_ADMIN = 'removedAdmin',
 }
 
 export enum EBanMute {
