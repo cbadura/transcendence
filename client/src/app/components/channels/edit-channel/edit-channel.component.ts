@@ -79,6 +79,7 @@ export class EditChannelComponent implements OnInit {
     } else {
       console.log('NOT CREATED');
       this.channelService.updateChannel(this.tempChannel, this.tempPassword, this.oldName)
+      this.router.navigate(['/channels']);
     }
   }
 
