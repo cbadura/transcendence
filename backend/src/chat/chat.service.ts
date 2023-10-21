@@ -237,8 +237,8 @@ export class ChatService {
       throw new WsException('Missing channel password for a protected channel');
     const updChannel: IChannel = { ...channel, ...dto };
     this.channels = this.channels.filter((ch) => ch.name !== dto.currName);
-    this.channels.push(updChannel);
     updChannel.name = dto.channelName;
+    this.channels.push(updChannel);
     const channelData: CreateChannelDto = new CreateChannelDto();
     channelData.ownerId = channel.ownerId;
     channelData.channelName = updChannel.name;
