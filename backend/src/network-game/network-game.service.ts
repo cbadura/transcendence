@@ -17,13 +17,12 @@ import { JoinRoomDto } from './dto/join-room.dto';
 @Injectable()
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
-      // this.monitorGameRooms();
+      this.monitorGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
     private specialQueue: IGameSocketUser[] = [];
     private gameRooms: (GameRoom | null)[] = new Array(1000).fill(null);
-    // private myGameControl: GameControl;
 
 
     async handleConnection(socket: Socket, userId: number) {

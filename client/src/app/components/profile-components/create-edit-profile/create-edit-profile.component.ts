@@ -74,6 +74,7 @@ export class CreateProfileComponent implements OnInit {
       .createEditUser(this.tempUserName, this.tempColor, this.tempFile)
       .subscribe(
         (user) => {
+          this.userDataService.CreateSocketConnections();
           console.log('User created with ID:', user.id);
         },
         (error) => {
@@ -88,7 +89,6 @@ export class CreateProfileComponent implements OnInit {
     this.userDataService
       .createEditUser('Dummy user', '#E7C9FF', this.tempFile)
       .subscribe((user) => {
-        this.userDataService.CreateSocketConnections();
         console.log('Dummy created with ID:', user.id);
       });
     await delay(50);

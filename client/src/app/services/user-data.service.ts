@@ -160,7 +160,7 @@ export class UserDataService {
     const user = { ...this.getUser(), matches: matches };
   }
 
-
+ //this function connects the sockets important for game and chat. Probably needs to be called on Login as well
   CreateSocketConnections(){
     console.log('trying to create Sockets');
     const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
