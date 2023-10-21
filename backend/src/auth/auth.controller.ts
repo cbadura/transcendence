@@ -10,17 +10,12 @@ export class AuthController {
 
   @Get('login')
   @UseGuards(ftAuthGuard)
-  login() {
-    return ;
-  }
+  login() {}
 
   @Get('redirect')
   @UseGuards(ftAuthGuard)
-  async redirect(@Res() res: Response, @Req() req: Request) {
-    const token = await this.authService.jwtValidate(req.user);
-    console.log(token);
-    res.status(200).send(token);
-    
+  redirect(@Req() req: Request) {
+    return this.authService.jwtIssueToken(req.user);
   }
 
   @Get('protected')

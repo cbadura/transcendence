@@ -25,10 +25,10 @@ export class ftStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
     cb: VerifyCallback
   ) {
-    console.log(accessToken);
-    console.log(refreshToken);
+    // console.log(accessToken);
+    // console.log(refreshToken);
     const {id, username} = profile;
-    const user = await this.authService.validateUser({id, username});
+    const user = await this.authService.ftValidateUser(id, username);
     // console.log(user);
     return cb(null, user);
     // return id;

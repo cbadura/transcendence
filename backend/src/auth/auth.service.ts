@@ -15,18 +15,18 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser({id, username}) {
-    const user: User = await this.userRepo.findOne({where: {ftid: id}})
+  async ftValidateUser(ftid: number, username: string) {
+    // const user: User = await this.userRepo.findOne({where: {ftid: id}});
+    const user: User = await this.userService.getUserFromftid(ftid);
     if (user) return user;
     const newUser = new CreateUserDto;
     newUser.name = username;
-    newUser.ftid = id;
+    newUser.ftid = ftid;
     return this.userService.createUser(newUser);
   }
 
-  async jwtValidate(user: any) {
+  async jwtIssueToken(user: any) {
     const payload = {ftid: user.ftid, id: user.id};
-
     return {
       access_token: this.jwtService.sign(payload)
     };
