@@ -13,6 +13,7 @@ export class ProfileCardComponent {
 	@Input() kick!: Function;
 	@Input() ban!: Function;
 	@Input() mute!: Function;
+	public selected: string = 'none';
 
 	getFloorLevel = () => Math.floor(this.user.level);
 }
