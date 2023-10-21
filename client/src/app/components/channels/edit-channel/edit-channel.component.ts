@@ -25,19 +25,19 @@ export class EditChannelComponent implements OnInit {
   public channelAdmins: User[] = [];
   public channelMembers: User[] = [];
   private oldName: string = '';
-  
+
   public tempChannel!: Channel;
-	public tempPassword!: string;
-	public tempUserChanges!: [{id: number, change: string}];
-//   private dummyChannel: Channel = {
-//     name: '',
-//     mode: EChannelMode.PUBLIC,
-//     role: EUserRole.OWNER,
-//     isBanned: false,
-//     isMuted: false,
-//     usersIds: [1, 2, 3],
-//     adminsIds: [2, 4, 6, 99],
-//   };
+  public tempPassword!: string;
+	public tempUserChanges!: [{ id: number; change: string }];
+  //   private dummyChannel: Channel = {
+  //     name: '',
+  //     mode: EChannelMode.PUBLIC,
+  //     role: EUserRole.OWNER,
+  //     isBanned: false,
+  //     isMuted: false,
+  //     usersIds: [1, 2, 3],
+  //     adminsIds: [2, 4, 6, 99],
+  //   };
 
   constructor(
     private route: ActivatedRoute,
@@ -53,8 +53,8 @@ export class EditChannelComponent implements OnInit {
       // Here I am extracting the channel property and assigning it to the channel object
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
-		this.tempChannel = { ...this.channel };
-		this.oldName = this.tempChannel.name;
+      this.tempChannel = { ...this.channel };
+      this.oldName = this.tempChannel.name;
       if (!this.tempChannel.name) {
         console.log('EMPTY');
         this.emptyChannel = true;
@@ -64,9 +64,9 @@ export class EditChannelComponent implements OnInit {
         this.newChannel = false;
       }
 
-		if (!this.newChannel) this.getMembers();
-
-    });
+      if (!this.newChannel) this.getMembers();
+	});
+	  	  this.tempUserChanges = [{ id: 0, change: '' }];
   }
   selectMode(mode: EChannelMode) {
     this.tempChannel.mode = mode;
@@ -81,7 +81,11 @@ export class EditChannelComponent implements OnInit {
     } else {
       console.log('NOT CREATED');
       this.channelService.execActions(this.tempChannel, this.tempUserChanges);
-      this.channelService.updateChannel(this.tempChannel, this.tempPassword, this.oldName)
+      this.channelService.updateChannel(
+        this.tempChannel,
+        this.tempPassword,
+        this.oldName
+      );
       this.router.navigate(['/channels']);
     }
   }
@@ -105,59 +109,40 @@ export class EditChannelComponent implements OnInit {
     });
   }
 
-  kick(event: Event, user: User) {
-	  event.stopPropagation(); 
-	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'kick');
-	  if (index !== -1) {
-		  this.tempUserChanges.splice(index, 1);
-	  }
-	  else {
-		  this.tempUserChanges.push({id: user.id, change: 'kick'});
-	  }
-  }
-	
-  ban(event: Event, user: User) {
-	  event.stopPropagation(); 
-	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'ban');
-	  if (index !== -1) {
-		  this.tempUserChanges.splice(index, 1);
-	  }
-	  else {
-		  this.tempUserChanges.push({id: user.id, change: 'ban'});
-	  }
+  editTempUserChanges = (id: number, mode: string) => {
+    let index = this.tempUserChanges.findIndex(
+      (change) => change.id === id && change.change === mode
+    );
+    if (index !== -1) {
+      this.tempUserChanges.splice(index, 1);
+    } else {
+      this.tempUserChanges.push({ id: id, change: mode });
+	}
+	  console.log(this.tempUserChanges);
   }
 
-  mute(event: Event, user: User) {
-	  event.stopPropagation(); 
-	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'mute');
-	  if (index !== -1) {
-		  this.tempUserChanges.splice(index, 1);
-	  }
-	  else {
-		  this.tempUserChanges.push({id: user.id, change: 'mute'});
-	  }
+  kick = (event: Event, user: User) => {
+    event.stopPropagation();
+	this.editTempUserChanges(user.id, 'kick');
   }
 
-  makeAdmin(event: Event, user: User) {
-	  event.stopPropagation(); 
-	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'makeAdmin');
-	  if (index !== -1) {
-		  this.tempUserChanges.splice(index, 1);
-	  }
-	  else {
-		  this.tempUserChanges.push({id: user.id, change: 'makeAdmin'});
-	  }
+  ban = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'ban');
   }
 
-  removeAdmin(event: Event, user: User) {
-	  event.stopPropagation(); 
-	  let index = this.tempUserChanges.findIndex((change) => change.id === user.id && change.change === 'removeAdmin');
-	  if (index !== -1) {
-		  this.tempUserChanges.splice(index, 1);
-	  }
-	  else {
-		  this.tempUserChanges.push({id: user.id, change: 'removeAdmin'});
-	  }
+  mute = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'mute');
+  }
 
+  makeAdmin = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'makeAdmin');
+  }
+
+  removeAdmin = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'removeAdmin');
   }
 }
