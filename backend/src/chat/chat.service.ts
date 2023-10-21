@@ -237,8 +237,8 @@ export class ChatService {
       throw new WsException('Missing channel password for a protected channel');
     const updChannel: IChannel = { ...channel, ...dto };
     this.channels = this.channels.filter((ch) => ch.name !== dto.currName);
+    updChannel.name = dto.channelName;
     this.channels.push(updChannel);
-
     const channelData: CreateChannelDto = new CreateChannelDto();
     channelData.ownerId = channel.ownerId;
     channelData.channelName = updChannel.name;
@@ -247,7 +247,6 @@ export class ChatService {
     const updChannelData: UpdateChannelDto = {
       ...channelData,
       currName: dto.currName,
-      channelName: dto.channelName, //TODO test more if name is empty (?)
     };
     const deleteDto: DeleteChannelDto = {
       channelName: dto.channelName,
@@ -412,6 +411,7 @@ export class ChatService {
   // good morning check again tmr
   // Good morning, Cosmo :)
   // good evening, are you hungry?
+  // I actually am \(O.O)/
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     const user: number = this.getUserIdFromSocket(socket);
@@ -536,9 +536,6 @@ export class ChatService {
           );
         } else leftDto.transferId = channel.users[1];
       }
-      // TODO notify transfer client about becoming a channel owner (?)
-      //  in case frontend will not want to add check (leftDto.transferId === myId)
-      //  to make user an owner from frontend side
     }
     channel.ownerId = leftDto.transferId;
     const activeUsers: ISocketUser[] = this.getActiveChannelUsers(channel);
@@ -583,39 +580,6 @@ export class ChatService {
     });
     this.getUserSocketsByID(dto.userId).forEach((u) => {
       u.emit(ESocketMessage.REMOVED_ADMIN, dto);
-    });
-  }
-
-  addRemoveAdmin(
-    socket: Socket,
-    dto: AddRemoveAdminDto,
-    option: ESocketMessage,
-  ) {
-    const channel: IChannel = this.getChannelfromName(dto.channelName);
-    const who: number = this.getUserIdFromSocket(socket);
-    const userInChannel: boolean = !!channel.users.find((user) => user === who);
-    if (!userInChannel) throw new WsException('User is not in this channel');
-    const isAdmin: boolean = !!channel.admins.find((a) => a === dto.userId);
-    if (channel.ownerId !== who)
-      throw new WsException('Permission denied: You are not a channel owner');
-    let response: string;
-    if (option === ESocketMessage.TRY_ADD_ADMIN) {
-      if (isAdmin)
-        throw new WsException('User is already an admin in this channel');
-      channel.admins.push(dto.userId);
-      response = ESocketMessage.ADDED_ADMIN;
-    }
-    if (option === ESocketMessage.TRY_REMOVE_ADMIN) {
-      if (!isAdmin)
-        throw new WsException('User is not an admin in this channel');
-      channel.admins = channel.admins.filter((a) => a !== dto.userId);
-      response = ESocketMessage.REMOVED_ADMIN;
-    }
-    this.getUserSocketsByID(who).forEach((u) => {
-      u.emit(response, dto);
-    });
-    this.getUserSocketsByID(dto.userId).forEach((u) => {
-      u.emit(response, dto);
     });
   }
 }
