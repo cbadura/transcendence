@@ -105,7 +105,24 @@ export class SpecialPongGame extends APongGame {
             config = specialConfig;
         super(config);
     }
+    private scaleMult = 0.5
+    private maxPaddleScale = 200;
+    private minPaddleScale = 50;
+
+
     gameLoop(): void {
+        for (let i = 0; i < this.userPaddles.length; i++) {
+            this.userPaddles[i].length += this.scaleMult;
+            if(this.userPaddles[i].length > this.maxPaddleScale){
+                this.scaleMult *= -1;
+            }
+            else if(this.userPaddles[i].length < this.minPaddleScale){
+                this.scaleMult *= -1;
+            }
+            
+        }
+
+
         for (let i = 0; i < this.gameBalls.length; i++) {
             this.gameBalls[i].updatePosition(this);
         }

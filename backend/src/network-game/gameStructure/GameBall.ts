@@ -44,10 +44,9 @@ export class GameBall {
             console.log(`NEW Direction [${this.dirX},${this.dirY}]`)
             //for now i decided to not do anything. So no control to the player
             // this.dirY = this.getBouncingAngle(targetPaddle); 
-            // this.adjustSpeed();
+            this.increaseBallSpeed();
             game.hits++;
         }
-
         this.checkScore(game);
     }
 
@@ -59,6 +58,11 @@ export class GameBall {
             game.hits = 0;
         }
     }
+
+    increaseBallSpeed(){
+        this.speed += 0.2;
+    }
+
 
     getBouncingAngle(paddle: GamePaddle): number {
 
