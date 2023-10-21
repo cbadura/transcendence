@@ -22,7 +22,7 @@ export class AuthController {
   @UseGuards(jwtAuthGuard)
   status(@Req() req: Request) {
     console.log(req.user);
-    return 'status';
+    return req.user;
   }
 
   @Get('logout')
