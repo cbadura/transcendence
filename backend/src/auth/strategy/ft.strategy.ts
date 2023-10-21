@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { Strategy, Profile, VerifyCallback } from 'passport-42'
 // import { Strategy, VerifyCallback } from 'passport-oauth2'
 import { Injectable } from '@nestjs/common'
-import { AuthService } from './auth.service'
+import { AuthService } from '../auth.service'
 
 @Injectable()
 export class ftStrategy extends PassportStrategy(Strategy) {

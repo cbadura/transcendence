@@ -7,5 +7,6 @@ declare namespace NodeJS {
     TCD_UID?: string;
     TCD_SECRET?: string;
     TCD_CALLBACKURL?: string;
+    JWT_SECRET?: string;
   }
 }
