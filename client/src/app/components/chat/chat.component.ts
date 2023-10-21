@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -74,5 +74,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         /* this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? '' */
     };
     this.chatHistoryService.sendMessage(newPost);
+  }
+
+  ngOnDestroy() {
+    this.postSubscription.unsubscribe();
   }
 }
