@@ -261,7 +261,7 @@ export class NetworkGameService {
                 // const game = this.gameRooms[i]?.gameControl.getGame();
                 console.log(`Room [${i}] =`,this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
                 this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0]?.userId,'vs',this.gameRooms[i]?.clients[1]?.userId,
-                game.score1,':',game.score2);
+                game.paddles[0].score,':',game.paddles[1].score);
 
                 if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
                   if(this.gameRooms[i].clients[0] != null){

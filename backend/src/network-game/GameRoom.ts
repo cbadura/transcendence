@@ -6,8 +6,9 @@ import { MatchService } from "src/match/match.service";
 import { CreateMatchDto } from "src/match/dto/create-match.dto";
 import { GameRoomInfoDto, GameRoomUserInfo } from "./dto/game-room-info.dto";
 import { UserService } from "src/user/user.service";
-import { APongGame, DefaultPongGame, SpecialPongGame } from "./gameStructure/APongGame";
-
+import { APongGame } from "./gameStructure/APongGame";
+import { DefaultPongGame } from "./gameStructure/DefaultPongGame";
+import { SpecialPongGame } from "./gameStructure/SpecialPongGame";
 
 export class GameRoom {
 
