@@ -241,6 +241,7 @@ export class NetworkGameService {
         const currUser = this.getISocketUserFromSocket(client);
 
         if(currUser != null){
+          currUser.status = EUserStatus.ONLINE;
           console.log('Found Disconnecting user in Queue. removing user from Queue')
           this.defaultQueue = this.defaultQueue.filter(
             (currentClient) => currentClient.socket.id !== client.id,
