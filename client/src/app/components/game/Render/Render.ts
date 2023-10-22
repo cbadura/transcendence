@@ -18,7 +18,9 @@ export class Render {
     user2: User,
     private id: number
   ) {
-    this.initialFrame =gameRenderInfo;
+    this.initialFrame = gameRenderInfo;
+    console.log('USER COLOR',user1.id === id ? user1.color : user2.color)
+    console.log(user1.id,id);
     this.userColor = user1.id === id ? user1.color : user2.color;
     this.darkerColor = LightenDarkenColor(this.userColor, -10);
     console.log('RENDER INFO',gameRenderInfo);

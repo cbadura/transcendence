@@ -90,26 +90,33 @@ export class NetworkGameService {
         return -1;
       }
 
-      async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ){
+      async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ) {
+
         const instigator = this.getISocketUserFromSocket(client);
         if(instigator == null){
           console.log('exception','Instigator (You) are not registered')
           return;
         }
         //could check if user is online and not in a match
-        const recipient = this.getISocketUserFromUserId(dto.recipient_user_id);
-        if(recipient == null){
-          console.log('exception','Recipient is not registered')
-          instigator.socket.emit('exception','Recipient is not registered');
-          return;
-        }
-        if(recipient.status != EUserStatus.ONLINE){
-          console.log('exception','Recipient is currently',recipient.status);
-          instigator.socket.emit('exception','Recipient is ',recipient.status);
-          return;
-        }
+        let recipient;
+        if(dto.recipient_user_id != -1){
 
-        const roomID = this.InsertRoom(new GameRoom(this.matchService,this.userService,'private',dto.gameType))
+          recipient = this.getISocketUserFromUserId(dto.recipient_user_id);
+          if(recipient == null){
+            console.log('exception','Recipient is not registered')
+            instigator.socket.emit('exception','Recipient is not registered');
+            return;
+          }
+          if(recipient.status != EUserStatus.ONLINE){
+            console.log('exception','Recipient is currently',recipient.status);
+            instigator.socket.emit('exception','Recipient is ',recipient.status);
+            return;
+          }
+        }
+        let roomAccess: 'private' | 'public' | 'training' = 'private'; //yikes
+        if(dto.recipient_user_id == -1)
+          roomAccess = 'training';
+        const roomID = this.InsertRoom(new GameRoom(this.matchService,this.userService,roomAccess,dto.gameType))
         if(roomID == -1) {
           console.log('Room could not be created. All Rooms are currently occupied')
           instigator.socket.emit('exception','Room could not be created. All Rooms are currently occupied')
@@ -117,13 +124,16 @@ export class NetworkGameService {
         }
         const newRoom = this.gameRooms[roomID];
         instigator.socket.emit(ESocketGameMessage.ROOM_CREATED,{room_id: roomID})
+        newRoom.insertUserToRoom(instigator);
+
+        if(dto.recipient_user_id != -1){
         const invitationInfo: privateRoomInvitationInfo = {
           room_id: roomID,
           gameType: dto.gameType,
           inviting_user: await this.userService.getUser(instigator.userId),
         };
         recipient.socket.emit(ESocketGameMessage.RECEIVE_ROOM_INVITE,invitationInfo);
-        newRoom.insertUserToRoom(instigator);
+        }
 
       }
 
