@@ -11,6 +11,9 @@ export class User {
   @Column({ nullable: true, unique: true })
   ftid: number;
 
+  @Column({nullable: true})
+  tfa: boolean;
+
   @Column()
   name: string;
 
