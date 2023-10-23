@@ -2,7 +2,7 @@
 
     <!-- My user -->
   <div class="flex flex-col items-center h-[125px]">
-    <tcd-thumbnail class="aspect-square" [imgUrl]="'http://localhost:3000' + me.avatar" [size]="'5rem'"></tcd-thumbnail>
+    <tcd-thumbnail class="aspect-square" [imgUrl]="me.avatar" [size]="'5rem'"></tcd-thumbnail>
     <h1>{{ me.name }}</h1>
   </div>
 
@@ -22,7 +22,7 @@
 
   <!-- Opponent -->
   <div class="flex flex-col items-center h-[125px]">
-    <tcd-thumbnail class="aspect-square" [imgUrl]="'http://localhost:3000' + match.opponent.avatar" [size]="'5rem'"></tcd-thumbnail>
+    <tcd-thumbnail class="aspect-square" [imgUrl]="match.opponent.avatar" [size]="'5rem'"></tcd-thumbnail>
     <h1>{{ match.opponent.name }}</h1>
   </div>
 
