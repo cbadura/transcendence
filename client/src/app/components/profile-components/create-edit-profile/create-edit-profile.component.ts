@@ -81,7 +81,7 @@ export class CreateProfileComponent implements OnInit {
           window.alert('Error editing user: ' + JSON.stringify(error));
         }
       );
-    await delay(50);
+    await delay(80);
     this.goBack();
   };
 

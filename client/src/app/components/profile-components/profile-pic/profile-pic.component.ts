@@ -8,6 +8,8 @@ import { Component, Input, Output, EventEmitter  } from '@angular/core';
 export class ProfilePicComponent {
   @Input() profilePic: string = '';
 	@Output() imageClick = new EventEmitter<void>();
+  @Input() size!: string;
+
 	fallbackImageSrc: string = 'https://picsum.photos/100'
 
   handleClick() {

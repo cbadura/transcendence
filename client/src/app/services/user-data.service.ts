@@ -14,7 +14,7 @@ export class UserDataService {
   private myUser = {
       id: 0,
       name: '',
-      status: 'online', // WILL NEED TO COME FROM SERVER
+      status: 'online',
       level: 0,
       matches: 0,
       wins: 0,
@@ -31,7 +31,6 @@ export class UserDataService {
 
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
-
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
