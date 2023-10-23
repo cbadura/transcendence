@@ -39,7 +39,9 @@ export class UserService {
 
   createUser(dtoUserCreator: CreateUserDto): Promise<User> {
     console.log(dtoUserCreator);
-    const newUser:CreateUserDto = {...dtoUserCreator, avatar: `/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`, level:1.00,matches: 0, wins: 0};
+    if(dtoUserCreator.avatar == null)
+      dtoUserCreator.avatar = `/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
+    const newUser:CreateUserDto = {...dtoUserCreator, level:1.00,matches: 0, wins: 0};
     return this.userRepository.save(newUser);
   }
 

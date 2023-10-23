@@ -132,7 +132,7 @@ export class ChatService {
     fullMessage.senderAvatar = sender.avatar;
     fullMessage.senderColor = sender.color;
     fullMessage.senderName = sender.name;
-    fullMessage.timestamp = this.getCurrentUnixTime();
+/*     fullMessage.timestamp = this.getCurrentUnixTime();*/    
     return (fullMessage);
   }
 
@@ -173,7 +173,7 @@ export class ChatService {
   updateBanMutelist(channel: IChannel) {
     const now: number = this.getCurrentUnixTime();
     //console.log('bans', channel.bans);
-    console.log('mutes', channel.mutes);
+    //console.log('mutes', channel.mutes);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
     channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now);
   }
@@ -236,6 +236,7 @@ export class ChatService {
     if (dto.mode === EChannelMode.PROTECTED && !dto.password)
       throw new WsException('Missing channel password for a protected channel');
     const updChannel: IChannel = { ...channel, ...dto };
+    updChannel.name = dto.channelName;
     this.channels = this.channels.filter((ch) => ch.name !== dto.currName);
     updChannel.name = dto.channelName;
     this.channels.push(updChannel);
@@ -246,7 +247,7 @@ export class ChatService {
 
     const updChannelData: UpdateChannelDto = {
       ...channelData,
-      currName: dto.currName,
+      currName: dto.currName
     };
     const deleteDto: DeleteChannelDto = {
       channelName: dto.channelName,
@@ -552,10 +553,12 @@ export class ChatService {
     const userInChannel: boolean = !!channel.users.find((user) => user === who);
     if (!userInChannel) throw new WsException('User is not in this channel');
     const isAdmin: boolean = !!channel.admins.find((a) => a === dto.userId);
-    if (channel.ownerId === who)
+    if (channel.ownerId !== who)
       throw new WsException('Permission denied: You are not a channel owner');
     if (isAdmin)
       throw new WsException('User is already an admin in this channel');
+    if (channel.ownerId === dto.userId)
+      throw new WsException('You are a channel owner. You cannot demote yourself.');
     channel.admins.push(dto.userId);
     this.getUserSocketsByID(who).forEach((u) => {
       u.emit(ESocketMessage.ADDED_ADMIN, dto);

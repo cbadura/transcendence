@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { User } from '../shared/interfaces/user';
 import { map, forkJoin } from 'rxjs';
+import { Socket } from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root',
@@ -13,11 +14,11 @@ export class UserDataService {
   private myUser = {
       id: 0,
       name: '',
-      status: 'online', // WILL NEED TO COME FROM SERVER
+      status: 'online',
       level: 0,
       matches: 0,
       wins: 0,
-      color: '',
+      color: '#E7C9FF',
       avatar: 'a',
     };
 
@@ -27,6 +28,9 @@ export class UserDataService {
   constructor(
     private http: HttpClient
   ) {}
+
+  gameSocket: Socket | null = null;
+  chatSocket: Socket | null = null;
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
@@ -72,7 +76,6 @@ export class UserDataService {
   private updateUserData(data: any) {
       this.myUser = { ...this.myUser, ...data };
       this.userSubject.next(this.myUser);
-      // window.alert(JSON.stringify(data));
   }
 
   getProfilePics(): Observable<{ blobUrl: string, filePath: string }[]> {
@@ -99,10 +102,18 @@ export class UserDataService {
     const url = `http://localhost:3000/users/${id}`;
     
     return this.http.get<User>(url).pipe(
-      map((user: User) => ({
-        ...user,
-        avatar: `http://localhost:3000${user.avatar}` // Replace with the new avatar URL
-      }))
+      map((user: User) => {
+        if (user && user.avatar) {
+          return {
+            ...user,
+            avatar: `http://localhost:3000${user.avatar}`
+          };
+        } else {
+          return {
+            ...user
+          };
+        }
+      })
     );
   }
 
@@ -117,19 +128,13 @@ export class UserDataService {
     });
   }
 
-  /* OLDER FUNCTIONS */
-
-  /* setAvatar(filePath: string) {
-    this.myUser.avatar = filePath;
-    // this.userSubject.next(this.myUser);
-  } */
-
+  /* internal user functions */
   getUser(): User {
     return this.userSubject.value;
   }
 
   setName(name: string) {
-    const user = { ...this.getUser(), name: name }; // shallow copy with spread operator, then update
+    const user = { ...this.getUser(), name: name };
     this.userSubject.next(user);
   }
 
@@ -139,19 +144,18 @@ export class UserDataService {
     this.userSubject.next(user);
   }
 
-  incrementLevel() {
-    let level = this.myUser.level + 0.25;
-    const user = { ...this.getUser(), level: level };
-    this.userSubject.next(user);
-  }
-  decrementLevel() {
-    let level = this.myUser.level + 0.05;
-    const user = { ...this.getUser(), level: level };
-    this.userSubject.next(user);
-  }
-  
-  incrementMatches() {
-    let matches = ++this.myUser.matches;
-    const user = { ...this.getUser(), matches: matches };
+  //this function connects the sockets important for game and chat.
+  // Probably needs to be called on Login as well
+  CreateSocketConnections(){
+    console.log('trying to create Sockets');
+    const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
+    if (!this.gameSocket) {
+      this.gameSocket = new Socket({ url: gameUrl, options: {} });
+    }
+
+    const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
+    if (!this.gameSocket) {
+      this.chatSocket = new Socket({ url: chatUrl, options: {} });
+    }
   }
 }

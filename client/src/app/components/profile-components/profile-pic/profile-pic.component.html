@@ -1,1 +1,2 @@
-<img class="w-32 rounded-full border border-black" *ngIf="profilePic" [src]="profilePic" alt="avatar" (click)="handleClick()"/>
+<img class="w-32 rounded-full border border-black" *ngIf="profilePic" [src]="profilePic" alt="avatar" [ngStyle]="{'width':size, 'height':size}"
+(click)="handleClick()" (error)="loadFallbackImage()"/>

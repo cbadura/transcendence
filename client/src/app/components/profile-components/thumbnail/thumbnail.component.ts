@@ -7,4 +7,11 @@ import { Component, Input } from '@angular/core';
 export class ThumbnailComponent {
   @Input() imgUrl: string = ''; 
   @Input() size!: string;
+
+  fallbackImageSrc: string = 'https://picsum.photos/100'
+
+  loadFallbackImage() {
+	  this.imgUrl = this.fallbackImageSrc;
+	  console.log('Fallback image loaded');
+  }
 }

@@ -5,5 +5,6 @@ import { Component, Input } from '@angular/core';
   templateUrl: './chat-btn.component.html',
 })
 export class ChatBtnComponent {
-@Input() icon!: string;
+	@Input() icon!: string;
+	@Input() white!: boolean;
 }

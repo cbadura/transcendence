@@ -2,57 +2,160 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
-
+import { EUserRole } from 'src/app/shared/macros/EUserRole';
 import { ChannelService } from 'src/app/services/channel.service';
+import { User } from 'src/app/shared/interfaces/user';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'tcd-edit-channel',
   templateUrl: './edit-channel.component.html',
 })
 export class EditChannelComponent implements OnInit {
-  public modes: EChannelMode [] = [EChannelMode.PUBLIC, EChannelMode.PRIVATE, EChannelMode.PROTECTED];
-  // public channel!: Channel;
+  public modes: EChannelMode[] = [
+    EChannelMode.PUBLIC,
+    EChannelMode.PRIVATE,
+    EChannelMode.PROTECTED,
+  ];
+  private channel!: Channel;
+  public emptyChannel: boolean = false;
+  public channelAdmins: User[] = [];
+  public channelMembers: User[] = [];
+  private oldName: string = '';
   public tempChannel!: Channel;
   public tempPassword!: string;
-  private channel!: Channel;
-  private emptyChannel: boolean = false;
+  public tempUserChanges!: [{ id: number; change: string }];
+  public invitedUsers!: User[];
+  public popup: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private channelService: ChannelService,
-    private router: Router
-    ) {}
-
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
-      this.route.params.subscribe(params => {
-      // This is a hack because I could not pass only the channel object
-      // I had to pass the channel property of the object as well
-      // Here I am extracting the channel property and assigning it to the channel object
+    // Initialize arrays
+    this.tempUserChanges = [{ id: 0, change: '' }];
+    this.invitedUsers = [];
+
+    // Get url params
+    this.route.params.subscribe((params) => {
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
-      this.tempChannel =  { ...this.channel };
+      this.tempChannel = { ...this.channel };
+      this.oldName = this.tempChannel.name;
       if (!this.tempChannel.name) {
-        console.log('EMPTY');
         this.emptyChannel = true;
-      } else {
-        console.log('NOT EMPTY');
       }
-
+      if (!this.emptyChannel) this.getMembers();
     });
   }
+	
   selectMode(mode: EChannelMode) {
     this.tempChannel.mode = mode;
-    console.log(this.tempChannel);
   }
 
   handleClick() {
-    if (this.emptyChannel && this.tempChannel.name && this.tempChannel.mode) {
+    if (this.emptyChannel) {
+      if (
+        !this.tempChannel.name ||
+        !this.tempChannel.mode ||
+        (this.tempChannel.mode === EChannelMode.PROTECTED && !this.tempPassword)
+      ) {
+        window.alert('Please fill in all fields');
+        return;
+      }
       this.channelService.createChannel(this.tempChannel, this.tempPassword);
-      console.log('PASSWORD', this.tempPassword);
       this.router.navigate(['/channels']);
     } else {
-      console.log('NOT CREATED');
+      this.channelService.execActions(this.tempChannel, this.tempUserChanges);
+      this.channelService.updateChannel(
+        this.tempChannel,
+        this.tempPassword,
+        this.oldName
+      );
+      this.router.navigate(['/channels']);
     }
+  }
+
+  getMembers() {
+    if (!this.channel.usersIds) return;
+    for (let id of this.channel.usersIds) {
+      this.fetchUser(id);
+    }
+  }
+
+  fetchUser(id: number) {
+    const url = `http://localhost:3000/users/${id}`;
+    this.http.get<User>(url).subscribe((data) => {
+      if (data) {
+        this.channelMembers.push(data);
+        if (this.channel.adminIds?.includes(data.id)) {
+          this.channelAdmins.push(data);
+        }
+      }
+    });
+  }
+
+	editTempUserChanges = (id: number, mode: string) => {
+    let index = this.tempUserChanges.findIndex(
+      (change) => change.id === id && change.change === mode
+    );
+    if (index !== -1) {
+      this.tempUserChanges.splice(index, 1);
+    } else {
+      this.tempUserChanges.push({ id: id, change: mode });
+    }
+  };
+
+	kick = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'kick');
+  };
+
+	ban = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'ban');
+  };
+
+  mute = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'mute');
+  };
+
+  makeAdmin = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'makeAdmin');
+  };
+
+  removeAdmin = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'removeAdmin');
+  };
+	
+	disinvite = (event: Event, user: User) => {
+		event.stopPropagation();
+		this.editTempUserChanges(user.id, 'invite');
+		let index = this.invitedUsers.findIndex((u) => u.id === user.id);
+		if (index !== -1) {
+			this.invitedUsers.splice(index, 1);
+		}
+	}
+
+  onUserSelected(user: User) {
+    this.closeUserPopup();
+    this.editTempUserChanges(user.id, 'invite');
+    this.invitedUsers.push(user);
+  }
+
+  openUserPopup() {
+    this.popup = true;
+  }
+
+  closeUserPopup() {
+    this.popup = false;
   }
 }
