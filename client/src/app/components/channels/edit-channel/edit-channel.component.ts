@@ -25,8 +25,8 @@ export class EditChannelComponent implements OnInit {
   private oldName: string = '';
   public tempChannel!: Channel;
   public tempPassword!: string;
-	public tempUserChanges!: [{ id: number; change: string }];
-	public invitedUsers!: User[];
+  public tempUserChanges!: [{ id: number; change: string }];
+  public invitedUsers!: User[];
   public popup: boolean = false;
 
   constructor(
@@ -37,6 +37,11 @@ export class EditChannelComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Initialize arrays
+    this.tempUserChanges = [{ id: 0, change: '' }];
+    this.invitedUsers = [];
+
+    // Get url params
     this.route.params.subscribe((params) => {
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
@@ -45,11 +50,10 @@ export class EditChannelComponent implements OnInit {
       if (!this.tempChannel.name) {
         this.emptyChannel = true;
       }
-
       if (!this.emptyChannel) this.getMembers();
     });
-    this.tempUserChanges = [{ id: 0, change: '' }];
   }
+	
   selectMode(mode: EChannelMode) {
     this.tempChannel.mode = mode;
   }
@@ -65,10 +69,8 @@ export class EditChannelComponent implements OnInit {
         return;
       }
       this.channelService.createChannel(this.tempChannel, this.tempPassword);
-      console.log('PASSWORD', this.tempPassword);
       this.router.navigate(['/channels']);
     } else {
-      console.log('NOT CREATED');
       this.channelService.execActions(this.tempChannel, this.tempUserChanges);
       this.channelService.updateChannel(
         this.tempChannel,
@@ -98,7 +100,7 @@ export class EditChannelComponent implements OnInit {
     });
   }
 
-  editTempUserChanges = (id: number, mode: string) => {
+	editTempUserChanges = (id: number, mode: string) => {
     let index = this.tempUserChanges.findIndex(
       (change) => change.id === id && change.change === mode
     );
@@ -107,15 +109,14 @@ export class EditChannelComponent implements OnInit {
     } else {
       this.tempUserChanges.push({ id: id, change: mode });
     }
-    console.log(this.tempUserChanges);
   };
 
-  kick = (event: Event, user: User) => {
+	kick = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'kick');
   };
 
-  ban = (event: Event, user: User) => {
+	ban = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'ban');
   };
@@ -134,12 +135,20 @@ export class EditChannelComponent implements OnInit {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'removeAdmin');
   };
+	
+	disinvite = (event: Event, user: User) => {
+		event.stopPropagation();
+		this.editTempUserChanges(user.id, 'invite');
+		let index = this.invitedUsers.findIndex((u) => u.id === user.id);
+		if (index !== -1) {
+			this.invitedUsers.splice(index, 1);
+		}
+	}
 
   onUserSelected(user: User) {
-    console.log('Selected User:', user);
     this.closeUserPopup();
-	  this.editTempUserChanges(user.id, 'invite');
-	  this.invitedUsers.push(user);
+    this.editTempUserChanges(user.id, 'invite');
+    this.invitedUsers.push(user);
   }
 
   openUserPopup() {

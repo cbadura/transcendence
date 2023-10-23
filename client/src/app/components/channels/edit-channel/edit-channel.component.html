@@ -1,4 +1,4 @@
-<section class="flex flex-col gap-8 items-center max-w-screen-md  h-full ml-auto mr-auto pr-4 pl-4">
+<section class="flex flex-col gap-8 items-center max-w-screen-md  h-full ml-auto mr-auto pr-4 pl-4 pb-8">
 
 	<!-- Channel name -->
 	<div class="w-full flex flex-col gap-2">
@@ -29,7 +29,7 @@
 	<div *ngIf="!emptyChannel && channelAdmins.length > 0" class="w-full flex flex-col gap-2">
 		<label class="font-bold " for="name">Admins</label>
 		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-			<div *ngFor="let admin of channelAdmins">
+			<div class="p-4" *ngFor="let admin of channelAdmins">
 				<tcd-profile-card [removeAdmin]="removeAdmin" [user]="admin"></tcd-profile-card>
 
 			</div>
@@ -43,7 +43,7 @@
 			<tcd-custom-button (click)="openUserPopup()" [buttonText]="'Add member'"></tcd-custom-button>
 		</div>
 		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-			<div *ngFor="let user of channelMembers">
+			<div class="p-4" *ngFor="let user of channelMembers">
 				<tcd-profile-card [kick]="kick" [ban]="ban" [mute]="mute" [makeAdmin]="makeAdmin" [user]="user"></tcd-profile-card>
 			</div>
 		</div>
@@ -56,8 +56,8 @@
 	<div *ngIf="invitedUsers.length > 0"  class="w-full flex flex-col gap-2">
 		<label class="font-bold " for="name">Invited users</label>
 		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-			<div *ngFor="let user of invitedUsers">
-				<tcd-profile-card [user]="user"></tcd-profile-card>
+			<div class="p-4" *ngFor="let user of invitedUsers">
+				<tcd-profile-card [disinvite]="disinvite" [user]="user"></tcd-profile-card>
 			</div>
 		</div>
 	</div>
