@@ -33,6 +33,8 @@ export const defaultConfig: PongGameConfig = {
         width: 25,
         startPosY: 720 / 2, //hard coding for now
         step: 10,
+        minLength: 10,
+        maxLength: 1280,
       },
       balls: [{
         defaultPosX: 1280 / 2,
@@ -60,6 +62,8 @@ export const specialConfig: PongGameConfig = {
       width: 25,
       startPosY: 720 / 2, //hard coding for now
       step: 10,
+      minLength: 10,
+      maxLength: 1280,
     },
     balls: [
       {
@@ -109,6 +113,8 @@ export interface PaddleConfig {
     width: number;
     startPosY: number;
     step: number;
+    minLength?: number;
+    maxLength?: number;
 }
 
 export interface PongGameConfig {

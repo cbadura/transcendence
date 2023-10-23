@@ -19,7 +19,7 @@ export class GameBall {
     private speed: number = this.config.defaultSpeed;
     private ballRadius: number = this.config.defaultRadius * this.config.defaultSize;
     private ownerID : number = -1 //this indicates who last the ball
-    private MaxSpeed: number = 10;
+    private MaxSpeed: number = 50;
 
     updatePosition(game: APongGame) {
         this.posX += this.dirX * this.speed;
@@ -59,7 +59,16 @@ export class GameBall {
         this.checkScore(game);
     }
 
-    checkScore(game: APongGame){
+    getBallState(): BallRenderInfo {
+        return {x: this.posX,y: this.posY,    debugDirX: this.dirX ,debugDirY: this.dirY,radius: this.ballRadius,speed: this.speed} as BallRenderInfo
+    }
+
+    getOwner(): number {
+        return this.ownerID;
+    }
+
+
+    private checkScore(game: APongGame){
         if(this.posX <= this.boardConfig.goalLineOffset || this.posX > this.boardConfig.width - this.boardConfig.goalLineOffset) {
             const scoringUserElement: number = this.getCourtHalfFromPosition(this.posX) === 0 ? 1 : 0;
             game.userPaddles[scoringUserElement].score++;
@@ -68,13 +77,13 @@ export class GameBall {
         }
     }
 
-    increaseBallSpeed(){
+    private increaseBallSpeed(){
         if(this.speed < this.MaxSpeed)
             this.speed += 0.2;
     }
 
 
-    getBouncingAngle(paddle: GamePaddle): number {
+    private getBouncingAngle(paddle: GamePaddle): number {
 
         const relativehitPoint = (this.posY - paddle.posY) / (paddle.length / 2 ); //get value between -1 and 1
         const bounceAngle = 1 * relativehitPoint;
@@ -82,11 +91,11 @@ export class GameBall {
         return Math.sin(bounceAngle);
       }
 
-      checkPowerUpCollision(powerups: APowerUp[]) {
+    private checkPowerUpCollision(powerups: APowerUp[]) {
         for (let i = 0; i < powerups.length; i++) {
             const dist = Math.sqrt(Math.pow(this.posX - powerups[i].posX,2) + Math.pow(this.posY - powerups[i].posY,2))
             if(dist < this.ballRadius + powerups[i].radius){
-                powerups[i].TriggerEffect(this.ownerID);
+                powerups[i].TriggerEffect(this);
             }
         }
 
@@ -94,12 +103,12 @@ export class GameBall {
 
 
 
-    hitVerticalWall(): boolean {
+    private hitVerticalWall(): boolean {
         return (this.posY <= this.ballRadius || this.posY >= this.boardConfig.height - this.ballRadius)
     }
 
     //we assume that the pivot of the paddle is dead center
-    hitPaddle(paddle: GamePaddle):boolean {
+    private hitPaddle(paddle: GamePaddle):boolean {
         return (
         this.checkPaddleCollisionX(paddle) &&
         this.checkPaddleCollisionY(paddle))
@@ -117,11 +126,11 @@ export class GameBall {
         return (this.posX + this.ballRadius >= paddle.posX - paddle.width/2) //its right court
     }
     //returns 0 if ball is in left half. 1 if ball is in right half
-    getCourtHalfFromPosition(positionX: number): number {
+    private getCourtHalfFromPosition(positionX: number): number {
         return (positionX < this.boardConfig.width /2 ? 0 : 1)
     }
 
-    resetBall() {
+    private resetBall() {
         this.posX = this.config.defaultPosX
         this.posY = this.config.defaultPosY
         this.dirX = this.config.defaultDirX
@@ -129,7 +138,5 @@ export class GameBall {
         this.speed = this.config.defaultSpeed
     }
 
-    getBallState(): BallRenderInfo {
-        return {x: this.posX,y: this.posY,    debugDirX: this.dirX ,debugDirY: this.dirY,radius: this.ballRadius,speed: this.speed} as BallRenderInfo
-    }
+
 }

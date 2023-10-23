@@ -3,16 +3,44 @@ import { PaddleConfig } from "./PongGameConfig";
 
 export class GamePaddle {
     constructor(config: PaddleConfig) {
-        this.posY =config.startPosY;
-        this.step = config.step;
-        this.width = config.width;
-        this.length = config.length;
+        this.posY = config.startPosY;
+        this.step = this.defaultStep = config.step;
+        this.width = this.defaultWidth = config.width;
+        this.length = this.defaultLength = config.length;
+        if(config.maxLength)
+            this.maxLength = config.maxLength;
+        if(config.minLength)
+            this.minLength = config.minLength;
+
+        console.log(this)
     }
+    //unchangeable variables
+    defaultStep: number = 10;
+    defaultLength: number = 180;
+    defaultWidth: number = 25;
+    private minLength: number = 10;
+    private maxLength: number = 1280;
+
     score: number = 0;
     posX: number = -1; //will be assigned when game is created
     posY: number = -1;
-    step: number = 10;
-    length: number = 180;
-    width: number = 25;
+    step: number;
+    length: number;
+    width: number;
 
+    //add or substract length within min and max length bounds
+    public addSubLength(increment: number): void {
+        this.length +=increment;
+        if(this.length >this.maxLength)
+            this.length =this.maxLength
+        else if(this.length <this.minLength)
+            this.length =this.minLength
+    }
+
+    //add or substract from score 0 is smallest value
+    public addSubScore(increment: number) {
+        this.score +=increment;
+        if(this.score < 0)
+            this.score = 0;
+    }
 }

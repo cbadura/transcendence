@@ -1,8 +1,9 @@
-import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "../RenderInfo";
+import { GameRenderInfo } from "../RenderInfo";
 import { GameBall } from "../GameBall";
 import { GamePaddle } from "../GamePaddle";
-import { PongGameConfig, defaultConfig, specialConfig } from "../PongGameConfig";
+import { PongGameConfig } from "../PongGameConfig";
 import { APowerUp } from "../PowerUps/APowerUp";
+import { AGameEffect } from "../gameEffects/AGameEffect";
 
 export abstract class APongGame {
     constructor(protected config: PongGameConfig) {
@@ -16,9 +17,10 @@ export abstract class APongGame {
             this.gameBalls.push(new GameBall(config.canvas,config.balls[i]));
         }
     }
-    powerUps: APowerUp[] = []
-    gameBalls: GameBall[] = [];
     userPaddles: GamePaddle[] = [];
+    gameBalls: GameBall[] = [];
+    powerUps: APowerUp[] = [];
+    gameEffects: AGameEffect[] = [];
     private gameOver: boolean = false;
     hits : number = 0;
 

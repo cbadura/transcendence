@@ -1,7 +1,8 @@
 import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "../RenderInfo";
 import { PongGameConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
-import { APowerUp, PowerUpDummy } from "../PowerUps/APowerUp";
+import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
+import { PUIncreasePaddleLength } from "../PowerUps/PUIncreasePaddleLength";
 
 export class SpecialPongGame extends APongGame {
     private scaleMult = 0.5
@@ -20,7 +21,7 @@ export class SpecialPongGame extends APongGame {
         // for (let i = 30; i < config.canvas.width; i+=60) {
         //     this.powerUps.push(new PowerUpDummy(640+320,i))   
         // }
-        this.powerUps.push(new PowerUpDummy(640+320,350))   
+        this.powerUps.push(new PUIncreasePaddleLength(this,640+320,350))   
     }
 
     gameLoop(): void {
@@ -36,31 +37,27 @@ export class SpecialPongGame extends APongGame {
 
     }
 
-    UpdateEffects(){
-        //apply effects
-            
-         //cleanup effects
+
+
+    private UpdatePeddles(){
+        // for (let i = 0; i < this.userPaddles.length; i++) {
+        //     this.userPaddles[i].length += this.scaleMult;
+        //     if(this.userPaddles[i].length > this.maxPaddleScale){
+        //         this.scaleMult *= -1;
+        //     }
+        //     else if(this.userPaddles[i].length < this.minPaddleScale){
+        //         this.scaleMult *= -1;
+        //     }
+        // } 
     }
 
-    UpdatePeddles(){
-        for (let i = 0; i < this.userPaddles.length; i++) {
-            this.userPaddles[i].length += this.scaleMult;
-            if(this.userPaddles[i].length > this.maxPaddleScale){
-                this.scaleMult *= -1;
-            }
-            else if(this.userPaddles[i].length < this.minPaddleScale){
-                this.scaleMult *= -1;
-            }
-        }
-    }
-
-    UpdateBalls(){
+    private UpdateBalls(){
         for (let i = 0; i < this.gameBalls.length; i++) {
             this.gameBalls[i].updatePosition(this);
         }
     }
 
-    UpdatePowerUps(){
+    private UpdatePowerUps(){
         //remove consumed.
         this.powerUps = this.powerUps.filter((powerup)=> powerup.isConsumed == false)
         // console.log('NUMBER OF POWERUPS = ',this.powerUps.length)
@@ -75,13 +72,22 @@ export class SpecialPongGame extends APongGame {
             this.prevPeriodTimeStamp = this.getNewDate()
 
             for (let i = this.powerUps.length; i < this.maxPowerUps; i++) {
-                this.powerUps.push(new PowerUpDummy(640+320,350))
+                this.powerUps.push(new PUIncreasePaddleLength(this,640+320,350))
             }
         }
     }
 
+    private UpdateEffects() {
+        //apply effects
+        for (let i = 0; i < this.gameEffects.length; i++) {
+            this.gameEffects[i].applyEffect();            
+        }
+         //cleanup effects
+        this.gameEffects = this.gameEffects.filter((effect)=> effect.completed == false);
+    }
 
-    getNewDate(): number{
+
+    private getNewDate(): number{
         let currDate = new Date();
         currDate.setSeconds(currDate.getSeconds() + this.powerUpRespawnTimer)
         return currDate.getTime();

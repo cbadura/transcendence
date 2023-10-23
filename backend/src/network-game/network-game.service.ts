@@ -258,7 +258,7 @@ export class NetworkGameService {
           for (let i = 0; i < this.gameRooms.length; i++) {
               if( this.gameRooms[i] != null) {
                 if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
-                  for (let j = 0; j < this.gameRooms[i].clients.length; i++) {
+                  for (let j = 0; j < this.gameRooms[i]?.clients?.length; i++) {
                     if(this.gameRooms[i].clients[j] != null){
                       this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                       this.gameRooms[i].clients[j].room_id = -1;
