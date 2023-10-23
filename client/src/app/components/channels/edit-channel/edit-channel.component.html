@@ -36,9 +36,6 @@
 		</div>
 	</div>
 
-	<!-- Popup -->
-	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"></tcd-user-search>
-
 	<!-- Members -->
 	<div *ngIf="!emptyChannel && channelMembers.length > 0"  class="w-full flex flex-col gap-2">
 		<div class="w-full flex items-center justify-between">
@@ -48,6 +45,19 @@
 		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
 			<div *ngFor="let user of channelMembers">
 				<tcd-profile-card [kick]="kick" [ban]="ban" [mute]="mute" [makeAdmin]="makeAdmin" [user]="user"></tcd-profile-card>
+			</div>
+		</div>
+	</div>
+
+	<!-- Popup -->
+	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"></tcd-user-search>
+
+	<!-- Invited users -->
+	<div *ngIf="invitedUsers.length > 0"  class="w-full flex flex-col gap-2">
+		<label class="font-bold " for="name">Invited users</label>
+		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+			<div *ngFor="let user of invitedUsers">
+				<tcd-profile-card [user]="user"></tcd-profile-card>
 			</div>
 		</div>
 	</div>

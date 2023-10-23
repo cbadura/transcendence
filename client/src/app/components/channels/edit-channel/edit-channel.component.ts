@@ -25,7 +25,8 @@ export class EditChannelComponent implements OnInit {
   private oldName: string = '';
   public tempChannel!: Channel;
   public tempPassword!: string;
-  public tempUserChanges!: [{ id: number; change: string }];
+	public tempUserChanges!: [{ id: number; change: string }];
+	public invitedUsers!: User[];
   public popup: boolean = false;
 
   constructor(
@@ -137,7 +138,8 @@ export class EditChannelComponent implements OnInit {
   onUserSelected(user: User) {
     console.log('Selected User:', user);
     this.closeUserPopup();
-    this.editTempUserChanges(user.id, 'invite');
+	  this.editTempUserChanges(user.id, 'invite');
+	  this.invitedUsers.push(user);
   }
 
   openUserPopup() {
