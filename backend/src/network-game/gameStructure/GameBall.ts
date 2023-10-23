@@ -2,6 +2,7 @@ import { APongGame } from "./APongGame";
 import { BallRenderInfo } from "./RenderInfo"
 import { GamePaddle } from "./GamePaddle";
 import { BallConfig,GameBoardConfig } from "./PongGameConfig";
+import { APowerUp } from "./PowerUps/APowerUp";
 
 
 export class GameBall {
@@ -17,31 +18,39 @@ export class GameBall {
     private posY: number = this.config.defaultPosY;
     private speed: number = this.config.defaultSpeed;
     private ballRadius: number = this.config.defaultRadius * this.config.defaultSize;
+    private ownerID : number = -1 //this indicates who last the ball
+    private MaxSpeed: number = 10;
 
     updatePosition(game: APongGame) {
         this.posX += this.dirX * this.speed;
         this.posY += this.dirY * this.speed;
 
+
+        this.checkPowerUpCollision(game.powerUps)
+
         if (this.hitVerticalWall()) {
-            console.log('Hit vertical Wall')
+            // console.log('Hit vertical Wall')
             this.dirY *= -1;
         }
-        const targetPaddle = game.userPaddles[this.getCourtHalfFromPosition(this.posX)]
+        const paddleID = this.getCourtHalfFromPosition(this.posX)
+        const targetPaddle = game.userPaddles[paddleID]
         if(this.hitPaddle(targetPaddle)){
-            console.log(this.getCourtHalfFromPosition(this.posX) === 0 ? 'left Court' : 'right court')
+            this.ownerID = paddleID;
+            // console.log(this.getCourtHalfFromPosition(this.posX) === 0 ? 'left Court' : 'right court')
+
             //get value on paddle from -1(start) to 1(end)
-            console.log(`DEFAULT DIR [${this.config.defaultDirX},${this.config.defaultDirY}]`)
+            // console.log(`DEFAULT DIR [${this.config.defaultDirX},${this.config.defaultDirY}]`)
             const relativehitPoint = (this.posY - targetPaddle.posY) / (targetPaddle.length / 2 );
-            console.log("relativehitPoint",relativehitPoint);
+            // console.log("relativehitPoint",relativehitPoint);
             const ratio  = relativehitPoint * 1 //invert ratio
-            console.log("ratio",ratio);
-            console.log(`OLD Direction [${this.dirX},${this.dirY}]`)
+            // console.log("ratio",ratio);
+            // console.log(`OLD Direction [${this.dirX},${this.dirY}]`)
             // this.dirY += this.dirY * ratio;
             // if(this.dirY == 0){
             //     this.dirY = 0.5;
             // }
             this.dirX *= -1;
-            console.log(`NEW Direction [${this.dirX},${this.dirY}]`)
+            // console.log(`NEW Direction [${this.dirX},${this.dirY}]`)
             //for now i decided to not do anything. So no control to the player
             // this.dirY = this.getBouncingAngle(targetPaddle); 
             this.increaseBallSpeed();
@@ -60,7 +69,8 @@ export class GameBall {
     }
 
     increaseBallSpeed(){
-        this.speed += 0.2;
+        if(this.speed < this.MaxSpeed)
+            this.speed += 0.2;
     }
 
 
@@ -71,6 +81,17 @@ export class GameBall {
         // const bounceAngle = this.gameConfig.ball.maxBounceAngle * relativehitPoint;
         return Math.sin(bounceAngle);
       }
+
+      checkPowerUpCollision(powerups: APowerUp[]) {
+        for (let i = 0; i < powerups.length; i++) {
+            const dist = Math.sqrt(Math.pow(this.posX - powerups[i].posX,2) + Math.pow(this.posY - powerups[i].posY,2))
+            if(dist < this.ballRadius + powerups[i].radius){
+                powerups[i].TriggerEffect(this.ownerID);
+            }
+        }
+
+    }
+
 
 
     hitVerticalWall(): boolean {

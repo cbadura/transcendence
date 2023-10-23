@@ -8,16 +8,17 @@
 		<!-- Ultimate -->
 		<tcd-game-mode class="w-full max-w-md" [mode]="'special'" (click)="startGame('special')"
 			[highLightColor]="highLightColor" [darkerColor]="darkerColor"></tcd-game-mode>
-	</div>
-
-	<!-- Loading -->
-	<div *ngIf="status === 'waiting'" class="flex flex-col items-center justify-center gap-4 w-full">
-		<div class="sm:w-full max-w-md aspect-square  w-2/3 relative ">
-			<img class="w-full spin absolute" src="assets/loading.svg" alt="loading">
-			<div class="w-full rounded-full aspect-square" [ngStyle]="{ 'background-color': darkerColor }"></div>
+			<!-- added by Jean, sorry for the uglyness -->
+			<tcd-custom-button [buttonText]="'Training'" (click)="startTrainingGame()" [isBlack]="true"></tcd-custom-button>
 		</div>
-		<tcd-custom-button [buttonText]="'Leave match'" (click)="leaveQueue()" [isBlack]="true"></tcd-custom-button>
-	</div>
+		<!-- Loading -->
+		<div *ngIf="status === 'waiting'" class="flex flex-col items-center justify-center gap-4 w-full">
+			<div class="sm:w-full max-w-md aspect-square  w-2/3 relative ">
+				<img class="w-full spin absolute" src="assets/loading.svg" alt="loading">
+				<div class="w-full rounded-full aspect-square" [ngStyle]="{ 'background-color': darkerColor }"></div>
+			</div>
+			<tcd-custom-button [buttonText]="'Leave match'" (click)="leaveQueue()" [isBlack]="true"></tcd-custom-button>
+		</div>
 
 	<!-- Aborted -->
 	<div *ngIf="status === 'aborted'" class="flex flex-col items-center">
