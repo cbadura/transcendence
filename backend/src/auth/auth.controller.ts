@@ -25,6 +25,12 @@ export class AuthController {
     return req.user;
   }
 
+  @Get('profile')
+  @UseGuards(jwtAuthGuard)
+  profile(@Req() req: Request) {
+    return req.user;
+  }
+
   @Get('logout')
   logout() {}
 }

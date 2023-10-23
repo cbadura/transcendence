@@ -11,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly userService: UserService,
     ) {
     super({
-      jwtFromRequest: ExtractJwt.fromUrlQueryParameter('userId'),
+      jwtFromRequest: ExtractJwt.fromUrlQueryParameter('token'),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     })
