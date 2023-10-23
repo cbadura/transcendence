@@ -15,13 +15,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async ftValidateUser(ftid: number, username: string) {
+  async ftValidateUser(ftid: number, username: string, avatar: string) {
     // const user: User = await this.userRepo.findOne({where: {ftid: id}});
     const user: User = await this.userService.getUserFromftid(ftid);
     if (user) return user;
     const newUser = new CreateUserDto;
-    newUser.name = username;
+    // newUser.name = username;
     newUser.ftid = ftid;
+    newUser.avatar = avatar;
     return this.userService.createUser(newUser);
   }
 

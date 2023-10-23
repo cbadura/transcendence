@@ -14,7 +14,7 @@ export class User {
   @Column({nullable: true})
   tfa: boolean;
 
-  @Column()
+  @Column({nullable: true}) //set null for auth test
   name: string;
 
   @Column({ nullable: false })

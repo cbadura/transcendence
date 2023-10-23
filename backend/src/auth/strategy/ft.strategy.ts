@@ -27,8 +27,10 @@ export class ftStrategy extends PassportStrategy(Strategy) {
   ) {
     // console.log(accessToken);
     // console.log(refreshToken);
-    const {id, username} = profile;
-    const user = await this.authService.ftValidateUser(id, username);
+    const {id, username, _json} = profile;
+    const avatar = _json['image']['versions']['small'];
+    console.log(avatar);
+    const user = await this.authService.ftValidateUser(id, username, avatar);
     // console.log(user);
     return cb(null, user);
     // return id;
