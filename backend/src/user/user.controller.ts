@@ -52,7 +52,7 @@ export class UserController {
     ) {
 
     // const baseUrl = request.protocol + '://' + request.get('host');
-    const userProfileImageURL = `/users/profilepic/${file.filename}`
+    const userProfileImageURL = `http://localhost:3000/users/profilepic/${file.filename}`
 
     let updateDTO = new UpdateUserDto();
     console.log('successfully uploaded file to: ',userProfileImageURL);

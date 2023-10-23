@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Req } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { CreateMatchDto } from './dto/create-match.dto';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 @Controller('match')
 export class MatchController {
