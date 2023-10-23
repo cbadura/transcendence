@@ -2,10 +2,10 @@
     <ul>
         <li *ngFor="let user of users | sortByScore">
             <div class="flex items-center gap-2">
-                <tcd-profile-pic [profilePic]="user.avatar"></tcd-profile-pic>
+                <tcd-profile-pic [profilePic]="user.avatar" [size]="'8rem'"></tcd-profile-pic>
                 <div class="">
                     <h2>{{ user.name }}</h2>
-                    <h2>wins: {{ user.wins }}</h2>
+                    <h2>level: {{ user.level }}</h2>
                     <p *ngIf="user.color">
                         color: {{ user.color }}
                     </p>
