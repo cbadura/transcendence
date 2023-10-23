@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 
@@ -29,7 +31,7 @@ export class CreateProfileComponent implements OnInit {
   ];
   imageData: { blobUrl: string; filePath: string }[] = [];
 
-  constructor(
+  constructor(private router: Router,
     private userDataService: UserDataService,
     private location: Location
   ) {
@@ -81,8 +83,8 @@ export class CreateProfileComponent implements OnInit {
           window.alert('Error editing user: ' + JSON.stringify(error));
         }
       );
-    await delay(50);
-    this.goBack();
+	  await delay(50);
+	  this.router.navigate(['/profile']);
   };
 
   createQuickUser = async () => {
