@@ -32,7 +32,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
       (channels) => {
         this.serverChannels = channels;
         console.log('SERVER CHANNELS', this.serverChannels);
-        this.selectChannel('My channels');
+         this.selectChannel('My channels');
       }
     );
    
@@ -58,7 +58,12 @@ export class ChannelsComponent implements OnInit, OnDestroy {
     else if (selectedPage === 'My channels') {
       this.ownChannels = this.serverChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.serverChannels.filter(channel => channel.role === EUserRole.ADMIN);
-    }
+	}
+	else if (selectedPage === 'DMs') {
+		this.filteredChannels = [];
+	}
+	  
+	  console.log('FILTERED CHANNELS', this.filteredChannels);
   }
 
   ngOnDestroy(): void {

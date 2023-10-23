@@ -13,6 +13,9 @@ export class Match{
     @Column()
     reason: 'score' | 'disconnect';
 
+    @Column()
+    matchType: 'default' | 'special';
+
     @OneToMany(()=>MatchUser,(matchUser)=>matchUser.match, {
         cascade: ['insert'],
     })

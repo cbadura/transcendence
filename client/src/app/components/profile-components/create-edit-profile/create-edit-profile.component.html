@@ -1,76 +1,67 @@
-<section class="flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto pr-4 pl-4 h-full-header">
-  
-  <!-- Profile picture -->
-  <tcd-profile-pic *ngIf="this.tempUser.avatar.length > 1"
-    [profilePic]="myUser.avatar">
-  </tcd-profile-pic>
+<section
+	class="flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto pr-4 pl-4 h-full-header gap-4">
 
-  <p *ngIf="this.tempUser.avatar.length < 2">Upload a picture, or one of these avatars will be chosen for you</p>
+	<!-- Profile picture -->
+
+	<!-- <p *ngIf="this.tempUser.avatar.length < 2">Upload a picture, or one of these avatars will be chosen for you</p> -->
+
 	<!-- Edit picture section -->
 	<div class="flex justify-center items-center w-full space-x-5">
-    <div *ngIf="this.tempUser.avatar.length < 2" class="image-row">
-      <img 
-        class="border border-black w-20 aspect-square transition-all rounded-lg"
-        *ngFor="let image of imageData"
-          [src]="image.blobUrl"
-          alt="Profile Picture">
-    </div>
+		<tcd-profile-pic *ngIf="this.tempUser.avatar.length > 1" [profilePic]="myUser.avatar">
+		</tcd-profile-pic>
+		<div *ngIf="this.tempUser.avatar.length < 2" class="image-row">
+			<img class="border border-black w-20 aspect-square transition-all rounded-lg"
+				*ngFor="let image of imageData" [src]="image.blobUrl" alt="Profile Picture">
+		</div>
 
-    <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
-    <tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button>
-    <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
-  </div>
+		<input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
+		<tcd-custom-button [buttonText]="'Upload new picture'" (click)="fileInput.click()"> </tcd-custom-button>
+		<tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
+	</div>
 
-  <!-- Edit name section -->
-  <div class="w-full flex flex-col">
-    <label class="font-bold" for="name">Name</label>
-    <input
-      class="p-2 border border-black rounded-full bg-transparent outline-none"
-      name="name"
-      type="text"
-      [(ngModel)]="tempUserName"
-      placeholder="{{ tempUser.name }}"
-    />
-  </div>
+	<!-- Edit name section -->
+	<div class="w-full flex flex-col">
+		<label class="font-bold mb-2" for="name">* Name</label>
+		<input class="p-2 border border-black rounded-full bg-transparent outline-none" name="name" type="text"
+			[(ngModel)]="tempUserName" placeholder="{{ tempUser.name }}" />
+	</div>
 
-  <!-- Edit color section -->
-  <div class="w-full flex flex-col">
-    <label class="font-bold" for="color">Color</label>
-    <div class="flex">
-      <div
-        *ngFor="let color of availableColors"
-        [ngStyle]="{ 'background-color': color }"
-        [class.border-4]="color == tempColor"
-        (click)="editColor(color)"
-        class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
-      ></div>
-    </div>
-  </div>
+	<!-- Edit color section -->
+	<div class="w-full flex flex-col">
+		<label class="font-bold mb-2" for="color">* Color</label>
+		<div class="flex gap-2">
+			<div *ngFor="let color of availableColors" [ngStyle]="{ 'background-color': color }"
+				[class.border-4]="color == tempColor" (click)="editColor(color)"
+				class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95">
+			</div>
+		</div>
+	</div>
 
-  <!-- Create/edit user -->
-  <div class="w-full flex justify-end">
-    <tcd-custom-button
-      [buttonText]="'Save changes'"
-      [onClick]="createOrEditUser"
-      [isBlack]="true"
-    ></tcd-custom-button>
-  </div>
+	<!-- Create/edit user -->
+	<div class="w-full flex justify-end">
+		<tcd-custom-button [buttonText]="'Save changes'" [onClick]="createOrEditUser"
+			[isBlack]="true"></tcd-custom-button>
+	</div>
 
-  <!-- Create/edit user -->
-  <div class="w-full flex justify-end">
+	<!-- Create/edit user -->
+	<!-- <div class="w-full flex justify-end">
     <tcd-custom-button
       [buttonText]="'Go back'"
       [isBlack]="true"
       (click)="goBack()"
     ></tcd-custom-button>
-  </div>
+  </div> -->
 
-  <!--Test user request-->
-  <div class="w-full flex justify-end">
-    <tcd-custom-button
-      [buttonText]="'Get users'"
-      [onClick]="getUsers.bind(this)"
-      [isBlack]="true"
-    ></tcd-custom-button>
-  </div>
+	<!--Test user request-->
+	<div class="w-full flex justify-end">
+		<tcd-custom-button [buttonText]="'Get users'" [onClick]="getUsers.bind(this)"
+			[isBlack]="true"></tcd-custom-button>
+	</div>
+
+	<div class="w-full flex justify-end">
+		<tcd-custom-button [buttonText]="'Create quick user'" (click)="createQuickUser()"
+			[isBlack]="true"></tcd-custom-button>
+	</div>
+
+
 </section>

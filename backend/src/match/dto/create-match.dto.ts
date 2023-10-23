@@ -19,16 +19,20 @@ class MatchEndReason{
   @IsNotEmpty()
   reason: 'score' | 'disconnect';
 
+  
   @IsOptional()
   disconnected_user_id: number;
 }
 
 export class CreateMatchDto {
-
+  
   //this is necesarry to detemine who won if a user disconnected, so even a 0:4 match can be won if the player with 4 points leaves
   @IsNotEmpty()
   matchEndReason: MatchEndReason;
-
+  
+  @IsNotEmpty()
+  matchType: 'default' | 'special';
+  
     @IsArray()
   @IsNotEmpty()
   @ArrayMinSize(2)

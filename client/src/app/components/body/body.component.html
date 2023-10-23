@@ -1,6 +1,6 @@
 <div [ngStyle]="{'background-color': myUser.color}" class="font-Inter flex justify-center h-fit">
     <div class="w-full max-w-screen-lg flex flex-col">
-        <tcd-header></tcd-header>
+        <tcd-header [noUser]="noUser"></tcd-header>
         <router-outlet></router-outlet>
     </div>
 </div>

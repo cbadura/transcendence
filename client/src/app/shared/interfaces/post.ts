@@ -1,5 +1,3 @@
-import { User } from "./user";
-
 export interface Post {
     senderId?: number;
     senderName?: string;
@@ -7,5 +5,5 @@ export interface Post {
     senderAvatar: string;
     message: string;
     channel?: string;
-    timestamp: string | null;
+    timestamp: string;
 }

@@ -10,5 +10,6 @@ export interface Channel {
     banExpTime?: number;
     muteExpTime?: number;
     usersIds: number[];
-    password?: string
+	password?: string;
+	adminIds: number[];
 }

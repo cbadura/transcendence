@@ -7,6 +7,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { User } from '../shared/interfaces/user';
 import { Post } from '../shared/interfaces/post';
 import { Channel } from '../shared/chat/Channel';
+import { ChannelService } from './channel.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,9 @@ export class ChatHistoryService {
   ];
   eventSubject = new Subject<{ eventType: string; data: any}>();
 
-  constructor(public datepipe: DatePipe,
+  constructor(
+    public channelService: ChannelService,
+    public datepipe: DatePipe,
     @Inject('chatSocket') private chatSocket: Socket) {}
 
   /* Optional approach for namespaces
@@ -62,14 +65,7 @@ export class ChatHistoryService {
 
   /* SOCKET.IO functions */
   sendMessage(post: Post) {
-    //console.log(post.message);
-    //post.channel = 'new channel';
-
-    let newPost = {
-      message: 'hiiii',
-      channel: 'new channel',
-    }
-    this.chatSocket.emit('message', newPost);
+    this.chatSocket.emit('message', post);
   }
   getMessage() {
     let message = this.chatSocket.fromEvent('message')
@@ -77,6 +73,7 @@ export class ChatHistoryService {
       console.log('MSG', msg);
       return msg;
     }));
+    
     return message;
   }
 

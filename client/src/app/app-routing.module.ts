@@ -10,19 +10,21 @@ import { CreateProfileComponent } from './components/profile-components/create-e
 import { HomeComponent } from './components/home/home.component';
 import { ChannelsComponent } from './components/channels/channels.component';
 import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
-
+import { SigninComponent } from './components/signin/signin.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'game', component: GameComponent },
   { path: 'leaderboard', component: LeaderboardComponent },
   { path: 'chat', component: ChatComponent },
+  { path: 'chat/:channel', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   // { path: 'edit-profile', component: EditProfileComponent },
   { path: 'create-profile', component: CreateProfileComponent },
   { path: 'channels', component: ChannelsComponent },
   { path: 'channels/edit/:channel', component: EditChannelComponent },
-  { path: 'channels/edit', component: EditChannelComponent },
+	{ path: 'channels/edit', component: EditChannelComponent },
+	{ path: 'signin', component: SigninComponent },
   // { path: '**', redirectTo: '' },
 ];
 
