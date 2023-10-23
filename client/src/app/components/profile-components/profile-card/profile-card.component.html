@@ -16,6 +16,8 @@
 		<tcd-custom-button *ngIf="kick" [isDisabled]="isDisabled('kick')" [buttonText]="'kick'" (click)="changeSelected($event,'kick')" [isBlack]="true"></tcd-custom-button>
 		<tcd-custom-button *ngIf="ban" [isDisabled]="isDisabled('ban')" [buttonText]="'ban'" (click)="changeSelected($event,'ban')" [isBlack]="true"></tcd-custom-button>
 		<tcd-custom-button *ngIf="mute" [isDisabled]="isDisabled('mute')"  [buttonText]="'mute'" (click)="changeSelected($event,'mute')" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button *ngIf="disinvite" [isDisabled]="isDisabled('disinvite')"  [buttonText]="'disinvite'" (click)="changeSelected($event,'disinvite')" [isBlack]="true"></tcd-custom-button>
+
 	</div>
 
 
