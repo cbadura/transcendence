@@ -1,1 +1,16 @@
-<p>token works!</p>
+<div class=" h-full-header">
+
+	<!-- Loading -->
+	<div *ngIf="status === 'loading'" class="flex flex-col items-center justify-center gap-4 w-full">
+		<div class="sm:w-full max-w-md aspect-square  w-2/3 relative ">
+			<img class="w-full spin absolute" src="assets/loading.svg" alt="loading">
+			<div class="w-full rounded-full aspect-square" [ngStyle]="{ 'background-color': '#ceb0e6' }"></div>
+		</div>
+	</div>
+
+	<!-- Error -->
+	<div *ngIf="status === 'error'" class="h-full flex flex-col justify-center items-center gap-4">
+		<h1 class="text-4xl">Something went wrong...</h1>
+		<tcd-custom-button [customRoute]="'/signin'" [isBlack]="true" [buttonText]="'Take me back'"></tcd-custom-button>
+	</div>
+</div>
