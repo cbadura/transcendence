@@ -1,0 +1,11 @@
+<div (click)="closePopup($event)" class="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 bg-black">
+	<div (click)="$event.stopPropagation()" class="bg-zinc-800 rounded-3xl  p-4 shadow-md max-w-lg w-full flex flex-col gap-4">
+		<div class="flex">
+			<input [(ngModel)]="searchTerm" type="text" class=" default-input w-full bg-zinc-900 text-white border-none"
+				placeholder="Search Users">
+			<tcd-chat-btn (click)="closeUserPopup()" [icon]="'featherX'" [white]="true"></tcd-chat-btn>
+		</div>
+		<tcd-profile-card *ngFor="let user of filteredUsers" [user]="user" (click)="selectUser(user)"></tcd-profile-card>
+		<div *ngIf="filteredUsers.length == 0 && searchTerm !== ''" class="text-center text-white">No users found</div>
+	</div>
+</div>

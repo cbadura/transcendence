@@ -26,7 +26,7 @@
 	</div>
 
 	<!-- Admins -->
-	<div *ngIf="!newChannel && channelAdmins.length > 0" class="w-full flex flex-col gap-2">
+	<div *ngIf="!emptyChannel && channelAdmins.length > 0" class="w-full flex flex-col gap-2">
 		<label class="font-bold " for="name">Admins</label>
 		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
 			<div *ngFor="let admin of channelAdmins">
@@ -36,9 +36,15 @@
 		</div>
 	</div>
 
+	<!-- Popup -->
+	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"></tcd-user-search>
+
 	<!-- Members -->
-	<div *ngIf="!newChannel && channelMembers.length > 0"  class="w-full flex flex-col gap-2">
-		<label class="font-bold " for="name">Members</label>
+	<div *ngIf="!emptyChannel && channelMembers.length > 0"  class="w-full flex flex-col gap-2">
+		<div class="w-full flex items-center justify-between">
+			<label class="font-bold " for="name">Members</label>
+			<tcd-custom-button (click)="openUserPopup()" [buttonText]="'Add member'"></tcd-custom-button>
+		</div>
 		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
 			<div *ngFor="let user of channelMembers">
 				<tcd-profile-card [kick]="kick" [ban]="ban" [mute]="mute" [makeAdmin]="makeAdmin" [user]="user"></tcd-profile-card>

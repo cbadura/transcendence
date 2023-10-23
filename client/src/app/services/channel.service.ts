@@ -31,23 +31,26 @@ export class ChannelService {
   } */
 
   execActions(channel: Channel, userChanges: Change[]) {
-    userChanges.forEach((change: Change) => {
-      if (change.change === 'kick') {
-        this.kickUser(channel.name, change.id);
-      }
-      else if (change.change === 'ban') {
-        this.banUser(channel.name, change.id, 1000);
-      }
-      else if (change.change === 'mute') {
-        this.muteUser(channel.name, change.id, 1000);
-      }
-      else if (change.change === 'makeAdmin') {
-        this.addAdmin(channel.name, change.id);
-      }
-      else if (change.change === 'removeAdmin') {
-        this.removeAdmin(channel.name, change.id);
-      }
-    });
+	  userChanges.forEach((change: Change) => {
+		  if (change.change === 'kick') {
+			  this.kickUser(channel.name, change.id);
+		  }
+		  else if (change.change === 'ban') {
+			  this.banUser(channel.name, change.id, 1000);
+		  }
+		  else if (change.change === 'mute') {
+			  this.muteUser(channel.name, change.id, 1000);
+		  }
+		  else if (change.change === 'makeAdmin') {
+			  this.addAdmin(channel.name, change.id);
+		  }
+		  else if (change.change === 'removeAdmin') {
+			  this.removeAdmin(channel.name, change.id);
+		  }
+		  else if (change.change === 'invite') {
+			  this.inviteUser(channel.name, change.id);
+		  }
+	  });
   }
 
 
