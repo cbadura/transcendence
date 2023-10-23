@@ -1,8 +1,8 @@
-import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "./RenderInfo";
-import { GameBall } from "./GameBall";
-import { GamePaddle } from "./GamePaddle";
-import { PongGameConfig, defaultConfig, specialConfig } from "./PongGameConfig";
-import { APowerUp } from "./PowerUps/APowerUp";
+import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "../RenderInfo";
+import { GameBall } from "../GameBall";
+import { GamePaddle } from "../GamePaddle";
+import { PongGameConfig, defaultConfig, specialConfig } from "../PongGameConfig";
+import { APowerUp } from "../PowerUps/APowerUp";
 
 export abstract class APongGame {
     constructor(protected config: PongGameConfig) {

@@ -1,4 +1,4 @@
-import { APongGame } from "./APongGame";
+import { APongGame } from "./gameModes/APongGame";
 import { BallRenderInfo } from "./RenderInfo"
 import { GamePaddle } from "./GamePaddle";
 import { BallConfig,GameBoardConfig } from "./PongGameConfig";

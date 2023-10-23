@@ -1,7 +1,7 @@
-import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "./RenderInfo";
-import { PongGameConfig, specialConfig } from "./PongGameConfig";
+import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "../RenderInfo";
+import { PongGameConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
-import { APowerUp, PowerUpDummy } from "./PowerUps/APowerUp";
+import { APowerUp, PowerUpDummy } from "../PowerUps/APowerUp";
 
 export class SpecialPongGame extends APongGame {
     private scaleMult = 0.5
