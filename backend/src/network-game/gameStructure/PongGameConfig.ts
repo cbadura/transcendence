@@ -13,11 +13,8 @@ export const trainingGameConfig: PongGameConfig = {
     balls: [{
       defaultPosX: 1280 / 2,
       defaultPosY: 720 / 2,
-      defaultDirX: Math.floor(Math.random() * 2) === 0 ? 1 : -1,
-      defaultDirY: Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5,
-      // defaultDirY: 0, //temporary
-      // defaultDirY:  Math.floor(Math.random() * 2),
-      // defaultDirY:  0.1,
+      defaultDirX: -1,
+      defaultDirY: 0,
       defaultRadius: 20,
       defaultSize: 1.00, //not sure
       defaultSpeed: 5,

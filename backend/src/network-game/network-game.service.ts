@@ -18,6 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
+      // this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -254,6 +255,24 @@ export class NetworkGameService {
 
       monitorGameRooms(){
         const gameLoop = setInterval(()=>{
+          for (let i = 0; i < this.gameRooms.length; i++) {
+              if( this.gameRooms[i] != null) {
+                if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
+                  for (let j = 0; j < this.gameRooms[i].clients.length; i++) {
+                    if(this.gameRooms[i].clients[j] != null){
+                      this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
+                      this.gameRooms[i].clients[j].room_id = -1;
+                    }
+                  }
+                  this.gameRooms[i] = null;
+                }
+              }
+          }
+        },1000);
+      }
+
+      LogGameRooms(){
+        const gameLoop = setInterval(()=>{
           console.log(`---------- Connected Sockets----------`);
           this.printConnectedSockets();
           console.log(`---------- DEFAULT Queueing Sockets----------`);
@@ -273,25 +292,11 @@ export class NetworkGameService {
                 console.log(`Room [${i}] =`,this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
                 this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0]?.userId,'vs',this.gameRooms[i]?.clients[1]?.userId,
                 game.paddles[0].score,':',game.paddles[1].score);
-
-                if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
-                  if(this.gameRooms[i].clients[0] != null){
-                    this.gameRooms[i].clients[0].status = EUserStatus.ONLINE;
-                    this.gameRooms[i].clients[0].room_id = -1;
-                  }
-                  if(this.gameRooms[i].clients[1] != null){
-                    this.gameRooms[i].clients[1].status = EUserStatus.ONLINE;
-                    this.gameRooms[i].clients[1].room_id = -1;
-                  }
-                  console.log('Cleaning Up room with ID ',i);
-                  this.gameRooms[i] = null;
-                }
               }
 
           }
         },1000);
       }
-
 
       private getISocketUserFromSocket(client: Socket): IGameSocketUser | undefined{
         return this.clients.find((socketUser)=>socketUser.socket.id == client.id);
