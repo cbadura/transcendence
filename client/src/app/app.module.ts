@@ -40,9 +40,10 @@ import { ChannelsComponent } from './components/channels/channels.component';
 import { ChannelCardComponent } from './components/channels/channel-card/channel-card.component';
 import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
 import { ProfileCardComponent } from './components/profile-components/profile-card/profile-card.component';
-import { SigninComponent } from './components/signin/signin.component';
+import { SigninComponent } from './components/authentication/signin/signin.component';
 import { UserSearchComponent } from './components/shared-components/user-search/user-search.component';
 import { GameModeComponent } from './components/game/game-mode/game-mode.component';
+import { TokenComponent } from './components/authentication/token/token/token.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -80,7 +81,8 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ProfileCardComponent,
     SigninComponent,
 		UserSearchComponent,
-		GameModeComponent
+		GameModeComponent,
+  TokenComponent
   ],
   imports: [
     HttpClientModule,
