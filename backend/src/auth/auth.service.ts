@@ -20,7 +20,7 @@ export class AuthService {
     const user: User = await this.userService.getUserFromftid(ftid);
     if (user) return user;
     const newUser = new CreateUserDto;
-    // newUser.name = username;
+    newUser.name = username;
     newUser.ftid = ftid;
     newUser.avatar = avatar;
     return this.userService.createUser(newUser);
