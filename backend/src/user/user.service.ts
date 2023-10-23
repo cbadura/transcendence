@@ -7,6 +7,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Match } from 'src/entities/match.entity';
 import { MatchUser } from 'src/entities/match-user.entity';
 import { Relationship } from 'src/entities/relationship.entity';
+import { Socket } from 'socket.io';
+import { ISocketUser } from '../chat/chat.interfaces';
+import { EUserStatus } from '../network-game/interfaces/IGameSocketUser';
+import { UserStatusUpdateDto } from './dto/user-status-update.dto';
+import { EUserMessages } from './user.interface';
+import { WsException } from '@nestjs/websockets';
+import { UserNameUpdateDto } from './dto/user-name-update.dto';
+import { UserAvatarUpdateDto } from './dto/user-avatar-update.dto';
+import { UserColorUpdateDto } from './dto/user-color-update.dto';
 
 @Injectable()
 export class UserService {
@@ -17,6 +26,109 @@ export class UserService {
     @InjectRepository(Relationship) private relationshipRepository: Repository<Relationship>,
   ) {}
 
+  // ~~~~~~~
+  private clients: ISocketUser[] = [];
+
+  private getUserIdFromSocket(socket: Socket): number {
+    const user: ISocketUser = this.clients.find(
+      (client) => client.socket.id === socket.id,
+    );
+    if (!user) throw new WsException('Unexpected error');
+    return user.userId;
+  }
+  async handleConnection(socket: Socket, userId: number) {
+    if (isNaN(userId)) {
+      socket.emit('exception', 'Invalid user id');
+      socket.disconnect(true);
+      return;
+    }
+    // TODO  remove this check ^
+    //  add validation of token and extraction user id from it
+    if ((await this.getUser(userId)) == undefined) {
+      socket.emit('exception', "User doesn't exist"); // remove this exception and just disconnect (?)
+      socket.disconnect(true);
+      return;
+    }
+    const client: ISocketUser = {
+      socket,
+      userId: userId,
+    };
+    const statusUpdate: UserStatusUpdateDto = {
+      userId,
+      status: EUserStatus.ONLINE,
+    };
+    const isOnline: boolean = !!this.clients.find(
+      (client) => client.userId === userId,
+    );
+    this.clients.push(client);
+    if (!isOnline)
+      this.clients.forEach((client) => {
+        client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
+      });
+  }
+  handleDisconnect(client: Socket) {
+    const statusUpdate: UserStatusUpdateDto = {
+      userId: this.getUserIdFromSocket(client),
+      status: EUserStatus.OFFLINE,
+    };
+    const clientSockets: ISocketUser[] = this.clients.filter(
+      (client) => client.userId === statusUpdate.userId,
+    );
+    if (clientSockets.length === 1)
+      this.clients.forEach((client) => {
+        client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
+      });
+    this.clients = this.clients.filter(
+      (currentClient) => currentClient.socket.id !== client.id,
+    );
+  }
+
+  // Please add the call of it from function which handles user name changes.
+  // I couldn't find it (O.O)?
+  async notifyUserNameUpdate(userId: number) {
+    const user: User = await this.getUser(userId);
+    const userNameUpdate: UserNameUpdateDto = {
+      userId,
+      name: user.name,
+    };
+    this.clients.forEach((client) => {
+      client.socket.emit(EUserMessages.NAME_UPDATE, userNameUpdate);
+    });
+  }
+
+  notifyUserStatusUpdate(userId: number, status: EUserStatus) {
+    const statusUpdate: UserStatusUpdateDto = {
+      userId,
+      status,
+    };
+    this.clients.forEach((client) => {
+      client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
+    });
+  }
+
+  // Please add the call of it from function which handles user avatar changes.
+  // I couldn't find it either(O.O)?
+  notifyUserAvatarUpdate(userId: number, avatar: string) {
+    const userAvatarUpdate: UserAvatarUpdateDto = {
+      userId,
+      avatar,
+    };
+    this.clients.forEach((client) => {
+      client.socket.emit(EUserMessages.AVATAR_UPDATE, userAvatarUpdate);
+    });
+  }
+
+  // Please add the call of it from function which handles user color changes.
+  notifyUserColorUpdate(userId: number, color: string) {
+    const userColorUpdate: UserColorUpdateDto = {
+      userId,
+      color,
+    };
+    this.clients.forEach((client) => {
+      client.socket.emit(EUserMessages.COLOR_UPDATE, userColorUpdate);
+    });
+  }
+  // ~~~~~~~~
   async getUsers(): Promise<User[]> {
     return await this.userRepository.find();
   }
