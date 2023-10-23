@@ -1,5 +1,5 @@
-import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "./RenderInfo";
-import { PongGameConfig, defaultConfig } from "./PongGameConfig";
+import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "../RenderInfo";
+import { PongGameConfig, defaultConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
 
 export class DefaultPongGame extends APongGame {
