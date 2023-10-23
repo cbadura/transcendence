@@ -40,10 +40,7 @@ export class ProfileCardComponent implements OnInit {
 	}
 
 	isDisabled = (buttonType: string) => {
-		console.log('buttonType', buttonType);
-		console.log('this.selected', this.selected);
 		if (buttonType === this.selected || this.selected === 'none') return false;
 		else return true;
-	
 	}
 }

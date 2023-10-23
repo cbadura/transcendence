@@ -28,7 +28,7 @@ import { MessageBubbleComponent } from './components/chat/message-bubble/message
 import { MessageInfoComponent } from './components/chat/message-info/message-info.component';
 
 import { NgIconsModule } from '@ng-icons/core';
-import { featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare } from '@ng-icons/feather-icons';
+import { featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare, featherX } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
@@ -41,6 +41,7 @@ import { ChannelCardComponent } from './components/channels/channel-card/channel
 import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
 import { ProfileCardComponent } from './components/profile-components/profile-card/profile-card.component';
 import { SigninComponent } from './components/signin/signin.component';
+import { UserSearchComponent } from './components/shared-components/user-search/user-search.component';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -76,7 +77,8 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     ChannelCardComponent,
     EditChannelComponent,
     ProfileCardComponent,
-    SigninComponent
+    SigninComponent,
+    UserSearchComponent
   ],
   imports: [
     HttpClientModule,
@@ -84,7 +86,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
 		AppRoutingModule,
     FormsModule,
     ChatSocketModule,
-    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare }),
+    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare, featherX }),
   ],
   providers: [
     UserDataService,

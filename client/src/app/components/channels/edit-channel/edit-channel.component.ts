@@ -18,26 +18,15 @@ export class EditChannelComponent implements OnInit {
     EChannelMode.PRIVATE,
     EChannelMode.PROTECTED,
   ];
-  // public channel!: Channel;
-  public newChannel: boolean = false;
   private channel!: Channel;
-  private emptyChannel: boolean = false;
+  public emptyChannel: boolean = false;
   public channelAdmins: User[] = [];
   public channelMembers: User[] = [];
   private oldName: string = '';
-
   public tempChannel!: Channel;
   public tempPassword!: string;
-	public tempUserChanges!: [{ id: number; change: string }];
-  //   private dummyChannel: Channel = {
-  //     name: '',
-  //     mode: EChannelMode.PUBLIC,
-  //     role: EUserRole.OWNER,
-  //     isBanned: false,
-  //     isMuted: false,
-  //     usersIds: [1, 2, 3],
-  //     adminsIds: [2, 4, 6, 99],
-  //   };
+  public tempUserChanges!: [{ id: number; change: string }];
+  public popup: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,33 +37,32 @@ export class EditChannelComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
-      // This is a hack because I could not pass only the channel object
-      // I had to pass the channel property of the object as well
-      // Here I am extracting the channel property and assigning it to the channel object
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
       this.tempChannel = { ...this.channel };
       this.oldName = this.tempChannel.name;
       if (!this.tempChannel.name) {
-        console.log('EMPTY');
         this.emptyChannel = true;
-        this.newChannel = true;
-      } else {
-        console.log('NOT EMPTY');
-        this.newChannel = false;
       }
 
-      if (!this.newChannel) this.getMembers();
-	});
-	  	  this.tempUserChanges = [{ id: 0, change: '' }];
+      if (!this.emptyChannel) this.getMembers();
+    });
+    this.tempUserChanges = [{ id: 0, change: '' }];
   }
   selectMode(mode: EChannelMode) {
     this.tempChannel.mode = mode;
-    console.log(this.tempChannel);
   }
 
   handleClick() {
-    if (this.emptyChannel && this.tempChannel.name && this.tempChannel.mode) {
+    if (this.emptyChannel) {
+      if (
+        !this.tempChannel.name ||
+        !this.tempChannel.mode ||
+        (this.tempChannel.mode === EChannelMode.PROTECTED && !this.tempPassword)
+      ) {
+        window.alert('Please fill in all fields');
+        return;
+      }
       this.channelService.createChannel(this.tempChannel, this.tempPassword);
       console.log('PASSWORD', this.tempPassword);
       this.router.navigate(['/channels']);
@@ -117,32 +105,46 @@ export class EditChannelComponent implements OnInit {
       this.tempUserChanges.splice(index, 1);
     } else {
       this.tempUserChanges.push({ id: id, change: mode });
-	}
-	  console.log(this.tempUserChanges);
-  }
+    }
+    console.log(this.tempUserChanges);
+  };
 
   kick = (event: Event, user: User) => {
     event.stopPropagation();
-	this.editTempUserChanges(user.id, 'kick');
-  }
+    this.editTempUserChanges(user.id, 'kick');
+  };
 
   ban = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'ban');
-  }
+  };
 
   mute = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'mute');
-  }
+  };
 
   makeAdmin = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'makeAdmin');
-  }
+  };
 
   removeAdmin = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'removeAdmin');
+  };
+
+  onUserSelected(user: User) {
+    console.log('Selected User:', user);
+    this.closeUserPopup();
+    this.editTempUserChanges(user.id, 'invite');
+  }
+
+  openUserPopup() {
+    this.popup = true;
+  }
+
+  closeUserPopup() {
+    this.popup = false;
   }
 }
