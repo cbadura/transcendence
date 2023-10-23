@@ -18,7 +18,17 @@ import { HttpClient } from '@angular/common/http';
 		  (response: any) => {
 			const token = response.access_token;
 			if (token) {
-			  console.log('Token received:', token);
+				const url = `http://localhost:3000/auth/profile?token=${token}`;
+				this.http.get(url).subscribe(
+					(response: any) => {
+						console.log(response);
+					},
+					(error) => {
+						console.error('Error occurred while making the request:', error);
+					}
+				);
+			  console.log('Token received in the response:', token);
+			
 			} else {
 			  console.log('No token received in the response.');
 			}
