@@ -2,6 +2,7 @@ import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "./RenderInfo";
 import { GameBall } from "./GameBall";
 import { GamePaddle } from "./GamePaddle";
 import { PongGameConfig, defaultConfig, specialConfig } from "./PongGameConfig";
+import { APowerUp } from "./PowerUps/APowerUp";
 
 export abstract class APongGame {
     constructor(protected config: PongGameConfig) {
@@ -15,6 +16,7 @@ export abstract class APongGame {
             this.gameBalls.push(new GameBall(config.canvas,config.balls[i]));
         }
     }
+    powerUps: APowerUp[] = []
     gameBalls: GameBall[] = [];
     userPaddles: GamePaddle[] = [];
     private gameOver: boolean = false;
@@ -55,97 +57,10 @@ export abstract class APongGame {
 
 
     abstract gameLoop(): void 
-    abstract getGameState(): any
+    abstract getGameState(): GameRenderInfo
 
     getConfig(): any{
         return this.config;
     }
 }
 
-export class DefaultPongGame extends APongGame {
-    constructor(config?: PongGameConfig) {
-        console.log("in constructor of DefaultPongGame")
-        if(config == null)
-            config = defaultConfig;
-        super(config);
-    }
-    gameLoop(): void {
-        for (let i = 0; i < this.gameBalls.length; i++) {
-            this.gameBalls[i].updatePosition(this);
-        }
-        if (this.checkGameOver()) {
-            this.setGameOver(true);
-        }
-    }
-
-    getGameState(): any {
-
-        let renderInfo: GameRenderInfo = new GameRenderInfo();
-        renderInfo.canvas = this.config.canvas;
-        for (let i = 0; i < this.userPaddles.length; i++) {
-            renderInfo.paddles.push(new PaddleRenderInfo())
-            renderInfo.paddles[i] = this.userPaddles[i];
-        }
-        renderInfo.gameOver = this.getGameOver();
-        renderInfo.hits = this.hits;
-        for (let i = 0; i < this.gameBalls.length; i++) {
-            renderInfo.balls.push(new BallRenderInfo())
-            renderInfo.balls[i] = this.gameBalls[i].getBallState()
-        }
-        return renderInfo;
-    }
-
-}
-
-
-export class SpecialPongGame extends APongGame {
-    constructor(config?: PongGameConfig) {
-        console.log("in constructor of SpecialPongGame")
-        if(config == null)
-            config = specialConfig;
-        super(config);
-    }
-    private scaleMult = 0.5
-    private maxPaddleScale = 200;
-    private minPaddleScale = 50;
-
-
-    gameLoop(): void {
-        for (let i = 0; i < this.userPaddles.length; i++) {
-            this.userPaddles[i].length += this.scaleMult;
-            if(this.userPaddles[i].length > this.maxPaddleScale){
-                this.scaleMult *= -1;
-            }
-            else if(this.userPaddles[i].length < this.minPaddleScale){
-                this.scaleMult *= -1;
-            }
-            
-        }
-
-
-        for (let i = 0; i < this.gameBalls.length; i++) {
-            this.gameBalls[i].updatePosition(this);
-        }
-        if (this.checkGameOver()) {
-            this.setGameOver(true);
-        }
-    }
-
-    getGameState(): any {
-
-        let renderInfo: GameRenderInfo = new GameRenderInfo();
-        renderInfo.canvas = this.config.canvas;
-        for (let i = 0; i < this.userPaddles.length; i++) {
-            renderInfo.paddles.push(new PaddleRenderInfo())
-            renderInfo.paddles[i] = this.userPaddles[i];
-        }
-        renderInfo.gameOver = this.getGameOver();
-        renderInfo.hits = this.hits;
-        for (let i = 0; i < this.gameBalls.length; i++) {
-            renderInfo.balls.push(new BallRenderInfo())
-            renderInfo.balls[i] = this.gameBalls[i].getBallState()
-        }
-        return renderInfo;
-    }
-
-}

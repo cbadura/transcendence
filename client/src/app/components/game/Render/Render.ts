@@ -1,7 +1,7 @@
 import { User } from 'src/app/shared/interfaces/user';
 import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/functions/color';
 import { Rectangle } from './Rectangle';
-import { BallRenderInfo, GameRenderInfo } from 'src/app/components/game/Render/GameRenderInfo';
+import { BallRenderInfo, GameRenderInfo, PowerUpRenderInfo } from 'src/app/components/game/Render/GameRenderInfo';
 
 export class Render {
   private userColor: string;
@@ -18,7 +18,9 @@ export class Render {
     user2: User,
     private id: number
   ) {
-    this.initialFrame =gameRenderInfo;
+    this.initialFrame = gameRenderInfo;
+    console.log('USER COLOR',user1.id === id ? user1.color : user2.color)
+    console.log(user1.id,id);
     this.userColor = user1.id === id ? user1.color : user2.color;
     this.darkerColor = LightenDarkenColor(this.userColor, -10);
     console.log('RENDER INFO',gameRenderInfo);
@@ -50,15 +52,23 @@ export class Render {
       this.paddle2.draw(this.gameRenderInfo.paddles[1],frame.canvas);
       this.drawName(this.paddle1.user, this.gameRenderInfo.paddles[0].posX - 30,this.gameRenderInfo.paddles[0].posY,  Math.PI / 2)
       this.drawName(this.paddle2.user, this.gameRenderInfo.paddles[1].posX + 30,this.gameRenderInfo.paddles[1].posY,- Math.PI /2)
+      for (let i = 0; i < this.gameRenderInfo.powerups.length; i++) {
+        this.drawPowerUp(this.gameRenderInfo.powerups[i])
+      }
       for (let i = 0; i < this.gameRenderInfo.balls.length; i++) {
         this.drawBall(this.gameRenderInfo.balls[i])
       }
     }
   }
 
+  drawPowerUp(powerup: PowerUpRenderInfo){
+    this.drawCircle(powerup.posX, powerup.posY, powerup.radius, '#00000000', 'black',2);
+    this.drawString(powerup.posX, powerup.posY,'black','bold 25pt Inter',powerup.type[0])
+  }
+
   drawName(user:User,x:number,y:number,rotation: number = 0) {
     this.ctx.font = 'bold 25pt Inter';
-    this.ctx.fillStyle = SaturatedColor(user.color, 20);;
+    this.ctx.fillStyle = SaturatedColor(user.color, 20);
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.save();
@@ -170,8 +180,11 @@ export class Render {
     y: number,
     radius: number,
     fillColor: string,
-    strokeColor: string
+    strokeColor: string,
+    strokeWidth?: number,
   ) {
+    if(strokeWidth)
+      this.ctx.lineWidth = strokeWidth;
     this.ctx.beginPath();
     this.ctx.arc(x, y, radius, 0, Math.PI * 2);
     this.ctx.closePath();

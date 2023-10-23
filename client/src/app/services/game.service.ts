@@ -22,6 +22,10 @@ export class GameService {
     this.gameSocket?.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {gameType: gameType}) //temp fix the create same behavior as before
   }
 
+  CreateTrainingMatch(gameType: 'default' | 'special'){
+	this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {gameType: gameType,recipient_user_id: -1})
+  }
+
   //this function should be called if a use is queueing but switches to another tab. Or we have explicitly a button to stop queueing
   leaveQueue(){
     this.gameSocket?.emit(ESocketGameMessage.TRY_LEAVE_QUEUE)
