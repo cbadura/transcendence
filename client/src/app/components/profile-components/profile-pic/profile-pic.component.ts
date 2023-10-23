@@ -13,7 +13,7 @@ export class ProfilePicComponent {
   handleClick() {
     this.imageClick.emit();
   }
-	
+ 	
   loadFallbackImage() {
 	  this.profilePic = this.fallbackImageSrc;
 	  console.log('Fallback image loaded');
