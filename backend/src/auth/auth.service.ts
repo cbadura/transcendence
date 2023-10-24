@@ -110,7 +110,15 @@ export class AuthService {
     console.log(body);
     console.log(verified);
     return dto;
+  }
 
+  async deactivateTfa(ruser: any) {
+    const user: User = await this.userService.getUser(ruser.id);
+    const box: SecretBox = await this.boxRepo.findOne({where: {id: user.id}});
+    if (box)
+      this.boxRepo.remove(box);
+    this.userService.updateUser(user.id, {tfa: false});
+    return box;
   }
 
   async test() {

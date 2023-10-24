@@ -42,7 +42,7 @@ export class AuthController {
   @Get('2fa/deactivate')
   @UseGuards(jwtAuthGuard)
   deactivateTfa(@Req() req: Request) {
-    // return this.authService.deactivateTfa(req.user);
+    return this.authService.deactivateTfa(req.user);
   }
 
   @Post('2fa/verify')
