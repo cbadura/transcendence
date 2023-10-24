@@ -37,7 +37,7 @@ export class TokenComponent implements OnInit {
 							color: response.color,
 							avatar: response.avatar,
 						};
-						console.log(user);
+						console.log('First user created!', user);
 						this.userDataService.replaceUser(user);
 						this.router.navigate(['/create-profile']);
 					},

@@ -23,7 +23,6 @@ export class UserDataService {
     };
 
   private serverAddress: string = 'http://localhost:3000';
-  imageURL: string = '';
 
   constructor(
     private http: HttpClient
@@ -35,70 +34,23 @@ export class UserDataService {
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
-  /* API calls */
-  getUsers() {
-    this.http.get(this.serverAddress + '/users').subscribe(data => {
-      window.alert(JSON.stringify(data));
-    }, error => {
-      window.alert('Error fetching users: ' + JSON.stringify(error));
-    });
+		
+  replaceUser(user: User) {
+	this.myUser = { ...this.myUser, ...user };
+	this.userSubject.next(this.myUser);
   }
 	
-	replaceUser(user: User) {
-		this.userSubject.next(user);
-	}
-
-  createEditUser(name: string, color: string, file: File | undefined): Observable<any> {
-    const newUser = {
-        name: name,
-        color: color,
-    };
-
-    const isCreatingNewUser = this.myUser.id < 1;
-    const httpMethod = isCreatingNewUser ? 'post' : 'put';
-    const url = isCreatingNewUser ? `${this.serverAddress}/users/` : `${this.serverAddress}/users/${this.myUser.id}`;
-
-    if (!file) {
-      (newUser as any).avatar = this.myUser.avatar;
-    }
-    return new Observable(observer => {
-        this.http[httpMethod](url, newUser).subscribe(data => {
-            this.updateUserData(data);
-            if (file) {
-              this.uploadProfilePic(file);
-            }
-            observer.next(data);
-            observer.complete();
-        }, error => {
-            const errorMessage = isCreatingNewUser ? 'Error creating user: ' : 'Error editing user: ';
-            window.alert(errorMessage + JSON.stringify(error));
-            observer.error(error);
-        });
-    });
-  }
-
-  private updateUserData(data: any) {
-      this.myUser = { ...this.myUser, ...data };
-      this.userSubject.next(this.myUser);
-  }
-
-  getProfilePics(): Observable<{ blobUrl: string, filePath: string }[]> {
-    const picNames = ['default_00.jpg', 'default_01.jpg', 'default_02.jpg', 'default_03.jpg', 'default_04.jpg'];
-    const requests = picNames.map(picName => 
-      this.http.get(`${this.serverAddress}/users/profilepic/${picName}`, { responseType: 'blob' })
-        .pipe(map(blob => ({ blobUrl: URL.createObjectURL(blob), filePath: picName })))
-    );
-    return forkJoin(requests);
-  }
 
   uploadProfilePic(file: File) {
     const formData = new FormData();
     formData.append('file', file, file.name);
-    console.log('uploaded');
+    console.log('attempt upload');
     this.http.post(`${this.serverAddress}/users/${this.myUser.id}/profilepic`, formData).subscribe(data => {
       console.log('UPLOAD', JSON.stringify(data));
+	  window.alert('Profile picture uploaded!');
     }, error => {
       console.log(error);
+	  window.alert('error uploading profile picture');
     });
   }
 
@@ -107,32 +59,26 @@ export class UserDataService {
 	return this.http.get<User>(url);
   }
   
-  editUserById(id: number) {
+  editUserById(newName: string, newColor: string) {
+	const id = this.myUser.id;
     const updatedUser = {
-      name: 'edited Name'
+      name: newName,
+	  color: newColor,
     };
     this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(data => {
-      // window.alert(JSON.stringify(data));
+      console.log('EDIT', JSON.stringify(data));
+	  this.replaceUser(data as User);
     }, error => {
       window.alert('Error editing user: ' + JSON.stringify(error));
     });
   }
 
-  /* internal user functions */
+	/* internal user functions */
+	// Replace in profile by the subscription
   getUser(): User {
     return this.userSubject.value;
   }
 
-  setName(name: string) {
-    const user = { ...this.getUser(), name: name };
-    this.userSubject.next(user);
-  }
-
-  setColor(color: string) {
-    console.log('setting color to ', color);
-    const user = { ...this.getUser(), color: color };
-    this.userSubject.next(user);
-  }
 
   //this function connects the sockets important for game and chat.
   // Probably needs to be called on Login as well

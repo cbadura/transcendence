@@ -20,8 +20,9 @@ export class BodyComponent implements OnInit {
     this.userSubscription = this.userDataService.user$.subscribe(
       (user) => {
 			this.myUser = user;
-			console.log('Body', user);
+			console.log('Body component user:', user);
 			if (this.myUser && this.myUser.id != 0) this.noUser = false;
+			console.log('Body component noUser:', this.noUser);
       }
     );
   }
