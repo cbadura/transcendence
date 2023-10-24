@@ -1,4 +1,4 @@
-import { IsNotEmpty,IsOptional,IsString, IsHexColor, IsNumber } from "class-validator";
+import { IsNotEmpty,IsOptional,IsString, IsHexColor, IsNumber, IsBoolean } from "class-validator";
 
 export class CreateUserDto {
 
@@ -9,6 +9,9 @@ export class CreateUserDto {
   @IsNumber()
   @IsOptional()
   ftid: number;
+
+  @IsBoolean()
+  tfa: boolean=false;
 
   @IsOptional()
   @IsString()

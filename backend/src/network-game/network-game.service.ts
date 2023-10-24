@@ -274,7 +274,7 @@ export class NetworkGameService {
       LogGameRooms(){
         const gameLoop = setInterval(()=>{
           // console.log(`---------- Connected Sockets----------`);
-          this.printConnectedSockets();
+          // this.printConnectedSockets();
           // console.log(`---------- DEFAULT Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
             console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 

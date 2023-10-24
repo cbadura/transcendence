@@ -29,7 +29,10 @@ export class UserService {
   }
 
   async getUserFromftid(ftid: number): Promise<User | undefined> {
-    return await this.userRepository.findOne({ where: {ftid}});
+    return await this.userRepository.findOne({
+      where: {ftid},
+      relations: ['achievements','achievements.achievementDefinition'],
+    });
   }
 
   async updateUser(id: number,dto: UpdateUserDto) {

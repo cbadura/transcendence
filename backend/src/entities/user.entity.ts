@@ -11,7 +11,10 @@ export class User {
   @Column({ nullable: true, unique: true })
   ftid: number;
 
-  @Column()
+  @Column({nullable: true})
+  tfa: boolean;
+
+  @Column({nullable: true}) //set null for auth test
   name: string;
 
   @Column({ nullable: false })
