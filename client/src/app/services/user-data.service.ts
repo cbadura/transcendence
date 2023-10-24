@@ -99,24 +99,10 @@ export class UserDataService {
   }
 
   fetchUserById(id: number): Observable<User> {
-    const url = `http://localhost:3000/users/${id}`;
-    
-    return this.http.get<User>(url).pipe(
-      map((user: User) => {
-        if (user && user.avatar) {
-          return {
-            ...user,
-            avatar: `http://localhost:3000${user.avatar}`
-          };
-        } else {
-          return {
-            ...user
-          };
-        }
-      })
-    );
+	const url = `http://localhost:3000/users/${id}`;
+	return this.http.get<User>(url);
   }
-
+  
   editUserById(id: number) {
     const updatedUser = {
       name: 'edited Name'

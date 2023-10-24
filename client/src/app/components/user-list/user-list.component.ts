@@ -24,16 +24,8 @@ export class UserListComponent implements OnInit {
   }
 
   fetchScoreboardUsers(): Observable<User[]> {
-    const url = 'http://localhost:3000/users';
-    
-    return this.http.get<User[]>(url).pipe(
-      map((response: any) => {
-        // Transform each user object in the response
-        return response.map((user: User) => ({
-          ...user,
-          avatar: `http://localhost:3000${user.avatar}` // Replace with the new avatar URL
-        }));
-      })
-    );
+	const url = 'http://localhost:3000/users';
+	return this.http.get<User[]>(url);
   }
+  
 }

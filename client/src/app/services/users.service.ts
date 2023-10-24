@@ -14,7 +14,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl).pipe(
-      map(users => users.map(user => ({ ...user, avatar: `http://localhost:3000${user.avatar}` }))));
+	return this.http.get<User[]>(this.apiUrl);
   }
+  
 }
