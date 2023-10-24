@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -22,16 +22,17 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  private generateToken(user: User, verified: boolean) {
+  private generateToken(user: User, verified: boolean): verifyDto {
     const payload = {
       verified: verified,
       id: user.id,
       ftid: user.ftid
     };
-    return {
+    const dto: verifyDto = {
       verified: verified,
       access_token: this.jwtService.sign(payload)
-    }
+    };
+    return dto;
   }
 
   private dataToImage(qr: string) {
@@ -119,6 +120,21 @@ export class AuthService {
       this.boxRepo.remove(box);
     this.userService.updateUser(user.id, {tfa: false});
     return box;
+  }
+
+  async tfaVerify(ruser: any, body: any) {
+    const user: User = await this.userService.getUser(ruser.id);
+    const box: SecretBox = await this.boxRepo.findOne({where: {id: user.id}});
+    if (!box)
+      throw new UnauthorizedException(); // not sure what exception to throw, when a non 2fa user try to verify
+    const verified: boolean = authenticator.check(body['key'], box.secret);
+    const dto = new verifyDto;
+    if (verified) {
+      return this.generateToken(user, true);
+    }
+    if (!verified) {
+      return {verified: false};
+    }
   }
 
   async test() {

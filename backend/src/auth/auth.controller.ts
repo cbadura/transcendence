@@ -50,6 +50,7 @@ export class AuthController {
   tfa(@Req() req: Request, @Body() body: any) {
     // verify and issue a "verified" jwt
     console.log(body);
+    return this.authService.tfaVerify(req.user, body);
     // return token;
   }
 
