@@ -1,9 +1,8 @@
-
 export interface GameRenderInfo {
     canvas: CanvasRenderInfo
-    balls : BallRenderInfo[]
-    paddles: PaddleRenderInfo[]
-    powerups: PowerUpRenderInfo[]
+    balls : BallRenderInfo[] 
+    paddles: PaddleRenderInfo[] 
+    powerups: PowerUpRenderInfo[] 
     gameOver: boolean
     hits : number
 }
@@ -15,26 +14,27 @@ export interface CanvasRenderInfo {
 }
 
 export interface BallRenderInfo {
-    x: number;
-	y: number;
-    debugDirX: number;
-	debugDirY: number;
-	size: number;
+    pos: Vector2D;
+    debugDir: Vector2D;
 	radius: number;
     speed: number;
 }
 
 export interface PaddleRenderInfo {
     score: number;
-    posX: number;
-    posY: number;
+    pos: Vector2D;
     length: number;
     width: number;
 }
 
 export interface PowerUpRenderInfo {
-    posX: number;
-    posY: number;    
+    pos: Vector2D;
     type: string;
     radius: number;
+
+}
+
+export interface Vector2D {
+    x: number;
+    y: number;
 }

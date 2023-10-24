@@ -1,15 +1,17 @@
 import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "../RenderInfo";
 import { PongGameConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
-import { APowerUp, PowerUpDummy } from "../PowerUps/APowerUp";
+import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
+import { PUIncreaseOwnerPaddleLength } from "../PowerUps/PUIncreaseOwnerPaddleLength";
+import { PUDecreaseOpponentPaddleLength } from "../PowerUps/PUDecreaseOpponentPaddleLength";
+import { Vector2D } from "../Vector2D";
+import { PUSplitBall } from "../PowerUps/PUSplitBall";
+import { BallFactory } from "../gameBalls/BallFactory";
+import { EBallType } from "../gameBalls/EBallType";
 
 export class SpecialPongGame extends APongGame {
-    private scaleMult = 0.5
-    private maxPaddleScale = 200;
-    private minPaddleScale = 50;
-
     private maxPowerUps = 1;
-    private powerUpRespawnTimer = 5;
+    private powerUpRespawnTimer = 7;
     private prevPeriodTimeStamp: number =  this.getNewDate();
 
     constructor(config?: PongGameConfig) {
@@ -20,47 +22,49 @@ export class SpecialPongGame extends APongGame {
         // for (let i = 30; i < config.canvas.width; i+=60) {
         //     this.powerUps.push(new PowerUpDummy(640+320,i))   
         // }
-        this.powerUps.push(new PowerUpDummy(640+320,350))   
+        // this.powerUps.push(new PUDecreaseOpponentPaddleLength(this,640+320,350))   
     }
 
     gameLoop(): void {
         this.UpdatePeddles();
-        this.UpdateBalls();
+        this.UpdateBallPositions();
         this.UpdatePowerUps();
         this.UpdateEffects();
+        
         
         if (this.checkGameOver()) {
             this.setGameOver(true);
         }
-
-
+        
+        this.handleBalls();
+        
     }
 
-    UpdateEffects(){
-        //apply effects
-            
-         //cleanup effects
-    }
+    handleBalls() {
+        //delete all expired balls
+        this.gameBalls = this.gameBalls.filter((ball)=>ball.isExpired == false)
 
-    UpdatePeddles(){
-        for (let i = 0; i < this.userPaddles.length; i++) {
-            this.userPaddles[i].length += this.scaleMult;
-            if(this.userPaddles[i].length > this.maxPaddleScale){
-                this.scaleMult *= -1;
-            }
-            else if(this.userPaddles[i].length < this.minPaddleScale){
-                this.scaleMult *= -1;
-            }
+        if(this.gameBalls.length == 0){
+            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos:new Vector2D(this.config.canvas.width/2,this.config.canvas.height/2)
+                ,startDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5)}))
         }
+        // console.log(this.gameBalls.length)
+        // for (let i = 0; i < this.gameBalls.length; i++) {
+        //     console.log(this.gameBalls[i].getDirection());
+            
+        // }
     }
 
-    UpdateBalls(){
+    private UpdatePeddles(){
+    }
+
+    private UpdateBallPositions(){
         for (let i = 0; i < this.gameBalls.length; i++) {
             this.gameBalls[i].updatePosition(this);
         }
     }
 
-    UpdatePowerUps(){
+    private UpdatePowerUps(){
         //remove consumed.
         this.powerUps = this.powerUps.filter((powerup)=> powerup.isConsumed == false)
         // console.log('NUMBER OF POWERUPS = ',this.powerUps.length)
@@ -75,13 +79,36 @@ export class SpecialPongGame extends APongGame {
             this.prevPeriodTimeStamp = this.getNewDate()
 
             for (let i = this.powerUps.length; i < this.maxPowerUps; i++) {
-                this.powerUps.push(new PowerUpDummy(640+320,350))
+                this.spawnPowerUp();
             }
         }
     }
 
+    private getRandomNbrInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
 
-    getNewDate(): number{
+    private spawnPowerUp() {
+        //try find suitable spawn location thats not within another location
+        const randomX = this.getRandomNbrInRange(700,700);
+        this.powerUps.push(new PUSplitBall(this,new Vector2D(randomX,350)))
+        //no protection yet
+        // for (let i = 0; i < 3; i++) {
+        // }   
+    }
+
+
+    private UpdateEffects() {
+        //apply effects
+        for (let i = 0; i < this.gameEffects.length; i++) {
+            this.gameEffects[i].applyEffect();            
+        }
+         //cleanup effects
+        this.gameEffects = this.gameEffects.filter((effect)=> effect.completed == false);
+    }
+
+
+    private getNewDate(): number{
         let currDate = new Date();
         currDate.setSeconds(currDate.getSeconds() + this.powerUpRespawnTimer)
         return currDate.getTime();
