@@ -26,7 +26,7 @@ export class AuthController {
   async activateTfa(@Req() req: Request, @Res() res: Response) {
     // just create temp secret, save it and send to client, not enabling tfa yet
     console.log(req.user);
-    const img = await this.authService.getTempSecret(req.user);
+    const img = await this.authService.getTempQRcode(req.user);
     res.setHeader('content-type', 'image/png');
     res.send(img)
   }
@@ -34,6 +34,7 @@ export class AuthController {
   @Post('2fa/activate')
   @UseGuards(jwtAuthGuard)
   validActivate(@Req() req: Request, @Body() body: any) {
+    return this.authService.verifyActivate(req.user, body);
     // change user tfa to true here after verify
     // make temp secret real secret
   }
@@ -41,7 +42,7 @@ export class AuthController {
   @Get('2fa/deactivate')
   @UseGuards(jwtAuthGuard)
   deactivateTfa(@Req() req: Request) {
-    
+    // return this.authService.deactivateTfa(req.user);
   }
 
   @Post('2fa/verify')
