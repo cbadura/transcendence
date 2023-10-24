@@ -26,7 +26,7 @@ export class jwtAuthGuard extends AuthGuard('jwt') {
       );
       if (payload.verified === false)
         return false;
-      request['user'] = this.userService.getUserFromftid(payload.ftid);
+      request['user'] = await this.userService.getUserFromftid(payload.ftid);
     } catch {
       throw new UnauthorizedException()
     }

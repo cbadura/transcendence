@@ -21,6 +21,7 @@ import { Relationship } from './entities/relationship.entity';
 import { NetworkGameModule } from './network-game/network-game.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { SecretBox } from './entities/secretBox.entity';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -33,7 +34,7 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship],
+      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship,SecretBox],
       synchronize: true,
     }),
     MulterModule.register({

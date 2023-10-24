@@ -9,13 +9,14 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { SecretBox } from 'src/entities/secretBox.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     PassportModule,
     UserModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, SecretBox]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d'}

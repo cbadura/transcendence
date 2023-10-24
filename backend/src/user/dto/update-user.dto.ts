@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsOptional,IsHexColor } from 'class-validator';
+import { IsOptional,IsHexColor, IsBoolean } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
     
@@ -13,4 +13,8 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsHexColor()
     @IsOptional()
     color: string; 
+
+    @IsBoolean()
+    @IsOptional()
+    tfa: boolean;
 }
