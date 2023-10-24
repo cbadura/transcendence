@@ -1,5 +1,4 @@
-import {Inject, Injectable, OnDestroy} from '@angular/core';
-// import {Socket} from 'ngx-socket-io';
+import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 
 import {Channel} from '../shared/chat/Channel';
@@ -8,8 +7,6 @@ import {EUserRole} from '../shared/macros/EUserRole';
 import {ESocketMessage} from '../shared/chat/ESocketMessage';
 import { io, Socket } from 'socket.io-client'
 import { UserDataService } from './user-data.service';
-import { WrappedSocket } from 'ngx-socket-io/src/socket-io.service';
-
 
 interface Change {
   id: number,
@@ -26,23 +23,20 @@ export class ChannelService {
   private userSubscription!: Subscription;
   chatSocket!: Socket;
 
-  // constructor(private userService: UserDataService
-  //   /* @Inject('chatSocket') private chatSocket: Socket */) {
   constructor(private userService: UserDataService) {
     this.userSubscription = this.userService.user$.subscribe(
-        (user) => {
-          this.myUser = user;
-          if (this.myUser && this.myUser.id) {
-            this.userService.fetchUserById(this.myUser.id).subscribe(data => {
-              this.myUser = data;
-              this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
-              this.subscribeToEvents();
-            });
-          }
+      (user) => {
+        this.myUser = user;
+        if (this.myUser && this.myUser.id) {
+          this.userService.fetchUserById(this.myUser.id).subscribe(data => {
+            this.myUser = data;
+            this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
+            this.subscribeToEvents();
+          });
         }
-      );
+      }
+    );
   }
-
   
   serverChannels = new BehaviorSubject<Channel[]>(this.channels);
   serverChatObs$ = this.serverChannels.asObservable();

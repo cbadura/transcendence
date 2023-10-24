@@ -1,13 +1,15 @@
 import { Injectable, Inject } from '@angular/core';
 import { DatePipe } from "@angular/common";
-import { Socket } from 'ngx-socket-io';
+// import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { io, Socket } from 'socket.io-client'
 
 import { User } from '../shared/interfaces/user';
 import { Post } from '../shared/interfaces/post';
 import { Channel } from '../shared/chat/Channel';
 import { ChannelService } from './channel.service';
+import { UserDataService } from './user-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,23 +21,29 @@ export class ChatHistoryService {
     'first message'
   ];
   eventSubject = new Subject<{ eventType: string; data: any}>();
+  myUser!: User;
+  private userSubscription!: Subscription;
+  chatSocket!: Socket;
 
   constructor(
     public channelService: ChannelService,
     public datepipe: DatePipe,
-    @Inject('chatSocket') private chatSocket: Socket) {}
+    private userService: UserDataService) {
+    // @Inject('chatSocket') private chatSocket: Socket
 
-  /* Optional approach for namespaces
-  private chatSocket :any;
-  constructor(public datepipe: DatePipe,
-    private socket: Socket) {
-        this.chatSocket = new Socket({
-        url: 'http://localhost:3000',
-        options: {}
-      })
-      this.chatSocket.ioSocket.nsp = '/chat'
-    }
-  */
+      this.userSubscription = this.userService.user$.subscribe(
+          (user) => {
+            this.myUser = user;
+            if (this.myUser && this.myUser.id) {
+              this.userService.fetchUserById(this.myUser.id).subscribe(data => {
+                this.myUser = data;
+                this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
+              });
+            }
+          }
+        );
+  }
+
   
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
@@ -76,15 +84,6 @@ export class ChatHistoryService {
     
     return message;
   }
-
-  /* createChannel(name: string) {
-    let post = {
-      name: name,
-      mode: 'public'
-    };
-    console.log('POST', post);
-    this.chatSocket.emit('tryCreateChannel', post);
-  }  */
 
   subscribeToEvents() {
     this.chatSocket?.on(

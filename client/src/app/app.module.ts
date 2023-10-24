@@ -45,7 +45,7 @@ import { UserSearchComponent } from './components/shared-components/user-search/
 import { GameModeComponent } from './components/game/game-mode/game-mode.component';
 import { TokenComponent } from './components/authentication/token/token/token.component';
 
-const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
+// const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
 
 
@@ -96,7 +96,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     UserDataService,
     DatePipe,
     // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
-    { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
+    // { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],
   bootstrap: [AppComponent]
 })

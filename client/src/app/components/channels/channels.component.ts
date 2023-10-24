@@ -35,7 +35,6 @@ export class ChannelsComponent implements OnInit, OnDestroy {
          this.selectChannel('My channels');
       }
     );
-   
   }
 
   selectChannel(channel: string) {
