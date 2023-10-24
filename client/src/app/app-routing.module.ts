@@ -19,14 +19,15 @@ const routes: Routes = [
   { path: 'leaderboard', component: LeaderboardComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'chat/:channel', component: ChatComponent },
+  { path: 'profile/:profile', component: ProfileComponent },
   { path: 'profile', component: ProfileComponent },
   // { path: 'edit-profile', component: EditProfileComponent },
   { path: 'create-profile', component: CreateProfileComponent },
   { path: 'channels', component: ChannelsComponent },
   { path: 'channels/edit/:channel', component: EditChannelComponent },
-	{ path: 'channels/edit', component: EditChannelComponent },
-	{ path: 'signin', component: SigninComponent },
-	{path: 'signin/token', component: TokenComponent},
+  { path: 'channels/edit', component: EditChannelComponent },
+  { path: 'signin', component: SigninComponent },
+  { path: 'signin/token', component: TokenComponent },
   // { path: '**', redirectTo: '' },
 ];
 

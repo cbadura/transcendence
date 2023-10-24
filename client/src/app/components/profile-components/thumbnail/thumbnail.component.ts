@@ -8,7 +8,7 @@ export class ThumbnailComponent {
   @Input() imgUrl: string = ''; 
   @Input() size!: string;
 
-  fallbackImageSrc: string = 'https://picsum.photos/100'
+  fallbackImageSrc: string = 'assets/default.png'
 
   loadFallbackImage() {
 	  this.imgUrl = this.fallbackImageSrc;
