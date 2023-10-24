@@ -12,7 +12,6 @@ import { HeaderComponent } from './components/header/header.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
-import { UserListComponent } from './components/user-list/user-list.component';
 import { SortByScorePipe } from './pipes/sort-by-score.pipe';
 import { UserDataService } from './services/user-data.service';
 import { BodyComponent } from './components/body/body.component';
@@ -28,7 +27,14 @@ import { MessageBubbleComponent } from './components/chat/message-bubble/message
 import { MessageInfoComponent } from './components/chat/message-info/message-info.component';
 
 import { NgIconsModule } from '@ng-icons/core';
-import { featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare, featherX } from '@ng-icons/feather-icons';
+import {
+  featherSettings,
+  featherSend,
+  featherUser,
+  featherUsers,
+  featherPlusSquare,
+  featherX,
+} from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
@@ -45,9 +51,11 @@ import { UserSearchComponent } from './components/shared-components/user-search/
 import { GameModeComponent } from './components/game/game-mode/game-mode.component';
 import { TokenComponent } from './components/authentication/token/token/token.component';
 
-const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
+const chatConfig: SocketIoConfig = {
+  url: 'http://localhost:3000/chat',
+  options: {},
+};
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
-
 
 @NgModule({
   declarations: [
@@ -57,7 +65,6 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     GameComponent,
     ChatComponent,
     LeaderboardComponent,
-    UserListComponent,
     SortByScorePipe,
     BodyComponent,
     ProfileComponent,
@@ -80,24 +87,34 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
     EditChannelComponent,
     ProfileCardComponent,
     SigninComponent,
-		UserSearchComponent,
-		GameModeComponent,
-  TokenComponent
+    UserSearchComponent,
+    GameModeComponent,
+    TokenComponent,
   ],
   imports: [
     HttpClientModule,
     BrowserModule,
-		AppRoutingModule,
+    AppRoutingModule,
     FormsModule,
     ChatSocketModule,
-    NgIconsModule.withIcons({ featherSettings, featherSend, featherUser, featherUsers, featherPlusSquare, featherX }),
+    NgIconsModule.withIcons({
+      featherSettings,
+      featherSend,
+      featherUser,
+      featherUsers,
+      featherPlusSquare,
+      featherX,
+    }),
   ],
   providers: [
     UserDataService,
     DatePipe,
     // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
-    { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
+    {
+      provide: 'chatSocket',
+      useFactory: (config: SocketIoConfig) => new Socket(chatConfig),
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
