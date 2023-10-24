@@ -2,14 +2,12 @@ import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } f
 import { PongGameConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
 import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
-import { PUIncreasePaddleLength } from "../PowerUps/PUIncreasePaddleLength";
+import { PUIncreaseOwnerPaddleLength } from "../PowerUps/PUIncreaseOwnerPaddleLength";
+import { PUDecreaseOpponentPaddleLength } from "../PowerUps/PUDecreaseOpponentPaddleLength";
+import { Vector2D } from "../Vector2D";
 
 export class SpecialPongGame extends APongGame {
-    private scaleMult = 0.5
-    private maxPaddleScale = 200;
-    private minPaddleScale = 50;
-
-    private maxPowerUps = 1;
+    private maxPowerUps = 3;
     private powerUpRespawnTimer = 5;
     private prevPeriodTimeStamp: number =  this.getNewDate();
 
@@ -21,7 +19,7 @@ export class SpecialPongGame extends APongGame {
         // for (let i = 30; i < config.canvas.width; i+=60) {
         //     this.powerUps.push(new PowerUpDummy(640+320,i))   
         // }
-        this.powerUps.push(new PUIncreasePaddleLength(this,640+320,350))   
+        // this.powerUps.push(new PUDecreaseOpponentPaddleLength(this,640+320,350))   
     }
 
     gameLoop(): void {
@@ -40,15 +38,6 @@ export class SpecialPongGame extends APongGame {
 
 
     private UpdatePeddles(){
-        // for (let i = 0; i < this.userPaddles.length; i++) {
-        //     this.userPaddles[i].length += this.scaleMult;
-        //     if(this.userPaddles[i].length > this.maxPaddleScale){
-        //         this.scaleMult *= -1;
-        //     }
-        //     else if(this.userPaddles[i].length < this.minPaddleScale){
-        //         this.scaleMult *= -1;
-        //     }
-        // } 
     }
 
     private UpdateBalls(){
@@ -72,10 +61,24 @@ export class SpecialPongGame extends APongGame {
             this.prevPeriodTimeStamp = this.getNewDate()
 
             for (let i = this.powerUps.length; i < this.maxPowerUps; i++) {
-                this.powerUps.push(new PUIncreasePaddleLength(this,640+320,350))
+                this.spawnPowerUp();
             }
         }
     }
+
+    private getRandomNbrInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    private spawnPowerUp() {
+        //try find suitable spawn location thats not within another location
+        const randomX = this.getRandomNbrInRange(900,1000);
+        this.powerUps.push(new PUDecreaseOpponentPaddleLength(this,new Vector2D(randomX,350)))
+        //no protection yet
+        // for (let i = 0; i < 3; i++) {
+        // }   
+    }
+
 
     private UpdateEffects() {
         //apply effects

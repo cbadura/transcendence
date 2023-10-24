@@ -50,8 +50,8 @@ export class Render {
       this.drawScores(this.userColor);
       this.paddle1.draw(this.gameRenderInfo.paddles[0],frame.canvas);
       this.paddle2.draw(this.gameRenderInfo.paddles[1],frame.canvas);
-      this.drawName(this.paddle1.user, this.gameRenderInfo.paddles[0].posX - 30,this.gameRenderInfo.paddles[0].posY,  Math.PI / 2)
-      this.drawName(this.paddle2.user, this.gameRenderInfo.paddles[1].posX + 30,this.gameRenderInfo.paddles[1].posY,- Math.PI /2)
+      this.drawName(this.paddle1.user, this.gameRenderInfo.paddles[0].pos.x - 30,this.gameRenderInfo.paddles[0].pos.y,  Math.PI / 2)
+      this.drawName(this.paddle2.user, this.gameRenderInfo.paddles[1].pos.x + 30,this.gameRenderInfo.paddles[1].pos.y,- Math.PI /2)
       for (let i = 0; i < this.gameRenderInfo.powerups.length; i++) {
         this.drawPowerUp(this.gameRenderInfo.powerups[i])
       }
@@ -62,8 +62,8 @@ export class Render {
   }
 
   drawPowerUp(powerup: PowerUpRenderInfo){
-    this.drawCircle(powerup.posX, powerup.posY, powerup.radius, '#00000000', 'black',2);
-    this.drawString(powerup.posX, powerup.posY,'black','bold 25pt Inter',powerup.type[0])
+    this.drawCircle(powerup.pos.x, powerup.pos.y, powerup.radius, '#00000000', 'black',2);
+    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',powerup.type[0])
   }
 
   drawName(user:User,x:number,y:number,rotation: number = 0) {
@@ -84,12 +84,12 @@ export class Render {
       this.ctx.fillStyle = 'black'; //balls[i].color //color should be determined by renderer based on the type
       this.ctx.strokeStyle = 'black'; //balls[i].color
       this.ctx.lineWidth = 2;
-      this.ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+      this.ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, 2 * Math.PI);
       this.ctx.stroke();
       this.ctx.fill();
       //drawing debug direction line
       const mult = 50;
-      this.drawLine(ball.x, ball.y,ball.x + (ball.debugDirX * mult), ball.y + (ball.debugDirY * mult), 2, 'black');
+      this.drawLine(ball.pos.x, ball.pos.y,ball.pos.x + (ball.debugDir.x * mult), ball.pos.y + (ball.debugDir.y * mult), 2, 'black');
   }
 
   
@@ -104,15 +104,15 @@ export class Render {
     this.drawLine(midX,0,midX, canvas.height, lineWidth, lineColor);
     // Right line
     this.drawLine(
-      this.gameRenderInfo.paddles[0].posX,0,
-      this.gameRenderInfo.paddles[0].posX,canvas.height,
+      this.gameRenderInfo.paddles[0].pos.x,0,
+      this.gameRenderInfo.paddles[0].pos.x,canvas.height,
       lineWidth,
       lineColor
     );
     // Lines left
     this.drawLine(
-      this.gameRenderInfo.paddles[1].posX,0,
-      this.gameRenderInfo.paddles[1].posX,canvas.height,
+      this.gameRenderInfo.paddles[1].pos.x,0,
+      this.gameRenderInfo.paddles[1].pos.x,canvas.height,
       lineWidth,
       lineColor
     );

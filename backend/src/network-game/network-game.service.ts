@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      // this.LogGameRooms();
+      this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -251,14 +251,15 @@ export class NetworkGameService {
 
       }
 
-
-
       monitorGameRooms(){
         const gameLoop = setInterval(()=>{
-          for (let i = 0; i < this.gameRooms.length; i++) {
-              if( this.gameRooms[i] != null) {
-                if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
-                  for (let j = 0; j < this.gameRooms[i]?.clients?.length; i++) {
+          for (let i = 0; i < this.gameRooms?.length; i++) {
+            if( this.gameRooms[i] == null)
+              return;
+
+              if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED) {
+                  for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
+                    console.log(this.gameRooms[i]?.clients[j])
                     if(this.gameRooms[i].clients[j] != null){
                       this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                       this.gameRooms[i].clients[j].room_id = -1;
@@ -266,7 +267,6 @@ export class NetworkGameService {
                   }
                   this.gameRooms[i] = null;
                 }
-              }
           }
         },1000);
       }
@@ -285,13 +285,13 @@ export class NetworkGameService {
           }
           //game rooms
           console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
-          for (let i = 0; i < this.gameRooms.length; i++) {
+          for (let i = 0; i < this.gameRooms?.length; i++) {
               if( this.gameRooms[i] != null) {
-                const game = this.gameRooms[i].game.getGameState();
+                const game = this.gameRooms[i]?.game.getGameState();
                 // const game = this.gameRooms[i]?.gameControl.getGame();
                 console.log(`Room [${i}] =`,this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
                 this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0]?.userId,'vs',this.gameRooms[i]?.clients[1]?.userId,
-                game.paddles[0].score,':',game.paddles[1].score);
+                game?.paddles[0].score,':',game.paddles[1].score);
               }
 
           }

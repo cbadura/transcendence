@@ -157,8 +157,7 @@ export class GameRoom {
             console.log('Starting training game');
             this.StartGame();
         }
-
-        if(this.clients.length == this.maxClients){
+        else if(this.clients.length == this.maxClients){
             //user[0] == peddal 1, user[1] == peddal 2
             const peddal1User = await this.userService.getUser(this.clients[0].userId) //should be improved
             const peddal2User = await this.userService.getUser(this.clients[1].userId)

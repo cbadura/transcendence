@@ -1,24 +1,25 @@
 import { GameRenderInfo } from "../RenderInfo";
-import { GameBall } from "../GameBall";
+import { ABall } from "../gameBalls/ABall";
 import { GamePaddle } from "../GamePaddle";
 import { PongGameConfig } from "../PongGameConfig";
 import { APowerUp } from "../PowerUps/APowerUp";
 import { AGameEffect } from "../gameEffects/AGameEffect";
+import { BallFactory } from "../gameBalls/BallFactory";
 
 export abstract class APongGame {
     constructor(protected config: PongGameConfig) {
         for (let i = 0; i < 2; i++) { //hard coded exactly 2 
             this.userPaddles.push(new GamePaddle(config.paddle));
         }
-        this.userPaddles[0].posX = config.canvas.goalLineOffset;
-        this.userPaddles[1].posX = config.canvas.width - config.canvas.goalLineOffset;
+        this.userPaddles[0].pos.x = config.canvas.goalLineOffset;
+        this.userPaddles[1].pos.x = config.canvas.width - config.canvas.goalLineOffset;
         
         for (let i = 0; i < config.balls.length; i++) {
-            this.gameBalls.push(new GameBall(config.canvas,config.balls[i]));
+            this.gameBalls.push(BallFactory(config.balls[i].type,config.balls[i].defaultPos,config.balls[i].defaultDir));
         }
     }
     userPaddles: GamePaddle[] = [];
-    gameBalls: GameBall[] = [];
+    gameBalls: ABall[] = [];
     powerUps: APowerUp[] = [];
     gameEffects: AGameEffect[] = [];
     private gameOver: boolean = false;
@@ -36,9 +37,9 @@ export abstract class APongGame {
         const maxBottom = this.config.canvas.height - maxTop;
         const step = direction * paddle.step;
         
-        const newPaddlePos = paddle.posY + step;
+        const newPaddlePos = paddle.pos.y + step;
         if (newPaddlePos > maxTop && newPaddlePos < maxBottom){
-            paddle.posY = newPaddlePos;
+            paddle.pos.y = newPaddlePos;
         }
 
       }
@@ -61,7 +62,7 @@ export abstract class APongGame {
     abstract gameLoop(): void 
     abstract getGameState(): GameRenderInfo
 
-    getConfig(): any{
+    getConfig(): PongGameConfig{
         return this.config;
     }
 }

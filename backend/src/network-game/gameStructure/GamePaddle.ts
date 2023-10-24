@@ -1,9 +1,10 @@
 import { PaddleConfig } from "./PongGameConfig";
+import { Vector2D } from "./Vector2D";
 
 
 export class GamePaddle {
     constructor(config: PaddleConfig) {
-        this.posY = config.startPosY;
+        this.pos.y = config.startPosY;
         this.step = this.defaultStep = config.step;
         this.width = this.defaultWidth = config.width;
         this.length = this.defaultLength = config.length;
@@ -22,8 +23,7 @@ export class GamePaddle {
     private maxLength: number = 1280;
 
     score: number = 0;
-    posX: number = -1; //will be assigned when game is created
-    posY: number = -1;
+    pos: Vector2D = new Vector2D(-1,-1)
     step: number;
     length: number;
     width: number;
