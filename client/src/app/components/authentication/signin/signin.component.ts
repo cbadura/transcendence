@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class SigninComponent {
 
+
+	redirectToLogin() {
+		window.location.href = 'http://localhost:3000/auth/login';
+	}
 }

@@ -28,6 +28,10 @@ export class UserService {
    });
   }
 
+  async getUserFromftid(ftid: number): Promise<User | undefined> {
+    return await this.userRepository.findOne({ where: {ftid}});
+  }
+
   async updateUser(id: number,dto: UpdateUserDto) {
     const currUser = await this.userRepository.findOne({ where: { id }});
     // console.log(currUser);

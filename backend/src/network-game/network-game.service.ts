@@ -273,18 +273,18 @@ export class NetworkGameService {
 
       LogGameRooms(){
         const gameLoop = setInterval(()=>{
-          console.log(`---------- Connected Sockets----------`);
+          // console.log(`---------- Connected Sockets----------`);
           this.printConnectedSockets();
-          console.log(`---------- DEFAULT Queueing Sockets----------`);
+          // console.log(`---------- DEFAULT Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
             console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 
           }
-          console.log(`---------- SPECIAL Queueing Sockets----------`);
+          // console.log(`---------- SPECIAL Queueing Sockets----------`);
           for (let i = 0; i < this.specialQueue.length; i++) {
             console.log(`Element [${i}] =`,this.specialQueue[i].userId); 
           }
           //game rooms
-          console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
+          // console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
           for (let i = 0; i < this.gameRooms.length; i++) {
               if( this.gameRooms[i] != null) {
                 const game = this.gameRooms[i].game.getGameState();

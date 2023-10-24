@@ -10,7 +10,8 @@ import { CreateProfileComponent } from './components/profile-components/create-e
 import { HomeComponent } from './components/home/home.component';
 import { ChannelsComponent } from './components/channels/channels.component';
 import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
-import { SigninComponent } from './components/signin/signin.component';
+import { SigninComponent } from './components/authentication/signin/signin.component';
+import { TokenComponent } from './components/authentication/token/token/token.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'channels/edit/:channel', component: EditChannelComponent },
 	{ path: 'channels/edit', component: EditChannelComponent },
 	{ path: 'signin', component: SigninComponent },
+	{path: 'signin/token', component: TokenComponent},
   // { path: '**', redirectTo: '' },
 ];
 

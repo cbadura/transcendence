@@ -43,6 +43,10 @@ export class UserDataService {
       window.alert('Error fetching users: ' + JSON.stringify(error));
     });
   }
+	
+	replaceUser(user: User) {
+		this.userSubject.next(user);
+	}
 
   createEditUser(name: string, color: string, file: File | undefined): Observable<any> {
     const newUser = {
