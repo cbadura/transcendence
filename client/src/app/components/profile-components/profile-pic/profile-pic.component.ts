@@ -10,7 +10,7 @@ export class ProfilePicComponent {
 	@Output() imageClick = new EventEmitter<void>();
   @Input() size!: string;
 
-	fallbackImageSrc: string = 'https://picsum.photos/100'
+	fallbackImageSrc: string = 'assets/default.png'
 
   handleClick() {
     this.imageClick.emit();
