@@ -15,6 +15,7 @@ export class ProfileCardComponent implements OnInit {
   @Input() ban!: Function;
   @Input() mute!: Function;
   @Input() disinvite!: Function;
+  @Input() redirect: boolean = true;
   public selected!: string;
 
   constructor(private router: Router) {}
@@ -23,8 +24,10 @@ export class ProfileCardComponent implements OnInit {
   }
 
   clickOnCard = (event: Event) => {
-    event.stopPropagation(); // Stop event propagation
-    this.router.navigate(['profile', 'profile', this.user]);
+    if (this.redirect) {
+		event.stopPropagation();
+      this.router.navigate(['profile', 'profile', this.user]);
+    }
   };
 
   getFloorLevel = () => Math.floor(this.user.level);
