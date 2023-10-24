@@ -7,7 +7,7 @@
 
   <!-- Edit picture section -->
   <div class="flex justify-center items-center w-full space-x-5">
-    <tcd-profile-pic [profilePic]="oldUser.avatar" [size]="'8rem'">
+    <tcd-profile-pic [profilePic]="getCorrectPic()" [size]="'8rem'">
     </tcd-profile-pic>
     <input
       type="file"
@@ -20,7 +20,7 @@
       (click)="fileInput.click()"
     >
     </tcd-custom-button>
-    <tcd-custom-button [buttonText]="'Delete'"></tcd-custom-button>
+    <tcd-custom-button [buttonText]="'Delete'" (click)="deleteTempPic()"></tcd-custom-button>
   </div>
 
   <!-- Edit name section -->
@@ -54,23 +54,6 @@
     <tcd-custom-button
       [buttonText]="'Save changes'"
       [onClick]="saveChanges"
-      [isBlack]="true"
-    ></tcd-custom-button>
-  </div>
-
-  <!-- Create/edit user -->
-  <!-- <div class="w-full flex justify-end">
-    <tcd-custom-button
-      [buttonText]="'Go back'"
-      [isBlack]="true"
-      (click)="goBack()"
-    ></tcd-custom-button>
-  </div> -->
-
-  <div class="w-full flex justify-end">
-    <tcd-custom-button
-      [buttonText]="'Create quick user'"
-      (click)="createQuickUser()"
       [isBlack]="true"
     ></tcd-custom-button>
   </div>

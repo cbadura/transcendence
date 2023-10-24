@@ -74,12 +74,6 @@ export class UserDataService {
     );
   }
 
-  /* internal user functions */
-  // Replace in profile by the subscription
-  //   getUser(): User {
-  //     return this.userSubject.value;
-  //   }
-
   //this function connects the sockets important for game and chat.
   // Probably needs to be called on Login as well
   CreateSocketConnections() {
