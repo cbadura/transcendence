@@ -36,11 +36,11 @@ export class ChannelService {
             this.userService.fetchUserById(this.myUser.id).subscribe(data => {
               this.myUser = data;
               this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
+              this.subscribeToEvents();
             });
           }
         }
       );
-      this.subscribeToEvents();
   }
 
   
