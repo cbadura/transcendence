@@ -21,8 +21,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private userDataService: UserDataService) {
 
-    const currentUser = this.userDataService.getUser();
-    console.log('Current User ID:', currentUser.id);
+    /* const currentUser = this.userDataService.getUser();
+    console.log('Current User ID:', currentUser.id); */
   }
 
   ngOnInit() {

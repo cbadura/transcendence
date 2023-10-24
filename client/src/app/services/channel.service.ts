@@ -1,10 +1,15 @@
-import {Inject, Injectable} from '@angular/core';
-import {Socket} from 'ngx-socket-io';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
+// import {Socket} from 'ngx-socket-io';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 
 import {Channel} from '../shared/chat/Channel';
+import { User } from 'src/app/shared/interfaces/user';
 import {EUserRole} from '../shared/macros/EUserRole';
 import {ESocketMessage} from '../shared/chat/ESocketMessage';
+import { io, Socket } from 'socket.io-client'
+import { UserDataService } from './user-data.service';
+import { WrappedSocket } from 'ngx-socket-io/src/socket-io.service';
+
 
 interface Change {
   id: number,
@@ -17,18 +22,31 @@ interface Change {
 export class ChannelService {
   channels: Channel[] = [];
   eventSubject = new Subject<{ eventType: string; data: any}>();
+  myUser!: User;
+  private userSubscription!: Subscription;
+  chatSocket!: Socket;
 
-  constructor(
-    @Inject('chatSocket') private chatSocket: Socket) {
+  // constructor(private userService: UserDataService
+  //   /* @Inject('chatSocket') private chatSocket: Socket */) {
+  constructor(private userService: UserDataService) {
+    this.userSubscription = this.userService.user$.subscribe(
+        (user) => {
+          this.myUser = user;
+          if (this.myUser && this.myUser.id) {
+            this.userService.fetchUserById(this.myUser.id).subscribe(data => {
+              this.myUser = data;
+              this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
+            });
+          }
+        }
+      );
       this.subscribeToEvents();
-    }
+  }
 
+  
   serverChannels = new BehaviorSubject<Channel[]>(this.channels);
   serverChatObs$ = this.serverChannels.asObservable();
 
-  /* getServerChannels(): Channel[] {
-    return this.serverChannels.value;
-  } */
 
   execActions(channel: Channel, userChanges: Change[]) {
 	  userChanges.forEach((change: Change) => {
@@ -364,4 +382,7 @@ export class ChannelService {
    /*~~~~~~~~~~~~~~~~*/
   }
 
+  ngOnDestroy() {
+    this.userSubscription.unsubscribe();
+  }
 }
