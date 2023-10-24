@@ -20,10 +20,14 @@ export abstract class APowerUp {
 
 
 
-    abstract TriggerEffect(instigator: ABall):void;
+    abstract OnCollision(instigator: ABall):void;
 
     protected markConsumed() {
         this.isConsumed = true;
+    }
+
+    getIsConsumed() {
+        return this.isConsumed;
     }
 }
 
@@ -33,7 +37,7 @@ export class PUDummy extends APowerUp {
         super(game,'Dummy',pos);
     }
 
-    TriggerEffect(instigator: ABall): void {
+    OnCollision(instigator: ABall): void {
         console.log("TRIGGERING EFFECT ON PADDLE ID: ",instigator)
         this.markConsumed();
     }

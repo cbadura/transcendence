@@ -9,7 +9,7 @@ export class PUIncreaseOwnerPaddleLength extends APowerUp {
         super(game,'IncreasePaddleLength',pos);
     }
 
-    TriggerEffect(instigator: ABall): void {
+    OnCollision(instigator: ABall): void {
         this.game.gameEffects.push(new GEUpdatePaddleSize(this.game,instigator,10))
         this.markConsumed();
     }

@@ -4,20 +4,26 @@ import { GamePaddle } from "../GamePaddle";
 import { GameBoardConfig } from "../PongGameConfig";
 import { APowerUp } from "../PowerUps/APowerUp";
 import { Vector2D } from "../Vector2D";
+import { EBallType } from "./EBallType";
 
 
 export abstract class ABall {
-    constructor (type:string,startPos:Vector2D,
-        startDir:Vector2D,startSpeed?:number,radius?: number,maxSpeed?: number) {
+    constructor (type:EBallType,startPos:Vector2D,
+        startDir:Vector2D,radius?: number,startSpeed?:number,maxSpeed?: number) {
             this.type = type;
-            this.pos = this.spawnPos = startPos;
-            if(startDir){
-                this.dir = this.defaultDir = startDir;
-            }
+            this.pos = {...startPos};
+            this.spawnPos = {...startPos};
+            this.defaultDir = {...startDir};
+            this.dir = {...startDir}            
             if(startSpeed)
                 this.speed = this.defaultSpeed = startSpeed;
-            if(radius)
+            if(radius){
                 this.ballRadius = this.defaultRadius = radius;
+                if(this.ballRadius > this.maxRadius)
+                    this.ballRadius = this.maxRadius
+                if(this.ballRadius < this.minRadius)
+                    this.ballRadius = this.minRadius
+            }
             if(maxSpeed)
                 this.maxSpeed = this.maxSpeed = maxSpeed;
         }
@@ -27,6 +33,8 @@ export abstract class ABall {
     protected respawnPos: Vector2D = new Vector2D(1280 / 2, 720 / 2)
     protected defaultSpeed: number = 5;
     protected defaultRadius: number = 20;
+    protected minRadius: number = 5;
+    protected maxRadius: number = 200;
 
     //constantly updating values
     protected dir: Vector2D;
@@ -35,8 +43,10 @@ export abstract class ABall {
     protected ballRadius: number = this.defaultRadius;
     protected ownerID : number = -1 //this indicates who last touched the ball
     protected maxSpeed: number = 50;
-    protected type: string;
-    
+    protected type: EBallType;
+    shouldRespawn: boolean = true;
+    isExpired: boolean = false;
+
     abstract moveBall()
 
     updatePosition(game: APongGame) {
@@ -47,7 +57,6 @@ export abstract class ABall {
         this.checkPowerUpCollision(game.powerUps)
 
         if (this.hitVerticalWall(config.canvas)) {
-            // console.log('Hit vertical Wall')
             this.dir.y *= -1;
         }
         const paddleID = this.getCourtHalfFromPosition(this.pos.x,config.canvas.width)
@@ -86,14 +95,37 @@ export abstract class ABall {
         return this.ownerID;
     }
 
+    getPosition():Vector2D{
+        return this.pos;
+    }
+
+    getDirection():Vector2D{
+        return this.dir;
+    }
+
+    getRadius():number{
+        return this.ballRadius;
+    }
+
+    setPosition(newPos: Vector2D): void{
+        this.pos =newPos;
+    }
+
+    setDirection(newDir: Vector2D): void{
+        this.dir = {...newDir};
+    }
+
+    setRadius(newRadius: number): void{
+        this.ballRadius = newRadius;
+    }
 
     private checkScore(game: APongGame){
         const config = game.getConfig()
         if(this.pos.x <=  config.canvas.goalLineOffset || this.pos.x >config.canvas.width - config.canvas.goalLineOffset) {
             const scoringUserElement: number = this.getCourtHalfFromPosition(this.pos.x,config.canvas.width) === 0 ? 1 : 0;
             game.userPaddles[scoringUserElement].score++;
-            this.resetBall();
             game.hits = 0;
+            this.resetBall();
         }
     }
 
@@ -115,7 +147,8 @@ export abstract class ABall {
         for (let i = 0; i < powerups.length; i++) {
             const dist = Math.sqrt(Math.pow(this.pos.x - powerups[i].pos.x,2) + Math.pow(this.pos.y - powerups[i].pos.y,2))
             if(dist < this.ballRadius + powerups[i].radius){
-                powerups[i].TriggerEffect(this);
+                if(!powerups[i].getIsConsumed())
+                    powerups[i].OnCollision(this);
             }
         }
 
@@ -151,9 +184,14 @@ export abstract class ABall {
     }
 
     private resetBall() {
-        this.pos = new Vector2D(this.respawnPos.x,this.respawnPos.y);
-        this.dir = new Vector2D(this.defaultDir.x,this.defaultDir.y);
-        this.speed = this.defaultSpeed;
+        if(this.shouldRespawn){
+            this.pos ={...this.respawnPos};
+            this.dir = {...this.defaultDir};
+            this.speed = this.defaultSpeed;
+        }
+        else{
+            this.isExpired = true;
+        }
     }
 
 

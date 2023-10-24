@@ -1,4 +1,5 @@
 import { Vector2D } from "./Vector2D";
+import { EBallType } from "./gameBalls/EBallType";
 
 export const trainingGameConfig: PongGameConfig = {
   canvas: {
@@ -15,7 +16,7 @@ export const trainingGameConfig: PongGameConfig = {
       maxLength: 1280,
     },
     balls: [{
-      type: 'Default',
+      type: EBallType.DEFAULT,
       defaultPos: new Vector2D(1280 / 2,720 / 2),
       defaultDir: new Vector2D(-1,0),
     }],
@@ -37,7 +38,7 @@ export const defaultConfig: PongGameConfig = {
         maxLength: 1280,
       },
       balls: [{
-        type: 'Default',
+        type:EBallType.DEFAULT,
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5),
       }],
@@ -60,12 +61,12 @@ export const specialConfig: PongGameConfig = {
     },
     balls: [
       {
-        type: 'Default',
+        type: EBallType.DEFAULT,
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(1,-0.5),
       },
       {
-        type: 'Default',
+        type: EBallType.DEFAULT,
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(-1,-0.5),
       },
@@ -78,7 +79,7 @@ export const specialConfig: PongGameConfig = {
 
 
 export interface BallConfig {
-    type: string;
+    type: EBallType;
     defaultPos: Vector2D;
     defaultDir: Vector2D;
 }

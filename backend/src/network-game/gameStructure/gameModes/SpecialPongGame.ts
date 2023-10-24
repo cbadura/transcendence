@@ -5,10 +5,13 @@ import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
 import { PUIncreaseOwnerPaddleLength } from "../PowerUps/PUIncreaseOwnerPaddleLength";
 import { PUDecreaseOpponentPaddleLength } from "../PowerUps/PUDecreaseOpponentPaddleLength";
 import { Vector2D } from "../Vector2D";
+import { PUSplitBall } from "../PowerUps/PUSplitBall";
+import { BallFactory } from "../gameBalls/BallFactory";
+import { EBallType } from "../gameBalls/EBallType";
 
 export class SpecialPongGame extends APongGame {
-    private maxPowerUps = 3;
-    private powerUpRespawnTimer = 5;
+    private maxPowerUps = 1;
+    private powerUpRespawnTimer = 7;
     private prevPeriodTimeStamp: number =  this.getNewDate();
 
     constructor(config?: PongGameConfig) {
@@ -24,23 +27,38 @@ export class SpecialPongGame extends APongGame {
 
     gameLoop(): void {
         this.UpdatePeddles();
-        this.UpdateBalls();
+        this.UpdateBallPositions();
         this.UpdatePowerUps();
         this.UpdateEffects();
+        
         
         if (this.checkGameOver()) {
             this.setGameOver(true);
         }
-
-
+        
+        this.handleBalls();
+        
     }
 
+    handleBalls() {
+        //delete all expired balls
+        this.gameBalls = this.gameBalls.filter((ball)=>ball.isExpired == false)
 
+        if(this.gameBalls.length == 0){
+            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos:new Vector2D(this.config.canvas.width/2,this.config.canvas.height/2)
+                ,startDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5)}))
+        }
+        // console.log(this.gameBalls.length)
+        // for (let i = 0; i < this.gameBalls.length; i++) {
+        //     console.log(this.gameBalls[i].getDirection());
+            
+        // }
+    }
 
     private UpdatePeddles(){
     }
 
-    private UpdateBalls(){
+    private UpdateBallPositions(){
         for (let i = 0; i < this.gameBalls.length; i++) {
             this.gameBalls[i].updatePosition(this);
         }
@@ -72,8 +90,8 @@ export class SpecialPongGame extends APongGame {
 
     private spawnPowerUp() {
         //try find suitable spawn location thats not within another location
-        const randomX = this.getRandomNbrInRange(900,1000);
-        this.powerUps.push(new PUDecreaseOpponentPaddleLength(this,new Vector2D(randomX,350)))
+        const randomX = this.getRandomNbrInRange(700,700);
+        this.powerUps.push(new PUSplitBall(this,new Vector2D(randomX,350)))
         //no protection yet
         // for (let i = 0; i < 3; i++) {
         // }   

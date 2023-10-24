@@ -4,9 +4,10 @@ import { BallConfigParams } from "./BallFactory";
 import { EBallType } from "./EBallType";
 
 
-export class BallDefault extends ABall {
-    constructor(config: BallConfigParams) {
-        super(EBallType.DEFAULT, config.startPos, config.startDir,20, 5, 50)
+export class BallSplit extends ABall {
+    constructor(config:BallConfigParams) {
+        super(EBallType.SPLITBALL, config.startPos,config.startDir,config.radius,config.startSpeed,config.maxSpeed)
+        this.shouldRespawn = false;
     }
     
     moveBall() {

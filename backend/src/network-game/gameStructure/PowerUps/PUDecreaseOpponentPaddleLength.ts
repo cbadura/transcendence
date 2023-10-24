@@ -9,7 +9,7 @@ export class PUDecreaseOpponentPaddleLength extends APowerUp {
         super(game,'DecreasePaddleLength',pos);
     }
 
-    TriggerEffect(instigator: ABall): void {
+    OnCollision(instigator: ABall): void {
         this.game.gameEffects.push(new GEUpdatePaddleSize(this.game,instigator,-10,true))
         this.markConsumed();
     }

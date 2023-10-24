@@ -15,7 +15,7 @@ export abstract class APongGame {
         this.userPaddles[1].pos.x = config.canvas.width - config.canvas.goalLineOffset;
         
         for (let i = 0; i < config.balls.length; i++) {
-            this.gameBalls.push(BallFactory(config.balls[i].type,config.balls[i].defaultPos,config.balls[i].defaultDir));
+            this.gameBalls.push(BallFactory(config.balls[i].type,{startPos: config.balls[i].defaultPos,startDir: config.balls[i].defaultDir}));
         }
     }
     userPaddles: GamePaddle[] = [];
