@@ -21,6 +21,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   serverPosts!: string[];
   tempText!: string;
   private postSubscription!: Subscription;
+  private userSubscription!: Subscription;
   myUser!: User;
   channel!: Channel;
 
@@ -32,10 +33,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     ) {
     this.messages = [];
     this.tempText = '';
-    this.myUser = this.userDataService.getUser();
   }
 
   ngOnInit() {
+	this.userSubscription = this.userDataService.user$.subscribe(
+		(user) => {
+		  this.myUser = user;
+		}
+	  );
     // const chatns = this.chatHistoryService.connect();
     this.messages = this.chatHistoryService.getHistory();
     this.chatHistoryService.subscribeToMessages();
