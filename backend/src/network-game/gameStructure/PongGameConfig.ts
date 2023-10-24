@@ -1,3 +1,27 @@
+export const trainingGameConfig: PongGameConfig = {
+  canvas: {
+      width: 1280,
+      height: 720,
+      goalLineOffset: 60,
+    },
+    paddle: {
+      length: 180,
+      width: 25,
+      startPosY: 720 / 2, //hard coding for now
+      step: 10,
+    },
+    balls: [{
+      defaultPosX: 1280 / 2,
+      defaultPosY: 720 / 2,
+      defaultDirX: -1,
+      defaultDirY: 0,
+      defaultRadius: 20,
+      defaultSize: 1.00, //not sure
+      defaultSpeed: 5,
+    }],
+    maxScore: 1000,
+} 
+
 export const defaultConfig: PongGameConfig = {
     canvas: {
         width: 1280,

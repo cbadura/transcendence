@@ -7,7 +7,7 @@
 
 	<!-- Edit picture section -->
 	<div class="flex justify-center items-center w-full space-x-5">
-		<tcd-profile-pic *ngIf="this.tempUser.avatar.length > 1" [profilePic]="myUser.avatar">
+		<tcd-profile-pic *ngIf="this.tempUser.avatar.length > 1" [profilePic]="myUser.avatar" [size]="'8rem'">
 		</tcd-profile-pic>
 		<div *ngIf="this.tempUser.avatar.length < 2" class="image-row">
 			<img class="border border-black w-20 aspect-square transition-all rounded-lg"

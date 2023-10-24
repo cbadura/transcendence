@@ -15,7 +15,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  avatar: string=`/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+  avatar: string=`http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
 
   @IsNotEmpty()
   @IsHexColor()

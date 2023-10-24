@@ -3,8 +3,15 @@ export interface GameRenderInfo {
     canvas: CanvasRenderInfo
     balls : BallRenderInfo[]
     paddles: PaddleRenderInfo[]
+    powerups: PowerUpRenderInfo[]
     gameOver: boolean
     hits : number
+}
+
+export interface CanvasRenderInfo {
+    width: number;
+    height: number;
+    goalLineOffset: number;
 }
 
 export interface BallRenderInfo {
@@ -25,10 +32,9 @@ export interface PaddleRenderInfo {
     width: number;
 }
 
-export interface CanvasRenderInfo {
-    width: number;
-    height: number;
-    goalLineOffset: number;
+export interface PowerUpRenderInfo {
+    posX: number;
+    posY: number;    
+    type: string;
+    radius: number;
 }
-
-
