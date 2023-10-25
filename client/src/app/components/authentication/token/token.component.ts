@@ -6,8 +6,7 @@ import { UserDataService } from 'src/app/services/user-data.service';
 
 @Component({
 	selector: 'tcd-token',
-	templateUrl: './token.component.html',
-	styleUrls: ['./token.component.css']
+	templateUrl: './token.component.html'
   })
 export class TokenComponent implements OnInit {
 	public status! : string;

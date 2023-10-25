@@ -11,7 +11,8 @@ import { HomeComponent } from './components/home/home.component';
 import { ChannelsComponent } from './components/channels/channels.component';
 import { EditChannelComponent } from './components/channels/edit-channel/edit-channel.component';
 import { SigninComponent } from './components/authentication/signin/signin.component';
-import { TokenComponent } from './components/authentication/token/token/token.component';
+import { TokenComponent } from './components/authentication/token/token.component';
+import { TwofaComponent } from './components/authentication/twofa/twofa.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'channels/edit', component: EditChannelComponent },
   { path: 'signin', component: SigninComponent },
   { path: 'signin/token', component: TokenComponent },
+  { path: 'signin/2fa', component: TwofaComponent },
   // { path: '**', redirectTo: '' },
 ];
 

@@ -49,7 +49,8 @@ import { ProfileCardComponent } from './components/profile-components/profile-ca
 import { SigninComponent } from './components/authentication/signin/signin.component';
 import { UserSearchComponent } from './components/shared-components/user-search/user-search.component';
 import { GameModeComponent } from './components/game/game-mode/game-mode.component';
-import { TokenComponent } from './components/authentication/token/token/token.component';
+import { TokenComponent } from './components/authentication/token/token.component';
+import { TwofaComponent } from './components/authentication/twofa/twofa.component';
 
 const chatConfig: SocketIoConfig = {
   url: 'http://localhost:3000/chat',
@@ -90,6 +91,7 @@ const chatConfig: SocketIoConfig = {
     UserSearchComponent,
     GameModeComponent,
     TokenComponent,
+    TwofaComponent,
   ],
   imports: [
     HttpClientModule,
