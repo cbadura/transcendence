@@ -53,6 +53,13 @@ export class ChatGateway
   }
 
   @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_LIST_CHANNELS)
+  listChannels(
+      @ConnectedSocket() socket: Socket,
+  ) {
+    this.chatService.listChannels(socket);
+  }
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.TRY_CREATE_CHANNEL)
   createChannel(
     @ConnectedSocket() socket: Socket,

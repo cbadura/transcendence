@@ -21,6 +21,7 @@ export enum EUserRole {
 export enum ESocketMessage {
   TRY_CREATE_CHANNEL = 'tryCreateChannel',
   CREATED_CHANNEL = 'createdChannel',
+  TRY_LIST_CHANNELS = 'tryListChannels',
   LIST_CHANNELS = 'listChannels',
   TRY_UPDATE_CHANNEL = 'tryUpdateChannel',
   UPDATED_CHANNEL = 'updatedChannel',
