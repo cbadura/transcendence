@@ -154,15 +154,22 @@ export class ChatService {
     };
     this.clients.push(client);
     // send channel list on connection
-    client.socket.emit(
-      ESocketMessage.LIST_CHANNELS,
-      this.createChannelList(client),
-    );
+    // client.socket.emit(
+    //   ESocketMessage.LIST_CHANNELS,
+    //   this.createChannelList(client),
+    // );
   }
 
   handleDisconnect(client: Socket) {
     this.clients = this.clients.filter(
       (currentClient) => currentClient.socket.id !== client.id,
+    );
+  }
+
+  listChannels(client: Socket) {
+    client.emit(
+        ESocketMessage.LIST_CHANNELS,
+        this.createChannelList(this.getUserFromId(this.getUserIdFromSocket(client))),
     );
   }
 
