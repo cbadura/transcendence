@@ -36,8 +36,8 @@ export class ChatGateway
   handleConnection(client: Socket) {
     this.chatService.handleConnection(
       client,
-      //+client?.handshake?.query?.userId,
-      1,
+      +client?.handshake?.query?.userId,
+      // 1,
     );
   }
 

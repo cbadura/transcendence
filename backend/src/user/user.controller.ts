@@ -20,16 +20,6 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  @Get('dummy')
-  createDummyUsers(){
-    this.userService.createDummyUsers();
-  }
-
-  @Delete('dummy')
-  deleteUserDatabase(){
-    this.userService.deleteUserDatabase();
-  }
-
   //todo: prevent uploading files if user doesnt exist 
   @Post(':id/profilepic')
   @UseInterceptors(FileInterceptor('file',{
@@ -52,7 +42,7 @@ export class UserController {
     ) {
 
     // const baseUrl = request.protocol + '://' + request.get('host');
-    const userProfileImageURL = `http://localhost:3000/users/profilepic/${file.filename}`
+    const userProfileImageURL = `/users/profilepic/${file.filename}`
 
     let updateDTO = new UpdateUserDto();
     console.log('successfully uploaded file to: ',userProfileImageURL);
@@ -111,9 +101,20 @@ export class UserController {
     return this.userService.getUserRelationships(id,filter);
   }
 
+  /*--------dev--------*/
   @Post()
   createUser(@Body() dto: CreateUserDto): Promise<User> {
     return this.userService.createUser(dto);
+  }
+
+  @Get('dummy')
+  createDummyUsers(){
+    this.userService.createDummyUsers();
+  }
+
+  @Delete('dummy')
+  deleteUserDatabase(){
+    this.userService.deleteUserDatabase();
   }
 
 }

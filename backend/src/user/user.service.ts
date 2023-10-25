@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Match } from 'src/entities/match.entity';
@@ -15,6 +15,7 @@ export class UserService {
     @InjectRepository(MatchUser) private matchUserRepository: Repository<MatchUser>,
     @InjectRepository(Match) private matchRepository: Repository<Match>,
     @InjectRepository(Relationship) private relationshipRepository: Repository<Relationship>,
+    private readonly entityManager: EntityManager,
   ) {}
 
   async getUsers(): Promise<User[]> {
@@ -71,17 +72,20 @@ export class UserService {
         user.level = Number(((100000 + Math.random() * 10000) % 100).toFixed(2)); 
         user.matches = Math.floor(100000 + Math.random() * 900000) % 500;
         user.wins = Math.floor(user.matches * Math.random());
-        await this.userRepository.save(user);
+        // await this.userRepository.save(user);
+        await this.createUser(user);
       }
-    } catch(error){
+    } catch(error){ 
       console.log(error);
     }
   }
-
+ 
   async deleteUserDatabase(){
-    await this.userRepository.clear();
+    await this.userRepository.createQueryBuilder().delete().from(User).execute();
+    const query = `ALTER SEQUENCE User_id_seq RESTART WITH 1;`;
+    await this.entityManager.query(query);
+    // await this.userRepository.clear();
   }
-
 
   async getUserMatches(id: number): Promise<Match[]> {
     const user = await this.userRepository.findOne({where: {id: id}})
