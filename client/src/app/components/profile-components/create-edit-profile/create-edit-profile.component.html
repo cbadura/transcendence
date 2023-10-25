@@ -49,28 +49,12 @@
     </div>
   </div>
 
-  <!-- Enable 2FA -->
-  <!-- <div class="w-full flex justify-start items-center gap-4">
-	<label class="font-bold" for="2fa">Enable 2FA</label>
-	<input type="checkbox" name="2fa" [(ngModel)]="temp2fa" />
-  </div> -->
+  <!-- Open 2FA Popup -->
+  <tcd-custom-button [icon]="'featherLock'" [buttonText]="'Enable 2FA'" (click)="open2FAPopup()" [isBlack]="true" class="mr-auto mt-4"></tcd-custom-button>
 
-  <div class="w-full flex flex-col justify-start items-center gap-4">
-	<tcd-custom-button [buttonText]="'Enable 2FA'" (click)="enable2fa()"></tcd-custom-button>
-	<div *ngIf="oldUser.qr">
+  <!-- 2FA Popup -->
+  <tcd-activate-twofa [user]="oldUser" (closeClicked)="close2FAPopup()" *ngIf="twoFAPopup" ></tcd-activate-twofa>
 
-		<img [src]="oldUser.qr">
-
-		<input
-		class="p-2 border border-black rounded-full bg-transparent outline-none"
-		name="code"
-		type="text"
-		[(ngModel)]="tempCode"
-		placeholder="{{ oldUser.name }}"
-		/>
-		<tcd-custom-button (click)="submit2fa()" [buttonText]="'submit'"></tcd-custom-button>
-	</div>
-  </div>
 
   <!-- Save changes -->
   <div class="w-full flex justify-end">

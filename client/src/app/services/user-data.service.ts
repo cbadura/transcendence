@@ -117,19 +117,12 @@ export class UserDataService {
       );
   }
 
-  submit2fa(code: string) {
+  submit2fa(code: string): Observable<any> {
     const params = new HttpParams().set('token', this.token);
     const data = {
       key: code,
     };
-    this.http.post(this.serverAddress + '/auth/2fa/activate', data, { params }).subscribe(
-		(data) => {
-			console.log(data);
-		},
-		(error) => {
-			console.log(error);
-		}
-	)
+    return this.http.post(this.serverAddress + '/auth/2fa/activate', data, { params });
   }
 
   //this function connects the sockets important for game and chat.

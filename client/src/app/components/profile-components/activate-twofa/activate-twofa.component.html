@@ -1,0 +1,88 @@
+<div
+  (click)="closePopup($event)"
+  class="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 bg-black"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="bg-zinc-800 rounded-3xl p-4 shadow-md max-w-lg w-full flex flex-col gap-4 items-center"
+  >
+    <tcd-chat-btn
+      class="mr-auto"
+      (click)="closeTwoFAPopup()"
+      [icon]="'featherX'"
+      [white]="true"
+    ></tcd-chat-btn>
+    <div
+      *ngIf="user.qr && !verified"
+      class="flex w-full flex-col justify-between items-center"
+    >
+      <img [src]="user.qr" />
+      <div class="space-x-2 m-10">
+        <input
+          type="text"
+          maxlength="1"
+          class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+          (keyup)="onKeyUp(1, $event)"
+          (keydown)="onKeyDown(1, $event)"
+        />
+        <input
+          type="text"
+          maxlength="1"
+          class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+          (keyup)="onKeyUp(2, $event)"
+          (keydown)="onKeyDown(2, $event)"
+        />
+        <input
+          type="text"
+          maxlength="1"
+          class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+          (keyup)="onKeyUp(3, $event)"
+          (keydown)="onKeyDown(3, $event)"
+        />
+        <input
+          type="text"
+          maxlength="1"
+          class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+          (keyup)="onKeyUp(4, $event)"
+          (keydown)="onKeyDown(4, $event)"
+        />
+        <input
+          type="text"
+          maxlength="1"
+          class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+          (keyup)="onKeyUp(5, $event)"
+          (keydown)="onKeyDown(5, $event)"
+        />
+        <input
+          type="text"
+          maxlength="1"
+          class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+          (keyup)="onKeyUp(6, $event)"
+          (keydown)="onKeyDown(6, $event)"
+        />
+      </div>
+    </div>
+    <div
+      *ngIf="verified"
+      class="flex text-3xl text-center text-green-500 m-10 flex-col justify-between items-center"
+    >
+      <ng-icon class="cursor-pointer" name="'featherCheckCircle'"></ng-icon>
+      <h1>2FA enabled!</h1>
+    </div>
+  </div>
+</div>
+
+<!-- 
+<div *ngIf="oldUser.qr">
+
+	<img [src]="oldUser.qr">
+
+	<input
+	class="p-2 border border-black rounded-full bg-transparent outline-none"
+	name="code"
+	type="text"
+	[(ngModel)]="tempCode"
+	placeholder="{{ oldUser.name }}"
+	/>
+	<tcd-custom-button (click)="submit2fa()" [buttonText]="'submit'"></tcd-custom-button>
+</div> -->

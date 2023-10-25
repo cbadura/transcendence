@@ -23,6 +23,7 @@ export class CreateProfileComponent implements OnInit {
   tempFile!: File | null;
   tempPic!: string;
   tempCode!: string;
+  twoFAPopup : boolean = false;
   availableColors: string[] = [
     '#E7C9FF',
     '#C9FFE5',
@@ -90,14 +91,14 @@ export class CreateProfileComponent implements OnInit {
     this.fileInput.nativeElement.value = null;
   }
 
-
-
-  enable2fa() {
-	this.userDataService.getQRCode();
+  open2FAPopup()
+  {
+	this.twoFAPopup = true;
   }
 
-  submit2fa() {
-	this.userDataService.submit2fa(this.tempCode);
+  close2FAPopup()
+  {
+	this.twoFAPopup = false;
   }
 
   ngOnDestroy(): void {

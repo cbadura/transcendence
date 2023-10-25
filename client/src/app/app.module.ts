@@ -30,10 +30,12 @@ import { NgIconsModule } from '@ng-icons/core';
 import {
   featherSettings,
   featherSend,
+  featherCheckCircle,
   featherUser,
   featherUsers,
   featherPlusSquare,
   featherX,
+  featherLock
 } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
@@ -51,6 +53,7 @@ import { UserSearchComponent } from './components/shared-components/user-search/
 import { GameModeComponent } from './components/game/game-mode/game-mode.component';
 import { TokenComponent } from './components/authentication/token/token.component';
 import { TwofaComponent } from './components/authentication/twofa/twofa.component';
+import { ActivateTwofaComponent } from './components/profile-components/activate-twofa/activate-twofa.component';
 
 const chatConfig: SocketIoConfig = {
   url: 'http://localhost:3000/chat',
@@ -92,6 +95,7 @@ const chatConfig: SocketIoConfig = {
     GameModeComponent,
     TokenComponent,
     TwofaComponent,
+    ActivateTwofaComponent,
   ],
   imports: [
     HttpClientModule,
@@ -102,10 +106,12 @@ const chatConfig: SocketIoConfig = {
     NgIconsModule.withIcons({
       featherSettings,
       featherSend,
+	  featherCheckCircle,
       featherUser,
       featherUsers,
       featherPlusSquare,
       featherX,
+	  featherLock
     }),
   ],
   providers: [
