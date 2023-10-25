@@ -22,7 +22,7 @@ export class TokenComponent implements OnInit {
 			const token = response.access_token;
 				if (token) {
 					//save token
-					
+				this.userDataService.setToken(token);
 				const url = `http://localhost:3000/auth/profile?token=${token}`;
 				this.http.get(url).subscribe(
 					(response: any) => {

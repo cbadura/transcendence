@@ -50,9 +50,26 @@
   </div>
 
   <!-- Enable 2FA -->
-  <div class="w-full flex justify-start items-center gap-4">
+  <!-- <div class="w-full flex justify-start items-center gap-4">
 	<label class="font-bold" for="2fa">Enable 2FA</label>
 	<input type="checkbox" name="2fa" [(ngModel)]="temp2fa" />
+  </div> -->
+
+  <div class="w-full flex flex-col justify-start items-center gap-4">
+	<tcd-custom-button [buttonText]="'Enable 2FA'" (click)="enable2fa()"></tcd-custom-button>
+	<div *ngIf="oldUser.qr">
+
+		<img [src]="oldUser.qr">
+
+		<input
+		class="p-2 border border-black rounded-full bg-transparent outline-none"
+		name="code"
+		type="text"
+		[(ngModel)]="tempCode"
+		placeholder="{{ oldUser.name }}"
+		/>
+		<tcd-custom-button (click)="submit2fa()" [buttonText]="'submit'"></tcd-custom-button>
+	</div>
   </div>
 
   <!-- Save changes -->
