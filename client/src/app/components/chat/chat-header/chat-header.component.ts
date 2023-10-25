@@ -9,6 +9,7 @@ import { Channel } from 'src/app/shared/chat/Channel';
 })
 export class ChatHeaderComponent implements OnInit {
   channel!: Channel;
+  userIdsLen: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -19,6 +20,11 @@ export class ChatHeaderComponent implements OnInit {
       console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
+      if (this.channel.usersIds.length > 1) {
+        this.userIdsLen = this.channel.usersIds.length - 1;
+      } else {
+        this.userIdsLen = this.channel.usersIds.length;
+      }
     });
   }
 }

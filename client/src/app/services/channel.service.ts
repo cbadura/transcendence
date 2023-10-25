@@ -189,6 +189,10 @@ export class ChannelService {
     console.log('REMOVE ADMIN', removeAdmin);
     this.chatSocket?.emit(ESocketMessage.TRY_REMOVE_ADMIN, removeAdmin);
   }
+  
+  tryListChannels() {
+    this.chatSocket?.emit('tryListChannels');
+  }
 
   /*~~~~~~~~~~~~~~~~*/
 
@@ -261,10 +265,8 @@ export class ChannelService {
       (data: any) => {
         console.log('JOINED', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
+          if (ch.name === data.channelName) {
             ch.usersIds = data.channelUsersIds;
-            ch.role = EUserRole.USER;
           }
         });
         this.serverChannels.next(this.channels);
@@ -275,18 +277,17 @@ export class ChannelService {
       (data: any) => {
         console.log('BANNED', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
-            /* uncomment this part, when client will know it's id
-            if (data.targetUserId === myID){
+          if (ch.name === data.channelName) {
+            if (data.targetUserId === this.myUser.id){
               ch.isBanned = true;
               ch.banExpTime = data.expirationTimestamp;
-            }*/
+              ch.role = EUserRole.NONE;
+            }
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
 
-            if (ch.role === EUserRole.OWNER)
+            if (ch.role === EUserRole.OWNER) {
               ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-            // TODO when user knows its id, if he is kicked change his role to none
+            }
           }
         });
         this.serverChannels.next(this.channels);
@@ -311,11 +312,15 @@ export class ChannelService {
       (data: any) => {
         console.log('KICKED', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
+          if (ch.name === data.channelName) {
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-           if (ch.role === EUserRole.OWNER)
-             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-            // TODO when user knows its id, if he is kicked change his role to none
+          }
+          if (data.targetUserId === this.myUser.id) {
+            ch.role = EUserRole.NONE;
+          }
+          if (ch.role === EUserRole.OWNER) {
+            ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+          }
         });
         this.serverChannels.next(this.channels);
       });
@@ -337,17 +342,14 @@ export class ChannelService {
       (data: any) => {
         console.log('LEFT', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
+          if (ch.name === data.channelName) {
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-           if (ch.role === EUserRole.OWNER)
-             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-          
-            /* uncomment this part, when client will know it's id
-              if (data.transferId === myID)
-                 ch.role = EUserRole.OWNER;
-             */
-            // TODO when user knows its id, if he is kicked change his role to none
+          if (ch.role === EUserRole.OWNER) {
+            ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+          }
+          if (data.userId === this.myUser.id) {
+            ch.role = EUserRole.NONE;
+          }
          }
        });
        this.serverChannels.next(this.channels);

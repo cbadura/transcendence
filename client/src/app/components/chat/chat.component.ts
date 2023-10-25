@@ -53,6 +53,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
+      console.log('IDS', this.channel.usersIds.length);
     });
   }
 

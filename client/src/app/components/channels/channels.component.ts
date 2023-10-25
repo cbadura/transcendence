@@ -37,11 +37,11 @@ export class ChannelsComponent implements OnInit, OnDestroy {
       (channels) => {
         this.serverChannels = channels;
         console.log('SERVER CHANNELS', this.serverChannels);
-         this.selectChannel('My channels');
-         this.channelService.subscribeToEvents();
-          //tryListChannels
+        this.selectChannel('My channels');
+        this.channelService.subscribeToEvents();
       }
-    );
+      );
+    this.channelService.tryListChannels();
     console.log('subscribe to socket ');
   }
 

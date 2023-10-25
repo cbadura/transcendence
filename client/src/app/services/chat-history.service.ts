@@ -82,6 +82,10 @@ export class ChatHistoryService {
         this.chatSocket?.on('message', (msg: any) => {
             observer.next(msg);
         });
+        // On observable unsubscribe, you can remove the socket listener
+        return () => {
+            this.chatSocket?.off('message');
+        };
     });
   }
 
