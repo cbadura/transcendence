@@ -5,7 +5,8 @@ import {Channel} from '../shared/chat/Channel';
 import { User } from 'src/app/shared/interfaces/user';
 import {EUserRole} from '../shared/macros/EUserRole';
 import {ESocketMessage} from '../shared/chat/ESocketMessage';
-import { io, Socket } from 'socket.io-client'
+// import { io, Socket } from 'socket.io-client'
+import { Socket } from 'ngx-socket-io';
 import { UserDataService } from './user-data.service';
 
 interface Change {
@@ -21,7 +22,7 @@ export class ChannelService {
   eventSubject = new Subject<{ eventType: string; data: any}>();
   myUser!: User;
   private userSubscription!: Subscription;
-  chatSocket!: Socket;
+  chatSocket: Socket | null = null;
 
   constructor(private userService: UserDataService) {
     this.userSubscription = this.userService.user$.subscribe(
@@ -30,7 +31,7 @@ export class ChannelService {
         if (this.myUser && this.myUser.id) {
           this.userService.fetchUserById(this.myUser.id).subscribe(data => {
             this.myUser = data;
-            this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
+            // this.chatSocket? = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
             this.subscribeToEvents();
           });
         }
@@ -78,7 +79,7 @@ export class ChannelService {
     if (password) {
       newChannel.password = password;
     }
-    this.chatSocket.emit('tryCreateChannel', newChannel);
+    this.chatSocket?.emit('tryCreateChannel', newChannel);
   }
 
   // Todo: add password field in channel card
@@ -92,7 +93,7 @@ export class ChannelService {
       newChannel.password = password;
     } */
     console.log('JOIN', newChannel);
-    this.chatSocket.emit(ESocketMessage.TRY_JOIN_CHANNEL, newChannel);
+    this.chatSocket?.emit(ESocketMessage.TRY_JOIN_CHANNEL, newChannel);
   }
 
   updateChannel(channel: Channel, password: string, currName: string) {
@@ -106,7 +107,7 @@ export class ChannelService {
       newChannel.password = password;
     }
     console.log('UPDATE', newChannel);
-    this.chatSocket.emit(ESocketMessage.TRY_UPDATE_CHANNEL, newChannel);
+    this.chatSocket?.emit(ESocketMessage.TRY_UPDATE_CHANNEL, newChannel);
   }
 
   deleteChannel(name: string) {
@@ -114,7 +115,7 @@ export class ChannelService {
     let ch = {
       channelName: name
     };
-    this.chatSocket.emit(ESocketMessage.TRY_DELETE_CHANNEL, ch);
+    this.chatSocket?.emit(ESocketMessage.TRY_DELETE_CHANNEL, ch);
   }
 
   /*~~~~~Nadiia~~~~~*/
@@ -127,7 +128,7 @@ export class ChannelService {
       expirationTimestamp: timestamp
     }
     console.log('BAN', ban);
-    this.chatSocket.emit(ESocketMessage.TRY_BAN_FROM_CHANNEL, ban);
+    this.chatSocket?.emit(ESocketMessage.TRY_BAN_FROM_CHANNEL, ban);
   }
 
   muteUser(chName: string, targetId: number, timestamp: number) {
@@ -137,7 +138,7 @@ export class ChannelService {
       expirationTimestamp: timestamp
     }
     console.log('MUTE', mute);
-    this.chatSocket.emit(ESocketMessage.TRY_MUTE_FROM_CHANNEL, mute);
+    this.chatSocket?.emit(ESocketMessage.TRY_MUTE_FROM_CHANNEL, mute);
   }
 
   kickUser(chName: string, targetId: number) {
@@ -146,7 +147,7 @@ export class ChannelService {
       targetUserId: targetId
     }
     console.log('KICK', kick);
-    this.chatSocket.emit(ESocketMessage.TRY_KICK_FROM_CHANNEL, kick);
+    this.chatSocket?.emit(ESocketMessage.TRY_KICK_FROM_CHANNEL, kick);
   }
 
   inviteUser(chName: string, targetId: number) {
@@ -155,7 +156,7 @@ export class ChannelService {
       targetUserId: targetId
     }
     console.log('INVITE', invite);
-    this.chatSocket.emit(ESocketMessage.TRY_INVITE_TO_CHANNEL, invite);
+    this.chatSocket?.emit(ESocketMessage.TRY_INVITE_TO_CHANNEL, invite);
   }
 
   leaveChannel(chName: string) {
@@ -166,7 +167,7 @@ export class ChannelService {
       channelName: chName
     }
     console.log('LEAVE', leave);
-    this.chatSocket.emit(ESocketMessage.TRY_LEAVE_CHANNEL, leave);
+    this.chatSocket?.emit(ESocketMessage.TRY_LEAVE_CHANNEL, leave);
   }
 
   addAdmin(chName: string, targetId: number) {
@@ -175,7 +176,7 @@ export class ChannelService {
       userId: targetId
     }
     console.log('ADD ADMIN', addAdmin);
-    this.chatSocket.emit(ESocketMessage.TRY_ADD_ADMIN, addAdmin);
+    this.chatSocket?.emit(ESocketMessage.TRY_ADD_ADMIN, addAdmin);
   }
 
   removeAdmin(chName: string, targetId: number) {
@@ -184,7 +185,7 @@ export class ChannelService {
       userId: targetId
     }
     console.log('REMOVE ADMIN', removeAdmin);
-    this.chatSocket.emit(ESocketMessage.TRY_REMOVE_ADMIN, removeAdmin);
+    this.chatSocket?.emit(ESocketMessage.TRY_REMOVE_ADMIN, removeAdmin);
   }
 
   /*~~~~~~~~~~~~~~~~*/

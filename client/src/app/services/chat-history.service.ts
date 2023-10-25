@@ -3,7 +3,8 @@ import { DatePipe } from "@angular/common";
 // import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { io, Socket } from 'socket.io-client'
+// import { io, Socket } from 'socket.io-client'
+import { Socket } from 'ngx-socket-io';
 
 import { User } from '../shared/interfaces/user';
 import { Post } from '../shared/interfaces/post';
@@ -23,7 +24,7 @@ export class ChatHistoryService {
   eventSubject = new Subject<{ eventType: string; data: any}>();
   myUser!: User;
   private userSubscription!: Subscription;
-  chatSocket!: Socket;
+  chatSocket: Socket | null = null;
 
   constructor(
     public channelService: ChannelService,
@@ -31,18 +32,18 @@ export class ChatHistoryService {
     private userService: UserDataService) {
     // @Inject('chatSocket') private chatSocket: Socket
 
-      this.userSubscription = this.userService.user$.subscribe(
-          (user) => {
-            this.myUser = user;
-            if (this.myUser && this.myUser.id) {
-              this.userService.fetchUserById(this.myUser.id).subscribe(data => {
-                this.myUser = data;
-                this.chatSocket = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
-              });
-            }
-          }
-        );
-  }
+    /* this.userSubscription = this.userService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+        if (this.myUser && this.myUser.id) {
+          this.userService.fetchUserById(this.myUser.id).subscribe(data => {
+            this.myUser = data;
+          });
+        }
+      }
+      ); */
+      this.chatSocket = this.channelService.chatSocket; /* io('http://localhost:3000/chat', {query: {userId: this.myUser.id}}) */;
+    }
 
   
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
@@ -73,16 +74,19 @@ export class ChatHistoryService {
 
   /* SOCKET.IO functions */
   sendMessage(post: Post) {
-    this.chatSocket.emit('message', post);
+    this.chatSocket?.emit('message', post);
   }
-  getMessage() {
-    let message = this.chatSocket.fromEvent('message')
-      .pipe(map((msg: any) => {
-      console.log('MSG', msg);
-      return msg;
-    }));
-    
-    return message;
+
+  getMessage(): Observable<any> {
+    return new Observable(observer => {
+        this.chatSocket?.on('message', (msg: any) => {
+            observer.next(msg);
+        });
+        // On observable unsubscribe, you can remove the socket listener
+        return () => {
+            this.chatSocket?.off('message');
+        };
+    });
   }
 
   subscribeToEvents() {
@@ -111,9 +115,11 @@ export class ChatHistoryService {
     return this.eventSubject.asObservable();
   }
 
-  listChannels(): Observable<Channel[]> {
-    return this.chatSocket.fromEvent('listChannels').pipe(
+  /* listChannels(): Observable<Channel[]> {
+    return this.chatSocket.fromEvent(
+      'listChannels').pipe(
       map((response: any) => response.channels)
-  );}
+    );
+  } */
 
 }

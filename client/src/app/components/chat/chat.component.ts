@@ -39,7 +39,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     // const chatns = this.chatHistoryService.connect();
     this.messages = this.chatHistoryService.getHistory();
     this.chatHistoryService.subscribeToMessages();
-    this.chatHistoryService.listChannels();
+    // this.chatHistoryService.listChannels();
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
       (posts) => {
         this.messages = posts;
@@ -70,8 +70,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         message: message,
         channel: this.channel.name,
         senderAvatar: '',
-        timestamp: /*  new Date().getTime() / 1000 */
-        this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
+        timestamp: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
     };
     this.chatHistoryService.sendMessage(newPost);
   }

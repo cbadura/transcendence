@@ -76,7 +76,7 @@ export class CreateProfileComponent implements OnInit {
       .createEditUser(this.tempUserName, this.tempColor, this.tempFile)
       .subscribe(
         (user) => {
-          this.userDataService.CreateSocketConnections();
+          // this.userDataService.CreateSocketConnections();
           console.log('User created with ID:', user.id);
         },
         (error) => {

@@ -144,8 +144,10 @@ export class UserDataService {
     }
 
     const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
-    if (!this.gameSocket) {
+    if (!this.chatSocket) {
       this.chatSocket = new Socket({ url: chatUrl, options: {} });
     }
+    console.log('SOCKET IN USER', this.chatSocket);
   }
 }
+

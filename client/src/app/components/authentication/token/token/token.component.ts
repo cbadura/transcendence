@@ -44,6 +44,7 @@ export class TokenComponent implements OnInit {
 					(error) => {
 						console.error('Error occurred while making the request:', error);
 					}
+	
 				);
 			  console.log('Token received in the response:', token);
 			
@@ -61,6 +62,7 @@ export class TokenComponent implements OnInit {
 		this.status = 'error';
 		console.log('No code parameter found in the URL.');
 	  }
+	//   this.userDataService.CreateSocketConnections();
 	}
   }
   
