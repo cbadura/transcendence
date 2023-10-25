@@ -20,6 +20,23 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  /*--------dev--------*/
+  @Post()
+  createUser(@Body() dto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(dto);
+  }
+
+  @Get('dummy')
+  createDummyUsers(){
+    this.userService.createDummyUsers();
+  }
+
+  @Delete('dummy')
+  deleteUserDatabase(){
+    this.userService.deleteUserDatabase();
+  }
+  /*---------dev---------*/
+
   //todo: prevent uploading files if user doesnt exist 
   @Post(':id/profilepic')
   @UseInterceptors(FileInterceptor('file',{
@@ -101,20 +118,6 @@ export class UserController {
     return this.userService.getUserRelationships(id,filter);
   }
 
-  /*--------dev--------*/
-  @Post()
-  createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(dto);
-  }
-
-  @Get('dummy')
-  createDummyUsers(){
-    this.userService.createDummyUsers();
-  }
-
-  @Delete('dummy')
-  deleteUserDatabase(){
-    this.userService.deleteUserDatabase();
-  }
+  
 
 }

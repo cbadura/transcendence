@@ -48,7 +48,7 @@ export class UserService {
   createUser(dtoUserCreator: CreateUserDto): Promise<User> {
     console.log(dtoUserCreator);
     if(dtoUserCreator.avatar == null)
-      dtoUserCreator.avatar = `/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
+      dtoUserCreator.avatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
     const newUser:CreateUserDto = {...dtoUserCreator, level:1.00,matches: 0, wins: 0};
     return this.userRepository.save(newUser);
   }
@@ -73,7 +73,8 @@ export class UserService {
         user.matches = Math.floor(100000 + Math.random() * 900000) % 500;
         user.wins = Math.floor(user.matches * Math.random());
         // await this.userRepository.save(user);
-        await this.createUser(user);
+        const newUser = await this.createUser(user);
+        await this.updateUser(newUser.id, {ftid: newUser.id});
       }
     } catch(error){ 
       console.log(error);
