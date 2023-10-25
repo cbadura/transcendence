@@ -18,8 +18,8 @@
 
 <!-- Add, remove, block friend -->
 <div class="flex gap-4">
-    <tcd-custom-button *ngIf="!myUser" buttonText="Add friend"></tcd-custom-button>
-    <tcd-custom-button *ngIf="!myUser" buttonText="Block"></tcd-custom-button>
+    <tcd-custom-button (click)="changeRelation('friend')" *ngIf="!myUser" buttonText="Add friend"></tcd-custom-button>
+    <tcd-custom-button (click)="changeRelation('blocked')" *ngIf="!myUser" buttonText="Block"></tcd-custom-button>
     <tcd-custom-button *ngIf="myUser" buttonText="Edit profile" [customRoute]="'/create-profile'"></tcd-custom-button>
 </div>
 

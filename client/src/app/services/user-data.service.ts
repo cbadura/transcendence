@@ -74,6 +74,22 @@ export class UserDataService {
     );
   }
 
+  changeRelation(status: string, targetId: number) {
+    const data = {
+      user_id: this.myUser.id,
+      relationship_user_id: targetId,
+      relationship_status: status,
+    };
+	this.http.post(this.serverAddress + '/relationship', data).subscribe(
+		(data) => {
+			console.log('changeRelation success', data);
+		},
+		(error) => {
+			console.log('changeRelation error', error);
+		}
+	)
+  }
+
   //this function connects the sockets important for game and chat.
   // Probably needs to be called on Login as well
   CreateSocketConnections() {

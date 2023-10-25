@@ -29,8 +29,8 @@ export class ProfileComponent implements OnInit {
       this.user = rest as User;
       if (!this.user.name) {
         this.userSubscription = this.userDataService.user$.subscribe((user) => {
-			this.user = user;
-			this.myUser = true;
+          this.user = user;
+          this.myUser = true;
         });
       }
     });
@@ -65,6 +65,10 @@ export class ProfileComponent implements OnInit {
       },
     ];
   }
+
+  changeRelation(status : string) : void {
+	this.userDataService.changeRelation(status, this.user.id);
+  };
 
   getFloorLevel = () => Math.floor(this.user.level);
 }
