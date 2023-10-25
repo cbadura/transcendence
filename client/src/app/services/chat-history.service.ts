@@ -25,6 +25,7 @@ export class ChatHistoryService {
   myUser!: User;
   private userSubscription!: Subscription;
   chatSocket: Socket | null = null;
+  private once : boolean = true;
 
   constructor(
     public channelService: ChannelService,
@@ -66,6 +67,9 @@ export class ChatHistoryService {
   }
   
   subscribeToMessages() {
+    if (!this.once) return;
+    this.once = false;
+    
     this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);

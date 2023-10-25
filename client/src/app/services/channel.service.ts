@@ -197,9 +197,9 @@ export class ChannelService {
   /*~~~~~~~~~~~~~~~~*/
 
   subscribeToEvents() {
-
     if (!this.once) return;
     this.once = false;
+    
     console.log('LISTENING', this.chatSocket);
     this.chatSocket?.on(
       'listChannels',
