@@ -13,9 +13,7 @@ import { EUserStatus } from '../network-game/interfaces/IGameSocketUser';
 import { UserStatusUpdateDto } from './dto/user-status-update.dto';
 import { EUserMessages } from './user.interface';
 import { WsException } from '@nestjs/websockets';
-import { UserNameUpdateDto } from './dto/user-name-update.dto';
-import { UserAvatarUpdateDto } from './dto/user-avatar-update.dto';
-import { UserColorUpdateDto } from './dto/user-color-update.dto';
+import { UserDataUpdateDto } from './dto/user-data-update.dto';
 
 @Injectable()
 export class UserService {
@@ -83,19 +81,6 @@ export class UserService {
     );
   }
 
-  // Please add the call of it from function which handles user name changes.
-  // I couldn't find it (O.O)?
-  async notifyUserNameUpdate(userId: number) {
-    const user: User = await this.getUser(userId);
-    const userNameUpdate: UserNameUpdateDto = {
-      userId,
-      name: user.name,
-    };
-    this.clients.forEach((client) => {
-      client.socket.emit(EUserMessages.NAME_UPDATE, userNameUpdate);
-    });
-  }
-
   notifyUserStatusUpdate(userId: number, status: EUserStatus) {
     const statusUpdate: UserStatusUpdateDto = {
       userId,
@@ -106,26 +91,13 @@ export class UserService {
     });
   }
 
-  // Please add the call of it from function which handles user avatar changes.
-  // I couldn't find it either(O.O)?
-  notifyUserAvatarUpdate(userId: number, avatar: string) {
-    const userAvatarUpdate: UserAvatarUpdateDto = {
+  notifyUserDataUpdate(userId: number, dto: UpdateUserDto) {
+    const upd: UserDataUpdateDto = {
       userId,
-      avatar,
+      ...dto,
     };
     this.clients.forEach((client) => {
-      client.socket.emit(EUserMessages.AVATAR_UPDATE, userAvatarUpdate);
-    });
-  }
-
-  // Please add the call of it from function which handles user color changes.
-  notifyUserColorUpdate(userId: number, color: string) {
-    const userColorUpdate: UserColorUpdateDto = {
-      userId,
-      color,
-    };
-    this.clients.forEach((client) => {
-      client.socket.emit(EUserMessages.COLOR_UPDATE, userColorUpdate);
+      client.socket.emit(EUserMessages.USER_UPDATE, upd);
     });
   }
   // ~~~~~~~~
@@ -140,12 +112,13 @@ export class UserService {
    });
   }
 
-  async updateUser(id: number,dto: UpdateUserDto) {
+  async updateUser(id: number, dto: UpdateUserDto) {
     const currUser = await this.userRepository.findOne({ where: { id }});
     // console.log(currUser);
     this.userRepository.merge(currUser, dto);
     // console.log(currUser);
     const updatedUser = await this.userRepository.save(currUser);
+    this.notifyUserDataUpdate(id, dto);
     return updatedUser;
   }
 
