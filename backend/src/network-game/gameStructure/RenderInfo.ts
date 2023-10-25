@@ -1,4 +1,5 @@
 import { APowerUp } from "./PowerUps/APowerUp"
+import { Vector2D } from "./Vector2D"
 
 export class GameRenderInfo {
     canvas: CanvasRenderInfo
@@ -16,31 +17,26 @@ export class CanvasRenderInfo {
 }
 
 export class BallRenderInfo {
-    x: number;
-	y: number;
-    debugDirX: number;
-	debugDirY: number;
+    pos: Vector2D;
+    debugDir: Vector2D;
 	radius: number;
     speed: number;
 }
 
 export class PaddleRenderInfo {
     score: number;
-    posX: number;
-    posY: number;
+    pos: Vector2D;
     length: number;
     width: number;
 }
 
 export class PowerUpRenderInfo {
-    public posX: number;
-    public posY: number;    
+    public pos: Vector2D;
     public type: string;
     private radius: number;
     constructor(powerup?: APowerUp) {
         if(powerup){
-            this.posX = powerup.posX;
-            this.posY = powerup.posY;
+            this.pos = powerup.pos;
             this.type = powerup .type;
             this.radius = powerup.radius;
         }
