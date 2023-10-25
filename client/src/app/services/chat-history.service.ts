@@ -44,16 +44,18 @@ export class ChatHistoryService {
       }
       ); */
       this.chatSocket = this.channelService.chatSocket; /* io('http://localhost:3000/chat', {query: {userId: this.myUser.id}}) */;
-    }
+    this.subscribeToMessages();
+    console.log('~~~~~~~~~~~~SUBSCRIBED HISTORY~~~~~~~~~~~~~');
+  }
 
-  
+
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
-  
+
   getServerChat(): Post[] {
     return this.serverChat.value;
   }
-  
+
   getServerPosts() {
     return this.serverPosts;
   }
@@ -65,11 +67,11 @@ export class ChatHistoryService {
   addPost(post: Post) {
     this.chatHistory.push(post);
   }
-  
+
   subscribeToMessages() {
-    if (!this.once) return;
-    this.once = false;
-    
+    // if (!this.once) return;
+    // this.once = false;
+
     this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);
@@ -87,9 +89,9 @@ export class ChatHistoryService {
             observer.next(msg);
         });
         // On observable unsubscribe, you can remove the socket listener
-        return () => {
-            this.chatSocket?.off('message');
-        };
+        // return () => {
+        //     this.chatSocket?.off('message');
+        // };
     });
   }
 

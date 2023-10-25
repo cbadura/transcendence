@@ -42,7 +42,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 		}
 	  );
     this.messages = this.chatHistoryService.getHistory();
-    this.chatHistoryService.subscribeToMessages();
+   // this.chatHistoryService.subscribeToMessages();
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
       (posts) => {
         this.messages = posts;
@@ -53,14 +53,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
-      console.log('IDS', this.channel.usersIds.length);
+      //console.log('IDS', this.channel.usersIds.length);
     });
   }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
   }
-  
+
   scrollToBottom() {
     try {
       this.messagesDiv.nativeElement.scrollTop = this.messagesDiv.nativeElement.scrollHeight;

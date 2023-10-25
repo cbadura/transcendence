@@ -39,7 +39,7 @@ import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.c
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
 import { HomeComponent } from './components/home/home.component';
-import { ChatSocketModule } from './chat-socket/chat-socket.module';
+//import { ChatSocketModule } from './chat-socket/chat-socket.module';
 // import { GameSocketModule } from './game-socket/game-socket.module'; //doesnt exist anymore?
 import { CreateProfileComponent } from './components/profile-components/create-edit-profile/create-edit-profile.component';
 import { ChannelsComponent } from './components/channels/channels.component';
@@ -97,7 +97,7 @@ import { ChatHistoryService } from './services/chat-history.service';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ChatSocketModule,
+   // ChatSocketModule,
     NgIconsModule.withIcons({
       featherSettings,
       featherSend,

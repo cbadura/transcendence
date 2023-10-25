@@ -26,6 +26,10 @@ export class ChannelService {
   private once : boolean = true;
 
   constructor(private userService: UserDataService) {
+    this.chatSocket = userService.chatSocket;
+    this.subscribeToEvents();
+    console.log('~~~~~~~~~~~~SUBSCRIBED CHANNEL~~~~~~~~~~~~~');
+    this.tryListChannels();
     this.userSubscription = this.userService.user$.subscribe(
       (user) => {
         this.myUser = user;
@@ -36,11 +40,10 @@ export class ChannelService {
           });
         } */
         console.log('channel service constructor');
-        //this.subscribeToEvents();
       }
     );
   }
-  
+
   serverChannels = new BehaviorSubject<Channel[]>(this.channels);
   serverChatObs$ = this.serverChannels.asObservable();
 
@@ -189,7 +192,7 @@ export class ChannelService {
     console.log('REMOVE ADMIN', removeAdmin);
     this.chatSocket?.emit(ESocketMessage.TRY_REMOVE_ADMIN, removeAdmin);
   }
-  
+
   tryListChannels() {
     this.chatSocket?.emit('tryListChannels');
   }
@@ -197,9 +200,9 @@ export class ChannelService {
   /*~~~~~~~~~~~~~~~~*/
 
   subscribeToEvents() {
-    if (!this.once) return;
-    this.once = false;
-    
+    // if (!this.once) return;
+    // this.once = false;
+
     console.log('LISTENING', this.chatSocket);
     this.chatSocket?.on(
       'listChannels',
@@ -226,7 +229,7 @@ export class ChannelService {
           isBanned: false,
           isMuted: false,
           usersIds: [1],
-          adminIds: [] 
+          adminIds: []
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);

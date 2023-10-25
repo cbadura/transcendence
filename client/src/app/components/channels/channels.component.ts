@@ -21,27 +21,27 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
   private channelSubscription!: Subscription;
-  
+
 
   constructor(
     private userDataService: UserDataService,
     private channelService: ChannelService) {
   }
-    
+
   ngOnInit() {
     console.log('ON INIT');
     // this.userDataService.CreateSocketConnections();
-    this.channelService.chatSocket = this.userDataService.chatSocket;
+   // this.channelService.chatSocket = this.userDataService.chatSocket;
     console.log('SOCKET', this.channelService.chatSocket);
     this.channelSubscription = this.channelService.serverChatObs$.subscribe(
       (channels) => {
         this.serverChannels = channels;
-        console.log('SERVER CHANNELS', this.serverChannels);
-        this.selectChannel('My channels');
-        this.channelService.subscribeToEvents();
+       // console.log('SERVER CHANNELS', this.serverChannels);
+       this.selectChannel('My channels');
+        //this.channelService.subscribeToEvents(); // ?
       }
       );
-    this.channelService.tryListChannels();
+   // this.channelService.tryListChannels();
     console.log('subscribe to socket ');
   }
 
@@ -68,7 +68,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 	else if (selectedPage === 'DMs') {
 		this.filteredChannels = [];
 	}
-	  
+
 	  console.log('FILTERED CHANNELS', this.filteredChannels);
   }
 

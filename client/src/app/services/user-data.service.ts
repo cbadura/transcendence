@@ -104,7 +104,7 @@ export class UserDataService {
       this.chatSocket = new Socket({ url: chatUrl, options: {} });
 
     }
-    console.log('SOCKET IN USER', this.chatSocket);
+    //console.log('SOCKET IN USER', this.chatSocket);
   }
 }
 
