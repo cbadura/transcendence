@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DatePipe } from "@angular/common";
 // import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
@@ -82,44 +82,10 @@ export class ChatHistoryService {
         this.chatSocket?.on('message', (msg: any) => {
             observer.next(msg);
         });
-        // On observable unsubscribe, you can remove the socket listener
-        return () => {
-            this.chatSocket?.off('message');
-        };
-    });
-  }
-
-  subscribeToEvents() {
-    this.chatSocket?.on(
-      'listChannels',
-      (data: any) => {
-        console.log('LIST', data);
-        this.eventSubject.next({
-          eventType: 'listChannels',
-          data: data
-        });
-    });
-
-    this.chatSocket?.on(
-      'createdChannel',
-      (data: any) => {
-        console.log('CREATED', data);
-        this.eventSubject.next({
-          eventType: 'listChannels',
-          data: data
-        });
     });
   }
 
   getEventData() {
     return this.eventSubject.asObservable();
   }
-
-  /* listChannels(): Observable<Channel[]> {
-    return this.chatSocket.fromEvent(
-      'listChannels').pipe(
-      map((response: any) => response.channels)
-    );
-  } */
-
 }

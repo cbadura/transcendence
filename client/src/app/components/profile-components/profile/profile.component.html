@@ -1,31 +1,31 @@
 <section class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4 p-4">
 
 <!-- Profile picture -->
-<tcd-profile-pic [profilePic]="myUser.avatar" [size]="'8rem'"></tcd-profile-pic>
+<tcd-profile-pic [profilePic]="user.avatar" [size]="'8rem'"></tcd-profile-pic>
 
 <!-- Name , level and status -->
 <div class="flex flex-col items-center">
     <div class="flex items-center gap-2">
         <div [ngClass] = "{ 'h-4 aspect-square  rounded-full border border-black' : true,
-            'bg-green-300' : myUser.status === 'online',
-            'bg-red-400' : myUser.status === 'offline',
-            'bg-blue-400' : myUser.status === 'ingame'}">
+            'bg-green-300' : user.status === 'online',
+            'bg-red-400' : user.status === 'offline',
+            'bg-blue-400' : user.status === 'ingame'}">
         </div>
-        <h1 class="font-bold text-2xl">{{myUser.name}}</h1>
+        <h1 class="font-bold text-2xl">{{user.name}}</h1>
     </div>
     <p>level {{getFloorLevel()}}</p>
 </div>
 
 <!-- Add, remove, block friend -->
 <div class="flex gap-4">
-    <tcd-custom-button buttonText="Add friend"></tcd-custom-button>
-    <tcd-custom-button buttonText="Block"></tcd-custom-button>
-    <tcd-custom-button buttonText="Edit profile" [customRoute]="'/create-profile'"></tcd-custom-button>
+    <tcd-custom-button (click)="changeRelation('friend')" *ngIf="!myUser" buttonText="Add friend"></tcd-custom-button>
+    <tcd-custom-button (click)="changeRelation('blocked')" *ngIf="!myUser" buttonText="Block"></tcd-custom-button>
+    <tcd-custom-button *ngIf="myUser" buttonText="Edit profile" [customRoute]="'/create-profile'"></tcd-custom-button>
 </div>
 
 <!-- note from Jean: it might make sense to also display the overall matches here -->
 <!-- Stats -->
-<tcd-stats [level]="myUser.level"></tcd-stats>
+<tcd-stats [level]="user.level"></tcd-stats>
 
 <!-- Achievements -->
 <div class="flex flex-col items-center w-full">
@@ -42,7 +42,7 @@
     <p>Match history</p>
     <div class="bg-black w-full rounded-3xl h-fit p-4" >
         <div *ngFor="let match of matches">
-            <tcd-match [match]="match" [me]="myUser"></tcd-match>
+            <tcd-match [match]="match" [me]="user"></tcd-match>
         </div>
     </div>
 </div>

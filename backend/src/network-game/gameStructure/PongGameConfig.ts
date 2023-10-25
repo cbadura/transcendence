@@ -1,3 +1,6 @@
+import { Vector2D } from "./Vector2D";
+import { EBallType } from "./gameBalls/EBallType";
+
 export const trainingGameConfig: PongGameConfig = {
   canvas: {
       width: 1280,
@@ -9,15 +12,13 @@ export const trainingGameConfig: PongGameConfig = {
       width: 25,
       startPosY: 720 / 2, //hard coding for now
       step: 10,
+      minLength: 20,
+      maxLength: 1280,
     },
     balls: [{
-      defaultPosX: 1280 / 2,
-      defaultPosY: 720 / 2,
-      defaultDirX: -1,
-      defaultDirY: 0,
-      defaultRadius: 20,
-      defaultSize: 1.00, //not sure
-      defaultSpeed: 5,
+      type: EBallType.DEFAULT,
+      defaultPos: new Vector2D(1280 / 2,720 / 2),
+      defaultDir: new Vector2D(-1,0),
     }],
     maxScore: 1000,
 } 
@@ -33,18 +34,13 @@ export const defaultConfig: PongGameConfig = {
         width: 25,
         startPosY: 720 / 2, //hard coding for now
         step: 10,
+        minLength: 20,
+        maxLength: 1280,
       },
       balls: [{
-        defaultPosX: 1280 / 2,
-        defaultPosY: 720 / 2,
-        defaultDirX: Math.floor(Math.random() * 2) === 0 ? 1 : -1,
-        defaultDirY: Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5,
-        // defaultDirY: 0, //temporary
-        // defaultDirY:  Math.floor(Math.random() * 2),
-        // defaultDirY:  0.1,
-        defaultRadius: 20,
-        defaultSize: 1.00, //not sure
-        defaultSpeed: 5,
+        type:EBallType.DEFAULT,
+        defaultPos: new Vector2D(1280 / 2,720 / 2),
+        defaultDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5),
       }],
       maxScore: 5,
 } 
@@ -60,25 +56,19 @@ export const specialConfig: PongGameConfig = {
       width: 25,
       startPosY: 720 / 2, //hard coding for now
       step: 10,
+      minLength: 20,
+      maxLength: 1280,
     },
     balls: [
       {
-        defaultPosX: 1280 / 2,
-        defaultPosY: 720 / 2,
-        defaultDirX: 1,
-        defaultDirY: -0.5,
-        defaultRadius: 20,
-        defaultSize: 1.00, //not sure
-        defaultSpeed: 5,
+        type: EBallType.DEFAULT,
+        defaultPos: new Vector2D(1280 / 2,720 / 2),
+        defaultDir: new Vector2D(1,-0.5),
       },
       {
-        defaultPosX: 1280 / 2,
-        defaultPosY: 720 / 2,
-        defaultDirX: -1,
-        defaultDirY: -0.5,
-        defaultRadius: 20,
-        defaultSize: 1.00, //not sure
-        defaultSpeed: 5,
+        type: EBallType.DEFAULT,
+        defaultPos: new Vector2D(1280 / 2,720 / 2),
+        defaultDir: new Vector2D(-1,-0.5),
       },
   ],
     maxScore: 5,
@@ -89,13 +79,9 @@ export const specialConfig: PongGameConfig = {
 
 
 export interface BallConfig {
-    defaultPosX: number;
-    defaultPosY: number;
-    defaultDirX: number;
-    defaultDirY: number;
-    defaultRadius: number;
-    defaultSize: number; //not sure
-    defaultSpeed: number;
+    type: EBallType;
+    defaultPos: Vector2D;
+    defaultDir: Vector2D;
 }
 
 export interface GameBoardConfig {
@@ -109,6 +95,8 @@ export interface PaddleConfig {
     width: number;
     startPosY: number;
     step: number;
+    minLength?: number;
+    maxLength?: number;
 }
 
 export interface PongGameConfig {

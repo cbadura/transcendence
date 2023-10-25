@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-
+import { ActivatedRoute } from '@angular/router';
 import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { User } from 'src/app/shared/interfaces/user';
@@ -10,33 +10,30 @@ import { Match } from 'src/app/shared/interfaces/match';
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
-
 })
 export class ProfileComponent implements OnInit {
-  myUser!: User;
+  user!: User;
   private userSubscription!: Subscription;
   achievements: Achievement[] = [];
   matches: Match[] = [];
+  public myUser: boolean = false;
 
   constructor(
-    private userDataService: UserDataService) {
-
-    /* const currentUser = this.userDataService.getUser();
-    console.log('Current User ID:', currentUser.id); */
-  }
+    private route: ActivatedRoute,
+    private userDataService: UserDataService,
+  ) {}
 
   ngOnInit() {
-    this.userSubscription = this.userDataService.user$.subscribe(
-      (user) => {
-        this.myUser = user;
-        if (this.myUser && this.myUser.id) {
-          this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
-            this.myUser = data;
-            console.log('Profile', data);
-          });
-        }
+    this.route.params.subscribe((params) => {
+      const { profile, ...rest } = params;
+      this.user = rest as User;
+      if (!this.user.name) {
+        this.userSubscription = this.userDataService.user$.subscribe((user) => {
+          this.user = user;
+          this.myUser = true;
+        });
       }
-    );
+    });
 
     this.achievements = [
       { name: 'Paddle Master', url: 'https://picsum.photos/100' },
@@ -47,14 +44,31 @@ export class ProfileComponent implements OnInit {
       { name: 'Table Tennis Titan', url: 'https://picsum.photos/100' },
     ];
 
-
-
     this.matches = [
-      { opponent: dummyUsers[0], dateTime: '2021-04-01T12:00:00', myScore: 10, opponentScore: 5 },
-      { opponent: dummyUsers[1], dateTime: '2021-04-02T12:00:00', myScore: 5, opponentScore: 10 },
-      { opponent: dummyUsers[2], dateTime: '2021-04-03T12:00:00', myScore: 2, opponentScore: 3 },
+      {
+        opponent: dummyUsers[0],
+        dateTime: '2021-04-01T12:00:00',
+        myScore: 10,
+        opponentScore: 5,
+      },
+      {
+        opponent: dummyUsers[1],
+        dateTime: '2021-04-02T12:00:00',
+        myScore: 5,
+        opponentScore: 10,
+      },
+      {
+        opponent: dummyUsers[2],
+        dateTime: '2021-04-03T12:00:00',
+        myScore: 2,
+        opponentScore: 3,
+      },
     ];
   }
 
-  getFloorLevel = () => Math.floor(this.myUser.level);
+  changeRelation(status : string) : void {
+	this.userDataService.changeRelation(status, this.user.id);
+  };
+
+  getFloorLevel = () => Math.floor(this.user.level);
 }

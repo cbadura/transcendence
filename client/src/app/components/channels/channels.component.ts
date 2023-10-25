@@ -38,12 +38,14 @@ export class ChannelsComponent implements OnInit, OnDestroy {
         this.serverChannels = channels;
         console.log('SERVER CHANNELS', this.serverChannels);
          this.selectChannel('My channels');
+         this.channelService.subscribeToEvents();
+          //tryListChannels
       }
     );
+    console.log('subscribe to socket ');
   }
 
   selectChannel(channel: string) {
-    console.log(channel);
     this.selectedPage = channel;
     this.filterChannels();
   }
@@ -72,5 +74,6 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.channelSubscription.unsubscribe();
+
   }
 }

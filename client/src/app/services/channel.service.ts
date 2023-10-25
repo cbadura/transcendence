@@ -23,18 +23,20 @@ export class ChannelService {
   myUser!: User;
   private userSubscription!: Subscription;
   chatSocket: Socket | null = null;
+  private once : boolean = true;
 
   constructor(private userService: UserDataService) {
     this.userSubscription = this.userService.user$.subscribe(
       (user) => {
         this.myUser = user;
-        if (this.myUser && this.myUser.id) {
+       /*  if (this.myUser && this.myUser.id) {
           this.userService.fetchUserById(this.myUser.id).subscribe(data => {
             this.myUser = data;
             // this.chatSocket? = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
-            this.subscribeToEvents();
           });
-        }
+        } */
+        console.log('channel service constructor');
+        //this.subscribeToEvents();
       }
     );
   }
@@ -191,9 +193,14 @@ export class ChannelService {
   /*~~~~~~~~~~~~~~~~*/
 
   subscribeToEvents() {
+
+    if (!this.once) return;
+    this.once = false;
+    console.log('LISTENING', this.chatSocket);
     this.chatSocket?.on(
       'listChannels',
       (data: any) => {
+        console.log('listChannels', data);
         this.channels = data.channels;
         this.serverChannels.next(this.channels);
     });

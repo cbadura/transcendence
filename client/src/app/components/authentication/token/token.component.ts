@@ -6,12 +6,11 @@ import { UserDataService } from 'src/app/services/user-data.service';
 
 @Component({
 	selector: 'tcd-token',
-	templateUrl: './token.component.html',
-	styleUrls: ['./token.component.css']
+	templateUrl: './token.component.html'
   })
 export class TokenComponent implements OnInit {
 	public status! : string;
-	constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient,  private userDataService: UserDataService) {}
+	constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient,  private userDataService: UserDataService, ) {}
   
 	ngOnInit() {
 		this.status = 'loading';
@@ -37,14 +36,17 @@ export class TokenComponent implements OnInit {
 							color: response.color,
 							avatar: response.avatar,
 						};
-						console.log(user);
+						console.log('First user created!', user);
+						
 						this.userDataService.replaceUser(user);
+						this.userDataService.CreateSocketConnections();
+				
+
 						this.router.navigate(['/create-profile']);
 					},
 					(error) => {
 						console.error('Error occurred while making the request:', error);
 					}
-	
 				);
 			  console.log('Token received in the response:', token);
 			
@@ -61,8 +63,7 @@ export class TokenComponent implements OnInit {
 	  } else {
 		this.status = 'error';
 		console.log('No code parameter found in the URL.');
-	  }
-	//   this.userDataService.CreateSocketConnections();
+	  }	  
 	}
   }
   
