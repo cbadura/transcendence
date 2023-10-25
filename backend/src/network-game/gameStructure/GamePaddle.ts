@@ -20,7 +20,7 @@ export class GamePaddle {
     defaultLength: number = 180;
     defaultWidth: number = 25;
     private minLength: number = 10;
-    private maxLength: number = 1280;
+    private maxLength: number = 500;
 
     score: number = 0;
     pos: Vector2D = new Vector2D(-1,-1)
@@ -42,5 +42,11 @@ export class GamePaddle {
         this.score +=increment;
         if(this.score < 0)
             this.score = 0;
+    }
+
+    public resetPaddle() {
+        this.length = this.defaultLength;
+        this.step = this.defaultStep;
+        this.width = this.defaultWidth;
     }
 }

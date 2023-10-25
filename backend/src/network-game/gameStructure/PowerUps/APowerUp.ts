@@ -22,7 +22,7 @@ export abstract class APowerUp {
 
     abstract OnCollision(instigator: ABall):void;
 
-    protected markConsumed() {
+    markConsumed() {
         this.isConsumed = true;
     }
 

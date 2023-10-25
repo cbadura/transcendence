@@ -37,6 +37,7 @@ export class GECreateSplitBall extends AGameEffect{
           const startDir = new Vector2D(xDir, yDir);
         //   console.log(i,startDir);
           const splitBall = BallFactory(EBallType.SPLITBALL, { startPos, startDir,radius: radius });
+          splitBall.setOwner(this.instigator.getOwner());
           this.game.gameBalls.push(splitBall);
         }
     

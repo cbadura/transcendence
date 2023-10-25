@@ -19,10 +19,7 @@ export abstract class ABall {
                 this.speed = this.defaultSpeed = startSpeed;
             if(radius){
                 this.ballRadius = this.defaultRadius = radius;
-                if(this.ballRadius > this.maxRadius)
-                    this.ballRadius = this.maxRadius
-                if(this.ballRadius < this.minRadius)
-                    this.ballRadius = this.minRadius
+                this.SafeguardRadius();
             }
             if(maxSpeed)
                 this.maxSpeed = this.maxSpeed = maxSpeed;
@@ -34,7 +31,7 @@ export abstract class ABall {
     protected defaultSpeed: number = 5;
     protected defaultRadius: number = 20;
     protected minRadius: number = 5;
-    protected maxRadius: number = 200;
+    protected maxRadius: number = 100;
 
     //constantly updating values
     protected dir: Vector2D;
@@ -117,6 +114,23 @@ export abstract class ABall {
 
     setRadius(newRadius: number): void{
         this.ballRadius = newRadius;
+        this.SafeguardRadius();
+    }
+
+    addSubRadius(newRadius: number): void{
+        this.ballRadius += newRadius;
+        this.SafeguardRadius();
+    }
+
+    setOwner(newStatus: number): void {
+        this.ownerID = newStatus;
+    }
+
+    private SafeguardRadius(){
+        if(this.ballRadius > this.maxRadius)
+            this.ballRadius = this.maxRadius
+        if(this.ballRadius < this.minRadius)
+            this.ballRadius = this.minRadius
     }
 
     private checkScore(game: APongGame){
@@ -147,8 +161,14 @@ export abstract class ABall {
         for (let i = 0; i < powerups.length; i++) {
             const dist = Math.sqrt(Math.pow(this.pos.x - powerups[i].pos.x,2) + Math.pow(this.pos.y - powerups[i].pos.y,2))
             if(dist < this.ballRadius + powerups[i].radius){
-                if(!powerups[i].getIsConsumed())
-                    powerups[i].OnCollision(this);
+                if(!powerups[i].getIsConsumed()){
+                    if(this.ownerID != -1){
+                        powerups[i].OnCollision(this);
+                    }
+                    else{ //edge case for when the ball has no owner assigned yet
+                        powerups[i].markConsumed();
+                    }
+                }
             }
         }
 
@@ -188,6 +208,8 @@ export abstract class ABall {
             this.pos ={...this.respawnPos};
             this.dir = {...this.defaultDir};
             this.speed = this.defaultSpeed;
+            this.ballRadius = this.defaultRadius;
+            this.ownerID = -1;
         }
         else{
             this.isExpired = true;

@@ -17,6 +17,8 @@ export abstract class APongGame {
         for (let i = 0; i < config.balls.length; i++) {
             this.gameBalls.push(BallFactory(config.balls[i].type,{startPos: config.balls[i].defaultPos,startDir: config.balls[i].defaultDir}));
         }
+        this.centerX = this.config.canvas.width/2
+        this.centerY = this.config.canvas.height/2
     }
     userPaddles: GamePaddle[] = [];
     gameBalls: ABall[] = [];
@@ -24,6 +26,9 @@ export abstract class APongGame {
     gameEffects: AGameEffect[] = [];
     private gameOver: boolean = false;
     hits : number = 0;
+
+    protected centerX: number;
+    protected centerY: number;
 
     //make sure that you get 0 or 1... currently its 1 and 2
     movePaddle(id: number, direction: number): void {

@@ -8,21 +8,21 @@ import { Vector2D } from "../Vector2D";
 import { PUSplitBall } from "../PowerUps/PUSplitBall";
 import { BallFactory } from "../gameBalls/BallFactory";
 import { EBallType } from "../gameBalls/EBallType";
+import { PUIncreaseBallSize } from "../PowerUps/PUIncreaseBallSize";
+import { PowerUpFactory } from "../PowerUps/PowerUpFactory";
 
 export class SpecialPongGame extends APongGame {
-    private maxPowerUps = 1;
-    private powerUpRespawnTimer = 7;
+    private maxPowerUps = 20;
+    private powerUpRespawnTimer = 3;
     private prevPeriodTimeStamp: number =  this.getNewDate();
+    //defines an area from the center where powerups can spawn
+    private powerUpSpawnArea: Vector2D = new Vector2D(this.config.canvas.width/4,this.config.canvas.height/2 - 100)
 
     constructor(config?: PongGameConfig) {
         console.log("in constructor of SpecialPongGame")
         if(config == null)
             config = specialConfig;
         super(config);
-        // for (let i = 30; i < config.canvas.width; i+=60) {
-        //     this.powerUps.push(new PowerUpDummy(640+320,i))   
-        // }
-        // this.powerUps.push(new PUDecreaseOpponentPaddleLength(this,640+320,350))   
     }
 
     gameLoop(): void {
@@ -45,7 +45,7 @@ export class SpecialPongGame extends APongGame {
         this.gameBalls = this.gameBalls.filter((ball)=>ball.isExpired == false)
 
         if(this.gameBalls.length == 0){
-            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos:new Vector2D(this.config.canvas.width/2,this.config.canvas.height/2)
+            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos:new Vector2D(this.centerX,this.centerY)
                 ,startDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5)}))
         }
         // console.log(this.gameBalls.length)
@@ -56,6 +56,7 @@ export class SpecialPongGame extends APongGame {
     }
 
     private UpdatePeddles(){
+
     }
 
     private UpdateBallPositions(){
@@ -67,18 +68,14 @@ export class SpecialPongGame extends APongGame {
     private UpdatePowerUps(){
         //remove consumed.
         this.powerUps = this.powerUps.filter((powerup)=> powerup.isConsumed == false)
-        // console.log('NUMBER OF POWERUPS = ',this.powerUps.length)
-        for (let i = 0; i < this.powerUps.length; i++) {
-            // console.log(`element [${i}] status = ${this.powerUps[i].isConsumed}`)
-            
-        }
 
         //add new PowerUps if necessary ones
         if(this.prevPeriodTimeStamp < new Date().getTime()) {
             console.log("NEW TIMESTAMP CREATED")
             this.prevPeriodTimeStamp = this.getNewDate()
 
-            for (let i = this.powerUps.length; i < this.maxPowerUps; i++) {
+            if(this.powerUps.length < this.maxPowerUps){
+                // this.spawnDebugPowerUp();
                 this.spawnPowerUp();
             }
         }
@@ -90,11 +87,22 @@ export class SpecialPongGame extends APongGame {
 
     private spawnPowerUp() {
         //try find suitable spawn location thats not within another location
-        const randomX = this.getRandomNbrInRange(700,700);
-        this.powerUps.push(new PUSplitBall(this,new Vector2D(randomX,350)))
-        //no protection yet
-        // for (let i = 0; i < 3; i++) {
-        // }   
+        if(this.config.powerUps.length <= 0) {
+            throw new Error("Didn't find any powerups in the config")
+        }
+
+        const randomElement = Math.floor(this.getRandomNbrInRange(0,this.config.powerUps.length -1))
+        const PowerUpConfig = this.config.powerUps[randomElement]
+        const randomX = this.getRandomNbrInRange(this.centerX - this.powerUpSpawnArea.x,this.centerX + this.powerUpSpawnArea.x);
+        const randomY = this.getRandomNbrInRange(this.centerY - this.powerUpSpawnArea.y,this.centerY + this.powerUpSpawnArea.y);
+        
+        this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(randomX,randomY),PowerUpConfig.config))
+
+    }
+
+    private spawnDebugPowerUp(){
+        const PowerUpConfig = this.config.powerUps[0]
+        this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(this.centerX,this.centerY),PowerUpConfig.config))
     }
 
 

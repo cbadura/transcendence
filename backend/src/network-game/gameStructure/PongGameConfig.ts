@@ -1,3 +1,4 @@
+import { EPowerUpType } from "./PowerUps/EPowerUpType";
 import { Vector2D } from "./Vector2D";
 import { EBallType } from "./gameBalls/EBallType";
 
@@ -13,13 +14,19 @@ export const trainingGameConfig: PongGameConfig = {
       startPosY: 720 / 2, //hard coding for now
       step: 10,
       minLength: 20,
-      maxLength: 1280,
+      maxLength: 400,
     },
     balls: [{
       type: EBallType.DEFAULT,
       defaultPos: new Vector2D(1280 / 2,720 / 2),
       defaultDir: new Vector2D(-1,0),
     }],
+    powerUps: [
+      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 10,}},
+      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false}},
+      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10}},
+      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10}},
+    ],
     maxScore: 1000,
 } 
 
@@ -35,7 +42,7 @@ export const defaultConfig: PongGameConfig = {
         startPosY: 720 / 2, //hard coding for now
         step: 10,
         minLength: 20,
-        maxLength: 1280,
+        maxLength: 400,
       },
       balls: [{
         type:EBallType.DEFAULT,
@@ -70,7 +77,13 @@ export const specialConfig: PongGameConfig = {
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(-1,-0.5),
       },
-  ],
+    ],
+    powerUps: [
+      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 45,}},
+      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false}},
+      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10}},
+      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10}},
+    ],
     maxScore: 5,
 } 
 
@@ -99,10 +112,15 @@ export interface PaddleConfig {
     maxLength?: number;
 }
 
+export interface PowerUpConfig {
+    type: EPowerUpType;
+    config?: any;
+}
+
 export interface PongGameConfig {
     canvas: GameBoardConfig;
     paddle: PaddleConfig;
     balls: BallConfig[];
     maxScore: number;
+    powerUps?: PowerUpConfig[];
 }
-

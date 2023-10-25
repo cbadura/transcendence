@@ -63,7 +63,11 @@ export class Render {
 
   drawPowerUp(powerup: PowerUpRenderInfo){
     this.drawCircle(powerup.pos.x, powerup.pos.y, powerup.radius, '#00000000', 'black',2);
-    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',powerup.type[0])
+    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',this.getCapitalizedLettersFromType(powerup.type))
+  }
+
+    getCapitalizedLettersFromType (type: string): string {
+      return type.replace(/[^A-Z]+/g, "");
   }
 
   drawName(user:User,x:number,y:number,rotation: number = 0) {
