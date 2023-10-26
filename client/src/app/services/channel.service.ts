@@ -232,7 +232,7 @@ export class ChannelService {
           role: role,
           isBanned: false,
           isMuted: false,
-          usersIds: [this.myUser.id],
+          usersIds: [data.ownerId],
           adminIds: []
         }
         this.channels.push(channel);

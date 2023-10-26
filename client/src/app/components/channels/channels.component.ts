@@ -21,7 +21,6 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
   private channelSubscription!: Subscription;
-  private userJoined: boolean = false;
   private userId: number = 0;
 
   constructor(
@@ -66,9 +65,9 @@ export class ChannelsComponent implements OnInit, OnDestroy {
     const foundChannel = this.serverChannels.find(ch =>
       ch.name === channel.name);
     
+    console.log('ID', this.userId);
     if (foundChannel) {
-        return !!foundChannel.usersIds.find(id =>  // !! double negation will convert this result into a boolean (true if a channel is found, false otherwise)
-          id === this.userId);
+      return foundChannel.usersIds.every(id => id !== this.userId);
     }
     return false;
   }
