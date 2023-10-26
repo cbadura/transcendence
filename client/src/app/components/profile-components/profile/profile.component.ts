@@ -20,6 +20,7 @@ export class ProfileComponent implements OnInit {
   achievements: Achievement[] = [];
   friends: User[] = [];
   matches: Match[] = [];
+  relation : string = '';
   public myUser: boolean = false;
 
   constructor(
@@ -38,7 +39,10 @@ export class ProfileComponent implements OnInit {
           this.user = user;
           this.myUser = true;
         });
-      }
+      } else {
+		
+	  }
+
 	  this.userService.getFriends(this.user.id).subscribe((data) => {
 		data.forEach((friend) => {
 			this.fetchUser(friend.relational_user_id);
