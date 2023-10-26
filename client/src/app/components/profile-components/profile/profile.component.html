@@ -28,13 +28,13 @@
 <tcd-stats [level]="user.level"></tcd-stats>
 
 <!-- Friends -->
-<div class="flex flex-col items-center w-full">
-    <p>Friends</p>
-    <div class="bg-black w-full rounded-3xl h-fit " >
-        <div *ngFor="let friend of friends">
+<div class="w-full" *ngIf="friends.length > 0">
+	<p class="text-center">Friends</p>
+	<div  class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+		<div class="p-4" *ngFor="let friend of friends">
 			<tcd-profile-card [user]="friend"></tcd-profile-card>
-        </div>
-    </div>
+	</div>
+</div>
 </div>
 
 
