@@ -1,11 +1,10 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject, Subject, Subscription} from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 
-import {Channel} from '../shared/chat/Channel';
+import { Channel } from '../shared/chat/Channel';
 import { User } from 'src/app/shared/interfaces/user';
-import {EUserRole} from '../shared/macros/EUserRole';
-import {ESocketMessage} from '../shared/chat/ESocketMessage';
-// import { io, Socket } from 'socket.io-client'
+import { EUserRole } from '../shared/macros/EUserRole';
+import { ESocketMessage } from '../shared/chat/ESocketMessage';
 import { Socket } from 'ngx-socket-io';
 import { UserDataService } from './user-data.service';
 
@@ -17,7 +16,7 @@ interface Change {
 @Injectable({
   providedIn: 'root'
 })
-export class ChannelService {
+export class ChannelService implements OnDestroy{
   channels: Channel[] = [];
   eventSubject = new Subject<{ eventType: string; data: any}>();
   myUser!: User;
@@ -33,12 +32,6 @@ export class ChannelService {
     this.userSubscription = this.userService.user$.subscribe(
       (user) => {
         this.myUser = user;
-       /*  if (this.myUser && this.myUser.id) {
-          this.userService.fetchUserById(this.myUser.id).subscribe(data => {
-            this.myUser = data;
-            // this.chatSocket? = io('http://localhost:3000/chat', {query: {userId: this.myUser.id}});
-          });
-        } */
         console.log('channel service constructor');
       }
     );
@@ -46,7 +39,6 @@ export class ChannelService {
 
   serverChannels = new BehaviorSubject<Channel[]>(this.channels);
   serverChatObs$ = this.serverChannels.asObservable();
-
 
   execActions(channel: Channel, userChanges: Change[]) {
 	  userChanges.forEach((change: Change) => {
@@ -70,8 +62,7 @@ export class ChannelService {
 		  }
 	  });
   }
-
-
+  
   /* SOCKET.IO calls */
 
   createChannel(channel: Channel, password: string) {
@@ -392,7 +383,6 @@ export class ChannelService {
 
    /*~~~~~~~~~~~~~~~~*/
   }
-
   ngOnDestroy() {
     this.userSubscription.unsubscribe();
   }
