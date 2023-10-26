@@ -7,5 +7,7 @@ export interface User {
     wins: number;
     color: string;
     avatar: string;
+	qr?: string;
+	tfa?: boolean;
     // friends: User[];
 }
