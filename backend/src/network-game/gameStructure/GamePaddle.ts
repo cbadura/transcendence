@@ -13,7 +13,7 @@ export class GamePaddle {
         if(config.minLength)
             this.minLength = config.minLength;
 
-        console.log(this)
+        // console.log(this)
     }
     //unchangeable variables
     defaultStep: number = 10;

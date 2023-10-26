@@ -22,10 +22,10 @@ export const trainingGameConfig: PongGameConfig = {
       defaultDir: new Vector2D(-1,0),
     }],
     powerUps: [
-      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 10,}},
-      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false}},
-      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10}},
-      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10}},
+      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 10,},weight: 1},
+      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 1},
+      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 100},
+      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 1},
     ],
     maxScore: 1000,
 } 
@@ -115,6 +115,7 @@ export interface PaddleConfig {
 export interface PowerUpConfig {
     type: EPowerUpType;
     config?: any;
+    weight?: number;
 }
 
 export interface PongGameConfig {

@@ -38,7 +38,7 @@ export class PUDummy extends APowerUp {
     }
 
     OnCollision(instigator: ABall): void {
-        console.log("TRIGGERING EFFECT ON PADDLE ID: ",instigator)
+        // console.log("TRIGGERING EFFECT ON PADDLE ID: ",instigator)
         this.markConsumed();
     }
 }

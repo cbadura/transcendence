@@ -139,7 +139,7 @@ export abstract class ABall {
         const bounceAngle = this.maxBounceAngle * relativehitPoint;
         this.dir.x < 0 ? this.dir.x = 1 :this.dir.x = -1;
         this.dir.y = Math.sin(bounceAngle);
-        console.log(`new direction [${this.dir.x},${this.dir.y}]`)
+        // console.log(`new direction [${this.dir.x},${this.dir.y}]`)
       }
 
     private checkPowerUpCollision(powerups: APowerUp[]) {

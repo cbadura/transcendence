@@ -1,5 +1,5 @@
 import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "../RenderInfo";
-import { PongGameConfig, specialConfig } from "../PongGameConfig";
+import { PongGameConfig, PowerUpConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
 import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
 import { PUIncreaseOwnerPaddleLength } from "../PowerUps/PUIncreaseOwnerPaddleLength";
@@ -17,12 +17,23 @@ export class SpecialPongGame extends APongGame {
     private prevPeriodTimeStamp: number =  this.getNewDate();
     //defines an area from the center where powerups can spawn
     private powerUpSpawnArea: Vector2D = new Vector2D(this.config.canvas.width/4,this.config.canvas.height/2 - 100)
-
+    private sumPowerUpWeigths: number = 0;
     constructor(config?: PongGameConfig) {
         console.log("in constructor of SpecialPongGame")
         if(config == null)
             config = specialConfig;
         super(config);
+
+
+        //calucalate sum once for random spawning
+        for (let i = 0; i < this.config.powerUps.length; i++) {
+            if(this.config.powerUps[i].weight == null){
+                this.sumPowerUpWeigths++
+                this.config.powerUps[i].weight = 1;
+            }
+            else
+                this.sumPowerUpWeigths += this.config.powerUps[i].weight;
+        }
     }
 
     gameLoop(): void {
@@ -88,16 +99,27 @@ export class SpecialPongGame extends APongGame {
     private spawnPowerUp() {
         //try find suitable spawn location thats not within another location
         if(this.config.powerUps.length <= 0) {
-            throw new Error("Didn't find any powerups in the config")
+            console.log("Didn't find any powerups in the config, NOT SPAWNING POWERUP")
+            return
         }
 
-        const randomElement = Math.floor(this.getRandomNbrInRange(0,this.config.powerUps.length -1))
-        const PowerUpConfig = this.config.powerUps[randomElement]
+        const PowerUpConfig = this.rollForPowerUp()
         const randomX = this.getRandomNbrInRange(this.centerX - this.powerUpSpawnArea.x,this.centerX + this.powerUpSpawnArea.x);
         const randomY = this.getRandomNbrInRange(this.centerY - this.powerUpSpawnArea.y,this.centerY + this.powerUpSpawnArea.y);
         
         this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(randomX,randomY),PowerUpConfig.config))
-
+        
+    }
+    
+    private rollForPowerUp():PowerUpConfig {
+        let randomNumber = Math.floor(this.getRandomNbrInRange(0,this.sumPowerUpWeigths))
+        for (let i = 0; i < this.config.powerUps.length; i++) {
+            if(randomNumber <= this.config.powerUps[i].weight) {
+                return this.config.powerUps[i];
+            }
+            randomNumber -= this.config.powerUps[i].weight;
+        }
+        new Error('Weight calculation is incorrect ')
     }
 
     private spawnDebugPowerUp(){
