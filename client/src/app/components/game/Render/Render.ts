@@ -106,7 +106,7 @@ export class Render {
       this.ctx.fill();
       //drawing debug direction line
       const mult = 50;
-      this.drawLine(ball.pos.x, ball.pos.y,ball.pos.x + (ball.debugDir.x * mult), ball.pos.y + (ball.debugDir.y * mult), 2, 'black');
+      // this.drawLine(ball.pos.x, ball.pos.y,ball.pos.x + (ball.debugDir.x * mult), ball.pos.y + (ball.debugDir.y * mult), 2, 'black');
   }
 
   
