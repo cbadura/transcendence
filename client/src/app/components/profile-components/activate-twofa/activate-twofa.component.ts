@@ -18,6 +18,7 @@ export class ActivateTwofaComponent implements OnInit {
   @Output() closeClicked = new EventEmitter<void>();
   @Input() user!: User;
   public verified: boolean = false;
+  public animationClass : string = '';
   constructor(
     private userDataService: UserDataService,
     private renderer: Renderer2,
@@ -83,6 +84,16 @@ export class ActivateTwofaComponent implements OnInit {
 	  this.userDataService.submit2fa(sixDigitCode).subscribe(
 		(data) => {
 		  this.verified = data.verified;
+		  if (data.verified === false) {
+			this.animationClass = 'shake-horizontal';
+		
+			const divElement = this.el.nativeElement.querySelector('.animation-div');
+			if (divElement) {
+			  divElement.addEventListener('animationend', () => {
+				this.animationClass = '';
+			  });
+			}
+		  }
 		},
 		(error) => {
 		  console.error('Submit2fa error:', error);

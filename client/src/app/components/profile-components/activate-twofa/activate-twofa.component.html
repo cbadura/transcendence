@@ -4,7 +4,8 @@
 >
   <div
     (click)="$event.stopPropagation()"
-    class="bg-zinc-800 rounded-3xl p-4 shadow-md max-w-lg w-full flex flex-col gap-4 items-center"
+	[class]="animationClass"
+    class="animation-div bg-zinc-800 rounded-3xl p-4 shadow-md max-w-lg w-full flex flex-col gap-4 items-center"
   >
     <tcd-chat-btn
       class="mr-auto"
