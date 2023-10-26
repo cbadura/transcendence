@@ -33,13 +33,13 @@ export abstract class ABall {
     protected minRadius: number = 5;
     protected maxRadius: number = 100;
     protected maxBounceAngle: number = 5*Math.PI/12 //75 degrees
+    protected maxSpeed: number = 50;
     //constantly updating values
     protected dir: Vector2D;
     protected pos: Vector2D;
     protected speed: number = this.defaultSpeed;
     protected ballRadius: number = this.defaultRadius;
     protected ownerID : number = -1 //this indicates who last touched the ball
-    protected maxSpeed: number = 50;
     protected type: EBallType;
     shouldRespawn: boolean = true;
     isExpired: boolean = false;
@@ -108,6 +108,15 @@ export abstract class ABall {
 
     setOwner(newStatus: number): void {
         this.ownerID = newStatus;
+    }
+
+    setSpeed(newSpeed: number): void {
+        this.speed = newSpeed;
+        if(this.speed >this.maxSpeed)
+            this.speed = this.maxSpeed
+    }
+    getSpeed(): number {
+        return this.speed;
     }
 
     private SafeguardRadius(){

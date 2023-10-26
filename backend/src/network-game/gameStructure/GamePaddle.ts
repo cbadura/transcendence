@@ -1,9 +1,9 @@
-import { PaddleConfig } from "./PongGameConfig";
+import { GameBoardConfig, PaddleConfig } from "./PongGameConfig";
 import { Vector2D } from "./Vector2D";
 
 
 export class GamePaddle {
-    constructor(config: PaddleConfig) {
+    constructor(private canvas: GameBoardConfig,config: PaddleConfig) {
         this.pos.y = config.startPosY;
         this.step = this.defaultStep = config.step;
         this.width = this.defaultWidth = config.width;
@@ -12,13 +12,17 @@ export class GamePaddle {
             this.maxLength = config.maxLength;
         if(config.minLength)
             this.minLength = config.minLength;
+        if(config.defaultSpeed){
+            this.defaultSpeed = config.defaultSpeed;
+            this.speed =  config.defaultSpeed;
+        }
 
-        // console.log(this)
     }
     //unchangeable variables
     defaultStep: number = 10;
     defaultLength: number = 180;
     defaultWidth: number = 25;
+    private defaultSpeed: number = 1;
     private minLength: number = 10;
     private maxLength: number = 500;
 
@@ -27,6 +31,7 @@ export class GamePaddle {
     step: number;
     length: number;
     width: number;
+    private speed: number = this.defaultSpeed;
 
     //add or substract length within min and max length bounds
     public addSubLength(increment: number): void {
@@ -48,5 +53,21 @@ export class GamePaddle {
         this.length = this.defaultLength;
         this.step = this.defaultStep;
         this.width = this.defaultWidth;
+        this.speed = this.defaultSpeed;
     }
+
+    public move(direction: number): void {
+
+        const maxTop = this.length / 2; //dafuq is that
+        const maxBottom = this.canvas.height - maxTop;
+        const step = direction * this.step * this.speed;
+        
+        const newPaddlePos = this.pos.y + step;
+        if (newPaddlePos < maxTop) 
+            this.pos.y = maxTop;
+        else if(newPaddlePos > maxBottom)
+            this.pos.y = maxBottom;
+        else
+            this.pos.y = newPaddlePos;
+      }
 }

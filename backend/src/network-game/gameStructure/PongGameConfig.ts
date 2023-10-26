@@ -59,32 +59,29 @@ export const specialConfig: PongGameConfig = {
       goalLineOffset: 60,
     },
     paddle: {
-      length: 90,
+      length: 180,
       width: 25,
       startPosY: 720 / 2, //hard coding for now
       step: 10,
       minLength: 20,
-      maxLength: 1280,
+      maxLength: 500,
+      defaultSpeed: 3,
     },
     balls: [
       {
         type: EBallType.DEFAULT,
-        defaultPos: new Vector2D(1280 / 2,720 / 2),
-        defaultDir: new Vector2D(1,-0.5),
-      },
-      {
-        type: EBallType.DEFAULT,
-        defaultPos: new Vector2D(1280 / 2,720 / 2),
-        defaultDir: new Vector2D(-1,-0.5),
+        defaultPos: new Vector2D(1280 / 2,720 / 2 -10),//slightly offsetting y to stop endless loop
+        defaultDir: new Vector2D(1,0),
+        defaultSpeed: 10,
       },
     ],
     powerUps: [
-      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 45,}},
-      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false}},
-      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10}},
-      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10}},
+      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 45,},weight: 1},
+      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 3},
+      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 5},
+      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 5},
     ],
-    maxScore: 5,
+    maxScore: 10,
 } 
 
 
@@ -95,6 +92,7 @@ export interface BallConfig {
     type: EBallType;
     defaultPos: Vector2D;
     defaultDir: Vector2D;
+    defaultSpeed?: number;
 }
 
 export interface GameBoardConfig {
@@ -110,6 +108,7 @@ export interface PaddleConfig {
     step: number;
     minLength?: number;
     maxLength?: number;
+    defaultSpeed?: number;
 }
 
 export interface PowerUpConfig {

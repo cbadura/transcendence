@@ -6,7 +6,10 @@ import { EBallType } from "./EBallType";
 
 export class BallDefault extends ABall {
     constructor(config: BallConfigParams) {
-        super(EBallType.DEFAULT, config.startPos, config.startDir,20, 5, 50)
+        let defaultSpeed = 5;
+        if(config.startSpeed != null)
+            defaultSpeed =config.startSpeed
+        super(EBallType.DEFAULT, config.startPos, config.startDir,20, defaultSpeed, 50)
     }
     
     moveBall() {
