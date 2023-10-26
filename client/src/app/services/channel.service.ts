@@ -223,13 +223,9 @@ export class ChannelService {
       (data: any) => {
         console.log('CREATED', data);
         let role = EUserRole.NONE;
-        this.channels.find((ch) => {
-          if (ch.name === data.channelName) {
-            if (data.ownerId === this.myUser.id) {
-              role = EUserRole.OWNER;
-            }
-          }
-        });
+        if (data.ownerId === this.myUser.id) {
+          role = EUserRole.OWNER;
+        }
         let channel: Channel = {
           name: data.channelName,
           mode: data.mode,
