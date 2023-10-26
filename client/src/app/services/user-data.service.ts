@@ -48,6 +48,7 @@ export class UserDataService {
     });
   }
 
+
   replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
@@ -93,22 +94,19 @@ export class UserDataService {
       );
   }
 
-  changeRelation(status: string, targetId: number) {
-    console.log(targetId);
+  addRelation(status: string, targetId: number) : Observable<any> {
     const data = {
       user_id: this.myUser.id,
       relationship_user_id: Number(targetId),
       relationship_status: status,
     };
     console.log(data);
-    this.http.post(this.serverAddress + '/relationship', data).subscribe(
-      (data) => {
-        console.log('changeRelation success', data);
-      },
-      (error) => {
-        console.log('changeRelation error', error);
-      },
-    );
+	return this.http.post(this.serverAddress + '/relationship', data);
+  }
+
+  removeRelation(relationID : number) : Observable<any> {
+	const url = `http://localhost:3000/relationship/${relationID}`
+	return this.http.delete(url);
   }
 
   //   2FA
