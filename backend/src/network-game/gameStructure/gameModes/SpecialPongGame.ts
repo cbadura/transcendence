@@ -103,7 +103,7 @@ export class SpecialPongGame extends APongGame {
             return
         }
 
-        const PowerUpConfig = this.rollForPowerUp()
+        const PowerUpConfig = this.rollForPowerUpConfig()
         const randomX = this.getRandomNbrInRange(this.centerX - this.powerUpSpawnArea.x,this.centerX + this.powerUpSpawnArea.x);
         const randomY = this.getRandomNbrInRange(this.centerY - this.powerUpSpawnArea.y,this.centerY + this.powerUpSpawnArea.y);
         
@@ -111,10 +111,10 @@ export class SpecialPongGame extends APongGame {
         
     }
     
-    private rollForPowerUp():PowerUpConfig {
+    private rollForPowerUpConfig():PowerUpConfig {
         let randomNumber = Math.floor(this.getRandomNbrInRange(0,this.sumPowerUpWeigths))
         for (let i = 0; i < this.config.powerUps.length; i++) {
-            if(randomNumber <= this.config.powerUps[i].weight) {
+            if(randomNumber < this.config.powerUps[i].weight) {
                 return this.config.powerUps[i];
             }
             randomNumber -= this.config.powerUps[i].weight;

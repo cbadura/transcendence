@@ -62,8 +62,21 @@ export class Render {
   }
 
   drawPowerUp(powerup: PowerUpRenderInfo){
-    this.drawCircle(powerup.pos.x, powerup.pos.y, powerup.radius, '#00000000', 'black',2);
-    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',this.getCapitalizedLettersFromType(powerup.type))
+    const capitalLetters = this.getCapitalizedLettersFromType(powerup.type)
+
+    //hacky color implementation
+    const powerUpTypes: string[] = ['IBS','IOPL','DOPL','SB']
+    const powerUpcolors: string[] = ['#57A639','#3B83BD','#F39F18','#6A5F31']
+    let i = 0;
+    for (; i < powerUpTypes.length; i++) {
+      if(powerUpTypes[i] == capitalLetters)
+        break
+    }
+    let color = '#000000';
+    if(i < powerUpTypes.length)
+      color = powerUpcolors[i]
+    this.drawCircle(powerup.pos.x, powerup.pos.y, powerup.radius, color, 'black',2);
+    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',capitalLetters)
   }
 
     getCapitalizedLettersFromType (type: string): string {

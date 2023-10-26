@@ -24,7 +24,7 @@ export const trainingGameConfig: PongGameConfig = {
     powerUps: [
       {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 10,},weight: 1},
       {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 1},
-      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 100},
+      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 1},
       {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 1},
     ],
     maxScore: 1000,
