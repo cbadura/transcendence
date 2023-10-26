@@ -61,7 +61,7 @@ export class ChannelService implements OnDestroy{
 		  }
 	  });
   }
-  
+
   /* SOCKET.IO calls */
 
   createChannel(channel: Channel, password: string) {
@@ -305,12 +305,12 @@ export class ChannelService implements OnDestroy{
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-          }
-          if (data.targetUserId === this.myUser.id) {
-            ch.role = EUserRole.NONE;
-          }
-          if (ch.role === EUserRole.OWNER) {
-            ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+            if (data.targetUserId === this.myUser.id) {
+              ch.role = EUserRole.NONE;
+            }
+            if (ch.role === EUserRole.OWNER) {
+              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+            }
           }
         });
         this.serverChannels.next(this.channels);
