@@ -76,6 +76,7 @@ export class UserController {
   @Get('profilepic/:filename')
   ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
       const filePath = path.join(__dirname, '../../', 'uploadedData/profilepictures/', filename);
+      console.log(filePath);
       res.sendFile(filePath)
   }
 
