@@ -44,7 +44,7 @@ export class UserController {
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
           const userId = req.params.id;
-          // const uniqueSuffix = Date.now() 
+          // const uniqueSuffix = Date.now()
           // console.log(req);
           const extension = extname(file.originalname)
           const filename =`profilepic_user_${userId}${extension}`;

@@ -341,9 +341,15 @@ export class ChatService {
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
       throw new WsException('User has no permission');
+    if (!this.userService.getUser(dto.targetUserId)) 
+      throw new WsException('Target user does not exist');
+    if (!channel.users.find((user) => user === dto.targetUserId)) // not necessary since frontend will only send target user in channel
+      throw new WsException('Target user is not a member of the channel');
+    // dont need to get ISocketUser since user offline user wont have it
+    // use `dto.targetUserId` instead for everything
     const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId); // this function looks in online users, you need to look in channel users instead.
     if (!targetUser) throw new WsException('User not online'); // quick fix, need review later, for ban/mute offline user
-    const targetRole: EUserRole = this.getUserRole(channel, targetUser.userId);
+    const targetRole: EUserRole = this.getUserRole(channel, dto.targetUserId);
     if (
       targetRole === EUserRole.OWNER ||
       (role === EUserRole.ADMIN && targetRole === EUserRole.ADMIN)
@@ -362,6 +368,11 @@ export class ChatService {
       channel.users = channel.users.filter(
         (user) => user !== targetUser.userId,
       );
+      if (targetRole === EUserRole.ADMIN) {
+        channel.admins = channel.admins.filter(
+          (admin) => admin !== targetUser.userId
+        );
+      }
     }
     if (action === EBanMute.MUTE) {
       channel.mutes.push({
@@ -413,6 +424,8 @@ export class ChatService {
   // Good morning, Cosmo :)
   // good evening, are you hungry?
   // I actually am \(O.O)/
+  // Random tips: use chopsticks to eat chips,
+  //  this will keep your fingers and keyboard clean
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     const user: number = this.getUserIdFromSocket(socket);
