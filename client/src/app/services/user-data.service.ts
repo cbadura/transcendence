@@ -58,17 +58,21 @@ export class UserDataService {
   }
 
   uploadProfilePic(file: File) {
+	interface UploadedResponse {
+		img: string;
+	  }
     const formData = new FormData();
     formData.append('file', file, file.name);
     console.log('attempt upload');
     this.http
-      .post(
+      .post<UploadedResponse>(
         `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
         formData,
       )
       .subscribe(
         (data) => {
-          console.log('UPLOAD', JSON.stringify(data));
+		  this.myUser.avatar = data.img;
+          this.replaceUser(this.myUser);
           window.alert('Profile picture uploaded!');
         },
         (error) => {
