@@ -20,7 +20,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages!: Post[];
   tempText!: string;
   private postSubscription!: Subscription;
-  postSubscriptions: Subscription[] = [];
   private userSubscription!: Subscription;
   myUser!: User;
   channel!: Channel;
@@ -44,6 +43,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.messages = posts;
       }); */
 
+    /* this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
+      this.messages = posts;
+    }); */
+
     this.route.params.subscribe(params => {
       console.log('PARAMS', params)
       const { channel, ...rest } = params;
@@ -51,15 +54,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatHistoryService.setChannelName(this.channel.name);
     });
 
-    // manage all chat display subscriptions
-    const mergedObs$ = merge(...this.chatHistoryService.serverChatObs$);
-  
-    const sub = mergedObs$.subscribe(posts => {
-      // Handle the posts here
-      this.messages = [...this.messages, ...posts];
-    });
+    // Unsubscribe from any previous subscription
+    if (this.postSubscription) {
+      this.postSubscription.unsubscribe();
+    }
 
-    this.postSubscriptions.push(sub);
+    // Subscribe to the chat history for the new channel
+    this.postSubscription = this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
+      this.messages = posts;
+    });
   }
 
   ngAfterViewChecked() {
@@ -86,7 +89,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnDestroy() {
     this.userSubscription.unsubscribe();
-    // this.postSubscription.unsubscribe();
-    this.postSubscriptions.forEach(sub => sub.unsubscribe());
+    if (this.postSubscription) {
+      this.postSubscription.unsubscribe();
+    }
   }
 }
