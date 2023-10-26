@@ -3,9 +3,12 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
+import { UserService } from 'src/app/services/users.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'tcd-profile',
@@ -15,12 +18,15 @@ export class ProfileComponent implements OnInit {
   user!: User;
   private userSubscription!: Subscription;
   achievements: Achievement[] = [];
+  friends: User[] = [];
   matches: Match[] = [];
   public myUser: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private userDataService: UserDataService,
+	private userService: UserService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -33,7 +39,14 @@ export class ProfileComponent implements OnInit {
           this.myUser = true;
         });
       }
+	  this.userService.getFriends(this.user.id).subscribe((data) => {
+		data.forEach((friend) => {
+			this.fetchUser(friend.relational_user_id);
+		  });
+	  });
     });
+
+
 
     this.achievements = [
       { name: 'Paddle Master', url: 'https://picsum.photos/100' },
@@ -64,6 +77,15 @@ export class ProfileComponent implements OnInit {
         opponentScore: 3,
       },
     ];
+  }
+
+  fetchUser(id: number) {
+    const url = `http://localhost:3000/users/${id}`;
+    this.http.get<User>(url).subscribe((data) => {
+      if (data) {
+        this.friends.push(data);
+      }
+    });
   }
 
   changeRelation(status : string) : void {
