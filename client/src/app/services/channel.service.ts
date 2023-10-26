@@ -22,7 +22,6 @@ export class ChannelService implements OnDestroy{
   myUser!: User;
   private userSubscription!: Subscription;
   chatSocket: Socket | null = null;
-  private once : boolean = true;
 
   constructor(private userService: UserDataService) {
     this.chatSocket = userService.chatSocket;
@@ -191,10 +190,6 @@ export class ChannelService implements OnDestroy{
   /*~~~~~~~~~~~~~~~~*/
 
   subscribeToEvents() {
-    // if (!this.once) return;
-    // this.once = false;
-
-    console.log('LISTENING', this.chatSocket);
     this.chatSocket?.on(
       'listChannels',
       (data: any) => {
@@ -248,11 +243,9 @@ export class ChannelService implements OnDestroy{
       ESocketMessage.DELETED_CHANNEL,
       (data: any) => {
         console.log('DELETED', data);
-        this.channels = this.channels.filter(
-          (ch) =>
+        this.channels = this.channels.filter((ch) =>
             ch.name !== data.channelName
         );
-        console.log('AFTER DELETED', this.channels);
         this.serverChannels.next(this.channels);
     });
 

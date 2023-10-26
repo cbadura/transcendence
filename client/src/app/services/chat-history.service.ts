@@ -1,34 +1,40 @@
 import { Injectable } from '@angular/core';
 import { DatePipe } from "@angular/common";
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 
-import { User } from '../shared/interfaces/user';
 import { Post } from '../shared/interfaces/post';
-import { Channel } from '../shared/chat/Channel';
 import { ChannelService } from './channel.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatHistoryService {
-  chatHistory: Post[] = [];
-  channels: Channel[] = [];
-  myUser!: User;
-  chatSocket: Socket | null = null;
+  private chatHistory: Post[] = [];
+  chatHistories: Post[][] = [this.chatHistory];
+  serverChats: BehaviorSubject<Post[]>[] = [];
+  serverChatObs$: Observable<Post[]>[] = [];
+
+  private channelName: string = '';
+  private chatSocket: Socket | null = null;
 
   constructor(public channelService: ChannelService,
     public datepipe: DatePipe) {
       this.chatSocket = this.channelService.chatSocket;
+      this.initializeObservables();
+
       this.subscribeToMessages();
       console.log('~~~~~~~~~~~~SUBSCRIBED HISTORY~~~~~~~~~~~~~');
   }
 
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
-  serverChatObs$ = this.serverChat.asObservable();
 
-  getServerChat(): Post[] {
-    return this.serverChat.value;
+  initializeObservables() {
+    this.chatHistories.forEach(chatHistory => {
+      this.serverChat = new BehaviorSubject<Post[]>(chatHistory);
+      this.serverChats.push(this.serverChat);
+      this.serverChatObs$.push(this.serverChat.asObservable());
+    });
   }
 
   getHistory() {
@@ -41,21 +47,29 @@ export class ChatHistoryService {
 
   subscribeToMessages() {
     this.getMessage().subscribe( (msg : any) => {
-      this.chatHistory.push(msg);
-      this.serverChat.next(this.chatHistory);
+      if (msg.channel === this.channelName ) {
+        this.chatHistory.push(msg);
+        this.serverChat.next(this.chatHistory);
+      }
     });
   }
 
   /* SOCKET.IO functions */
   sendMessage(post: Post) {
+    console.log('SEND MSG', post);
     this.chatSocket?.emit('message', post);
   }
 
   getMessage(): Observable<any> {
     return new Observable(observer => {
         this.chatSocket?.on('message', (msg: any) => {
-            observer.next(msg);
+          console.log('GET MSG', msg);
+          observer.next(msg);
         });
     });
+  }
+
+  setChannelName(name: string) {
+    this.channelName = name;
   }
 }
