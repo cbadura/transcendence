@@ -20,20 +20,17 @@ export class UserDataService {
     color: '#E7C9FF',
     avatar: 'a',
     qr: '',
+    tfa: false,
   };
   private token!: string;
-
   private serverAddress: string = 'http://localhost:3000';
-
-  constructor(private http: HttpClient) {}
-
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
-
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
+  constructor(private http: HttpClient) {}
 
-  initializeUser() {
+  getNewestUser() {
     const url = `http://localhost:3000/auth/profile?token=${this.token}`;
     this.http.get(url).subscribe((response: any) => {
       const user: User = {
@@ -47,7 +44,6 @@ export class UserDataService {
         avatar: response.avatar,
         tfa: response.tfa,
       };
-      console.log('First user created!', response);
       this.replaceUser(user);
     });
   }
@@ -55,31 +51,6 @@ export class UserDataService {
   replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
-  }
-
-  uploadProfilePic(file: File) {
-	interface UploadedResponse {
-		img: string;
-	  }
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    console.log('attempt upload');
-    this.http
-      .post<UploadedResponse>(
-        `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
-        formData,
-      )
-      .subscribe(
-        (data) => {
-		  this.myUser.avatar = data.img;
-          this.replaceUser(this.myUser);
-          window.alert('Profile picture uploaded!');
-        },
-        (error) => {
-          console.log(error);
-          window.alert('error uploading profile picture');
-        },
-      );
   }
 
   editUserById(newName: string, newColor: string) {
@@ -99,12 +70,37 @@ export class UserDataService {
     );
   }
 
+  uploadProfilePic(file: File) {
+    interface UploadedResponse {
+      img: string;
+    }
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    console.log('attempt upload');
+    this.http
+      .post<UploadedResponse>(
+        `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
+        formData,
+      )
+      .subscribe(
+        (data) => {
+          this.myUser.avatar = data.img;
+          this.replaceUser(this.myUser);
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+  }
+
   changeRelation(status: string, targetId: number) {
+    console.log(targetId);
     const data = {
       user_id: this.myUser.id,
-      relationship_user_id: targetId,
+      relationship_user_id: Number(targetId),
       relationship_status: status,
     };
+    console.log(data);
     this.http.post(this.serverAddress + '/relationship', data).subscribe(
       (data) => {
         console.log('changeRelation success', data);
@@ -115,6 +111,7 @@ export class UserDataService {
     );
   }
 
+  //   2FA
   setToken(newToken: string) {
     this.token = newToken;
   }
@@ -130,8 +127,8 @@ export class UserDataService {
       })
       .subscribe(
         (data) => {
-          console.log('success', data);
           this.myUser.qr = data.qr;
+		  console.log('newqr', this.myUser);
           this.replaceUser(this.myUser);
         },
         (error) => {
@@ -168,11 +165,8 @@ export class UserDataService {
       })
       .subscribe(
         (data) => {
-          const newUser = {
-            tfa: false,
-          };
-          this.replaceUser(newUser);
-          console.log(data);
+          this.myUser.tfa = false;
+          this.replaceUser(this.myUser.tfa);
         },
         (error) => console.log(error),
       );
@@ -190,9 +184,7 @@ export class UserDataService {
     const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
     if (!this.chatSocket) {
       this.chatSocket = new Socket({ url: chatUrl, options: {} });
-
     }
     console.log('SOCKET IN USER', this.chatSocket);
   }
 }
-
