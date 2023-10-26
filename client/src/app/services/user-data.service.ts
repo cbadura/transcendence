@@ -99,12 +99,15 @@ export class UserDataService {
       this.gameSocket = new Socket({ url: gameUrl, options: {} });
     }
 
-    const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
     if (!this.chatSocket) {
-      this.chatSocket = new Socket({ url: chatUrl, options: {} });
-
+      this.chatSocket = new Socket({
+        url: "http://localhost:3000/chat",
+        options: {
+          query: { 'userId': String(this.myUser.id) },
+          forceNew: true
+      } });
+      console.log('connecting chat socket', this.chatSocket);
     }
-    //console.log('SOCKET IN USER', this.chatSocket);
   }
 }
 
