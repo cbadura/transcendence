@@ -32,7 +32,7 @@ export abstract class ABall {
     protected defaultRadius: number = 20;
     protected minRadius: number = 5;
     protected maxRadius: number = 100;
-
+    protected maxBounceAngle: number = 5*Math.PI/12 //75 degrees
     //constantly updating values
     protected dir: Vector2D;
     protected pos: Vector2D;
@@ -60,23 +60,7 @@ export abstract class ABall {
         const targetPaddle = game.userPaddles[paddleID]
         if(this.hitPaddle(targetPaddle,config.canvas.width)){
             this.ownerID = paddleID;
-            // console.log(this.getCourtHalfFromPosition(this.posX) === 0 ? 'left Court' : 'right court')
-
-            //get value on paddle from -1(start) to 1(end)
-            // console.log(`DEFAULT DIR [${this.config.defaultDirX},${this.config.defaultDirY}]`)
-            const relativehitPoint = (this.pos.y - targetPaddle.pos.y) / (targetPaddle.length / 2 );
-            // console.log("relativehitPoint",relativehitPoint);
-            const ratio  = relativehitPoint * 1 //invert ratio
-            // console.log("ratio",ratio);
-            // console.log(`OLD Direction [${this.dirX},${this.dirY}]`)
-            // this.dirY += this.dirY * ratio;
-            // if(this.dirY == 0){
-            //     this.dirY = 0.5;
-            // }
-            this.dir.x *= -1;
-            // console.log(`NEW Direction [${this.dirX},${this.dirY}]`)
-            //for now i decided to not do anything. So no control to the player
-            // this.dirY = this.getBouncingAngle(targetPaddle); 
+            this.setBounceDirection(targetPaddle);            
             this.increaseBallSpeed();
             game.hits++;
         }
@@ -149,12 +133,13 @@ export abstract class ABall {
     }
 
 
-    private getBouncingAngle(paddle: GamePaddle): number {
+    private setBounceDirection(paddle: GamePaddle): void {
 
         const relativehitPoint = (this.pos.y - paddle.pos.y) / (paddle.length / 2 ); //get value between -1 and 1
-        const bounceAngle = 1 * relativehitPoint;
-        // const bounceAngle = this.gameConfig.ball.maxBounceAngle * relativehitPoint;
-        return Math.sin(bounceAngle);
+        const bounceAngle = this.maxBounceAngle * relativehitPoint;
+        this.dir.x < 0 ? this.dir.x = 1 :this.dir.x = -1;
+        this.dir.y = Math.sin(bounceAngle);
+        console.log(`new direction [${this.dir.x},${this.dir.y}]`)
       }
 
     private checkPowerUpCollision(powerups: APowerUp[]) {
