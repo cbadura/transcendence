@@ -3,9 +3,11 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
+import { UserService } from 'src/app/services/users.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'tcd-profile',
@@ -15,16 +17,20 @@ export class ProfileComponent implements OnInit {
   user!: User;
   private userSubscription!: Subscription;
   achievements: Achievement[] = [];
+  friends: User[] = [];
   matches: Match[] = [];
+  relation: string = '';
   public myUser: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private userDataService: UserDataService,
+    private userService: UserService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
-    this.route.params.subscribe((params) => {
+    this.route.params.subscribe((params : any) => {
       const { profile, ...rest } = params;
       this.user = rest as User;
       if (!this.user.name) {
@@ -32,7 +38,14 @@ export class ProfileComponent implements OnInit {
           this.user = user;
           this.myUser = true;
         });
+      } else {
       }
+
+      this.userService.getFriends(this.user.id).subscribe((data) => {
+        data.forEach((friend) => {
+          this.fetchUser(friend.relational_user_id);
+        });
+      });
     });
 
     this.achievements = [
@@ -66,9 +79,18 @@ export class ProfileComponent implements OnInit {
     ];
   }
 
-  changeRelation(status : string) : void {
-	this.userDataService.changeRelation(status, this.user.id);
-  };
+  fetchUser(id: number) {
+    const url = `http://localhost:3000/users/${id}`;
+    this.http.get<User>(url).subscribe((data) => {
+      if (data) {
+        this.friends.push(data);
+      }
+    });
+  }
+
+  changeRelation(status: string): void {
+    this.userDataService.changeRelation(status, this.user.id);
+  }
 
   getFloorLevel = () => Math.floor(this.user.level);
 }

@@ -39,7 +39,7 @@ export class AuthService {
     if (!qr)
       throw new InternalServerErrorException();
     const data = qr.replace(/^data:image\/\w+;base64,/, '');
-    return Buffer.from(data, 'base64');
+    return qr;
   }
 
   private async secretToImage(user: User, secret: string) {

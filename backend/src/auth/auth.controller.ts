@@ -28,7 +28,7 @@ export class AuthController {
     console.log(req.user);
     const img = await this.authService.getTempQRcode(req.user);
     res.setHeader('content-type', 'image/png');
-    res.send(img)
+    res.send({qr: img})
   }
 
   @Post('2fa/activate')

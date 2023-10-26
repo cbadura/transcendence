@@ -76,7 +76,7 @@ export class TwofaComponent implements OnInit {
         console.log(data);
         if (data.verified) {
           this.userDataService.setToken(data.access_token);
-          this.userDataService.initializeUser();
+          this.userDataService.getNewestUser();
           this.router.navigate(['/']);
         } else {
           this.animationClass = 'shake-horizontal';
