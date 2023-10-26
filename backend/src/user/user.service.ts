@@ -49,7 +49,14 @@ export class UserService {
     console.log(dtoUserCreator);
     if(dtoUserCreator.avatar == null)
       dtoUserCreator.avatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
-    const newUser:CreateUserDto = {...dtoUserCreator, level:1.00,matches: 0, wins: 0};
+    const newUser:CreateUserDto = {
+      ...dtoUserCreator,
+      tfa: false,
+      color: '#E7C9FF',
+      level:1.00,
+      matches: 0,
+      wins: 0
+    };
     return this.userRepository.save(newUser);
   }
 
@@ -68,12 +75,14 @@ export class UserService {
       for(let i: number = 0 ; i < 100 ;i++){
         let user = new CreateUserDto;
         user.name = 'DummyUser_' + Math.floor(100000 + Math.random() * 900000).toString();
+        user.avatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
         user.color = colors[Math.floor(100000 + Math.random() * 900000) % 6];
         user.level = Number(((100000 + Math.random() * 10000) % 100).toFixed(2)); 
         user.matches = Math.floor(100000 + Math.random() * 900000) % 500;
         user.wins = Math.floor(user.matches * Math.random());
-        // await this.userRepository.save(user);
-        const newUser = await this.createUser(user);
+        user.tfa = false;
+        const newUser = await this.userRepository.save(user);
+        // const newUser = await this.createUser(user);
         await this.updateUser(newUser.id, {ftid: newUser.id});
       }
     } catch(error){ 

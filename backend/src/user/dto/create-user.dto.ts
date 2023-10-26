@@ -11,7 +11,7 @@ export class CreateUserDto {
   ftid: number;
 
   @IsBoolean()
-  tfa: boolean=false;
+  tfa: boolean;
 
   @IsOptional()
   @IsString()
@@ -20,11 +20,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsHexColor()
   @IsOptional()
-  color: string='#E7C9FF';
+  color: string;
 
-  level: number=1.00;
+  level: number;
 
-  matches: number=0;
+  matches: number;
 
-  wins: number=0;
+  wins: number;
 }
