@@ -90,7 +90,7 @@ export class ActivateTwofaComponent implements OnInit {
       }
     }
     const sixDigitCode = allDigits.join('');
-    this.userDataService.submit2fa(sixDigitCode).subscribe(
+    this.userDataService.activateTFA(sixDigitCode).subscribe(
       (data) => {
         this.verified = data.verified;
         if (data.verified === false) {
@@ -103,7 +103,12 @@ export class ActivateTwofaComponent implements OnInit {
               this.animationClass = '';
             });
           }
-        }
+        } else {
+			const newUser = {
+				tfa: true
+			}
+			this.userDataService.replaceUser(newUser);
+		}
       },
       (error) => {
         console.error('Submit2fa error:', error);

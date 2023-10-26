@@ -29,6 +29,7 @@ import { MessageInfoComponent } from './components/chat/message-info/message-inf
 import { NgIconsModule } from '@ng-icons/core';
 import {
   featherSettings,
+  featherUnlock,
   featherSend,
   featherCheckCircle,
   featherUser,
@@ -105,6 +106,7 @@ const chatConfig: SocketIoConfig = {
     ChatSocketModule,
     NgIconsModule.withIcons({
       featherSettings,
+	  featherUnlock,
       featherSend,
 	  featherCheckCircle,
       featherUser,

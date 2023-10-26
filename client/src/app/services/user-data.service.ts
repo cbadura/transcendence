@@ -33,7 +33,26 @@ export class UserDataService {
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
-  replaceUser(user: User) {
+  initializeUser() {
+    const url = `http://localhost:3000/auth/profile?token=${this.token}`;
+    this.http.get(url).subscribe((response: any) => {
+      const user: User = {
+        id: response.id,
+        name: response.name,
+        status: response.status,
+        level: response.level,
+        matches: response.matches,
+        wins: response.wins,
+        color: response.color,
+        avatar: response.avatar,
+        tfa: response.tfa,
+      };
+      console.log('First user created!', response);
+      this.replaceUser(user);
+    });
+  }
+
+  replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
   }
@@ -117,12 +136,42 @@ export class UserDataService {
       );
   }
 
-  submit2fa(code: string): Observable<any> {
+  activateTFA(code: string): Observable<any> {
     const params = new HttpParams().set('token', this.token);
     const data = {
       key: code,
     };
-    return this.http.post(this.serverAddress + '/auth/2fa/activate', data, { params });
+    return this.http.post(this.serverAddress + '/auth/2fa/activate', data, {
+      params,
+    });
+  }
+
+  verifyTFA(code: string): Observable<any> {
+    const params = new HttpParams().set('token', this.token);
+    const data = {
+      key: code,
+    };
+    return this.http.post(this.serverAddress + '/auth/2fa/verify', data, {
+      params,
+    });
+  }
+
+  deactivateTFA() {
+    const params = new HttpParams().set('token', this.token);
+    this.http
+      .get(this.serverAddress + '/auth/2fa/deactivate', {
+        params,
+      })
+      .subscribe(
+        (data) => {
+          const newUser = {
+            tfa: false,
+          };
+          this.replaceUser(newUser);
+          console.log(data);
+        },
+        (error) => console.log(error),
+      );
   }
 
   //this function connects the sockets important for game and chat.

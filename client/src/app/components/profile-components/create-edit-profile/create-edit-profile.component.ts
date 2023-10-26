@@ -101,6 +101,11 @@ export class CreateProfileComponent implements OnInit {
 	this.twoFAPopup = false;
   }
 
+  deactivateTFA()
+  {
+	this.userDataService.deactivateTFA();
+  }
+
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
   }

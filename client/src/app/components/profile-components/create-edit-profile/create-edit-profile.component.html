@@ -49,8 +49,12 @@
     </div>
   </div>
 
-  <!-- Open 2FA Popup -->
-  <tcd-custom-button [icon]="'featherLock'" [buttonText]="'Enable 2FA'" (click)="open2FAPopup()" [isBlack]="true" class="mr-auto mt-4"></tcd-custom-button>
+  <!-- Activate 2FA button -->
+  <tcd-custom-button *ngIf="!oldUser.tfa" [icon]="'featherLock'" [buttonText]="'Enable 2FA'" (click)="open2FAPopup()" [isBlack]="true" class="mr-auto mt-4"></tcd-custom-button>
+<!-- Deactivate 2FA button -->
+<tcd-custom-button *ngIf="oldUser.tfa" [icon]="'featherUnlock'" [buttonText]="'Disable 2FA'" (click)="deactivateTFA()" [isBlack]="true" class="mr-auto mt-4"></tcd-custom-button>
+
+
 
   <!-- 2FA Popup -->
   <tcd-activate-twofa [user]="oldUser" (closeClicked)="close2FAPopup()" *ngIf="twoFAPopup" ></tcd-activate-twofa>

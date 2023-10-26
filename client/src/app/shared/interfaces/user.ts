@@ -8,5 +8,6 @@ export interface User {
     color: string;
     avatar: string;
 	qr?: string;
+	tfa?: boolean;
     // friends: User[];
 }
