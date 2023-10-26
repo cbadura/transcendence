@@ -221,6 +221,7 @@ export class NetworkGameService {
             this.defaultQueue.push(currUser);
             currUser.status = EUserStatus.IN_QUEUE;
             console.log('Queue length = ',this.defaultQueue.length);
+            this.userService.notifyUserStatusUpdate(currUser.userId, EUserStatus.IN_QUEUE);
           }
         else if(dto.gameType == 'special') {
             if(this.specialQueue.find( (user)=>user.socket.id == client.id) != null){
@@ -230,6 +231,7 @@ export class NetworkGameService {
 
             this.specialQueue.push(currUser);
             currUser.status = EUserStatus.IN_QUEUE;
+            this.userService.notifyUserStatusUpdate(currUser.userId, EUserStatus.IN_QUEUE);
             console.log('Queue length = ',this.specialQueue.length);
             }
 
@@ -243,6 +245,7 @@ export class NetworkGameService {
 
         if(currUser != null){
           currUser.status = EUserStatus.ONLINE;
+          this.userService.notifyUserStatusUpdate(currUser.userId, EUserStatus.ONLINE);
           console.log('Found Disconnecting user in Queue. removing user from Queue')
           this.defaultQueue = this.defaultQueue.filter(
             (currentClient) => currentClient.socket.id !== client.id,
@@ -263,6 +266,7 @@ export class NetworkGameService {
                     if(this.gameRooms[i].clients[j] != null){
                       this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                       this.gameRooms[i].clients[j].room_id = -1;
+                      this.userService.notifyUserStatusUpdate(this.gameRooms[i].clients[j].userId, EUserStatus.ONLINE);
                     }
                   }
                   this.gameRooms[i] = null;

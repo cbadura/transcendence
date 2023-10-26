@@ -132,8 +132,7 @@ export class ChatService {
     fullMessage.senderAvatar = sender.avatar;
     fullMessage.senderColor = sender.color;
     fullMessage.senderName = sender.name;
-/*     fullMessage.timestamp = this.getCurrentUnixTime();*/    
-    return (fullMessage);
+    return fullMessage;
   }
 
   // TODO change later userId into token and extract userId from token
