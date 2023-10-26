@@ -1,6 +1,6 @@
 <ng-container *ngIf="!isMe">
   <div
-    class="p-2 rounded-tr-xl rounded-br-xl rounded-bl-xl m-1 inline-block"
+    class="p-2 overflow-x-auto break-words rounded-tr-xl rounded-br-xl rounded-bl-xl m-1 inline-block whitespace-normal break-words"
     [ngStyle]="{ 'background-color': post.senderColor }"
   >
     <p class="">{{ post.message }}</p>
@@ -10,7 +10,7 @@
 
 <ng-container *ngIf="isMe">
   <div
-    class="p-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl m-1 inline-block ml-auto"
+    class="p-2 overflow-x-auto break-words rounded-tl-xl rounded-tr-xl rounded-bl-xl m-1 inline-block ml-auto "
     [ngStyle]="{ 'background-color': post.senderColor }"
   >
     <p class="">{{ post.message }}</p>

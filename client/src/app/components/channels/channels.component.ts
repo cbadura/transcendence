@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
+import { UserDataService } from 'src/app/services/user-data.service';
 import { ChannelService } from 'src/app/services/channel.service';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
@@ -23,23 +24,28 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   
 
   constructor(
+    private userDataService: UserDataService,
     private channelService: ChannelService) {
   }
     
   ngOnInit() {
     console.log('ON INIT');
+    // this.userDataService.CreateSocketConnections();
+    this.channelService.chatSocket = this.userDataService.chatSocket;
+    console.log('SOCKET', this.channelService.chatSocket);
     this.channelSubscription = this.channelService.serverChatObs$.subscribe(
       (channels) => {
         this.serverChannels = channels;
         console.log('SERVER CHANNELS', this.serverChannels);
-         this.selectChannel('My channels');
+        this.selectChannel('My channels');
+        this.channelService.subscribeToEvents();
       }
-    );
-   
+      );
+    this.channelService.tryListChannels();
+    console.log('subscribe to socket ');
   }
 
   selectChannel(channel: string) {
-    console.log(channel);
     this.selectedPage = channel;
     this.filterChannels();
   }
@@ -68,5 +74,6 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.channelSubscription.unsubscribe();
+
   }
 }

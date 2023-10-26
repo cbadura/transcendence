@@ -1,7 +1,7 @@
 <button
 *ngIf="!isDisabled"
   [ngClass]="{
-    'rounded-full p-2 border border-black transition-all active:scale-95': true,
+    'rounded-full p-2 border border-black transition-all active:scale-95 flex items-center justify-between gap-2': true,
     'bg-black text-white hover:bg-zinc-800': isBlack,
     'hover:bg-black hover:text-white': !isBlack,
     'h-10': size == 'small',
@@ -11,7 +11,8 @@
   [routerLink]="customRoute"
 
 >
-  {{ buttonText }}
+<ng-icon *ngIf="icon" class="cursor-pointer" name="{{icon}}"></ng-icon>
+{{ buttonText }}
 </button>
 
 

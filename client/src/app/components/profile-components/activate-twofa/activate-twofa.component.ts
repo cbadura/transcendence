@@ -1,26 +1,45 @@
-import { Component, ElementRef, Renderer2, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  EventEmitter,
+  Output,
+  OnInit,
+  ElementRef,
+  Renderer2,
+} from '@angular/core';
+import { User } from 'src/app/shared/interfaces/user';
 import { UserDataService } from 'src/app/services/user-data.service';
-import { Router } from '@angular/router';
 
 @Component({
-  selector: 'tcd-twofa',
-  templateUrl: './twofa.component.html',
+  selector: 'tcd-activate-twofa',
+  templateUrl: './activate-twofa.component.html',
 })
-export class TwofaComponent implements OnInit {
+export class ActivateTwofaComponent implements OnInit {
+  @Output() closeClicked = new EventEmitter<void>();
+  @Input() user!: User;
+  public verified: boolean = false;
   public animationClass: string = '';
-
   constructor(
     private userDataService: UserDataService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private router: Router,
   ) {}
-
   ngOnInit(): void {
+    this.userDataService.getQRCode();
     const firestInput =
       this.el.nativeElement.querySelector(`input:nth-child(1)`);
     if (firestInput) {
       this.renderer.selectRootElement(firestInput).focus();
+    }
+  }
+
+  closeTwoFAPopup() {
+    this.closeClicked.emit();
+  }
+
+  closePopup(event: Event) {
+    if (event.target === event.currentTarget) {
+      this.closeTwoFAPopup();
     }
   }
 
@@ -71,15 +90,12 @@ export class TwofaComponent implements OnInit {
       }
     }
     const sixDigitCode = allDigits.join('');
-    this.userDataService.verifyTFA(sixDigitCode).subscribe(
+    this.userDataService.activateTFA(sixDigitCode).subscribe(
       (data) => {
-        console.log(data);
-        if (data.verified) {
-          this.userDataService.setToken(data.access_token);
-          this.userDataService.initializeUser();
-          this.router.navigate(['/']);
-        } else {
+        this.verified = data.verified;
+        if (data.verified === false) {
           this.animationClass = 'shake-horizontal';
+
           const divElement =
             this.el.nativeElement.querySelector('.animation-div');
           if (divElement) {
@@ -87,10 +103,15 @@ export class TwofaComponent implements OnInit {
               this.animationClass = '';
             });
           }
-        }
+        } else {
+			const newUser = {
+				tfa: true
+			}
+			this.userDataService.replaceUser(newUser);
+		}
       },
       (error) => {
-        console.error('verifyTFA error:', error);
+        console.error('Submit2fa error:', error);
       },
     );
   }

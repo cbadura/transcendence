@@ -1,13 +1,16 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DatePipe } from "@angular/common";
-import { Socket } from 'ngx-socket-io';
+// import { Socket } from 'ngx-socket-io';
 import { map } from 'rxjs/operators';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
+// import { io, Socket } from 'socket.io-client'
+import { Socket } from 'ngx-socket-io';
 
 import { User } from '../shared/interfaces/user';
 import { Post } from '../shared/interfaces/post';
 import { Channel } from '../shared/chat/Channel';
 import { ChannelService } from './channel.service';
+import { UserDataService } from './user-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,23 +22,30 @@ export class ChatHistoryService {
     'first message'
   ];
   eventSubject = new Subject<{ eventType: string; data: any}>();
+  myUser!: User;
+  private userSubscription!: Subscription;
+  chatSocket: Socket | null = null;
+  private once : boolean = true;
 
   constructor(
     public channelService: ChannelService,
     public datepipe: DatePipe,
-    @Inject('chatSocket') private chatSocket: Socket) {}
+    private userService: UserDataService) {
+    // @Inject('chatSocket') private chatSocket: Socket
 
-  /* Optional approach for namespaces
-  private chatSocket :any;
-  constructor(public datepipe: DatePipe,
-    private socket: Socket) {
-        this.chatSocket = new Socket({
-        url: 'http://localhost:3000',
-        options: {}
-      })
-      this.chatSocket.ioSocket.nsp = '/chat'
+    /* this.userSubscription = this.userService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+        if (this.myUser && this.myUser.id) {
+          this.userService.fetchUserById(this.myUser.id).subscribe(data => {
+            this.myUser = data;
+          });
+        }
+      }
+      ); */
+      this.chatSocket = this.channelService.chatSocket; /* io('http://localhost:3000/chat', {query: {userId: this.myUser.id}}) */;
     }
-  */
+
   
   serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
   serverChatObs$ = this.serverChat.asObservable();
@@ -57,6 +67,9 @@ export class ChatHistoryService {
   }
   
   subscribeToMessages() {
+    if (!this.once) return;
+    this.once = false;
+    
     this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);
@@ -65,56 +78,22 @@ export class ChatHistoryService {
 
   /* SOCKET.IO functions */
   sendMessage(post: Post) {
-    this.chatSocket.emit('message', post);
-  }
-  getMessage() {
-    let message = this.chatSocket.fromEvent('message')
-      .pipe(map((msg: any) => {
-      console.log('MSG', msg);
-      return msg;
-    }));
-    
-    return message;
+    this.chatSocket?.emit('message', post);
   }
 
-  /* createChannel(name: string) {
-    let post = {
-      name: name,
-      mode: 'public'
-    };
-    console.log('POST', post);
-    this.chatSocket.emit('tryCreateChannel', post);
-  }  */
-
-  subscribeToEvents() {
-    this.chatSocket?.on(
-      'listChannels',
-      (data: any) => {
-        console.log('LIST', data);
-        this.eventSubject.next({
-          eventType: 'listChannels',
-          data: data
+  getMessage(): Observable<any> {
+    return new Observable(observer => {
+        this.chatSocket?.on('message', (msg: any) => {
+            observer.next(msg);
         });
-    });
-
-    this.chatSocket?.on(
-      'createdChannel',
-      (data: any) => {
-        console.log('CREATED', data);
-        this.eventSubject.next({
-          eventType: 'listChannels',
-          data: data
-        });
+        // On observable unsubscribe, you can remove the socket listener
+        return () => {
+            this.chatSocket?.off('message');
+        };
     });
   }
 
   getEventData() {
     return this.eventSubject.asObservable();
   }
-
-  listChannels(): Observable<Channel[]> {
-    return this.chatSocket.fromEvent('listChannels').pipe(
-      map((response: any) => response.channels)
-  );}
-
 }

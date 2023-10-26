@@ -69,7 +69,7 @@ export class UserController {
     } catch (error) {
         throw new NotFoundException()
     }
-      return userProfileImageURL;
+      return {img: userProfileImageURL};
   }
 
   // this makes sense, but blocks the other

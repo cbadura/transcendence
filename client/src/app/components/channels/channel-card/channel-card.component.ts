@@ -11,6 +11,7 @@ import { ChannelService } from 'src/app/services/channel.service';
 export class ChannelCardComponent {
   @Input() channel!: Channel;
   @Input() editMode: boolean = false;
+  @Input() joinedMode: boolean = false;
   constructor(private router: Router,
     private route: ActivatedRoute,
     private channelService: ChannelService) { }

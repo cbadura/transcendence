@@ -41,10 +41,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 		  this.myUser = user;
 		}
 	  );
-    // const chatns = this.chatHistoryService.connect();
     this.messages = this.chatHistoryService.getHistory();
     this.chatHistoryService.subscribeToMessages();
-    this.chatHistoryService.listChannels();
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
       (posts) => {
         this.messages = posts;
@@ -55,6 +53,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
+      console.log('IDS', this.channel.usersIds.length);
     });
   }
 
@@ -75,8 +74,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         message: message,
         channel: this.channel.name,
         senderAvatar: '',
-        timestamp: /*  new Date().getTime() / 1000 */
-        this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
+        timestamp: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? ''
     };
     this.chatHistoryService.sendMessage(newPost);
   }
