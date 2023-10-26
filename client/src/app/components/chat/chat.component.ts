@@ -25,24 +25,22 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   myUser!: User;
   channel!: Channel;
 
-  constructor(
-    public datepipe: DatePipe,
+  constructor(public datepipe: DatePipe,
     private chatHistoryService: ChatHistoryService,
     private userDataService: UserDataService,
-    private route: ActivatedRoute
-    ) {
-    this.messages = [];
-    this.tempText = '';
+    private route: ActivatedRoute) {
+      this.messages = [];
+      this.tempText = '';
   }
 
   ngOnInit() {
-	this.userSubscription = this.userDataService.user$.subscribe(
-		(user) => {
-		  this.myUser = user;
-		}
-	  );
+	  this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+		  });
+
     this.messages = this.chatHistoryService.getHistory();
-   // this.chatHistoryService.subscribeToMessages();
+
     this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
       (posts) => {
         this.messages = posts;
@@ -53,7 +51,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
-      //console.log('IDS', this.channel.usersIds.length);
     });
   }
 
@@ -80,6 +77,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnDestroy() {
+    this.userSubscription.unsubscribe();
     this.postSubscription.unsubscribe();
   }
 }

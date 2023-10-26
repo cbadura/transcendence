@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { User } from '../shared/interfaces/user';
-import { map, forkJoin } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 
 @Injectable({
@@ -94,6 +93,7 @@ export class UserDataService {
   // Probably needs to be called on Login as well
   CreateSocketConnections() {
     console.log('trying to create Sockets', this.myUser.id);
+    
     const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
     if (!this.gameSocket) {
       this.gameSocket = new Socket({ url: gameUrl, options: {} });
