@@ -26,6 +26,7 @@ export class UserDataService {
 
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
+  userSocket: Socket | null = null;
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
@@ -93,16 +94,29 @@ export class UserDataService {
   // Probably needs to be called on Login as well
   CreateSocketConnections() {
     console.log('trying to create Sockets', this.myUser.id);
-    
+
     const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
     if (!this.gameSocket) {
       this.gameSocket = new Socket({ url: gameUrl, options: {} });
     }
 
-    const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
     if (!this.chatSocket) {
-      this.chatSocket = new Socket({ url: chatUrl, options: {} });
+      this.chatSocket = new Socket({
+        url: "http://localhost:3000/chat",
+        options: {
+          query: { 'userId': String(this.myUser.id) },
+          forceNew: true
+      } });
+      console.log('connecting chat socket', this.chatSocket);
+    }
 
+    if (!this.userSocket) {
+      this.userSocket = new Socket({
+        url: "http://localhost:3000/",
+        options: {
+          query: { 'userId': String(this.myUser.id) },
+          forceNew: true
+        } });
     }
   }
 }
