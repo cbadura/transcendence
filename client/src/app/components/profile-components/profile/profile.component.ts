@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { dummyUsers } from 'src/app/temp/dummyUsers';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { UserService } from 'src/app/services/users.service';
 import { User } from 'src/app/shared/interfaces/user';
@@ -17,7 +16,6 @@ export class ProfileComponent implements OnInit {
   user!: User;
   myUser!: User;
   private userSubscription!: Subscription;
-  achievements: Achievement[] = [];
   friends: User[] = [];
   matches: Match[] = [];
   relation: string = 'none';
@@ -52,6 +50,7 @@ export class ProfileComponent implements OnInit {
         if (!this.user.name) {
           // My profile
           this.user = user;
+		  console.log('My profile user:', this.user);
           this.myProfile = true;
         } else {
           // Profile from other user
@@ -69,34 +68,8 @@ export class ProfileComponent implements OnInit {
       });
     });
 
-    this.achievements = [
-      { name: 'Paddle Master', url: 'https://picsum.photos/100' },
-      { name: 'Ping Pong Champion', url: 'https://picsum.photos/100' },
-      { name: 'Pong Prodigy', url: 'https://picsum.photos/100' },
-      { name: 'Rally King', url: 'https://picsum.photos/100' },
-      { name: 'Paddle Wizard', url: 'https://picsum.photos/100' },
-      { name: 'Table Tennis Titan', url: 'https://picsum.photos/100' },
-    ];
 
     this.matches = [
-      {
-        opponent: dummyUsers[0],
-        dateTime: '2021-04-01T12:00:00',
-        myScore: 10,
-        opponentScore: 5,
-      },
-      {
-        opponent: dummyUsers[1],
-        dateTime: '2021-04-02T12:00:00',
-        myScore: 5,
-        opponentScore: 10,
-      },
-      {
-        opponent: dummyUsers[2],
-        dateTime: '2021-04-03T12:00:00',
-        myScore: 2,
-        opponentScore: 3,
-      },
     ];
   }
 

@@ -46,10 +46,10 @@
 
 
 <!-- Achievements -->
-<div class="flex flex-col items-center w-full">
+<div class="flex flex-col items-center w-full" *ngIf="user.achievements.length > 0">
     <p>Achievements</p>
     <div class="bg-black w-full rounded-3xl h-fit p-4 grid gap-4 grid-cols-3 sm:grid-cols-5 justify-items-center items-center" >
-        <div *ngFor="let achievement of achievements">
+        <div *ngFor="let achievement of user.achievements">
             <tcd-achievement [achievement]="achievement"></tcd-achievement>
         </div>
     </div>
