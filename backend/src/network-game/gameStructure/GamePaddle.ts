@@ -70,4 +70,25 @@ export class GamePaddle {
         else
             this.pos.y = newPaddlePos;
       }
+
+
+      public getSpeed():number{
+        return this.speed;
+      }
+
+      //no safeguard yet
+      public setSpeed(newSpeed: number): void {
+        this.speed = newSpeed;
+      }
+
+      public applySpeedMultiplier(speedMult: number): void {
+        // console.log("speedMult",speedMult)
+        // console.log("this.speed",this.speed)
+        //New Value = Original Value + (Original Value * (Positive Percentage / 100))
+        this.speed *= speedMult;
+
+        // this.speed *= speedMult;
+        // console.log("this.speed AFTER",this.speed)
+      }
+
 }

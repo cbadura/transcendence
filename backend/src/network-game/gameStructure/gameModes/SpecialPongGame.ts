@@ -1,14 +1,9 @@
 import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "../RenderInfo";
 import { PongGameConfig, PowerUpConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
-import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
-import { PUIncreaseOwnerPaddleLength } from "../PowerUps/PUIncreaseOwnerPaddleLength";
-import { PUDecreaseOpponentPaddleLength } from "../PowerUps/PUDecreaseOpponentPaddleLength";
 import { Vector2D } from "../Vector2D";
-import { PUSplitBall } from "../PowerUps/PUSplitBall";
 import { BallFactory } from "../gameBalls/BallFactory";
 import { EBallType } from "../gameBalls/EBallType";
-import { PUIncreaseBallSize } from "../PowerUps/PUIncreaseBallSize";
 import { PowerUpFactory } from "../PowerUps/PowerUpFactory";
 
 export class SpecialPongGame extends APongGame {
@@ -86,8 +81,8 @@ export class SpecialPongGame extends APongGame {
             this.prevPeriodTimeStamp = this.getNewDate()
 
             if(this.powerUps.length < this.maxPowerUps){
-                // this.spawnDebugPowerUp();
-                this.spawnPowerUp();
+                this.spawnDebugPowerUp();
+                // this.spawnPowerUp();
             }
         }
     }
@@ -123,8 +118,11 @@ export class SpecialPongGame extends APongGame {
     }
 
     private spawnDebugPowerUp(){
-        const PowerUpConfig = this.config.powerUps[0]
+        this.maxPowerUps =1;
+        let PowerUpConfig = this.config.powerUps[4]
         this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(this.centerX,this.centerY),PowerUpConfig.config))
+        PowerUpConfig = this.config.powerUps[5]
+        this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(this.centerX + 50,this.centerY),PowerUpConfig.config))
     }
 
 

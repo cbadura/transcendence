@@ -4,4 +4,5 @@ export enum EPowerUpType {
     INC_OWN_PADDLE_SIZE,
     SPLITBALL,
     INC_BALL_SIZE,
+    DEC_OPP_MOVEMENT_SPEED_TIMED,
 }

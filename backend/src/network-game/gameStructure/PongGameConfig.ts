@@ -26,10 +26,11 @@ export const trainingGameConfig: PongGameConfig = {
       {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 1},
       {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 1},
       {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 1},
+      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.9,duration: 3},weight: 1000},
+      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.6,duration: 3},weight: 1000},
     ],
     maxScore: 1000,
 } 
-
 export const defaultConfig: PongGameConfig = {
     canvas: {
         width: 1280,
@@ -48,6 +49,7 @@ export const defaultConfig: PongGameConfig = {
         type:EBallType.DEFAULT,
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5),
+        defaultSpeed: 2,
       }],
       maxScore: 5,
 } 
@@ -80,6 +82,7 @@ export const specialConfig: PongGameConfig = {
       {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 3},
       {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 5},
       {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 5},
+      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.5,duration: 3},weight: 1}
     ],
     maxScore: 10,
 } 

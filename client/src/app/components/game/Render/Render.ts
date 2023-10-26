@@ -65,8 +65,8 @@ export class Render {
     const capitalLetters = this.getCapitalizedLettersFromType(powerup.type)
 
     //hacky color implementation
-    const powerUpTypes: string[] = ['IBS','IOPL','DOPL','SB']
-    const powerUpcolors: string[] = ['#57A639','#3B83BD','#F39F18','#6A5F31']
+    const powerUpTypes: string[] = ['IBS','IOPL','DOPL','SB','DOMSFD']
+    const powerUpcolors: string[] = ['#57A639','#3B83BD','#F39F18','#6A5F31',"#F39F18"]
     let i = 0;
     for (; i < powerUpTypes.length; i++) {
       if(powerUpTypes[i] == capitalLetters)
