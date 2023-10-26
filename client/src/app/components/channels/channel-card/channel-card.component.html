@@ -20,6 +20,6 @@
 	<!-- Edit button -->
 	<tcd-chat-btn (click)="navigateToEditChannel($event, channel)" *ngIf="editMode"
 		[icon]="'featherSettings'"></tcd-chat-btn>
-	<tcd-chat-btn (click)="joinChannel($event)" [icon]="'featherPlusSquare'" *ngIf="joinedMode"></tcd-chat-btn>
+	<tcd-chat-btn (click)="joinChannel($event)" [icon]="'featherPlusSquare'" *ngIf="joinMode"></tcd-chat-btn>
 
 </div>
