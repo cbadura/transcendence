@@ -20,7 +20,6 @@ export class GEUpdatePaddleMovementSpeedForDuration extends AGameEffect{
     applyEffect(): void {
         if(this.invalidationTimestamp < new Date().getTime()){
             this.game.userPaddles[this.owner].applySpeedMultiplier(this.inverseMult) //undo the change
-            console.log('Restored SPEED',this.game.userPaddles[0].getSpeed())
             this.markCompleted()
         }
     }

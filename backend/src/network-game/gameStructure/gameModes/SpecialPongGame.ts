@@ -51,14 +51,10 @@ export class SpecialPongGame extends APongGame {
         this.gameBalls = this.gameBalls.filter((ball)=>ball.isExpired == false)
 
         if(this.gameBalls.length == 0){
-            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos:new Vector2D(this.centerX,this.centerY)
-                ,startDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5)}))
+            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos: this.config.balls[0].defaultPos
+                ,startDir: this.config.balls[0].defaultDir,
+                startSpeed: this.config.balls[0].defaultSpeed}))
         }
-        // console.log(this.gameBalls.length)
-        // for (let i = 0; i < this.gameBalls.length; i++) {
-        //     console.log(this.gameBalls[i].getDirection());
-            
-        // }
     }
 
     private UpdatePeddles(){
@@ -81,8 +77,8 @@ export class SpecialPongGame extends APongGame {
             this.prevPeriodTimeStamp = this.getNewDate()
 
             if(this.powerUps.length < this.maxPowerUps){
-                this.spawnDebugPowerUp();
-                // this.spawnPowerUp();
+                // this.spawnDebugPowerUp();
+                this.spawnPowerUp();
             }
         }
     }
@@ -118,11 +114,9 @@ export class SpecialPongGame extends APongGame {
     }
 
     private spawnDebugPowerUp(){
-        this.maxPowerUps =1;
-        let PowerUpConfig = this.config.powerUps[4]
+        this.maxPowerUps = 1;
+        let PowerUpConfig = this.config.powerUps[5]
         this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(this.centerX,this.centerY),PowerUpConfig.config))
-        PowerUpConfig = this.config.powerUps[5]
-        this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(this.centerX + 50,this.centerY),PowerUpConfig.config))
     }
 
 

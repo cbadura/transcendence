@@ -91,4 +91,8 @@ export class GamePaddle {
         // console.log("this.speed AFTER",this.speed)
       }
 
+      public inverseControls(): void{
+        this.step *= -1;
+      }
+
 }

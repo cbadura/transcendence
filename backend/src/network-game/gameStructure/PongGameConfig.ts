@@ -26,8 +26,8 @@ export const trainingGameConfig: PongGameConfig = {
       {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 1},
       {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 1},
       {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 1},
-      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.9,duration: 3},weight: 1000},
-      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.6,duration: 3},weight: 1000},
+      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.9,duration: 3},weight: 1},
+      {type: EPowerUpType.INVERSE_OWN_CONTROLS_TIMED,config: { duration: 3},weight: 1}
     ],
     maxScore: 1000,
 } 
@@ -78,11 +78,12 @@ export const specialConfig: PongGameConfig = {
       },
     ],
     powerUps: [
-      {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 45,},weight: 1},
-      {type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false},weight: 3},
-      {type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10},weight: 5},
-      {type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10},weight: 5},
-      {type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.5,duration: 3},weight: 1}
+      {weight: 3, type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 45,}},
+      {weight: 10, type: EPowerUpType.INC_BALL_SIZE,config: { increase: 5, applyToAll: false}},
+      {weight: 10, type: EPowerUpType.INC_OWN_PADDLE_SIZE,config: { increment: 10}},
+      {weight: 10, type: EPowerUpType.DEC_OPP_PADDLE_SIZE,config: { increment: -10}},
+      {weight: 2, type: EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED,config: { speedDecrease: 0.5,duration: 3}},
+      {weight: 1, type: EPowerUpType.INVERSE_OWN_CONTROLS_TIMED,config: { duration: 3}}
     ],
     maxScore: 10,
 } 

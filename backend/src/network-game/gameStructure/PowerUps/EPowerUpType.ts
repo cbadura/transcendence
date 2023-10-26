@@ -5,4 +5,5 @@ export enum EPowerUpType {
     SPLITBALL,
     INC_BALL_SIZE,
     DEC_OPP_MOVEMENT_SPEED_TIMED,
+    INVERSE_OWN_CONTROLS_TIMED,
 }

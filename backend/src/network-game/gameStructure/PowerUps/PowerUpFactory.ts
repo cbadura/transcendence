@@ -6,6 +6,7 @@ import { PUDecreaseOppMovementSpeedForDuration } from "./PUDecreaseOppMovementSp
 import { PUDecreaseOpponentPaddleLength } from "./PUDecreaseOpponentPaddleLength";
 import { PUIncreaseBallSize } from "./PUIncreaseBallSize";
 import { PUIncreaseOwnerPaddleLength } from "./PUIncreaseOwnerPaddleLength";
+import { PUInverseOwnerControls } from "./PUInverseOwnerControls";
 import { PUSplitBall } from "./PUSplitBall";
 
 
@@ -21,6 +22,8 @@ export function PowerUpFactory(type: EPowerUpType, game: SpecialPongGame,pos: Ve
             return new PUIncreaseBallSize(game,pos,config)    
         case EPowerUpType.DEC_OPP_MOVEMENT_SPEED_TIMED:  
             return new PUDecreaseOppMovementSpeedForDuration(game,pos,config)
+        case EPowerUpType.INVERSE_OWN_CONTROLS_TIMED:
+            return new PUInverseOwnerControls(game,pos,config)
         default:
             break;
     }
