@@ -75,11 +75,13 @@ export class UserDataService {
   }
 
   changeRelation(status: string, targetId: number) {
+	console.log(targetId);
     const data = {
       user_id: this.myUser.id,
-      relationship_user_id: targetId,
+      relationship_user_id: Number(targetId),
       relationship_status: status,
     };
+	console.log(data);
 	this.http.post(this.serverAddress + '/relationship', data).subscribe(
 		(data) => {
 			console.log('changeRelation success', data);
