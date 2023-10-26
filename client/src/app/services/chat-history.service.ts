@@ -14,18 +14,11 @@ import { ChannelService } from './channel.service';
 export class ChatHistoryService {
   chatHistory: Post[] = [];
   channels: Channel[] = [];
-  serverPosts: string[] = [
-    'first message'
-  ];
-  eventSubject = new Subject<{ eventType: string; data: any}>();
   myUser!: User;
   chatSocket: Socket | null = null;
-  private once : boolean = true;
 
-  constructor(
-    public channelService: ChannelService,
+  constructor(public channelService: ChannelService,
     public datepipe: DatePipe) {
-    
       this.chatSocket = this.channelService.chatSocket;
       this.subscribeToMessages();
       console.log('~~~~~~~~~~~~SUBSCRIBED HISTORY~~~~~~~~~~~~~');
@@ -38,10 +31,6 @@ export class ChatHistoryService {
     return this.serverChat.value;
   }
 
-  getServerPosts() {
-    return this.serverPosts;
-  }
-
   getHistory() {
     return this.chatHistory;
   }
@@ -51,9 +40,6 @@ export class ChatHistoryService {
   }
 
   subscribeToMessages() {
-    // if (!this.once) return;
-    // this.once = false;
-
     this.getMessage().subscribe( (msg : any) => {
       this.chatHistory.push(msg);
       this.serverChat.next(this.chatHistory);
@@ -71,9 +57,5 @@ export class ChatHistoryService {
             observer.next(msg);
         });
     });
-  }
-
-  getEventData() {
-    return this.eventSubject.asObservable();
   }
 }
