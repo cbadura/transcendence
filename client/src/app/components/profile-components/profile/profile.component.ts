@@ -9,7 +9,6 @@ import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
 import { HttpClient } from '@angular/common/http';
 
-
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
@@ -20,18 +19,18 @@ export class ProfileComponent implements OnInit {
   achievements: Achievement[] = [];
   friends: User[] = [];
   matches: Match[] = [];
-  relation : string = '';
+  relation: string = '';
   public myUser: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private userDataService: UserDataService,
-	private userService: UserService,
-    private http: HttpClient
+    private userService: UserService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
-    this.route.params.subscribe((params) => {
+    this.route.params.subscribe((params : any) => {
       const { profile, ...rest } = params;
       this.user = rest as User;
       if (!this.user.name) {
@@ -40,17 +39,14 @@ export class ProfileComponent implements OnInit {
           this.myUser = true;
         });
       } else {
-		
-	  }
+      }
 
-	  this.userService.getFriends(this.user.id).subscribe((data) => {
-		data.forEach((friend) => {
-			this.fetchUser(friend.relational_user_id);
-		  });
-	  });
+      this.userService.getFriends(this.user.id).subscribe((data) => {
+        data.forEach((friend) => {
+          this.fetchUser(friend.relational_user_id);
+        });
+      });
     });
-
-
 
     this.achievements = [
       { name: 'Paddle Master', url: 'https://picsum.photos/100' },
@@ -92,9 +88,9 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  changeRelation(status : string) : void {
-	this.userDataService.changeRelation(status, this.user.id);
-  };
+  changeRelation(status: string): void {
+    this.userDataService.changeRelation(status, this.user.id);
+  }
 
   getFloorLevel = () => Math.floor(this.user.level);
 }
