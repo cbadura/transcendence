@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { User } from '../shared/interfaces/user';
@@ -19,7 +19,9 @@ export class UserDataService {
     wins: 0,
     color: '#E7C9FF',
     avatar: 'a',
+    qr: '',
   };
+  private token!: string;
 
   private serverAddress: string = 'http://localhost:3000';
 
@@ -31,23 +33,46 @@ export class UserDataService {
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
 
-  replaceUser(user: User) {
+  initializeUser() {
+    const url = `http://localhost:3000/auth/profile?token=${this.token}`;
+    this.http.get(url).subscribe((response: any) => {
+      const user: User = {
+        id: response.id,
+        name: response.name,
+        status: response.status,
+        level: response.level,
+        matches: response.matches,
+        wins: response.wins,
+        color: response.color,
+        avatar: response.avatar,
+        tfa: response.tfa,
+      };
+      console.log('First user created!', response);
+      this.replaceUser(user);
+    });
+  }
+
+  replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
   }
 
   uploadProfilePic(file: File) {
+	interface UploadedResponse {
+		img: string;
+	  }
     const formData = new FormData();
     formData.append('file', file, file.name);
     console.log('attempt upload');
     this.http
-      .post(
+      .post<UploadedResponse>(
         `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
         formData,
       )
       .subscribe(
         (data) => {
-          console.log('UPLOAD', JSON.stringify(data));
+		  this.myUser.avatar = data.img;
+          this.replaceUser(this.myUser);
           window.alert('Profile picture uploaded!');
         },
         (error) => {
@@ -82,14 +107,77 @@ export class UserDataService {
       relationship_status: status,
     };
 	console.log(data);
-	this.http.post(this.serverAddress + '/relationship', data).subscribe(
-		(data) => {
-			console.log('changeRelation success', data);
-		},
-		(error) => {
-			console.log('changeRelation error', error);
-		}
-	)
+    this.http.post(this.serverAddress + '/relationship', data).subscribe(
+      (data) => {
+        console.log('changeRelation success', data);
+      },
+      (error) => {
+        console.log('changeRelation error', error);
+      },
+    );
+  }
+
+  setToken(newToken: string) {
+    this.token = newToken;
+  }
+
+  getQRCode() {
+    interface QRCodeResponse {
+      qr: string;
+    }
+    const params = new HttpParams().set('token', this.token);
+    this.http
+      .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
+        params,
+      })
+      .subscribe(
+        (data) => {
+          console.log('success', data);
+          this.myUser.qr = data.qr;
+          this.replaceUser(this.myUser);
+        },
+        (error) => {
+          console.log('error', error);
+        },
+      );
+  }
+
+  activateTFA(code: string): Observable<any> {
+    const params = new HttpParams().set('token', this.token);
+    const data = {
+      key: code,
+    };
+    return this.http.post(this.serverAddress + '/auth/2fa/activate', data, {
+      params,
+    });
+  }
+
+  verifyTFA(code: string): Observable<any> {
+    const params = new HttpParams().set('token', this.token);
+    const data = {
+      key: code,
+    };
+    return this.http.post(this.serverAddress + '/auth/2fa/verify', data, {
+      params,
+    });
+  }
+
+  deactivateTFA() {
+    const params = new HttpParams().set('token', this.token);
+    this.http
+      .get(this.serverAddress + '/auth/2fa/deactivate', {
+        params,
+      })
+      .subscribe(
+        (data) => {
+          const newUser = {
+            tfa: false,
+          };
+          this.replaceUser(newUser);
+          console.log(data);
+        },
+        (error) => console.log(error),
+      );
   }
 
   //this function connects the sockets important for game and chat.
