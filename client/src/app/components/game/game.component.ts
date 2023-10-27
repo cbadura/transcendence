@@ -50,7 +50,7 @@ export class GameComponent implements CanComponentDeactivate {
 
   constructor(
     private userDataService: UserDataService,
-    private gameService: GameService
+    private gameService: GameService,
   ) {}
 
   ngOnInit() {
@@ -69,18 +69,24 @@ export class GameComponent implements CanComponentDeactivate {
   ngAfterViewInit(): void {
     // Initialize canvas
     this.ctx = this.canvas.nativeElement.getContext(
-      '2d'
+      '2d',
     ) as CanvasRenderingContext2D;
   }
 
   canDeactivate(): Observable<boolean> | boolean {
-	if (this.status === 'waiting' || this.status === 'playing') {
-	  return window.confirm('Are you sure you want to leave the game?');
-	}
-	return true;
+    if (this.status === 'waiting' || this.status === 'playing') {
+      const navigate = window.confirm(
+        'Are you sure you want to leave the game?',
+      );
+      if (navigate) {
+        //add events
+        return true;
+      } else return false;
+    }
+    return true;
   }
 
-  startTrainingGame(){
+  startTrainingGame() {
     this.gameService.subscribeToEvents();
     //make request to create room
     this.gameService.CreateTrainingMatch('special');
@@ -96,7 +102,7 @@ export class GameComponent implements CanComponentDeactivate {
           this.gameRenderInfo,
           event.data.userInfo.user1,
           event.data.userInfo.user2,
-          this.myUser.id
+          this.myUser.id,
         );
       }
 
@@ -114,20 +120,20 @@ export class GameComponent implements CanComponentDeactivate {
         this.gameRenderInfo = event.data.gameRenderInfo;
         if (this.gameRenderInfo && this.render) {
           this.movePaddle();
-          if (!this.gameRenderInfo.gameOver) {;
+          if (!this.gameRenderInfo.gameOver) {
             this.render.redraw(this.gameRenderInfo);
           } else {
             console.log('gameover');
             this.status = 'gameover';
-            this.fillMatchData(this.gameRenderInfo); 
+            this.fillMatchData(this.gameRenderInfo);
             return;
           }
         }
       }
 
       // GAME_ABORTED
-		if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
-			this.status = 'aborted';
+      if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
+        this.status = 'aborted';
         console.log('GAME_ABORTED', event.data);
       }
     });
@@ -150,7 +156,7 @@ export class GameComponent implements CanComponentDeactivate {
           this.gameRenderInfo,
           event.data.userInfo.user1,
           event.data.userInfo.user2,
-          this.myUser.id
+          this.myUser.id,
         );
       }
 
@@ -168,20 +174,20 @@ export class GameComponent implements CanComponentDeactivate {
         this.gameRenderInfo = event.data.gameRenderInfo;
         if (this.gameRenderInfo && this.render) {
           this.movePaddle();
-          if (!this.gameRenderInfo.gameOver) {;
+          if (!this.gameRenderInfo.gameOver) {
             this.render.redraw(this.gameRenderInfo);
           } else {
             console.log('gameover');
             this.status = 'gameover';
-            this.fillMatchData(this.gameRenderInfo); 
+            this.fillMatchData(this.gameRenderInfo);
             return;
           }
         }
       }
 
       // GAME_ABORTED
-		if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
-			this.status = 'aborted';
+      if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
+        this.status = 'aborted';
         console.log('GAME_ABORTED', event.data);
       }
     });
@@ -190,10 +196,10 @@ export class GameComponent implements CanComponentDeactivate {
   //right now this play again will just queue up the user again.
   // later we probably want to enable users to play agains the same opponent again
   playAgain(): void {
-    //clean up prev field 
+    //clean up prev field
     this.status = 'new-game';
     this.render.reset();
-    this.startGame(this.gameType); 
+    this.startGame(this.gameType);
   }
 
   fillMatchData(game: GameRenderInfo): void {
@@ -205,10 +211,10 @@ export class GameComponent implements CanComponentDeactivate {
     };
   }
 
-	leaveQueue() {
-		this.gameService.leaveQueue();
-		this.status = 'new-game';
-	}
+  leaveQueue() {
+    this.gameService.leaveQueue();
+    this.status = 'new-game';
+  }
 
   movePaddle() {
     // Will emit events to backend
