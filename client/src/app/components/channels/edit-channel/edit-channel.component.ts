@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
-import { EUserRole } from 'src/app/shared/macros/EUserRole';
+// import { EUserRole } from 'src/app/shared/macros/EUserRole';
 import { ChannelService } from 'src/app/services/channel.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+// import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'tcd-edit-channel',

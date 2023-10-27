@@ -16,6 +16,10 @@
 
   <!-- Buttons -->
   <tcd-chat-btn [icon]="'featherSend'" (click)="onSendClick()"></tcd-chat-btn>
-  <tcd-chat-btn [icon]="'featherUser'" (click)="onUserClick()"></tcd-chat-btn>
+  <tcd-chat-btn [icon]="'featherUser'" (click)="openUserPopup()"></tcd-chat-btn>
+
+	<!-- Popup -->
+	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"></tcd-user-search>
+
 
 </div>
