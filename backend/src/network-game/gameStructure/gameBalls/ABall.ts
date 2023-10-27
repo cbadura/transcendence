@@ -19,10 +19,7 @@ export abstract class ABall {
                 this.speed = this.defaultSpeed = startSpeed;
             if(radius){
                 this.ballRadius = this.defaultRadius = radius;
-                if(this.ballRadius > this.maxRadius)
-                    this.ballRadius = this.maxRadius
-                if(this.ballRadius < this.minRadius)
-                    this.ballRadius = this.minRadius
+                this.SafeguardRadius();
             }
             if(maxSpeed)
                 this.maxSpeed = this.maxSpeed = maxSpeed;
@@ -34,15 +31,15 @@ export abstract class ABall {
     protected defaultSpeed: number = 5;
     protected defaultRadius: number = 20;
     protected minRadius: number = 5;
-    protected maxRadius: number = 200;
-
+    protected maxRadius: number = 100;
+    protected maxBounceAngle: number = 5*Math.PI/12 //75 degrees
+    protected maxSpeed: number = 50;
     //constantly updating values
     protected dir: Vector2D;
     protected pos: Vector2D;
     protected speed: number = this.defaultSpeed;
     protected ballRadius: number = this.defaultRadius;
     protected ownerID : number = -1 //this indicates who last touched the ball
-    protected maxSpeed: number = 50;
     protected type: EBallType;
     shouldRespawn: boolean = true;
     isExpired: boolean = false;
@@ -63,23 +60,7 @@ export abstract class ABall {
         const targetPaddle = game.userPaddles[paddleID]
         if(this.hitPaddle(targetPaddle,config.canvas.width)){
             this.ownerID = paddleID;
-            // console.log(this.getCourtHalfFromPosition(this.posX) === 0 ? 'left Court' : 'right court')
-
-            //get value on paddle from -1(start) to 1(end)
-            // console.log(`DEFAULT DIR [${this.config.defaultDirX},${this.config.defaultDirY}]`)
-            const relativehitPoint = (this.pos.y - targetPaddle.pos.y) / (targetPaddle.length / 2 );
-            // console.log("relativehitPoint",relativehitPoint);
-            const ratio  = relativehitPoint * 1 //invert ratio
-            // console.log("ratio",ratio);
-            // console.log(`OLD Direction [${this.dirX},${this.dirY}]`)
-            // this.dirY += this.dirY * ratio;
-            // if(this.dirY == 0){
-            //     this.dirY = 0.5;
-            // }
-            this.dir.x *= -1;
-            // console.log(`NEW Direction [${this.dirX},${this.dirY}]`)
-            //for now i decided to not do anything. So no control to the player
-            // this.dirY = this.getBouncingAngle(targetPaddle); 
+            this.setBounceDirection(targetPaddle);            
             this.increaseBallSpeed();
             game.hits++;
         }
@@ -117,6 +98,32 @@ export abstract class ABall {
 
     setRadius(newRadius: number): void{
         this.ballRadius = newRadius;
+        this.SafeguardRadius();
+    }
+
+    addSubRadius(newRadius: number): void{
+        this.ballRadius += newRadius;
+        this.SafeguardRadius();
+    }
+
+    setOwner(newStatus: number): void {
+        this.ownerID = newStatus;
+    }
+
+    setSpeed(newSpeed: number): void {
+        this.speed = newSpeed;
+        if(this.speed >this.maxSpeed)
+            this.speed = this.maxSpeed
+    }
+    getSpeed(): number {
+        return this.speed;
+    }
+
+    private SafeguardRadius(){
+        if(this.ballRadius > this.maxRadius)
+            this.ballRadius = this.maxRadius
+        if(this.ballRadius < this.minRadius)
+            this.ballRadius = this.minRadius
     }
 
     private checkScore(game: APongGame){
@@ -135,20 +142,27 @@ export abstract class ABall {
     }
 
 
-    private getBouncingAngle(paddle: GamePaddle): number {
+    private setBounceDirection(paddle: GamePaddle): void {
 
         const relativehitPoint = (this.pos.y - paddle.pos.y) / (paddle.length / 2 ); //get value between -1 and 1
-        const bounceAngle = 1 * relativehitPoint;
-        // const bounceAngle = this.gameConfig.ball.maxBounceAngle * relativehitPoint;
-        return Math.sin(bounceAngle);
+        const bounceAngle = this.maxBounceAngle * relativehitPoint;
+        this.dir.x < 0 ? this.dir.x = 1 :this.dir.x = -1;
+        this.dir.y = Math.sin(bounceAngle);
+        // console.log(`new direction [${this.dir.x},${this.dir.y}]`)
       }
 
     private checkPowerUpCollision(powerups: APowerUp[]) {
         for (let i = 0; i < powerups.length; i++) {
             const dist = Math.sqrt(Math.pow(this.pos.x - powerups[i].pos.x,2) + Math.pow(this.pos.y - powerups[i].pos.y,2))
             if(dist < this.ballRadius + powerups[i].radius){
-                if(!powerups[i].getIsConsumed())
-                    powerups[i].OnCollision(this);
+                if(!powerups[i].getIsConsumed()){
+                    if(this.ownerID != -1){
+                        powerups[i].OnCollision(this);
+                    }
+                    else{ //edge case for when the ball has no owner assigned yet
+                        powerups[i].markConsumed();
+                    }
+                }
             }
         }
 
@@ -188,6 +202,8 @@ export abstract class ABall {
             this.pos ={...this.respawnPos};
             this.dir = {...this.defaultDir};
             this.speed = this.defaultSpeed;
+            this.ballRadius = this.defaultRadius;
+            this.ownerID = -1;
         }
         else{
             this.isExpired = true;

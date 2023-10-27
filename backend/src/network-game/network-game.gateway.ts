@@ -45,6 +45,11 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
     this.networkGameService.LeaveQueue(client);
   }
 
+  @SubscribeMessage(ESocketGameMessage.TRY_LEAVE_MATCH) //should have info 
+  LeaveMatch( @ConnectedSocket() client: Socket) {
+    this.networkGameService.LeaveMatch(client);
+  }
+
   @SubscribeMessage(ESocketGameMessage.TRY_CREATE_ROOM) //should have info 
   CreatePrivateRoom(
     @ConnectedSocket() client: Socket, 

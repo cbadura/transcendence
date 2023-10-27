@@ -62,8 +62,25 @@ export class Render {
   }
 
   drawPowerUp(powerup: PowerUpRenderInfo){
-    this.drawCircle(powerup.pos.x, powerup.pos.y, powerup.radius, '#00000000', 'black',2);
-    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',powerup.type[0])
+    const capitalLetters = this.getCapitalizedLettersFromType(powerup.type)
+
+    //hacky color implementation
+    const powerUpTypes: string[] = ['IBS','IOPL','DOPL','SB','DOMSFD','IOC']
+    const powerUpcolors: string[] = ['#57A639','#3B83BD','#F39F18','#6A5F31',"#F39F18","#F54021"]
+    let i = 0;
+    for (; i < powerUpTypes.length; i++) {
+      if(powerUpTypes[i] == capitalLetters)
+        break
+    }
+    let color = '#000000';
+    if(i < powerUpTypes.length)
+      color = powerUpcolors[i]
+    this.drawCircle(powerup.pos.x, powerup.pos.y, powerup.radius, color, 'black',2);
+    this.drawString(powerup.pos.x, powerup.pos.y,'black','bold 25pt Inter',capitalLetters)
+  }
+
+    getCapitalizedLettersFromType (type: string): string {
+      return type.replace(/[^A-Z]+/g, "");
   }
 
   drawName(user:User,x:number,y:number,rotation: number = 0) {
@@ -89,7 +106,7 @@ export class Render {
       this.ctx.fill();
       //drawing debug direction line
       const mult = 50;
-      this.drawLine(ball.pos.x, ball.pos.y,ball.pos.x + (ball.debugDir.x * mult), ball.pos.y + (ball.debugDir.y * mult), 2, 'black');
+      // this.drawLine(ball.pos.x, ball.pos.y,ball.pos.x + (ball.debugDir.x * mult), ball.pos.y + (ball.debugDir.y * mult), 2, 'black');
   }
 
   

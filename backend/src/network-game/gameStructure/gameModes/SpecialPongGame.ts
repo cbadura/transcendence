@@ -1,28 +1,34 @@
 import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo, PowerUpRenderInfo } from "../RenderInfo";
-import { PongGameConfig, specialConfig } from "../PongGameConfig";
+import { PongGameConfig, PowerUpConfig, specialConfig } from "../PongGameConfig";
 import { APongGame } from "./APongGame";
-import { APowerUp, PUDummy } from "../PowerUps/APowerUp";
-import { PUIncreaseOwnerPaddleLength } from "../PowerUps/PUIncreaseOwnerPaddleLength";
-import { PUDecreaseOpponentPaddleLength } from "../PowerUps/PUDecreaseOpponentPaddleLength";
 import { Vector2D } from "../Vector2D";
-import { PUSplitBall } from "../PowerUps/PUSplitBall";
 import { BallFactory } from "../gameBalls/BallFactory";
 import { EBallType } from "../gameBalls/EBallType";
+import { PowerUpFactory } from "../PowerUps/PowerUpFactory";
 
 export class SpecialPongGame extends APongGame {
-    private maxPowerUps = 1;
-    private powerUpRespawnTimer = 7;
+    private maxPowerUps = 20;
+    private powerUpRespawnTimer = 3;
     private prevPeriodTimeStamp: number =  this.getNewDate();
-
+    //defines an area from the center where powerups can spawn
+    private powerUpSpawnArea: Vector2D = new Vector2D(this.config.canvas.width/4,this.config.canvas.height/2 - 100)
+    private sumPowerUpWeigths: number = 0;
     constructor(config?: PongGameConfig) {
         console.log("in constructor of SpecialPongGame")
         if(config == null)
             config = specialConfig;
         super(config);
-        // for (let i = 30; i < config.canvas.width; i+=60) {
-        //     this.powerUps.push(new PowerUpDummy(640+320,i))   
-        // }
-        // this.powerUps.push(new PUDecreaseOpponentPaddleLength(this,640+320,350))   
+
+
+        //calucalate sum once for random spawning
+        for (let i = 0; i < this.config.powerUps.length; i++) {
+            if(this.config.powerUps[i].weight == null){
+                this.sumPowerUpWeigths++
+                this.config.powerUps[i].weight = 1;
+            }
+            else
+                this.sumPowerUpWeigths += this.config.powerUps[i].weight;
+        }
     }
 
     gameLoop(): void {
@@ -45,17 +51,14 @@ export class SpecialPongGame extends APongGame {
         this.gameBalls = this.gameBalls.filter((ball)=>ball.isExpired == false)
 
         if(this.gameBalls.length == 0){
-            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos:new Vector2D(this.config.canvas.width/2,this.config.canvas.height/2)
-                ,startDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5)}))
+            this.gameBalls.push(BallFactory(EBallType.DEFAULT,{startPos: this.config.balls[0].defaultPos
+                ,startDir: this.config.balls[0].defaultDir,
+                startSpeed: this.config.balls[0].defaultSpeed}))
         }
-        // console.log(this.gameBalls.length)
-        // for (let i = 0; i < this.gameBalls.length; i++) {
-        //     console.log(this.gameBalls[i].getDirection());
-            
-        // }
     }
 
     private UpdatePeddles(){
+
     }
 
     private UpdateBallPositions(){
@@ -67,18 +70,14 @@ export class SpecialPongGame extends APongGame {
     private UpdatePowerUps(){
         //remove consumed.
         this.powerUps = this.powerUps.filter((powerup)=> powerup.isConsumed == false)
-        // console.log('NUMBER OF POWERUPS = ',this.powerUps.length)
-        for (let i = 0; i < this.powerUps.length; i++) {
-            // console.log(`element [${i}] status = ${this.powerUps[i].isConsumed}`)
-            
-        }
 
         //add new PowerUps if necessary ones
         if(this.prevPeriodTimeStamp < new Date().getTime()) {
-            console.log("NEW TIMESTAMP CREATED")
+            // console.log("NEW TIMESTAMP CREATED")
             this.prevPeriodTimeStamp = this.getNewDate()
 
-            for (let i = this.powerUps.length; i < this.maxPowerUps; i++) {
+            if(this.powerUps.length < this.maxPowerUps){
+                // this.spawnDebugPowerUp();
                 this.spawnPowerUp();
             }
         }
@@ -90,11 +89,56 @@ export class SpecialPongGame extends APongGame {
 
     private spawnPowerUp() {
         //try find suitable spawn location thats not within another location
-        const randomX = this.getRandomNbrInRange(700,700);
-        this.powerUps.push(new PUSplitBall(this,new Vector2D(randomX,350)))
-        //no protection yet
-        // for (let i = 0; i < 3; i++) {
-        // }   
+        if(this.config.powerUps.length <= 0) {
+            console.log("Didn't find any powerups in the config, NOT SPAWNING POWERUP")
+            return
+        }
+
+        const PowerUpConfig = this.rollForPowerUpConfig()
+        let randomX;
+        let randomY;
+        let tries = 10;
+        for (let i = 0; i < tries; i++) {
+            randomX = this.getRandomNbrInRange(this.centerX - this.powerUpSpawnArea.x,this.centerX + this.powerUpSpawnArea.x);
+            randomY = this.getRandomNbrInRange(this.centerY - this.powerUpSpawnArea.y,this.centerY + this.powerUpSpawnArea.y);
+            let j = 0;
+            for (; j < this.powerUps.length; j++) {
+                let dist = this.getDistanceFromPoints(this.powerUps[j].pos,new Vector2D(randomX,randomY))
+                if(dist < this.powerUps[j].radius * 3) { //2 is minum, 3 is to create more even distribution
+                    // console.log(`Spawn location [${randomX},${randomY}] is too close to [${this.powerUps[j].pos.x},${this.powerUps[j].pos.y}] = `,dist)
+                    break;
+                }
+            }
+            if(j >= this.powerUps.length){
+                this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(randomX,randomY),PowerUpConfig.config))
+                // console.log(`Found spawnlocation at [${randomX},${randomY}]`)
+                break;
+            }
+            // console.log('Iteration: ',i);
+        }
+        
+        
+    }
+    
+    private getDistanceFromPoints(pos1: Vector2D, pos2: Vector2D){
+        return Math.sqrt(Math.pow(pos1.x - pos2.x,2) + Math.pow(pos1.y - pos2.y,2))
+    }
+
+    private rollForPowerUpConfig():PowerUpConfig {
+        let randomNumber = Math.floor(this.getRandomNbrInRange(0,this.sumPowerUpWeigths))
+        for (let i = 0; i < this.config.powerUps.length; i++) {
+            if(randomNumber < this.config.powerUps[i].weight) {
+                return this.config.powerUps[i];
+            }
+            randomNumber -= this.config.powerUps[i].weight;
+        }
+        new Error('Weight calculation is incorrect ')
+    }
+
+    private spawnDebugPowerUp(){
+        this.maxPowerUps = 1;
+        let PowerUpConfig = this.config.powerUps[5]
+        this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(this.centerX,this.centerY),PowerUpConfig.config))
     }
 
 
