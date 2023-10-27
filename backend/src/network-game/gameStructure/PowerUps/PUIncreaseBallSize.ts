@@ -12,7 +12,6 @@ export class PUIncreaseBallSize extends APowerUp {
     constructor(game: SpecialPongGame,pos: Vector2D,config?: any){
         super(game,'IncreaseBallSize',pos);
 
-        console.log('Config =',config)
         if(config){
             this.increase = config.increase;
             this.applyToAll = config.applyToAll;

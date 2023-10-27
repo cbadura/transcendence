@@ -73,7 +73,7 @@ export class GameRoom {
                         this.matchService.createMatch(matchRes)
                         .then((matchResults) =>{
                             this.notifyClients(ESocketGameMessage.GAME_ENDED,matchResults);
-                            console.log(matchResults);
+                            // console.log(matchResults);
                         })
                         .catch()
                         }
@@ -115,7 +115,7 @@ export class GameRoom {
     }
 
     clientDisconnected(userId: number){
-        console.log('in client disconnected')
+        console.log('Client with ID ',userId,"disconnected");
         this.disconnectedUser = userId;
 
         if( this.state != EGameRoomState.FINISHED )
@@ -181,6 +181,7 @@ export class GameRoom {
     CanUserJoin(userId: number): boolean{
         return true;
     }
+
     abortGame(reason:string){
         this.notifyClients(ESocketGameMessage.GAME_ABORTED,{reason: reason});
         console.log('CLIENT DISCONNECTED WHILE TIMER STARTED RUNNING');

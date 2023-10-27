@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      // this.LogGameRooms();
+      this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -248,7 +248,15 @@ export class NetworkGameService {
             (currentClient) => currentClient.socket.id !== client.id,
             );
           }
+      }
 
+      LeaveMatch(client: Socket) {
+        const currUser = this.getISocketUserFromSocket(client);
+        if(currUser != null){
+          if(currUser.room_id != -1){ //let room know that user left
+            this.gameRooms[currUser.room_id]?.clientDisconnected(currUser.userId);
+          }
+        }
       }
 
       monitorGameRooms(){

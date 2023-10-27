@@ -82,13 +82,7 @@ export class GamePaddle {
       }
 
       public applySpeedMultiplier(speedMult: number): void {
-        // console.log("speedMult",speedMult)
-        // console.log("this.speed",this.speed)
-        //New Value = Original Value + (Original Value * (Positive Percentage / 100))
         this.speed *= speedMult;
-
-        // this.speed *= speedMult;
-        // console.log("this.speed AFTER",this.speed)
       }
 
       public inverseControls(): void{

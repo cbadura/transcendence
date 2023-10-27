@@ -12,6 +12,8 @@ export enum ESocketGameMessage {
     UPDATE_GAME_INFO = 'updateGame',
     GAME_ENDED = 'gameEnded',
     TRY_MOVE_PADDLE = 'tryMovePaddle',
+
+    TRY_LEAVE_MATCH = 'tryLeaveMatch',
     
     
     TRY_JOIN_QUEUE = 'tryJoinQueue',

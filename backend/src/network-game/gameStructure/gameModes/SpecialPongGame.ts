@@ -73,7 +73,7 @@ export class SpecialPongGame extends APongGame {
 
         //add new PowerUps if necessary ones
         if(this.prevPeriodTimeStamp < new Date().getTime()) {
-            console.log("NEW TIMESTAMP CREATED")
+            // console.log("NEW TIMESTAMP CREATED")
             this.prevPeriodTimeStamp = this.getNewDate()
 
             if(this.powerUps.length < this.maxPowerUps){
