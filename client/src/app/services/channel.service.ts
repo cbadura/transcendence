@@ -353,7 +353,9 @@ export class ChannelService implements OnDestroy{
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
-            ch.role = EUserRole.ADMIN;
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.ADMIN;
+            }
             if (ch.adminIds) {
               ch.adminIds.push(data.userId);
             } else {
