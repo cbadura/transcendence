@@ -21,15 +21,19 @@ export class GameRoom {
             config = trainingGameConfig;
         this.game = this.gameType == 'default' ? new DefaultPongGame(config) : new SpecialPongGame(config);
     }
-
     room_id: number = -1;
     game: APongGame;
     clients:  (IGameSocketUser | null)[] = []; 
     startTimer: number = 3;
     gameType;
+    private expirationTime: number = 30
+    private expiraryDate: number = new Date().getTime() + this.expirationTime * 1000;
+
     private state: EGameRoomState = EGameRoomState.IDLE;
     private disconnectedUser: number = -1; //this is shit needs to be imprved
     private maxClients: number = 2;
+    private tickRate = 1000 / 60;
+
 
 
     StartGame() {
@@ -44,7 +48,7 @@ export class GameRoom {
 
                 this.notifyClients(ESocketGameMessage.START_GAME)
                 this.state = EGameRoomState.RUNNING;
-                const tickRate = 1000 / 60;
+                
                 const gameLoop = setInterval(()=>{
                 
                     if(this.game.getGameOver() || this.state == EGameRoomState.DISCONNECT){ 
@@ -73,13 +77,13 @@ export class GameRoom {
                         this.matchService.createMatch(matchRes)
                         .then((matchResults) =>{
                             this.notifyClients(ESocketGameMessage.GAME_ENDED,matchResults);
-                            console.log(matchResults);
+                            // console.log(matchResults);
                         })
                         .catch()
                         }
                     }
                     this.updateGameState();
-                },tickRate)
+                },this.tickRate)
             }
             else {
                 this.abortGame('disconnect');
@@ -115,7 +119,7 @@ export class GameRoom {
     }
 
     clientDisconnected(userId: number){
-        console.log('in client disconnected')
+        console.log('Client with ID ',userId,"disconnected");
         this.disconnectedUser = userId;
 
         if( this.state != EGameRoomState.FINISHED )
@@ -181,11 +185,17 @@ export class GameRoom {
     CanUserJoin(userId: number): boolean{
         return true;
     }
+
     abortGame(reason:string){
         this.notifyClients(ESocketGameMessage.GAME_ABORTED,{reason: reason});
         console.log('CLIENT DISCONNECTED WHILE TIMER STARTED RUNNING');
         this.state = EGameRoomState.FINISHED;
     }
 
+    checkRoomExpiration() {
+        if(this.state == EGameRoomState.IDLE && this.expiraryDate < new Date().getTime()){
+            this.abortGame('Invitee took too long to respond');
+        }
+    }
 
 }

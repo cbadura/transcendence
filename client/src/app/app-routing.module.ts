@@ -13,10 +13,13 @@ import { EditChannelComponent } from './components/channels/edit-channel/edit-ch
 import { SigninComponent } from './components/authentication/signin/signin.component';
 import { TokenComponent } from './components/authentication/token/token.component';
 import { TwofaComponent } from './components/authentication/twofa/twofa.component';
+// import { SigninComponent } from './components/signin/signin.component';
+import {ConfirmDeactivateGuard} from './guards/can-deactivate.guard';
+
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'game', component: GameComponent },
+  { path: 'game', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard] },
   { path: 'leaderboard', component: LeaderboardComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'chat/:channel', component: ChatComponent },

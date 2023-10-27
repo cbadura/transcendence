@@ -94,11 +94,17 @@ export class NetworkGameService {
       async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ) {
 
         const instigator = this.getISocketUserFromSocket(client);
+        //validate instigator
         if(instigator == null){
           console.log('exception','Instigator (You) are not registered')
           return;
         }
-        //could check if user is online and not in a match
+        if(instigator.room_id != -1){
+          console.log('exception','Instigator (You) have already invited somebody in the last 10 seconds')
+          return;
+        }
+
+        //validate recipient
         let recipient;
         if(dto.recipient_user_id != -1){
 
@@ -211,6 +217,11 @@ export class NetworkGameService {
           console.log("in Join queue currUser is NULL");
           return;
         } 
+        if(currUser.room_id != -1){
+          console.log("Current User is already in a room. Likely due to an invitation");
+          return;
+        }
+
 
         if(dto.gameType == 'default') {
             if(this.defaultQueue.find( (user)=>user.socket.id == client.id) != null){
@@ -251,7 +262,15 @@ export class NetworkGameService {
             (currentClient) => currentClient.socket.id !== client.id,
             );
           }
+      }
 
+      LeaveMatch(client: Socket) {
+        const currUser = this.getISocketUserFromSocket(client);
+        if(currUser != null){
+          if(currUser.room_id != -1){ //let room know that user left
+            this.gameRooms[currUser.room_id]?.clientDisconnected(currUser.userId);
+          }
+        }
       }
 
       monitorGameRooms(){
@@ -259,7 +278,7 @@ export class NetworkGameService {
           for (let i = 0; i < this.gameRooms?.length; i++) {
             if( this.gameRooms[i] == null)
               return;
-
+              this.gameRooms[i].checkRoomExpiration();
               if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED) {
                   for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
                     console.log(this.gameRooms[i]?.clients[j])
