@@ -21,6 +21,7 @@ export class UserDataService {
     avatar: 'a',
     qr: '',
     tfa: false,
+	achievements: [],
   };
   private token!: string;
   private serverAddress: string = 'http://localhost:3000';
@@ -43,6 +44,7 @@ export class UserDataService {
         color: response.color,
         avatar: response.avatar,
         tfa: response.tfa,
+		achievements: response.achievements,
       };
       this.replaceUser(user);
     });
@@ -93,22 +95,20 @@ export class UserDataService {
       );
   }
 
-  changeRelation(status: string, targetId: number) {
-    console.log(targetId);
+  //   Relationships
+  addRelation(status: string, targetId: number): Observable<any> {
     const data = {
       user_id: this.myUser.id,
       relationship_user_id: Number(targetId),
       relationship_status: status,
     };
     console.log(data);
-    this.http.post(this.serverAddress + '/relationship', data).subscribe(
-      (data) => {
-        console.log('changeRelation success', data);
-      },
-      (error) => {
-        console.log('changeRelation error', error);
-      },
-    );
+    return this.http.post(this.serverAddress + '/relationship', data);
+  }
+
+  removeRelation(relationID: number): Observable<any> {
+    const url = `http://localhost:3000/relationship/${relationID}`;
+    return this.http.delete(url);
   }
 
   //   2FA
@@ -128,7 +128,7 @@ export class UserDataService {
       .subscribe(
         (data) => {
           this.myUser.qr = data.qr;
-		  console.log('newqr', this.myUser);
+          console.log('newqr', this.myUser);
           this.replaceUser(this.myUser);
         },
         (error) => {

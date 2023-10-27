@@ -1,4 +1,13 @@
 export interface Achievement {
-    name: string;
-    url: string;
+	id: number,
+	date_unlocked: string,
+	achievementDefinition: {
+		id: number,
+		name: string,
+		description: string,
+		criteria: {
+			matches: number
+		}
+	}
 }
+
