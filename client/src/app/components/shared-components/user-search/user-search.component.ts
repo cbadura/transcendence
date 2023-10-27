@@ -13,6 +13,7 @@ export class UserSearchComponent implements OnInit {
   searchTerm: string = '';
   @Output() userSelected = new EventEmitter<User>();
   @Output() closeClicked = new EventEmitter<void>();
+  
 
   constructor(private userService: UserService) {}
 
