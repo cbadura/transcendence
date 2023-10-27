@@ -23,7 +23,7 @@ export class TokenComponent implements OnInit {
 
     if (code) {
       this.http
-        .get(`http://localhost:3000/auth/redirect?code=${code}`)
+        .get(`http://localhost:3000/auth/redirect?code=${code}`, {withCredentials: true})
         .subscribe(
           (response: any) => {
             console.log('login response', response);

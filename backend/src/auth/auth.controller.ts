@@ -11,14 +11,24 @@ export class AuthController {
 
   @Get('login')
   @UseGuards(ftAuthGuard)
-  login() {}
+  login() {
+    console.log('hi there');
+  }
 
   @Get('redirect')
   @UseGuards(ftAuthGuard)
-  async redirect(@Req() req: Request) {
+  async redirect(@Req() req: Request, @Res() res: Response) {
     const token = await this.authService.jwtIssueToken(req.user);
     console.log(token);
-    return token;
+    res.cookie('token', token, {
+      maxAge: 3600000,
+      httpOnly: true,
+      domain: 'localhost',
+      sameSite: 'lax'
+    });
+    // console.log(req);
+    // console.log(res);
+    res.send(token);
   }
 
   @Get('2fa/activate')
@@ -57,11 +67,14 @@ export class AuthController {
   @Get('profile')
   @UseGuards(jwtAuthGuard)
   profile(@Req() req: Request) {
+    // console.log(req);
     return req.user;
   }
 
   @Get('logout') // not needed...probably
-  logout() {}
+  logout(@Req() req: Request) {
+    console.log(req);
+  }
 
   /* ----------dev-------------- */
 
