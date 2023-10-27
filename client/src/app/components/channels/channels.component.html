@@ -30,10 +30,10 @@
     class="border border-zinc-800 bg-zinc-800 rounded-3xl w-full"
   >
     <!-- Channel card -->
-
     <tcd-channel-card
       *ngFor="let channel of filteredChannels"
       [channel]="channel"
+      [joinMode]="this.checkUserJoinedStatus(channel)"
     ></tcd-channel-card>
   </div>
 

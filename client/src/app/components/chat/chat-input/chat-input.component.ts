@@ -18,4 +18,8 @@ export class ChatInputComponent {
     this.sendMessage.emit(message);
     this.inputField.nativeElement.value = "";
   }
+
+  onUserClick() {
+    
+  }
 }
