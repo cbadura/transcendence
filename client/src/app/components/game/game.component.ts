@@ -55,7 +55,7 @@ export class GameComponent implements CanComponentDeactivate {
 
   ngOnInit() {
     // Get user data
-    this.gameService.gameSocket = this.userDataService.gameSocket;
+    // this.gameService.gameSocket = this.userDataService.gameSocket;
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
       this.saturatedColor = SaturatedColor(this.myUser.color, 50);
@@ -87,7 +87,7 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   startTrainingGame() {
-    this.gameService.subscribeToEvents();
+   // this.gameService.subscribeToEvents();
     //make request to create room
     this.gameService.CreateTrainingMatch('special');
 
@@ -143,10 +143,11 @@ export class GameComponent implements CanComponentDeactivate {
     this.gameType = gameType;
     this.status = 'waiting';
     this.gameService.JoinQueue(this.myUser.id, gameType);
-    console.log('gameSocket created');
+    //console.log('gameSocket created');
 
-    this.gameService.subscribeToEvents();
+    //this.gameService.subscribeToEvents();
     this.gameService.getEventData().subscribe((event) => {
+		console.log("COMPONENT LISTENED TO EVENT");
       //   ROOM_CREATED
       if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
         console.log('ROOM CREATED IN GAME COMPONENT');
