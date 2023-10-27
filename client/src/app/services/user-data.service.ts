@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
-
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 import { User } from '../shared/interfaces/user';
 import { Socket } from 'ngx-socket-io';
 
@@ -18,43 +18,43 @@ export class UserDataService {
     wins: 0,
     color: '#E7C9FF',
     avatar: 'a',
+    qr: '',
+    tfa: false,
+	achievements: [],
   };
-
   private serverAddress: string = 'http://localhost:3000';
-
-  constructor(private http: HttpClient) {}
-
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
   userSocket: Socket | null = null;
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
+  constructor(private http: HttpClient, private cookieService: CookieService) {}
 
-  replaceUser(user: User) {
-    this.myUser = { ...this.myUser, ...user };
-    this.userSubject.next(this.myUser);
+  getNewestUser() {
+	const token = this.getTokenCookie();
+    const url = `http://localhost:3000/auth/profile?token=${token}`;
+    this.http.get(url).subscribe((response: any) => {
+      const user: User = {
+        id: response.id,
+        name: response.name,
+        status: response.status,
+        level: response.level,
+        matches: response.matches,
+        wins: response.wins,
+        color: response.color,
+        avatar: response.avatar,
+        tfa: response.tfa,
+		achievements: response.achievements,
+      };
+      this.replaceUser(user);
+      this.CreateSocketConnections();
+    });
   }
 
-  uploadProfilePic(file: File) {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    console.log('attempt upload');
-    this.http
-      .post(
-        `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
-        formData,
-      )
-      .subscribe(
-        (data) => {
-          console.log('UPLOAD', JSON.stringify(data));
-          window.alert('Profile picture uploaded!');
-        },
-        (error) => {
-          console.log(error);
-          window.alert('error uploading profile picture');
-        },
-      );
+  replaceUser(user: any) {
+    this.myUser = { ...this.myUser, ...user };
+    this.userSubject.next(this.myUser);
   }
 
   editUserById(newName: string, newColor: string) {
@@ -74,20 +74,112 @@ export class UserDataService {
     );
   }
 
-  changeRelation(status: string, targetId: number) {
+  uploadProfilePic(file: File) {
+    interface UploadedResponse {
+      img: string;
+    }
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    console.log('attempt upload');
+    this.http
+      .post<UploadedResponse>(
+        `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
+        formData,
+      )
+      .subscribe(
+        (data) => {
+          this.myUser.avatar = data.img;
+          this.replaceUser(this.myUser);
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+  }
+
+  getTokenCookie() {
+	return this.cookieService.get('token');
+  }
+
+  //   Relationships
+  addRelation(status: string, targetId: number): Observable<any> {
     const data = {
       user_id: this.myUser.id,
-      relationship_user_id: targetId,
+      relationship_user_id: Number(targetId),
       relationship_status: status,
     };
-	this.http.post(this.serverAddress + '/relationship', data).subscribe(
-		(data) => {
-			console.log('changeRelation success', data);
-		},
-		(error) => {
-			console.log('changeRelation error', error);
-		}
-	)
+    console.log(data);
+    return this.http.post(this.serverAddress + '/relationship', data);
+  }
+
+  removeRelation(relationID: number): Observable<any> {
+    const url = `http://localhost:3000/relationship/${relationID}`;
+    return this.http.delete(url);
+  }
+
+  //   2FA
+//   setToken(newToken: string) {
+//     this.token = newToken;
+//   }
+
+  getQRCode() {
+    interface QRCodeResponse {
+      qr: string;
+    }
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
+    this.http
+      .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
+        params,
+      })
+      .subscribe(
+        (data) => {
+          this.myUser.qr = data.qr;
+          console.log('newqr', this.myUser);
+          this.replaceUser(this.myUser);
+        },
+        (error) => {
+          console.log('error', error);
+        },
+      );
+  }
+
+  activateTFA(code: string): Observable<any> {
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
+    const data = {
+      key: code,
+    };
+    return this.http.post(this.serverAddress + '/auth/2fa/activate', data, {
+      params,
+    });
+  }
+
+  verifyTFA(code: string): Observable<any> {
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
+    const data = {
+      key: code,
+    };
+    return this.http.post(this.serverAddress + '/auth/2fa/verify', data, {
+      params,
+    });
+  }
+
+  deactivateTFA() {
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
+    this.http
+      .get(this.serverAddress + '/auth/2fa/deactivate', {
+        params,
+      })
+      .subscribe(
+        (data) => {
+          this.myUser.tfa = false;
+          this.replaceUser(this.myUser.tfa);
+        },
+        (error) => console.log(error),
+      );
   }
 
   //this function connects the sockets important for game and chat.
@@ -117,7 +209,7 @@ export class UserDataService {
           query: { 'userId': String(this.myUser.id) },
           forceNew: true
         } });
+      console.log('connecting user socket', this.userSocket);
     }
   }
 }
-

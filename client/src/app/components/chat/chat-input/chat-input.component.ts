@@ -1,17 +1,23 @@
-import { Component, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 
 import { User } from 'src/app/shared/interfaces/user';
+
 
 @Component({
   selector: 'tcd-chat-input',
   templateUrl: './chat-input.component.html',
 })
-export class ChatInputComponent {
+export class ChatInputComponent implements OnInit {
   @ViewChild('inputField') inputField!: ElementRef;
   @Output() sendMessage = new EventEmitter<string>();
+  @Input() userIds: number[] = [];
   public popup: boolean = false;
   public tempUserChanges!: [{ id: number; change: string }];
-  public invitedUsers!: User[];
+
+  ngOnInit() {
+    console.log('INPUT USERS', this.userIds);
+    this.tempUserChanges = [{ id: 0, change: '' }];
+  }
 
   focusInputField() {
     this.inputField.nativeElement.focus();
@@ -26,9 +32,9 @@ export class ChatInputComponent {
   onUserSelected(user: User) {
     this.closeUserPopup();
     this.editTempUserChanges(user.id, 'invite');
-    this.invitedUsers.push(user);
+    console.log(this.tempUserChanges);
   }
-
+  
   editTempUserChanges = (id: number, mode: string) => {
     let index = this.tempUserChanges.findIndex(
       (change) => change.id === id && change.change === mode

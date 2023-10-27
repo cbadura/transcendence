@@ -1,0 +1,27 @@
+import { UseFilters } from '@nestjs/common';
+import { BadRequestTransformationFilter } from '../chat/chat.filter';
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  WebSocketGateway,
+} from '@nestjs/websockets';
+import { UserService } from './user.service';
+import { Socket } from 'socket.io';
+
+@UseFilters(BadRequestTransformationFilter)
+@WebSocketGateway({
+  cors: true,
+})
+export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly userService: UserService) {}
+  handleConnection(client: Socket) {
+    this.userService.handleConnection(
+      client,
+      +client?.handshake?.query?.userId, // TODO change to token
+    );
+  }
+
+  handleDisconnect(client: Socket) {
+    this.userService.handleDisconnect(client);
+  }
+}

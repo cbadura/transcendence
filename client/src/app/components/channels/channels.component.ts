@@ -64,8 +64,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   checkUserJoinedStatus(channel: Channel): boolean {
     const foundChannel = this.serverChannels.find(ch =>
       ch.name === channel.name);
-    
-    console.log('ID', this.userId);
+    // console.log('ID', this.userId);
     if (foundChannel) {
       return foundChannel.usersIds.every(id => id !== this.userId);
     }

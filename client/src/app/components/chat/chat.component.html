@@ -26,6 +26,6 @@
     </div>
 
     <!-- Input field -->
-    <tcd-chat-input (sendMessage)="savePost($event)"></tcd-chat-input>
+    <tcd-chat-input (sendMessage)="savePost($event)" [userIds]="this.channel.usersIds"></tcd-chat-input>
   </div>
 </div>

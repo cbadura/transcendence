@@ -22,7 +22,8 @@ export class CreateProfileComponent implements OnInit {
   tempColor!: string;
   tempFile!: File | null;
   tempPic!: string;
-  temp2fa: boolean = false;
+  tempCode!: string;
+  twoFAPopup : boolean = false;
   availableColors: string[] = [
     '#E7C9FF',
     '#C9FFE5',
@@ -42,7 +43,6 @@ export class CreateProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-	console.log('2fa', this.temp2fa);
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.oldUser = user;
       this.tempName = this.oldUser.name;
@@ -52,7 +52,6 @@ export class CreateProfileComponent implements OnInit {
   }
 
   saveChanges = async () => {
-	console.log('2fa save changes', this.temp2fa);
 
     console.log('save changes', this.tempName, this.tempColor, this.oldUser);
 
@@ -90,6 +89,21 @@ export class CreateProfileComponent implements OnInit {
     this.tempPic = '';
     this.tempFile = null;
     this.fileInput.nativeElement.value = null;
+  }
+
+  open2FAPopup()
+  {
+	this.twoFAPopup = true;
+  }
+
+  close2FAPopup()
+  {
+	this.twoFAPopup = false;
+  }
+
+  deactivateTFA()
+  {
+	this.userDataService.deactivateTFA();
   }
 
   ngOnDestroy(): void {

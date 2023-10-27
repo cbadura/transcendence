@@ -50,7 +50,8 @@
 	</div>
 
 	<!-- Popup -->
-	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"></tcd-user-search>
+	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"
+		[invitation]="'Invite user to channel'"></tcd-user-search>
 
 	<!-- Invited users -->
 	<div *ngIf="invitedUsers.length > 0"  class="w-full flex flex-col gap-2">

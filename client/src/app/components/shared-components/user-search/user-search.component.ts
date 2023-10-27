@@ -1,5 +1,5 @@
 // user-search.component.ts
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { User } from 'src/app/shared/interfaces/user';
 import { UserService } from 'src/app/services/users.service';
 
@@ -13,13 +13,14 @@ export class UserSearchComponent implements OnInit {
   searchTerm: string = '';
   @Output() userSelected = new EventEmitter<User>();
   @Output() closeClicked = new EventEmitter<void>();
-  
+  @Input() userIds: number[] = [];
+  @Input() invitation: string = '';
 
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.userService.getUsers().subscribe((users) => {
-      this.users = users;
+      this.users = users.filter(user => this.userIds.includes(user.id));
     });
   }
 

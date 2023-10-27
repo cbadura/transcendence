@@ -1,3 +1,5 @@
+import { Achievement } from "./achievement";
+
 export interface User {
     id: number;
     name: string;
@@ -7,5 +9,8 @@ export interface User {
     wins: number;
     color: string;
     avatar: string;
+	qr?: string;
+	tfa?: boolean;
+	achievements: Achievement[];
     // friends: User[];
 }

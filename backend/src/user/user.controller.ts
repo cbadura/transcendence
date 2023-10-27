@@ -20,6 +20,12 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  /*--------dev--------*/
+  @Post()
+  createUser(@Body() dto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(dto);
+  }
+
   @Get('dummy')
   createDummyUsers(){
     this.userService.createDummyUsers();
@@ -29,6 +35,7 @@ export class UserController {
   deleteUserDatabase(){
     this.userService.deleteUserDatabase();
   }
+  /*---------dev---------*/
 
   //todo: prevent uploading files if user doesnt exist 
   @Post(':id/profilepic')
@@ -37,7 +44,7 @@ export class UserController {
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
           const userId = req.params.id;
-          // const uniqueSuffix = Date.now() 
+          // const uniqueSuffix = Date.now()
           // console.log(req);
           const extension = extname(file.originalname)
           const filename =`profilepic_user_${userId}${extension}`;
@@ -52,6 +59,7 @@ export class UserController {
     ) {
 
     // const baseUrl = request.protocol + '://' + request.get('host');
+    // dirty fix by cosmo :(, prepended `http://localhost:3000` to the imageURL 
     const userProfileImageURL = `http://localhost:3000/users/profilepic/${file.filename}`
 
     let updateDTO = new UpdateUserDto();
@@ -62,13 +70,14 @@ export class UserController {
     } catch (error) {
         throw new NotFoundException()
     }
-      return userProfileImageURL;
+      return {img: userProfileImageURL};
   }
 
   // this makes sense, but blocks the other
   @Get('profilepic/:filename')
   ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
       const filePath = path.join(__dirname, '../../', 'uploadedData/profilepictures/', filename);
+      console.log(filePath);
       res.sendFile(filePath)
   }
 
@@ -111,9 +120,6 @@ export class UserController {
     return this.userService.getUserRelationships(id,filter);
   }
 
-  @Post()
-  createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(dto);
-  }
+  
 
 }
