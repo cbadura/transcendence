@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-
+import { CookieService } from 'ngx-cookie-service';
 import { User } from '../shared/interfaces/user';
 import { Socket } from 'ngx-socket-io';
 
@@ -22,7 +22,6 @@ export class UserDataService {
     tfa: false,
 	achievements: [],
   };
-  private token!: string;
   private serverAddress: string = 'http://localhost:3000';
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
@@ -30,10 +29,11 @@ export class UserDataService {
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cookieService: CookieService) {}
 
   getNewestUser() {
-    const url = `http://localhost:3000/auth/profile?token=${this.token}`;
+	const token = this.getTokenCookie();
+    const url = `http://localhost:3000/auth/profile?token=${token}`;
     this.http.get(url).subscribe((response: any) => {
       const user: User = {
         id: response.id,
@@ -97,6 +97,10 @@ export class UserDataService {
       );
   }
 
+  getTokenCookie() {
+	return this.cookieService.get('token');
+  }
+
   //   Relationships
   addRelation(status: string, targetId: number): Observable<any> {
     const data = {
@@ -114,15 +118,16 @@ export class UserDataService {
   }
 
   //   2FA
-  setToken(newToken: string) {
-    this.token = newToken;
-  }
+//   setToken(newToken: string) {
+//     this.token = newToken;
+//   }
 
   getQRCode() {
     interface QRCodeResponse {
       qr: string;
     }
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     this.http
       .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
         params,
@@ -140,7 +145,8 @@ export class UserDataService {
   }
 
   activateTFA(code: string): Observable<any> {
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     const data = {
       key: code,
     };
@@ -150,7 +156,8 @@ export class UserDataService {
   }
 
   verifyTFA(code: string): Observable<any> {
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     const data = {
       key: code,
     };
@@ -160,7 +167,8 @@ export class UserDataService {
   }
 
   deactivateTFA() {
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     this.http
       .get(this.serverAddress + '/auth/2fa/deactivate', {
         params,

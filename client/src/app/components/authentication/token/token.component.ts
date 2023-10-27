@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { User } from 'src/app/shared/interfaces/user';
 import { UserDataService } from 'src/app/services/user-data.service';
+import { CookieService } from 'ngx-cookie-service';
+
 
 @Component({
   selector: 'tcd-token',
@@ -15,6 +16,7 @@ export class TokenComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private userDataService: UserDataService,
+	private cookieService: CookieService,
   ) {}
 
   ngOnInit() {
@@ -29,7 +31,8 @@ export class TokenComponent implements OnInit {
             console.log('login response', response);
             const token = response.access_token;
             if (token) {
-              this.userDataService.setToken(token);
+             // this.userDataService.setToken(token);
+			  this.cookieService.set('token', token);
               if (response.verified) {
                 this.userDataService.getNewestUser();
                 this.router.navigate(['/create-profile']);
