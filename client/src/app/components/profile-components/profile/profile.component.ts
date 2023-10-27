@@ -7,6 +7,8 @@ import { User } from 'src/app/shared/interfaces/user';
 import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'tcd-profile',
@@ -27,6 +29,8 @@ export class ProfileComponent implements OnInit {
     private userDataService: UserDataService,
     private userService: UserService,
     private http: HttpClient,
+	private router: Router,
+
   ) {}
 
   getUserRelation() {
@@ -56,6 +60,7 @@ export class ProfileComponent implements OnInit {
           // Profile from other user
           console.log('Profile from other user');
           this.myUser = user;
+		  if (this.myUser.id === Number(this.user.id)) this.router.navigate(['/profile']);
           this.getUserRelation();
         }
         //this.userDataService.getNewestUser();
