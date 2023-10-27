@@ -29,7 +29,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private userDataService: UserDataService,
     private route: ActivatedRoute) {
       this.messages = [];
-      this.tempText = '';
+      // this.tempText = '';
   }
 
   ngOnInit() {
@@ -37,28 +37,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       (user) => {
         this.myUser = user;
 		  });
-
-    /* this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
-      (posts) => {
-        this.messages = posts;
-      }); */
-
-    /* this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
-      this.messages = posts;
-    }); */
-
+    // Get params from URL
     this.route.params.subscribe(params => {
-      console.log('PARAMS', params)
+      // console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
-      this.chatHistoryService.setChannelName(this.channel.name);
     });
-
     // Unsubscribe from any previous subscription
     if (this.postSubscription) {
       this.postSubscription.unsubscribe();
     }
-
     // Subscribe to the chat history for the new channel
     this.postSubscription = this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
       this.messages = posts;

@@ -10,38 +10,18 @@ import { ChannelService } from './channel.service';
   providedIn: 'root'
 })
 export class ChatHistoryService {
-  // private chatHistory: Post[] = [];
-  // chatHistories: Post[][] = [this.chatHistory];
-  // serverChats: BehaviorSubject<Post[]>[] = [];
-  // serverChatObs$: Observable<Post[]>[] = [];
   chatHistories: { [channelName: string]: Post[] } = {}; // Hash table for chat histories
   serverChats: { [channelName: string]: BehaviorSubject<Post[]> } = {}; // Hash table for BehaviorSubjects
-
-  private channelName: string = '';
   private chatSocket: Socket | null = null;
 
   constructor(public channelService: ChannelService,
     public datepipe: DatePipe) {
       this.chatSocket = this.channelService.chatSocket;
-      // this.initializeObservables();
-
       this.subscribeToMessages();
-      console.log('~~~~~~~~~~~~SUBSCRIBED HISTORY~~~~~~~~~~~~~');
+      // console.log('~~~~~~~~~~~~SUBSCRIBED TO HISTORY~~~~~~~~~~~~~');
   }
 
-  // serverChat = new BehaviorSubject<Post[]>(this.chatHistory);
-
-  /* initializeObservables() {
-    this.chatHistories.forEach(chatHistory => {
-      this.serverChat = new BehaviorSubject<Post[]>(chatHistory);
-      this.serverChats.push(this.serverChat);
-      this.serverChatObs$.push(this.serverChat.asObservable());
-    });
-  } */
-
-  /* Map approach for different channels */
-
-  // Use this to get or create the BehaviorSubject for a channel
+  // Get or create the BehaviorSubject for a channel
   private getOrCreateChatSubject(channel: string): BehaviorSubject<Post[]> {
     if (!this.serverChats[channel]) {
       this.serverChats[channel] = new BehaviorSubject<Post[]>([]);
@@ -67,25 +47,6 @@ export class ChatHistoryService {
     return this.getOrCreateChatSubject(channel).asObservable();
   }
 
-  /* ~~~~~~~~ */
-
-  /* getHistory() {
-    return this.chatHistory;
-  } */
-
-  /* addPost(post: Post) {
-    this.chatHistory.push(post);
-  }
-
-  subscribeToMessages() {
-    this.getMessage().subscribe( (msg : any) => {
-      if (msg.channel === this.channelName ) {
-        this.chatHistory.push(msg);
-        this.serverChat.next(this.chatHistory);
-      }
-    });
-  } */
-
   /* SOCKET.IO functions */
   sendMessage(post: Post) {
     console.log('SEND MSG', post);
@@ -100,11 +61,4 @@ export class ChatHistoryService {
         });
     });
   }
-
-  
-
-  setChannelName(name: string) {
-    this.channelName = name;
-  }
-
 }
