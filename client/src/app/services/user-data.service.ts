@@ -48,6 +48,7 @@ export class UserDataService {
 		achievements: response.achievements,
       };
       this.replaceUser(user);
+      this.CreateSocketConnections();
     });
   }
 
@@ -200,6 +201,7 @@ export class UserDataService {
           query: { 'userId': String(this.myUser.id) },
           forceNew: true
         } });
+      console.log('connecting user socket', this.userSocket);
     }
   }
 }
