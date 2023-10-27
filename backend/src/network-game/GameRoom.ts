@@ -26,7 +26,7 @@ export class GameRoom {
     clients:  (IGameSocketUser | null)[] = []; 
     startTimer: number = 3;
     gameType;
-    private expirationTime: number = 10
+    private expirationTime: number = 30
     private expiraryDate: number = new Date().getTime() + this.expirationTime * 1000;
 
     private state: EGameRoomState = EGameRoomState.IDLE;
