@@ -7,6 +7,13 @@
     <h1 class="font-bold">🎮 {{ this.channel.name }} 🕹️</h1>
     <p>{{ this.channel.usersIds.length}}</p>
   </div>
+  <p *ngIf="!invitation">
+    No game invitations
+  <p>
+  <tcd-custom-button
+    *ngIf="invitation"
+    [buttonText]="'Click to accept game invitation'">
+  </tcd-custom-button>
   <a>
     <tcd-chat-btn [icon]="'featherSettings'"></tcd-chat-btn>
   </a>

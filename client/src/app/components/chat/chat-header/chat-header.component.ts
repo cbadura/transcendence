@@ -9,6 +9,7 @@ import { Channel } from 'src/app/shared/chat/Channel';
 })
 export class ChatHeaderComponent implements OnInit {
   channel!: Channel;
+  invitation: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
