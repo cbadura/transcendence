@@ -274,10 +274,10 @@ export class ChannelService implements OnDestroy{
               ch.banExpTime = data.expirationTimestamp;
               ch.role = EUserRole.NONE;
             }
-            ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
+            ch.usersIds = ch.usersIds.filter((id) => id !== data.userId);
 
             if (ch.role === EUserRole.OWNER) {
-              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+              ch.adminIds = ch.adminIds.filter((id) => id !== data.userId);
             }
           }
         });
@@ -304,12 +304,12 @@ export class ChannelService implements OnDestroy{
         console.log('KICKED', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
-            ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
+            ch.usersIds = ch.usersIds.filter((id) => id !== data.userId);
             if (data.targetUserId === this.myUser.id) {
               ch.role = EUserRole.NONE;
             }
             if (ch.role === EUserRole.OWNER) {
-              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+              ch.adminIds = ch.adminIds.filter((id) => id !== data.userId);
             }
           }
         });
@@ -334,9 +334,9 @@ export class ChannelService implements OnDestroy{
         console.log('LEFT', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
-            ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
+            ch.usersIds = ch.usersIds.filter((id) => id !== data.userId);
           if (ch.role === EUserRole.OWNER) {
-            ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+            ch.adminIds = ch.adminIds.filter((id) => id !== data.userId);
           }
           if (data.userId === this.myUser.id) {
             ch.role = EUserRole.NONE;
@@ -367,13 +367,11 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.on(
       ESocketMessage.REMOVED_ADMIN,
       (data: any) => {
-        console.log('REMOVED ADMIN', data);
-        console.log('TARGET', data.targetUserId);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
-            console.log('IF');
-            ch.role = EUserRole.USER;
+          if (ch.name === data.channelName) {
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.USER;
+            }
             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
           }
         });
