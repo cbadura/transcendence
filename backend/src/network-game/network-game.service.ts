@@ -94,11 +94,17 @@ export class NetworkGameService {
       async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ) {
 
         const instigator = this.getISocketUserFromSocket(client);
+        //validate instigator
         if(instigator == null){
           console.log('exception','Instigator (You) are not registered')
           return;
         }
-        //could check if user is online and not in a match
+        if(instigator.room_id != -1){
+          console.log('exception','Instigator (You) have already invited somebody in the last 10 seconds')
+          return;
+        }
+
+        //validate recipient
         let recipient;
         if(dto.recipient_user_id != -1){
 
