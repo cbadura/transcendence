@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import * as io from 'socket.io-client';
-
+import { CanComponentDeactivate } from 'src/app/guards/can-deactivate.guard';
 import { UserDataService } from '../../services/user-data.service';
 import { GameService } from 'src/app/services/game.service';
 import { Render } from './Render/Render';
@@ -22,7 +22,7 @@ import { GameRenderInfo } from 'src/app/components/game/Render/GameRenderInfo';
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.css'],
 })
-export class GameComponent {
+export class GameComponent implements CanComponentDeactivate {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
@@ -73,7 +73,12 @@ export class GameComponent {
     ) as CanvasRenderingContext2D;
   }
 
- 
+  canDeactivate(): Observable<boolean> | boolean {
+	if (this.status === 'waiting' || this.status === 'playing') {
+	  return window.confirm('Are you sure you want to leave the game?');
+	}
+	return true;
+  }
 
   startTrainingGame(){
     this.gameService.subscribeToEvents();
