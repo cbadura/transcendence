@@ -354,7 +354,11 @@ export class ChannelService implements OnDestroy{
           if (ch.name === data.channelName)
           {
             ch.role = EUserRole.ADMIN;
-            ch.adminIds.push(data.userId);
+            if (ch.adminIds) {
+              ch.adminIds.push(data.userId);
+            } else {
+              ch.adminIds = [data.userId];
+          }
           }
         });
         this.serverChannels.next(this.channels);
@@ -364,11 +368,13 @@ export class ChannelService implements OnDestroy{
       ESocketMessage.REMOVED_ADMIN,
       (data: any) => {
         console.log('REMOVED ADMIN', data);
+        console.log('TARGET', data.targetUserId);
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
+            console.log('IF');
             ch.role = EUserRole.USER;
-             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);6
+            ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
           }
         });
         this.serverChannels.next(this.channels);
