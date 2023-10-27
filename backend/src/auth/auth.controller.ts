@@ -68,13 +68,13 @@ export class AuthController {
   @Get('profile')
   @UseGuards(jwtAuthGuard)
   profile(@Req() req: Request) {
-    // console.log(req);
+    // console.log(req.cookies);
     return req.user;
   }
 
   @Get('logout') // not needed...probably
-  logout(@Req() req: Request) {
-    console.log(req);
+  logout(@Req() req: Request, @Res() res: Response) {
+    res.clearCookie('token').send('logged out');
   }
 
   /* ----------dev-------------- */

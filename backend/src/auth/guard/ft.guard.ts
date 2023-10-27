@@ -8,7 +8,6 @@ export class ftAuthGuard extends AuthGuard('42') {
     const request = context.switchToHttp().getRequest();
     // console.log(request);
     // await super.logIn(request);
-    console.log(request);
     return activate;
   }
 }

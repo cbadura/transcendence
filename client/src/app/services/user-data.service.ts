@@ -32,7 +32,7 @@ export class UserDataService {
 
   getNewestUser() {
     const url = `http://localhost:3000/auth/profile?token=${this.token}`;
-    this.http.get(url).subscribe((response: any) => {
+    this.http.get(url, { withCredentials: true }).subscribe((response: any) => {
       const user: User = {
         id: response.id,
         name: response.name,
