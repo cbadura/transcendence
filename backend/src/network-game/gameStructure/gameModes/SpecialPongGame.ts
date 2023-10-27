@@ -95,13 +95,35 @@ export class SpecialPongGame extends APongGame {
         }
 
         const PowerUpConfig = this.rollForPowerUpConfig()
-        const randomX = this.getRandomNbrInRange(this.centerX - this.powerUpSpawnArea.x,this.centerX + this.powerUpSpawnArea.x);
-        const randomY = this.getRandomNbrInRange(this.centerY - this.powerUpSpawnArea.y,this.centerY + this.powerUpSpawnArea.y);
+        let randomX;
+        let randomY;
+        let tries = 10;
+        for (let i = 0; i < tries; i++) {
+            randomX = this.getRandomNbrInRange(this.centerX - this.powerUpSpawnArea.x,this.centerX + this.powerUpSpawnArea.x);
+            randomY = this.getRandomNbrInRange(this.centerY - this.powerUpSpawnArea.y,this.centerY + this.powerUpSpawnArea.y);
+            let j = 0;
+            for (; j < this.powerUps.length; j++) {
+                let dist = this.getDistanceFromPoints(this.powerUps[j].pos,new Vector2D(randomX,randomY))
+                if(dist < this.powerUps[j].radius * 3) { //2 is minum, 3 is to create more even distribution
+                    // console.log(`Spawn location [${randomX},${randomY}] is too close to [${this.powerUps[j].pos.x},${this.powerUps[j].pos.y}] = `,dist)
+                    break;
+                }
+            }
+            if(j >= this.powerUps.length){
+                this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(randomX,randomY),PowerUpConfig.config))
+                // console.log(`Found spawnlocation at [${randomX},${randomY}]`)
+                break;
+            }
+            // console.log('Iteration: ',i);
+        }
         
-        this.powerUps.push(PowerUpFactory(PowerUpConfig.type,this,new Vector2D(randomX,randomY),PowerUpConfig.config))
         
     }
     
+    private getDistanceFromPoints(pos1: Vector2D, pos2: Vector2D){
+        return Math.sqrt(Math.pow(pos1.x - pos2.x,2) + Math.pow(pos1.y - pos2.y,2))
+    }
+
     private rollForPowerUpConfig():PowerUpConfig {
         let randomNumber = Math.floor(this.getRandomNbrInRange(0,this.sumPowerUpWeigths))
         for (let i = 0; i < this.config.powerUps.length; i++) {
