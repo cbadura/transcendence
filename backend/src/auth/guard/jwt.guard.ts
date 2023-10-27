@@ -15,8 +15,8 @@ export class jwtAuthGuard extends AuthGuard('jwt') {
   
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    // const token = ExtractJwt.fromUrlQueryParameter('token')(request);
-    const token = request.cookies?.token?.access_token; // get token from cookie
+    const token = ExtractJwt.fromUrlQueryParameter('token')(request);
+    // const token = request.cookies?.token?.access_token; // get token from cookie
     if (!token)
       throw new UnauthorizedException();
     
