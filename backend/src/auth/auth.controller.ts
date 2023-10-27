@@ -24,7 +24,8 @@ export class AuthController {
       maxAge: 3600000,
       httpOnly: true,
       domain: 'localhost',
-      sameSite: 'lax'
+      sameSite: 'lax',
+      secure: true,
     });
     // console.log(req);
     // console.log(res);
