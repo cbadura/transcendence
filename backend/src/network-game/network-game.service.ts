@@ -217,6 +217,11 @@ export class NetworkGameService {
           console.log("in Join queue currUser is NULL");
           return;
         } 
+        if(currUser.room_id != -1){
+          console.log("Current User is already in a room. Likely due to an invitation");
+          return;
+        }
+
 
         if(dto.gameType == 'default') {
             if(this.defaultQueue.find( (user)=>user.socket.id == client.id) != null){
