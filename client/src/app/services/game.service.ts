@@ -23,7 +23,12 @@ export class GameService {
   }
 
   CreateTrainingMatch(gameType: 'default' | 'special'){
-	this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {gameType: gameType,recipient_user_id: -1})
+	  this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {gameType: gameType,recipient_user_id: -1})
+  }
+  
+  InviteToMatch(gameType: 'default' | 'special', id: number){
+	  this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {gameType: gameType,recipient_user_id: id})
+    console.log('INVITED ID TO MATCH', id);
   }
 
   //this function should be called if a use is queueing but switches to another tab. Or we have explicitly a button to stop queueing
@@ -60,7 +65,6 @@ export class GameService {
       });
     });
   
-	  
 		this.gameSocket?.on(ESocketGameMessage.GAME_ABORTED, (data: any) => {
 			console.log('Game Aborted in service', data);
 			this.eventSubject.next({
@@ -68,7 +72,15 @@ export class GameService {
 				data: { data },
 			});
 		});
-	}
+
+    this.gameSocket?.on(ESocketGameMessage.RECEIVE_ROOM_INVITE, (data: any) => {
+      console.log('ROOM INVITE RECEIVED', data);
+      this.eventSubject.next({
+        eventType: ESocketGameMessage.RECEIVE_ROOM_INVITE,
+        data: { data },
+      });
+    });
+  }
 	  
   getEventData() {
     return this.eventSubject.asObservable();

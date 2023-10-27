@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 
 import { User } from 'src/app/shared/interfaces/user';
-
+import { GameService } from 'src/app/services/game.service';
 
 @Component({
   selector: 'tcd-chat-input',
@@ -14,8 +14,9 @@ export class ChatInputComponent implements OnInit {
   public popup: boolean = false;
   public tempUserChanges!: [{ id: number; change: string }];
 
+  constructor(private gameService: GameService) {}
+
   ngOnInit() {
-    console.log('INPUT USERS', this.userIds);
     this.tempUserChanges = [{ id: 0, change: '' }];
   }
 
@@ -31,8 +32,7 @@ export class ChatInputComponent implements OnInit {
 
   onUserSelected(user: User) {
     this.closeUserPopup();
-    this.editTempUserChanges(user.id, 'invite');
-    console.log(this.tempUserChanges);
+    this.gameService.InviteToMatch('default', user.id);
   }
   
   editTempUserChanges = (id: number, mode: string) => {
