@@ -47,6 +47,7 @@ export class GameComponent implements CanComponentDeactivate {
   public saturatedColor!: string;
   public highLightColor: string = 'black';
   public darkerColor!: string;
+  private gameSubscription!: Subscription;
 
   constructor(
     private userDataService: UserDataService,
@@ -87,7 +88,7 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   startTrainingGame() {
-   // this.gameService.subscribeToEvents();
+    // this.gameService.subscribeToEvents();
     //make request to create room
     this.gameService.CreateTrainingMatch('special');
 
@@ -143,12 +144,8 @@ export class GameComponent implements CanComponentDeactivate {
     this.gameType = gameType;
     this.status = 'waiting';
     this.gameService.JoinQueue(this.myUser.id, gameType);
-    //console.log('gameSocket created');
-
-    //this.gameService.subscribeToEvents();
-    this.gameService.getEventData().subscribe((event) => {
-		console.log("COMPONENT LISTENED TO EVENT");
-      //   ROOM_CREATED
+    this.gameSubscription = this.gameService.event$.subscribe((event) => {
+      console.log('EVENT RECEIVED IN GAME COMPONENT');
       if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
         console.log('ROOM CREATED IN GAME COMPONENT');
         this.gameRenderInfo = event.data.game;
@@ -186,12 +183,13 @@ export class GameComponent implements CanComponentDeactivate {
         }
       }
 
-      // GAME_ABORTED
       if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
         this.status = 'aborted';
         console.log('GAME_ABORTED', event.data);
       }
     });
+
+    // GAME_ABORTED
   }
 
   //right now this play again will just queue up the user again.
@@ -250,5 +248,6 @@ export class GameComponent implements CanComponentDeactivate {
   ngOnDestroy(): void {
     console.log('NG ON DESTROY CALLED ');
     this.userSubscription.unsubscribe();
+    this.gameSubscription.unsubscribe();
   }
 }

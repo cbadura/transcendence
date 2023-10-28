@@ -5,6 +5,7 @@ import { Socket } from 'ngx-socket-io';
 import { ESocketGameMessage } from '../shared/macros/ESocketGameMessage';
 import { GameRenderInfo } from '../components/game/Render/GameRenderInfo';
 import { UserDataService } from './user-data.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -14,17 +15,21 @@ export class GameService {
   gameRenderInfo!: GameRenderInfo;
   countdown!: number;
   gameSocket: Socket | null = null; //will be set on gameComponent Initialize (by that time a socket should already exist)
-  eventSubject = new Subject<{ eventType: string; data: any }>();
+  myEvent!: { eventType: string; data: any };
 
-constructor(private userService: UserDataService){
-	console.log("GameService constructor called");
-	if (!this.gameSocket)
-	{
-		this.gameSocket = userService.gameSocket;
-		this.subscribeToEvents();
-	}
-	console.log('game socket', this.gameSocket)
-}
+  private eventSubject = new BehaviorSubject<{ eventType: string; data: any }>(
+    this.myEvent,
+  );
+  event$ = this.eventSubject.asObservable();
+
+  constructor(private userService: UserDataService) {
+    console.log('GameService constructor called');
+    if (!this.gameSocket) {
+      this.gameSocket = userService.gameSocket;
+      this.subscribeToEvents();
+    }
+    console.log('game socket', this.gameSocket);
+  }
 
   JoinQueue(userId: number, gameType: 'default' | 'special'): void {
     this.gameSocket?.emit(ESocketGameMessage.TRY_JOIN_QUEUE, {
@@ -49,45 +54,50 @@ constructor(private userService: UserDataService){
   }
 
   subscribeToEvents() {
-	console.log("GameService constructor subscribed to events");
+    console.log('GameService constructor subscribed to events');
 
     this.gameSocket?.on(ESocketGameMessage.LOBBY_COMPLETED, (data: any) => {
-		console.log("LISTENED TO EVENT LOBBY_COMPLETED");
-      this.eventSubject.next({
-        eventType: ESocketGameMessage.LOBBY_COMPLETED,
-        data: data,
-      });
+      console.log('LISTENED TO EVENT LOBBY_COMPLETED');
+	  this.myEvent = {
+		eventType: ESocketGameMessage.LOBBY_COMPLETED,
+		data: data,
+	  };
+      this.eventSubject.next(this.myEvent);
     });
 
     this.gameSocket?.on(
       ESocketGameMessage.START_COUNTDOWN,
       (countdown: number) => {
-		console.log("LISTENED TO EVENT START_COUNTDOWN");
-        this.eventSubject.next({
-          eventType: ESocketGameMessage.START_COUNTDOWN,
-          data: { countdown },
-        });
+        console.log('LISTENED TO EVENT START_COUNTDOWN');
+		this.myEvent = {
+			eventType: ESocketGameMessage.START_COUNTDOWN,
+			data: { countdown },
+		};
+        this.eventSubject.next(this.myEvent);
       },
     );
 
     this.gameSocket?.on(
       ESocketGameMessage.UPDATE_GAME_INFO,
       (gameRenderInfo: GameRenderInfo) => {
-		console.log("LISTENED TO EVENT UPDATE_GAME_INFO");
-        this.eventSubject.next({
-          eventType: ESocketGameMessage.UPDATE_GAME_INFO,
-          data: { gameRenderInfo },
-        });
+        console.log('LISTENED TO EVENT UPDATE_GAME_INFO');
+		this.myEvent = {
+			eventType: ESocketGameMessage.UPDATE_GAME_INFO,
+			data: { gameRenderInfo },
+		}
+        this.eventSubject.next(this.myEvent);
       },
     );
 
     this.gameSocket?.on(ESocketGameMessage.GAME_ABORTED, (data: any) => {
       console.log('Game Aborted in service', data);
-	  console.log("LISTENED TO EVENT GAME_ABORTED");
-      this.eventSubject.next({
-        eventType: ESocketGameMessage.GAME_ABORTED,
-        data: { data },
-      });
+      console.log('LISTENED TO EVENT GAME_ABORTED');
+	  this.myEvent = {
+		eventType: ESocketGameMessage.GAME_ABORTED,
+		data: { data },
+	  };
+
+      this.eventSubject.next(this.myEvent);
     });
   }
 
