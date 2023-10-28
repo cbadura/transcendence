@@ -278,7 +278,6 @@ export class NetworkGameService {
             this.gameRooms[i].checkRoomExpiration();
             if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED) {
               for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
-                console.log(this.gameRooms[i]?.clients[j])
                 if(this.gameRooms[i].clients[j] != null){
                   this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                   this.gameRooms[i].clients[j].room_id = -1;
