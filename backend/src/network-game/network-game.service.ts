@@ -27,6 +27,7 @@ export class NetworkGameService {
 
 
     async handleConnection(socket: Socket, userId: number) {
+      console.log('userId',userId)
       if (isNaN(userId)) {
         socket.emit('exception', 'Invalid user id');
         socket.disconnect(true);
