@@ -42,6 +42,7 @@ import { EditChannelComponent } from './components/channels/edit-channel/edit-ch
 import { ProfileCardComponent } from './components/profile-components/profile-card/profile-card.component';
 import { SigninComponent } from './components/signin/signin.component';
 import { GameModeComponent } from './components/game/game-mode/game-mode.component';
+import { GameService } from './services/game.service';
 
 const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -91,6 +92,7 @@ const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options:
   providers: [
     UserDataService,
     DatePipe,
+	GameService,
     // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
     { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],

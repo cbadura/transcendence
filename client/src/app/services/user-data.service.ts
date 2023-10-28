@@ -163,14 +163,20 @@ export class UserDataService {
  //this function connects the sockets important for game and chat. Probably needs to be called on Login as well
   CreateSocketConnections(){
     console.log('trying to create Sockets');
-    const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
-    if (!this.gameSocket) {
-      this.gameSocket = new Socket({ url: gameUrl, options: {} });
-    }
+	if (!this.gameSocket) {
+		this.gameSocket = new Socket({
+		  url: "http://localhost:3000/game",
+		  options: {
+			query: { 'userId': String(this.myUser.id) },
+			forceNew: true
+		} });
+		console.log('connecting game socket', this.chatSocket);
+	  }
+	}
 
-    const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
-    if (!this.gameSocket) {
-      this.chatSocket = new Socket({ url: chatUrl, options: {} });
-    }
-  }
+//     const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
+//     if (!this.gameSocket) {
+//       this.chatSocket = new Socket({ url: chatUrl, options: {} });
+//     }
+//   }
 }
