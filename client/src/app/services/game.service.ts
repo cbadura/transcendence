@@ -49,6 +49,10 @@ export class GameService {
     this.gameSocket?.emit(ESocketGameMessage.TRY_LEAVE_QUEUE);
   }
 
+  leaveMatch() {
+	this.gameSocket?.emit(ESocketGameMessage.TRY_LEAVE_MATCH);
+  }
+
   sendPaddle(id: number, step: number) {
     this.gameSocket?.emit(ESocketGameMessage.TRY_MOVE_PADDLE, id, step);
   }

@@ -80,7 +80,7 @@ export class GameComponent implements CanComponentDeactivate {
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
-        //add events
+        this.gameService.leaveMatch();
         return true;
       } else return false;
     }
@@ -91,7 +91,7 @@ export class GameComponent implements CanComponentDeactivate {
     // this.gameService.subscribeToEventObject();
     //make request to create room
     this.gameService.CreateTrainingMatch('special');
-	this.subscribeToEventObject();
+    this.subscribeToEventObject();
   }
 
   startGame(gameType: 'default' | 'special'): void {
@@ -103,7 +103,7 @@ export class GameComponent implements CanComponentDeactivate {
 
   subscribeToEventObject() {
     this.gameSubscription = this.gameService.event$.subscribe((event) => {
-	if (!event) return;
+      if (!event) return;
       if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
         this.gameRenderInfo = event.data.game;
         this.render = new Render(
@@ -204,6 +204,6 @@ export class GameComponent implements CanComponentDeactivate {
   ngOnDestroy(): void {
     console.log('NG ON DESTROY CALLED ');
     this.userSubscription.unsubscribe();
-    this.gameSubscription.unsubscribe();
+    if (this.gameSubscription) this.gameSubscription.unsubscribe();
   }
 }
