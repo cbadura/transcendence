@@ -57,22 +57,20 @@ export class GameService {
     console.log('GameService constructor subscribed to events');
 
     this.gameSocket?.on(ESocketGameMessage.LOBBY_COMPLETED, (data: any) => {
-      console.log('LISTENED TO EVENT LOBBY_COMPLETED');
-	  this.myEvent = {
-		eventType: ESocketGameMessage.LOBBY_COMPLETED,
-		data: data,
-	  };
+      this.myEvent = {
+        eventType: ESocketGameMessage.LOBBY_COMPLETED,
+        data: data,
+      };
       this.eventSubject.next(this.myEvent);
     });
 
     this.gameSocket?.on(
       ESocketGameMessage.START_COUNTDOWN,
       (countdown: number) => {
-        console.log('LISTENED TO EVENT START_COUNTDOWN');
-		this.myEvent = {
-			eventType: ESocketGameMessage.START_COUNTDOWN,
-			data: { countdown },
-		};
+        this.myEvent = {
+          eventType: ESocketGameMessage.START_COUNTDOWN,
+          data: { countdown },
+        };
         this.eventSubject.next(this.myEvent);
       },
     );
@@ -80,28 +78,21 @@ export class GameService {
     this.gameSocket?.on(
       ESocketGameMessage.UPDATE_GAME_INFO,
       (gameRenderInfo: GameRenderInfo) => {
-        console.log('LISTENED TO EVENT UPDATE_GAME_INFO');
-		this.myEvent = {
-			eventType: ESocketGameMessage.UPDATE_GAME_INFO,
-			data: { gameRenderInfo },
-		}
+        this.myEvent = {
+          eventType: ESocketGameMessage.UPDATE_GAME_INFO,
+          data: { gameRenderInfo },
+        };
         this.eventSubject.next(this.myEvent);
       },
     );
 
     this.gameSocket?.on(ESocketGameMessage.GAME_ABORTED, (data: any) => {
       console.log('Game Aborted in service', data);
-      console.log('LISTENED TO EVENT GAME_ABORTED');
-	  this.myEvent = {
-		eventType: ESocketGameMessage.GAME_ABORTED,
-		data: { data },
-	  };
-
+      this.myEvent = {
+        eventType: ESocketGameMessage.GAME_ABORTED,
+        data: { data },
+      };
       this.eventSubject.next(this.myEvent);
     });
-  }
-
-  getEventData() {
-    return this.eventSubject.asObservable();
   }
 }

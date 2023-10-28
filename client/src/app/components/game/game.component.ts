@@ -88,15 +88,23 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   startTrainingGame() {
-    // this.gameService.subscribeToEvents();
+    // this.gameService.subscribeToEventObject();
     //make request to create room
     this.gameService.CreateTrainingMatch('special');
+	this.subscribeToEventObject();
+  }
 
-    //forgive me lord
-    this.gameService.getEventData().subscribe((event) => {
-      //   ROOM_CREATED
+  startGame(gameType: 'default' | 'special'): void {
+    this.gameType = gameType;
+    this.status = 'waiting';
+    this.gameService.JoinQueue(this.myUser.id, gameType);
+    this.subscribeToEventObject();
+  }
+
+  subscribeToEventObject() {
+    this.gameSubscription = this.gameService.event$.subscribe((event) => {
+	if (!event) return;
       if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
-        console.log('ROOM CREATED IN GAME COMPONENT');
         this.gameRenderInfo = event.data.game;
         this.render = new Render(
           this.ctx,
@@ -138,58 +146,6 @@ export class GameComponent implements CanComponentDeactivate {
         console.log('GAME_ABORTED', event.data);
       }
     });
-  }
-
-  startGame(gameType: 'default' | 'special'): void {
-    this.gameType = gameType;
-    this.status = 'waiting';
-    this.gameService.JoinQueue(this.myUser.id, gameType);
-    this.gameSubscription = this.gameService.event$.subscribe((event) => {
-      console.log('EVENT RECEIVED IN GAME COMPONENT');
-      if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
-        console.log('ROOM CREATED IN GAME COMPONENT');
-        this.gameRenderInfo = event.data.game;
-        this.render = new Render(
-          this.ctx,
-          this.gameRenderInfo,
-          event.data.userInfo.user1,
-          event.data.userInfo.user2,
-          this.myUser.id,
-        );
-      }
-
-      //   START_COUNTDOWN
-      if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
-        console.log('START COUNTDOWN IN GAME COMPONENT');
-        console.log(event.data);
-        this.status = 'playing';
-        this.render.setCountdown(event.data.countdown);
-        //let countdown = event.data.countdown;
-      }
-
-      //   UPDATE_GAME_INFO
-      if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
-        this.gameRenderInfo = event.data.gameRenderInfo;
-        if (this.gameRenderInfo && this.render) {
-          this.movePaddle();
-          if (!this.gameRenderInfo.gameOver) {
-            this.render.redraw(this.gameRenderInfo);
-          } else {
-            console.log('gameover');
-            this.status = 'gameover';
-            this.fillMatchData(this.gameRenderInfo);
-            return;
-          }
-        }
-      }
-
-      if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
-        this.status = 'aborted';
-        console.log('GAME_ABORTED', event.data);
-      }
-    });
-
-    // GAME_ABORTED
   }
 
   //right now this play again will just queue up the user again.
