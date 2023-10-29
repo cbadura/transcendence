@@ -28,6 +28,7 @@ export class GameComponent implements CanComponentDeactivate {
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
   public myUser!: User;
+  private paddle!: number;
   private opponent!: User | null;
   public match!: Match | null;
   public status: string = 'new-game';
@@ -106,6 +107,7 @@ export class GameComponent implements CanComponentDeactivate {
           event.data.userInfo.user2,
           this.myUser.id,
         );
+		this.myUser.id === event.data.userInfo.user1.id ? this.paddle = 1 : this.paddle = 2;
 		this.myUser.id === event.data.userInfo.user1.id ? this.opponent = event.data.userInfo.user2 : this.opponent = event.data.userInfo.user1;
       }
 
@@ -121,11 +123,12 @@ export class GameComponent implements CanComponentDeactivate {
       if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
         this.gameRenderInfo = event.data.gameRenderInfo;
         if (this.gameRenderInfo && this.render) {
-          this.movePaddle();
-          if (!this.gameRenderInfo.gameOver) {
-            this.render.redraw(this.gameRenderInfo);
-          } else {
-            console.log('gameover');
+			this.movePaddle();
+			if (!this.gameRenderInfo.gameOver) {
+				this.render.redraw(this.gameRenderInfo);
+			} else {
+				console.log('gameover data', event.data);
+				console.log('gameover');
             this.status = 'gameover';
             this.fillMatchData(this.gameRenderInfo);
             return;
@@ -150,18 +153,21 @@ export class GameComponent implements CanComponentDeactivate {
 	this.match = null;
 	this.opponent = null;
 	this.render = null;
+	this.paddle = 0;
 	this.gameSubscription.unsubscribe();	
 	console.log('playAgain');
   }
 
   fillMatchData(game: GameRenderInfo): void {
 	if (!this.opponent) return;
+	console.log('this paddle', this.paddle);
     this.match = {
       opponent: this.opponent,
-      myScore: game.paddles[0].score,
-      opponentScore: game.paddles[1].score,
+      myScore: this.paddle === 1 ? game.paddles[0].score : game.paddles[1].score,
+      opponentScore: this.paddle === 1 ? game.paddles[1].score : game.paddles[0].score,
       dateTime: new Date().toISOString(),
     };
+	console.log('match', this.match);
   }
 
   leaveQueue() {
