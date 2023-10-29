@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      this.LogGameRooms();
+      // this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
