@@ -49,7 +49,7 @@ export const defaultConfig: PongGameConfig = {
         type:EBallType.DEFAULT,
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5),
-        defaultSpeed: 2,
+        defaultSpeed: 5,
       }],
       maxScore: 5,
 } 
