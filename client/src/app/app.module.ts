@@ -53,6 +53,11 @@ import { TwofaComponent } from './components/authentication/twofa/twofa.componen
 import { ChannelService } from './services/channel.service';
 import { ChatHistoryService } from './services/chat-history.service';
 import { ActivateTwofaComponent } from './components/profile-components/activate-twofa/activate-twofa.component';
+import { GameService } from './services/game.service';
+
+// const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
+// const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
+
 
 @NgModule({
   declarations: [
@@ -111,6 +116,9 @@ import { ActivateTwofaComponent } from './components/profile-components/activate
     ChannelService,
     ChatHistoryService,
     DatePipe,
+	GameService,
+    // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
+    // { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],
   bootstrap: [AppComponent],
 })

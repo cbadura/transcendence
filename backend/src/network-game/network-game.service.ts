@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      // this.LogGameRooms();
+      this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -297,9 +297,9 @@ export class NetworkGameService {
 
       LogGameRooms(){
         const gameLoop = setInterval(()=>{
-          // console.log(`---------- Connected Sockets----------`);
-          // this.printConnectedSockets();
-          // console.log(`---------- DEFAULT Queueing Sockets----------`);
+          console.log(`---------- Connected Sockets----------`);
+          this.printConnectedSockets();
+          console.log(`---------- DEFAULT Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
             console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 
           }
