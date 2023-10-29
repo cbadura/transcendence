@@ -29,10 +29,13 @@ export class UserDataService {
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
-  constructor(private http: HttpClient, private cookieService: CookieService) {}
+  constructor(private http: HttpClient, private cookieService: CookieService) {
+    console.log('USer dataservice created')
+  }
 
   getNewestUser() {
 	const token = this.getTokenCookie();
+  console.log('IN NEWEST USER')
     const url = `http://localhost:3000/auth/profile?token=${token}`;
     this.http.get(url).subscribe((response: any) => {
       const user: User = {
@@ -52,27 +55,39 @@ export class UserDataService {
     });
   }
 
+  async createDevelopmentUser() {
+
+    const username = 'Dummy_' + new Date().getTime().toString();
+    await this.editUserById(username,'#E7C9FF')
+    this.CreateSocketConnections();
+  }
+
   replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
   }
 
-  editUserById(newName: string, newColor: string) {
+  editUserById(newName: string, newColor: string): Promise<User> {
     const id = this.myUser.id;
     const updatedUser = {
       name: newName,
       color: newColor,
     };
-    this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(
+
+    return new Promise<User>((resolve, reject) => {this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(
       (data) => {
         console.log('EDIT', JSON.stringify(data));
         this.replaceUser(data as User);
+        resolve(data as User);
       },
       (error) => {
         window.alert('Error editing user: ' + JSON.stringify(error));
+        reject(error);
       },
     );
   }
+  );
+};
 
   uploadProfilePic(file: File) {
     interface UploadedResponse {
