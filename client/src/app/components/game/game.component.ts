@@ -80,7 +80,7 @@ export class GameComponent implements CanComponentDeactivate {
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
-        this.gameService.leaveMatch();
+		this.status === 'waiting' ? this.gameService.leaveQueue() : this.gameService.leaveMatch();
         return true;
       } else return false;
     }
