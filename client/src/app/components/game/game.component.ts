@@ -28,15 +28,11 @@ export class GameComponent implements CanComponentDeactivate {
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
   public myUser!: User;
+  private opponent!: User;
   public match!: Match;
   public status: string = 'new-game';
-
-  // Render class
   private render!: Render;
-  // GameControl class
-  // private game!: Game;
   private gameRenderInfo!: GameRenderInfo;
-
   private gameType: 'default' | 'special' = 'default';
 
   // Paddle movement
@@ -56,17 +52,14 @@ export class GameComponent implements CanComponentDeactivate {
 
   ngOnInit() {
     // Get user data
-    // this.gameService.gameSocket = this.userDataService.gameSocket;
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
       this.saturatedColor = SaturatedColor(this.myUser.color, 50);
       this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
     });
-
-    // Get game data
   }
 
-  // Initialize canvas and render after view Init
+  // Initialize canvas after view Init
   ngAfterViewInit(): void {
     // Initialize canvas
     this.ctx = this.canvas.nativeElement.getContext(
@@ -113,6 +106,7 @@ export class GameComponent implements CanComponentDeactivate {
           event.data.userInfo.user2,
           this.myUser.id,
         );
+		this.myUser.id === event.data.userInfo.user1.id ? this.opponent = event.data.userInfo.user2 : this.opponent = event.data.userInfo.user1;
       }
 
       //   START_COUNTDOWN
@@ -159,7 +153,7 @@ export class GameComponent implements CanComponentDeactivate {
 
   fillMatchData(game: GameRenderInfo): void {
     this.match = {
-      opponent: this.myUser, //change to real opponent
+      opponent: this.opponent,
       myScore: game.paddles[0].score,
       opponentScore: game.paddles[1].score,
       dateTime: new Date().toISOString(),

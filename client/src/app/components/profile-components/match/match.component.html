@@ -3,8 +3,8 @@
     <!-- My user -->
   <div class="flex flex-col items-center h-[125px]">
     <tcd-thumbnail class="aspect-square" [imgUrl]="me.avatar" [size]="'5rem'"></tcd-thumbnail>
-    <h1>{{ me.name }}</h1>
-  </div>
+	<h1>{{ me.name.length > 10 ? (me.name | slice:0:10) + '...' : me.name }}</h1>
+</div>
 
   <!-- Score and date -->
   <div class="flex flex-col items-center">
@@ -23,7 +23,7 @@
   <!-- Opponent -->
   <div class="flex flex-col items-center h-[125px]">
     <tcd-thumbnail class="aspect-square" [imgUrl]="match.opponent.avatar" [size]="'5rem'"></tcd-thumbnail>
-    <h1>{{ match.opponent.name }}</h1>
-  </div>
+	<h1>{{ match.opponent.name.length > 10 ? (match.opponent.name | slice:0:10) + '...' : match.opponent.name }}</h1>
+</div>
 
 </div>
