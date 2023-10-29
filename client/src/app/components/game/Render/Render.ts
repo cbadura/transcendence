@@ -244,7 +244,7 @@ export class Render {
       this.countdown--;
       this.redraw(this.gameRenderInfo);
       console.log('COUNTDOWN RENDER: ' + this.countdown);
-      if (this.countdown === 0) {
+      if (this.countdown <= 0) {
         clearInterval(countdownInterval);
       }
     }, 1000);

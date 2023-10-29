@@ -28,10 +28,10 @@ export class GameComponent implements CanComponentDeactivate {
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
   public myUser!: User;
-  private opponent!: User;
-  public match!: Match;
+  private opponent!: User | null;
+  public match!: Match | null;
   public status: string = 'new-game';
-  private render!: Render;
+  private render!: Render | null;
   private gameRenderInfo!: GameRenderInfo;
   private gameType: 'default' | 'special' = 'default';
 
@@ -114,8 +114,7 @@ export class GameComponent implements CanComponentDeactivate {
         console.log('START COUNTDOWN IN GAME COMPONENT');
         console.log(event.data);
         this.status = 'playing';
-        this.render.setCountdown(event.data.countdown);
-        //let countdown = event.data.countdown;
+        this.render?.setCountdown(event.data.countdown);
       }
 
       //   UPDATE_GAME_INFO
@@ -147,11 +146,16 @@ export class GameComponent implements CanComponentDeactivate {
   playAgain(): void {
     //clean up prev field
     this.status = 'new-game';
-    this.render.reset();
-    this.startGame(this.gameType);
+	this.gameType = 'default';
+	this.match = null;
+	this.opponent = null;
+	this.render = null;
+	this.gameSubscription.unsubscribe();	
+	console.log('playAgain');
   }
 
   fillMatchData(game: GameRenderInfo): void {
+	if (!this.opponent) return;
     this.match = {
       opponent: this.opponent,
       myScore: game.paddles[0].score,

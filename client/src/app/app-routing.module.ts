@@ -19,7 +19,7 @@ import {ConfirmDeactivateGuard} from './guards/can-deactivate.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'game', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard] },
+  { path: 'game', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard], runGuardsAndResolvers: 'always' },
   { path: 'leaderboard', component: LeaderboardComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'chat/:channel', component: ChatComponent },

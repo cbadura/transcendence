@@ -33,8 +33,16 @@ import {
   featherUser,
   featherUsers,
   featherPlusSquare,
+  featherUserPlus,
+  featherUserMinus,
+  featherUserX,
+  featherUserCheck,
+  featherChevronsRight,
+  featherRepeat,
+  featherPlus,
   featherX,
-  featherLock
+  featherLock,
+  featherArrowLeft,
 } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
@@ -57,7 +65,6 @@ import { GameService } from './services/game.service';
 
 // const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
-
 
 @NgModule({
   declarations: [
@@ -101,14 +108,22 @@ import { GameService } from './services/game.service';
     FormsModule,
     NgIconsModule.withIcons({
       featherSettings,
-	  featherUnlock,
+      featherUnlock,
       featherSend,
-	  featherCheckCircle,
+      featherCheckCircle,
       featherUser,
       featherUsers,
       featherPlusSquare,
+      featherUserPlus,
+      featherUserMinus,
+      featherUserX,
+      featherUserCheck,
+	  featherChevronsRight,
+      featherRepeat,
+      featherPlus,
       featherX,
-	  featherLock
+      featherLock,
+      featherArrowLeft,
     }),
   ],
   providers: [
@@ -116,7 +131,7 @@ import { GameService } from './services/game.service';
     ChannelService,
     ChatHistoryService,
     DatePipe,
-	GameService,
+    GameService,
     // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
     // { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],
