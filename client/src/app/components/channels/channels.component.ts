@@ -19,6 +19,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   public filteredChannels: Channel[] = [];
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
+  public joinedChannels: Channel[] = [];
   private channelSubscription!: Subscription;
   private userId: number = 0;
 
@@ -28,12 +29,13 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // console.log('SOCKET', this.channelService.chatSocket);
+	this.userId = this.channelService.myUser.id;
     this.channelSubscription = this.channelService.serverChatObs$.subscribe(
       (channels) => {
         this.serverChannels = channels;
         this.selectChannel('My channels');
+		this.filterChannels();
     });
-    this.userId = this.channelService.myUser.id;
   }
 
   selectChannel(channel: string) {
@@ -43,6 +45,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 
   filterChannels() {
     const {selectedPage} = this;
+	console.log('serverChannels', this.serverChannels)
     if (selectedPage === 'Public' && this.serverChannels) {
       this.filteredChannels = this.serverChannels?.filter(channel => channel.mode === EChannelMode.PUBLIC);
     }
@@ -53,11 +56,12 @@ export class ChannelsComponent implements OnInit, OnDestroy {
     else if (selectedPage === 'My channels') {
       this.ownChannels = this.serverChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.serverChannels.filter(channel => channel.role === EUserRole.ADMIN);
-    }
+	  this.joinedChannels = this.serverChannels.filter(channel => !this.checkUserJoinedStatus(channel));
+		console.log('JOINED CHANNELS', this.joinedChannels);
+	}
     else if (selectedPage === 'DMs') {
       this.filteredChannels = [];
     }
-	  console.log('FILTERED CHANNELS', this.filteredChannels);
   }
 
   checkUserJoinedStatus(channel: Channel): boolean {

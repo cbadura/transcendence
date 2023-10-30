@@ -39,6 +39,16 @@
 
   <!-- My channels -->
   <div *ngIf="selectedPage === 'My channels'" class="w-full pb-4">
+	<div *ngIf="joinedChannels.length > 0" class="w-full">
+		<p class="font-bold p-4">Channels I am in</p>
+		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+		  <tcd-channel-card
+			*ngFor="let channel of joinedChannels"
+			[channel]="channel"
+			[editMode]="true"
+		  ></tcd-channel-card>
+		</div>
+	  </div>
     <div *ngIf="ownChannels.length > 0" class="w-full">
       <p class="font-bold p-4">Channels I own</p>
       <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
@@ -73,6 +83,9 @@
       No {{ selectedPage }} <span *ngIf="selectedPage !== 'DMs'">channels</span>
       found.
     </h1>
+	<h1 *ngIf="selectedPage === 'My channels' && joinedChannels.length === 0">
+		You are not in any channels.
+	  </h1>
     <h1 *ngIf="selectedPage === 'My channels' && ownChannels.length === 0">
       You do not own any channels.
     </h1>
