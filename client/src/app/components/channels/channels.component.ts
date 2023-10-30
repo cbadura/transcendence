@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UserDataService } from 'src/app/services/user-data.service';
 import { ChannelService } from 'src/app/services/channel.service';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
@@ -28,7 +27,7 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('SOCKET', this.channelService.chatSocket);
+    // console.log('SOCKET', this.channelService.chatSocket);
     this.channelSubscription = this.channelService.serverChatObs$.subscribe(
       (channels) => {
         this.serverChannels = channels;
@@ -64,7 +63,6 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   checkUserJoinedStatus(channel: Channel): boolean {
     const foundChannel = this.serverChannels.find(ch =>
       ch.name === channel.name);
-    // console.log('ID', this.userId);
     if (foundChannel) {
       return foundChannel.usersIds.every(id => id !== this.userId);
     }

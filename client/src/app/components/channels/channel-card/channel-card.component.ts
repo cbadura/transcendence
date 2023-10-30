@@ -34,7 +34,7 @@ export class ChannelCardComponent {
 
   navigateToChat(event: Event, channel: Channel) {
     event.stopPropagation(); // Stop event propagation
-    console.log('Navigating to chat: ');
+    // console.log('Navigating to chat: ');
     //console.log editmode and joinmode
     console.log('edit', this.editMode);
     console.log('join', this.joinMode);

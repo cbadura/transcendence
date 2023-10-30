@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Channel } from 'src/app/shared/chat/Channel';
@@ -17,11 +17,13 @@ export class ChatHeaderComponent implements OnInit, OnDestroy {
   myUser!: User;
   private eventSubscription!: Subscription;
   private userSubscription!: Subscription;
-  invitation: boolean = false;
   private gameType: "default" | "special" = "default";
+  private invitingUser: string = '';
+  invitation: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private gameService: GameService,
     private userService: UserDataService
     ) {}
@@ -46,17 +48,25 @@ export class ChatHeaderComponent implements OnInit, OnDestroy {
         console.log('Invitation received:', event.data);
         this.invitation = true;
         this.gameType = event.data.data.gameType;
-        this.gameService.JoinQueue(event.data.data.inviting_user.id, this.gameType);
+        this.invitingUser = event.data.data.inviting_user.id;
+        // this.gameService.JoinQueue(event.data.data.inviting_user.id, this.gameType);
       }
     });
   }
 
   acceptInvitation() {
-    this.gameService.JoinQueue(this.myUser.id, this.gameType);
+    // this.gameService.JoinQueue(this.myUser.id, this.gameType);
     console.log('INVITE ACCEPTED', this.myUser.id, this.gameType);
+    let invite = {
+      inviter: this.invitingUser,
+      invitee: this.myUser,
+      gameType: this.gameType
+    }
+    this.router.navigate(['game', 'invite', invite]);
   } 
 
   ngOnDestroy(): void {
     this.eventSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
   }
 }

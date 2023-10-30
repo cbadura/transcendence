@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Subscription, merge } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
 import { UserDataService } from '../../services/user-data.service';
@@ -39,7 +39,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 		  });
     // Get params from URL
     this.route.params.subscribe(params => {
-      // console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
     });
