@@ -5,12 +5,16 @@ import { SpecialPongGame } from "../gameModes/SpecialPongGame";
 import { APowerUp } from "./APowerUp";
 
 export class PUDecreaseOpponentPaddleLength extends APowerUp {
-    constructor(game: SpecialPongGame,pos: Vector2D){
-        super(game,'DecreasePaddleLength',pos);
+    private paddleDecrease = -10
+    constructor(game: SpecialPongGame,pos: Vector2D,config?: any){
+        super(game,'DecreaseOpponentPaddleLength',pos);
+        if(config){
+            this.paddleDecrease = config.increment
+        }
     }
 
     OnCollision(instigator: ABall): void {
-        this.game.gameEffects.push(new GEUpdatePaddleSize(this.game,instigator,-10,true))
+        this.game.gameEffects.push(new GEUpdatePaddleSize(this.game,instigator,this.paddleDecrease,true))
         this.markConsumed();
     }
 }

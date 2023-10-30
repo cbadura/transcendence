@@ -12,6 +12,9 @@ export class AchievementDefinition {
   @Column()
   description: string;
 
+  @Column()
+  image: string;
+
   @Column('json',{nullable: true})
   criteria: Record<string,any>; //can have variable amounts of key-value pairs
 

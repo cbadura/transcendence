@@ -1,17 +1,17 @@
 <div class="h-full-header pb-2 ml-2 mr-2">
  
-  <!-- Chat window -->
-  <div
-  class="border border-zinc-800 bg-zinc-800 rounded-3xl h-full relative"
-  >
-  <!-- Chat header -->
-  <tcd-chat-header></tcd-chat-header>
-  
-  <!-- Messages div -->
-  <div
-  #messagesDiv
-  class="overflow-y-auto h-[calc(100%-180px)] pl-9 pr-9 scrollbar-hide mt-24 pt-6 pb-8 "
-  >
+    <!-- Chat window -->
+    <div
+    class="border border-zinc-800 bg-zinc-800 rounded-3xl h-full relative"
+    >
+    <!-- Chat header -->
+    <tcd-chat-header></tcd-chat-header>
+
+    <!-- Messages div -->
+    <div
+    #messagesDiv
+    class="overflow-y-auto h-[calc(100%-180px)] pl-9 pr-9 scrollbar-hide mt-24 pt-6 pb-8 "
+    >
     <!-- Each message -->
     <div *ngFor="let message of messages; let i = index">
       
@@ -26,6 +26,6 @@
     </div>
 
     <!-- Input field -->
-    <tcd-chat-input (sendMessage)="savePost($event)"></tcd-chat-input>
+    <tcd-chat-input (sendMessage)="savePost($event)" [userIds]="this.channel.usersIds"></tcd-chat-input>
   </div>
 </div>

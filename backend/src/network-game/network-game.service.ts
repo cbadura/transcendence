@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      // this.LogGameRooms();
+      this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -27,6 +27,7 @@ export class NetworkGameService {
 
 
     async handleConnection(socket: Socket, userId: number) {
+      console.log('userId',userId)
       if (isNaN(userId)) {
         socket.emit('exception', 'Invalid user id');
         socket.disconnect(true);
@@ -94,11 +95,17 @@ export class NetworkGameService {
       async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ) {
 
         const instigator = this.getISocketUserFromSocket(client);
+        //validate instigator
         if(instigator == null){
           console.log('exception','Instigator (You) are not registered')
           return;
         }
-        //could check if user is online and not in a match
+        if(instigator.room_id != -1){
+          console.log('exception','Instigator (You) have already invited somebody in the last 10 seconds')
+          return;
+        }
+
+        //validate recipient
         let recipient;
         if(dto.recipient_user_id != -1){
 
@@ -211,6 +218,11 @@ export class NetworkGameService {
           console.log("in Join queue currUser is NULL");
           return;
         } 
+        if(currUser.room_id != -1){
+          console.log("Current User is already in a room. Likely due to an invitation");
+          return;
+        }
+
 
         if(dto.gameType == 'default') {
             if(this.defaultQueue.find( (user)=>user.socket.id == client.id) != null){
@@ -251,7 +263,15 @@ export class NetworkGameService {
             (currentClient) => currentClient.socket.id !== client.id,
             );
           }
+      }
 
+      LeaveMatch(client: Socket) {
+        const currUser = this.getISocketUserFromSocket(client);
+        if(currUser != null){
+          if(currUser.room_id != -1){ //let room know that user left
+            this.gameRooms[currUser.room_id]?.clientDisconnected(currUser.userId);
+          }
+        }
       }
 
       monitorGameRooms(){
@@ -259,7 +279,7 @@ export class NetworkGameService {
           for (let i = 0; i < this.gameRooms?.length; i++) {
             if( this.gameRooms[i] == null)
               return;
-
+              this.gameRooms[i].checkRoomExpiration();
               if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED) {
                   for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
                     console.log(this.gameRooms[i]?.clients[j])
@@ -277,9 +297,9 @@ export class NetworkGameService {
 
       LogGameRooms(){
         const gameLoop = setInterval(()=>{
-          // console.log(`---------- Connected Sockets----------`);
-          // this.printConnectedSockets();
-          // console.log(`---------- DEFAULT Queueing Sockets----------`);
+          console.log(`---------- Connected Sockets----------`);
+          this.printConnectedSockets();
+          console.log(`---------- DEFAULT Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
             console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 
           }

@@ -1,6 +1,8 @@
 import { Component, ElementRef, Renderer2, OnInit } from '@angular/core';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
+
 
 @Component({
   selector: 'tcd-twofa',
@@ -14,6 +16,7 @@ export class TwofaComponent implements OnInit {
     private renderer: Renderer2,
     private el: ElementRef,
     private router: Router,
+	private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
@@ -75,7 +78,7 @@ export class TwofaComponent implements OnInit {
       (data) => {
         console.log(data);
         if (data.verified) {
-          this.userDataService.setToken(data.access_token);
+		  this.cookieService.set('token', data.access_token);
           this.userDataService.getNewestUser();
           this.router.navigate(['/']);
         } else {

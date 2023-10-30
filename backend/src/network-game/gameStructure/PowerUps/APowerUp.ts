@@ -8,37 +8,24 @@ export abstract class APowerUp {
     public type: string = 'APowerUp';
     public radius: number = 30;
     public isConsumed: boolean = false;
-    private lifeTime: Date;
     protected game: SpecialPongGame;
 
     constructor(game:SpecialPongGame,type: string = 'APowerUp',pos: Vector2D){
         this.game = game;
         this.type = type;
         this.pos = pos;
-        console.log(`NEW POWERUP CREATED OF TYPE [${this.type}]`);
+        // console.log(`NEW POWERUP CREATED OF TYPE [${this.type}]`);
     }
 
 
 
     abstract OnCollision(instigator: ABall):void;
 
-    protected markConsumed() {
+    markConsumed() {
         this.isConsumed = true;
     }
 
     getIsConsumed() {
         return this.isConsumed;
-    }
-}
-
-
-export class PUDummy extends APowerUp {
-    constructor(game: SpecialPongGame,pos:Vector2D){
-        super(game,'Dummy',pos);
-    }
-
-    OnCollision(instigator: ABall): void {
-        console.log("TRIGGERING EFFECT ON PADDLE ID: ",instigator)
-        this.markConsumed();
     }
 }

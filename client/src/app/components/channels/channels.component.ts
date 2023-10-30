@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UserDataService } from 'src/app/services/user-data.service';
 import { ChannelService } from 'src/app/services/channel.service';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
@@ -21,28 +20,20 @@ export class ChannelsComponent implements OnInit, OnDestroy {
   public ownChannels: Channel[] = [];
   public adminChannels: Channel[] = [];
   private channelSubscription!: Subscription;
-  
+  private userId: number = 0;
 
   constructor(
-    private userDataService: UserDataService,
     private channelService: ChannelService) {
   }
-    
+
   ngOnInit() {
-    console.log('ON INIT');
-    // this.userDataService.CreateSocketConnections();
-    this.channelService.chatSocket = this.userDataService.chatSocket;
-    console.log('SOCKET', this.channelService.chatSocket);
+    // console.log('SOCKET', this.channelService.chatSocket);
     this.channelSubscription = this.channelService.serverChatObs$.subscribe(
       (channels) => {
         this.serverChannels = channels;
-        console.log('SERVER CHANNELS', this.serverChannels);
         this.selectChannel('My channels');
-        this.channelService.subscribeToEvents();
-      }
-      );
-    this.channelService.tryListChannels();
-    console.log('subscribe to socket ');
+    });
+    this.userId = this.channelService.myUser.id;
   }
 
   selectChannel(channel: string) {
@@ -57,23 +48,28 @@ export class ChannelsComponent implements OnInit, OnDestroy {
     }
     else if (selectedPage === 'Private')
       this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
-      // this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PRIVATE);
     else if (selectedPage === 'Protected')
       this.filteredChannels = this.serverChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
-      // this.filteredChannels = this.dummyChannels.filter(channel => channel.mode === EChannelMode.PROTECTED);
     else if (selectedPage === 'My channels') {
       this.ownChannels = this.serverChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.serverChannels.filter(channel => channel.role === EUserRole.ADMIN);
-	}
-	else if (selectedPage === 'DMs') {
-		this.filteredChannels = [];
-	}
-	  
+    }
+    else if (selectedPage === 'DMs') {
+      this.filteredChannels = [];
+    }
 	  console.log('FILTERED CHANNELS', this.filteredChannels);
+  }
+
+  checkUserJoinedStatus(channel: Channel): boolean {
+    const foundChannel = this.serverChannels.find(ch =>
+      ch.name === channel.name);
+    if (foundChannel) {
+      return foundChannel.usersIds.every(id => id !== this.userId);
+    }
+    return false;
   }
 
   ngOnDestroy(): void {
     this.channelSubscription.unsubscribe();
-
   }
 }

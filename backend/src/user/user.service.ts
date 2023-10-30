@@ -121,6 +121,18 @@ export class UserService {
   }
 
   async updateUser(id: number, dto: UpdateUserDto) {
+    if (id === 0) { // temp fix until dev specific endpoint
+      return this.createUser({
+        ftid: null,
+        name: dto.name,
+        color: dto.color,
+        avatar: `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`,
+        tfa: false,
+        level:1.00,
+        matches: 0,
+        wins: 0
+      })
+    }
     const currUser = await this.userRepository.findOne({ where: { id }});
     // console.log(currUser);
     this.userRepository.merge(currUser, dto);
@@ -203,6 +215,14 @@ export class UserService {
     }
 
     return query.getMany();
+  }
+
+  async validateRelationshipFromUser(user_id: number,other_user_id: number, relationType: string): Promise<boolean> {
+    const relations = await this.getUserRelationships(user_id,relationType);
+    const uniqueRelationship = relations.find(relation => relation.relational_user_id ==other_user_id)
+    if(uniqueRelationship == null)
+      return false;
+    return true;
   }
 
 }

@@ -4,11 +4,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Socket, SocketIoConfig } from 'ngx-socket-io';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
-// import { EditProfileComponent } from './components/profile-components/edit-profile/edit-profile.component';
 import { GameComponent } from './components/game/game.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
@@ -36,14 +34,14 @@ import {
   featherUsers,
   featherPlusSquare,
   featherX,
+  featherXSquare,
+  featherCheckSquare,
   featherLock
 } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
 import { ChatBtnComponent } from './components/chat/chat-btn/chat-btn.component';
 import { HomeComponent } from './components/home/home.component';
-import { ChatSocketModule } from './chat-socket/chat-socket.module';
-// import { GameSocketModule } from './game-socket/game-socket.module'; //doesnt exist anymore?
 import { CreateProfileComponent } from './components/profile-components/create-edit-profile/create-edit-profile.component';
 import { ChannelsComponent } from './components/channels/channels.component';
 import { ChannelCardComponent } from './components/channels/channel-card/channel-card.component';
@@ -57,15 +55,16 @@ import { TwofaComponent } from './components/authentication/twofa/twofa.componen
 import { ChannelService } from './services/channel.service';
 import { ChatHistoryService } from './services/chat-history.service';
 import { ActivateTwofaComponent } from './components/profile-components/activate-twofa/activate-twofa.component';
+import { GameService } from './services/game.service';
 
 // const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
+
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    // EditProfileComponent,
     GameComponent,
     ChatComponent,
     LeaderboardComponent,
@@ -102,7 +101,6 @@ import { ActivateTwofaComponent } from './components/profile-components/activate
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ChatSocketModule,
     NgIconsModule.withIcons({
       featherSettings,
 	  featherUnlock,
@@ -112,6 +110,8 @@ import { ActivateTwofaComponent } from './components/profile-components/activate
       featherUsers,
       featherPlusSquare,
       featherX,
+	  featherXSquare,
+	  featherCheckSquare,
 	  featherLock
     }),
   ],
@@ -120,6 +120,7 @@ import { ActivateTwofaComponent } from './components/profile-components/activate
     ChannelService,
     ChatHistoryService,
     DatePipe,
+	GameService,
     // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
     // { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],

@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
-import { EUserRole } from 'src/app/shared/macros/EUserRole';
+// import { EUserRole } from 'src/app/shared/macros/EUserRole';
 import { ChannelService } from 'src/app/services/channel.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+// import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'tcd-edit-channel',
@@ -45,6 +46,8 @@ export class EditChannelComponent implements OnInit {
     this.route.params.subscribe((params) => {
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
+      this.channel.usersIds = params['usersIds']?.split(',').map((num: string) => +num);
+
       this.tempChannel = { ...this.channel };
       this.oldName = this.tempChannel.name;
       if (!this.tempChannel.name) {
@@ -84,7 +87,9 @@ export class EditChannelComponent implements OnInit {
   getMembers() {
     if (!this.channel.usersIds) return;
     for (let id of this.channel.usersIds) {
-      this.fetchUser(id);
+      if (id) {
+        this.fetchUser(id);
+      }
     }
   }
 

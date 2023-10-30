@@ -3,8 +3,8 @@ import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
-import { ChatHistoryService } from '../../services/chat-history.service';
 import { UserDataService } from '../../services/user-data.service';
+import { ChatHistoryService } from '../../services/chat-history.service';
 
 import { Post } from 'src/app/shared/interfaces/post';
 import { User } from 'src/app/shared/interfaces/user';
@@ -15,52 +15,46 @@ import { Channel } from 'src/app/shared/chat/Channel';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewChecked {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesDiv') messagesDiv!: ElementRef;
   messages!: Post[];
-  serverPosts!: string[];
   tempText!: string;
   private postSubscription!: Subscription;
   private userSubscription!: Subscription;
   myUser!: User;
   channel!: Channel;
 
-  constructor(
-    public datepipe: DatePipe,
+  constructor(public datepipe: DatePipe,
     private chatHistoryService: ChatHistoryService,
     private userDataService: UserDataService,
-    private route: ActivatedRoute
-    ) {
-    this.messages = [];
-    this.tempText = '';
+    private route: ActivatedRoute) {
+      this.messages = [];
   }
 
   ngOnInit() {
-	this.userSubscription = this.userDataService.user$.subscribe(
-		(user) => {
-		  this.myUser = user;
-		}
-	  );
-    this.messages = this.chatHistoryService.getHistory();
-    this.chatHistoryService.subscribeToMessages();
-    this.postSubscription = this.chatHistoryService.serverChatObs$.subscribe(
-      (posts) => {
-        this.messages = posts;
-      }
-    );
-
+	  this.userSubscription = this.userDataService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+		  });
+    // Get params from URL
     this.route.params.subscribe(params => {
-      console.log('PARAMS', params)
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
-      console.log('IDS', this.channel.usersIds.length);
+    });
+    // Unsubscribe from any previous subscription
+    if (this.postSubscription) {
+      this.postSubscription.unsubscribe();
+    }
+    // Subscribe to the chat history for the new channel
+    this.postSubscription = this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
+      this.messages = posts;
     });
   }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
   }
-  
+
   scrollToBottom() {
     try {
       this.messagesDiv.nativeElement.scrollTop = this.messagesDiv.nativeElement.scrollHeight;
@@ -80,6 +74,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnDestroy() {
-    this.postSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
+    if (this.postSubscription) {
+      this.postSubscription.unsubscribe();
+    }
   }
 }

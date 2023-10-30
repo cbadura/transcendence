@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UserDataService } from '../../services/user-data.service';
 import { User } from '../../shared/interfaces/user';
@@ -25,5 +25,9 @@ export class BodyComponent implements OnInit {
 			console.log('Body component noUser:', this.noUser);
       }
     );
+  }
+
+  ngOnDestroy(): void {
+	this.userSubscription.unsubscribe();
   }
 }

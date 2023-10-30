@@ -8,8 +8,7 @@ export abstract class AGameEffect {
     protected owner: number;
     protected opponent: number;
     
-    //time in seconds
-    duration: number; 
+    invalidationTimestamp: number
     additionalGameEffects: AGameEffect[] =[];
     completed: boolean = false;
 
@@ -18,6 +17,7 @@ export abstract class AGameEffect {
         this.instigator = instigator;
         this.owner = instigator.getOwner();
         this.opponent = this.owner == 0 ? 1 : 0;
+
     }
 
 
@@ -31,6 +31,11 @@ export abstract class AGameEffect {
         const tmp = this.owner
         this.owner = this.opponent;
         this.opponent = tmp;
+    }
+
+    //sets this.invalidationTimestamp seconds in the future
+    protected createInvalidationTimestamp(seconds: number): void {
+        this.invalidationTimestamp = new Date().getTime() + seconds * 1000;
     }
 }
 

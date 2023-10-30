@@ -3,9 +3,9 @@ import { Achievement } from 'src/app/shared/interfaces/achievement';
 
 @Component({
   selector: 'tcd-achievement',
-  templateUrl: './achievement.component.html'
+  templateUrl: './achievement.component.html',
+  styleUrls: ['./achievement.component.css']
 })
 export class AchievementComponent {
-  @Input() achievement: Achievement = { name: '', url: '' }; 
-
+  @Input() achievement!: Achievement;
 }

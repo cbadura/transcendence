@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-
+import { CookieService } from 'ngx-cookie-service';
 import { User } from '../shared/interfaces/user';
-import { map, forkJoin } from 'rxjs';
 import { Socket } from 'ngx-socket-io';
 
 @Injectable({
@@ -21,18 +20,24 @@ export class UserDataService {
     avatar: 'a',
     qr: '',
     tfa: false,
+	achievements: [],
   };
-  private token!: string;
   private serverAddress: string = 'http://localhost:3000';
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
+  userSocket: Socket | null = null;
+
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cookieService: CookieService) {
+    console.log('USer dataservice created')
+  }
 
   getNewestUser() {
-    const url = `http://localhost:3000/auth/profile?token=${this.token}`;
-    this.http.get(url, { withCredentials: true }).subscribe((response: any) => {
+	const token = this.getTokenCookie();
+  console.log('IN NEWEST USER')
+    const url = `http://localhost:3000/auth/profile?token=${token}`;
+    this.http.get(url).subscribe((response: any) => {
       const user: User = {
         id: response.id,
         name: response.name,
@@ -43,9 +48,18 @@ export class UserDataService {
         color: response.color,
         avatar: response.avatar,
         tfa: response.tfa,
+		achievements: response.achievements,
       };
       this.replaceUser(user);
+      this.CreateSocketConnections();
     });
+  }
+
+  async createDevelopmentUser() {
+
+    const username = 'Dummy_' + new Date().getTime().toString();
+    await this.editUserById(username,'#E7C9FF')
+    this.CreateSocketConnections();
   }
 
   replaceUser(user: any) {
@@ -53,22 +67,27 @@ export class UserDataService {
     this.userSubject.next(this.myUser);
   }
 
-  editUserById(newName: string, newColor: string) {
+  editUserById(newName: string, newColor: string): Promise<User> {
     const id = this.myUser.id;
     const updatedUser = {
       name: newName,
       color: newColor,
     };
-    this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(
+
+    return new Promise<User>((resolve, reject) => {this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(
       (data) => {
         console.log('EDIT', JSON.stringify(data));
         this.replaceUser(data as User);
+        resolve(data as User);
       },
       (error) => {
         window.alert('Error editing user: ' + JSON.stringify(error));
+        reject(error);
       },
     );
   }
+  );
+};
 
   uploadProfilePic(file: File) {
     interface UploadedResponse {
@@ -93,34 +112,37 @@ export class UserDataService {
       );
   }
 
-  changeRelation(status: string, targetId: number) {
-    console.log(targetId);
+  getTokenCookie() {
+	return this.cookieService.get('token');
+  }
+
+  //   Relationships
+  addRelation(status: string, targetId: number): Observable<any> {
     const data = {
       user_id: this.myUser.id,
       relationship_user_id: Number(targetId),
       relationship_status: status,
     };
     console.log(data);
-    this.http.post(this.serverAddress + '/relationship', data).subscribe(
-      (data) => {
-        console.log('changeRelation success', data);
-      },
-      (error) => {
-        console.log('changeRelation error', error);
-      },
-    );
+    return this.http.post(this.serverAddress + '/relationship', data);
+  }
+
+  removeRelation(relationID: number): Observable<any> {
+    const url = `http://localhost:3000/relationship/${relationID}`;
+    return this.http.delete(url);
   }
 
   //   2FA
-  setToken(newToken: string) {
-    this.token = newToken;
-  }
+//   setToken(newToken: string) {
+//     this.token = newToken;
+//   }
 
   getQRCode() {
     interface QRCodeResponse {
       qr: string;
     }
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     this.http
       .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
         params,
@@ -128,7 +150,7 @@ export class UserDataService {
       .subscribe(
         (data) => {
           this.myUser.qr = data.qr;
-		  console.log('newqr', this.myUser);
+          console.log('newqr', this.myUser);
           this.replaceUser(this.myUser);
         },
         (error) => {
@@ -138,7 +160,8 @@ export class UserDataService {
   }
 
   activateTFA(code: string): Observable<any> {
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     const data = {
       key: code,
     };
@@ -148,7 +171,8 @@ export class UserDataService {
   }
 
   verifyTFA(code: string): Observable<any> {
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     const data = {
       key: code,
     };
@@ -158,7 +182,8 @@ export class UserDataService {
   }
 
   deactivateTFA() {
-    const params = new HttpParams().set('token', this.token);
+	const token = this.getTokenCookie();
+    const params = new HttpParams().set('token', token);
     this.http
       .get(this.serverAddress + '/auth/2fa/deactivate', {
         params,
@@ -176,15 +201,30 @@ export class UserDataService {
   // Probably needs to be called on Login as well
   CreateSocketConnections() {
     console.log('trying to create Sockets', this.myUser.id);
+
     const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
     if (!this.gameSocket) {
       this.gameSocket = new Socket({ url: gameUrl, options: {} });
     }
 
-    const chatUrl = 'http://localhost:3000/chat?userId=' + this.myUser.id;
     if (!this.chatSocket) {
-      this.chatSocket = new Socket({ url: chatUrl, options: {} });
+      this.chatSocket = new Socket({
+        url: "http://localhost:3000/chat",
+        options: {
+          query: { 'userId': String(this.myUser.id) },
+          forceNew: true
+      } });
+      console.log('connecting chat socket', this.chatSocket);
     }
-    console.log('SOCKET IN USER', this.chatSocket);
+
+    if (!this.userSocket) {
+      this.userSocket = new Socket({
+        url: "http://localhost:3000/",
+        options: {
+          query: { 'userId': String(this.myUser.id) },
+          forceNew: true
+        } });
+      console.log('connecting user socket', this.userSocket);
+    }
   }
 }
