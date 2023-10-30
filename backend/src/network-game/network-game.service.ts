@@ -275,15 +275,24 @@ export class NetworkGameService {
         }
       }
 
+      PlayAgain(client: Socket){
+        const currUser = this.getISocketUserFromSocket(client);
+
+        //check if gameRoom exists
+
+        if(currUser.room_id != -1)
+          this.gameRooms[currUser.room_id].votePlayAgain(currUser);
+      }
+
+
       monitorGameRooms(){
         const gameLoop = setInterval(()=>{
           for (let i = 0; i < this.gameRooms?.length; i++) {
             if( this.gameRooms[i] == null)
               return;
               this.gameRooms[i].checkRoomExpiration();
-              if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED) {
+              if(this.gameRooms[i].getGameRoomState() == EGameRoomState.CLEANUP) {
                   for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
-                    console.log(this.gameRooms[i]?.clients[j])
                     if(this.gameRooms[i].clients[j] != null){
                       this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                       this.gameRooms[i].clients[j].room_id = -1;
@@ -298,9 +307,9 @@ export class NetworkGameService {
 
       LogGameRooms(){
         const gameLoop = setInterval(()=>{
-          console.log(`---------- Connected Sockets----------`);
-          this.printConnectedSockets();
-          console.log(`---------- DEFAULT Queueing Sockets----------`);
+          // console.log(`---------- Connected Sockets----------`);
+          // this.printConnectedSockets();
+          // console.log(`---------- DEFAULT Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
             console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 
           }

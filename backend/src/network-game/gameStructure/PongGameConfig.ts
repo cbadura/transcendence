@@ -51,7 +51,7 @@ export const defaultConfig: PongGameConfig = {
         defaultDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5),
         defaultSpeed: 5,
       }],
-      maxScore: 5,
+      maxScore: 1,
 } 
 
 export const specialConfig: PongGameConfig = {

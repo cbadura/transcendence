@@ -18,5 +18,9 @@ export enum ESocketGameMessage {
 
     TRY_JOIN_QUEUE = 'tryJoinQueue',
     TRY_LEAVE_QUEUE = 'tryLeaveQueue',
+
+    TRY_PLAY_AGAIN = 'tryPlayAgain',
+    OPP_PLAY_AGAIN = 'OppPlayAgain',
+    OPP_LEFT_GAME = 'OppLeftGame',
 }
 
