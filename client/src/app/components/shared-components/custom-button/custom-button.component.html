@@ -20,13 +20,14 @@
 *ngIf="isDisabled"
   [ngClass]="{
     'rounded-full border p-2 cursor-not-allowed transition-all ': true,
-    'bg-gray-600 text-black border border-gray-600': isBlack,
-    'hover:bg-black hover:text-white border-black ': !isBlack,
+    'bg-zinc-400 text-zinc-800 ': isBlack,
+    'border-zinc-700 text-zinc-700': !isBlack,
     'h-10': size == 'small',
     'p-4 text-4xl' : size == 'big',
   }"
   [routerLink]="customRoute"
   disabled
 >
+<ng-icon *ngIf="icon" class="cursor-pointer ml-1" name="{{icon}}"></ng-icon>
   {{ buttonText }}
 </button>

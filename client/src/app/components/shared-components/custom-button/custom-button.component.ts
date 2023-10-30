@@ -12,5 +12,4 @@ export class CustomButtonComponent {
 	@Input() size: string = "small";
 	@Input() isDisabled: boolean = false;
 	@Input() icon!: string;
-
 }

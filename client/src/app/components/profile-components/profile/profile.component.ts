@@ -9,7 +9,6 @@ import { Match } from 'src/app/shared/interfaces/match';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
@@ -29,15 +28,14 @@ export class ProfileComponent implements OnInit {
     private userDataService: UserDataService,
     private userService: UserService,
     private http: HttpClient,
-	private router: Router,
-
+    private router: Router,
   ) {}
 
   getUserRelation() {
     this.userService.getFriends(this.myUser.id).subscribe((data) => {
       data.forEach((friend) => {
         if (friend.relational_user_id === Number(this.user.id)) {
-			console.log('Friend object that represents relationship:', friend);
+          console.log('Friend object that represents relationship:', friend);
           this.relation = friend.relationship_status;
           this.relationID = friend.id;
         }
@@ -54,16 +52,16 @@ export class ProfileComponent implements OnInit {
         if (!this.user.name) {
           // My profile
           this.user = user;
-		  console.log('My profile user:', this.user);
+          console.log('My profile user:', this.user);
           this.myProfile = true;
         } else {
           // Profile from other user
           console.log('Profile from other user');
           this.myUser = user;
-		  if (this.myUser.id === Number(this.user.id)) this.router.navigate(['/profile']);
+          if (this.myUser.id === Number(this.user.id))
+            this.router.navigate(['/profile']);
           this.getUserRelation();
         }
-        //this.userDataService.getNewestUser();
       });
 
       this.userService.getFriends(this.user.id).subscribe((data) => {
@@ -73,23 +71,23 @@ export class ProfileComponent implements OnInit {
       });
     });
 
-	this.userService.getMatches(this.user.id).subscribe((data) => {
-		data.forEach((obj) => {
-			console.log('obj object:', obj);
-			let userIndex;
-			let oppIndex;
-			obj.matchUsers[0].user.id == this.user.id ? userIndex = 0 : userIndex = 1;
-			oppIndex = userIndex === 0 ? 1 : 0;
-			const match: Match = {
-				opponent: obj.matchUsers[oppIndex].user,
-				dateTime: obj.timestamp,
-				myScore: obj.matchUsers[userIndex].score,
-				opponentScore: obj.matchUsers[oppIndex].score,
-			}
-			this.matches.push(match);
-		})});
-    this.matches = [
-    ];
+    this.userService.getMatches(this.user.id).subscribe((data) => {
+      data.forEach((obj) => {
+        let userIndex;
+        let oppIndex;
+        obj.matchUsers[0].user.id == this.user.id
+          ? (userIndex = 0)
+          : (userIndex = 1);
+        oppIndex = userIndex === 0 ? 1 : 0;
+        const match: Match = {
+          opponent: obj.matchUsers[oppIndex].user,
+          dateTime: obj.timestamp,
+          myScore: obj.matchUsers[userIndex].score,
+          opponentScore: obj.matchUsers[oppIndex].score,
+        };
+        this.matches.push(match);
+      });
+    });
   }
 
   fetchUser(id: number) {
@@ -106,7 +104,7 @@ export class ProfileComponent implements OnInit {
       (data) => {
         console.log(data);
         this.relation = data.relationship_status;
-		this.relationID = data.id;
+        this.relationID = data.id;
       },
       (error) => {
         console.log(error);

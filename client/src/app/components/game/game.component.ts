@@ -141,6 +141,12 @@ export class GameComponent implements CanComponentDeactivate {
         this.status = 'aborted';
         console.log('GAME_ABORTED', event.data);
       }
+
+	// OPP_PLAY_AGAIN
+	if (event.eventType === ESocketGameMessage.OPP_PLAY_AGAIN) {
+		if (this.status === 'gameover') this.status = 'rematch';
+        console.log('OPP_PLAY_AGAIN');
+      }
     });
   }
 
@@ -155,7 +161,11 @@ export class GameComponent implements CanComponentDeactivate {
 	this.render = null;
 	this.paddle = 0;
 	this.gameSubscription.unsubscribe();	
-	console.log('playAgain');
+  }
+
+  rematch(): void {
+	this.gameService.playAgain();
+	this.status = 'sent-rematch';
   }
 
   fillMatchData(game: GameRenderInfo): void {

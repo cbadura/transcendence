@@ -35,7 +35,7 @@
 
 
 	<!-- Game over -->
-	<div *ngIf="status === 'gameover' && match" class="flex flex-col gap-16 items-center w-full">
+	<div *ngIf="(status === 'gameover' || status === 'rematch' || status === 'sent-rematch') && match" class="flex flex-col gap-16 items-center w-full">
 		<div class="font-bold font-Sniglet text-4xl">
 			<h1 [class.hidden]="match.myScore <= match.opponentScore">YOU WON!</h1>
 			<h1 [class.hidden]="match.myScore > match.opponentScore">YOU LOST!</h1>
@@ -43,10 +43,10 @@
 		<div class=" p-8 bg-black rounded-3xl  w-3/5">
 			<tcd-match [match]="match" [me]="myUser"></tcd-match>
 		</div>
-		<div class="flex justify-between items-center w-3/5">
+		<div class="flex justify-between items-center w-full">
 			<tcd-custom-button class="self-start" buttonText="Back to lobby" [icon]="'featherArrowLeft'" (click)="playAgain()"></tcd-custom-button>
-			<!-- <tcd-custom-button [buttonText]="'Rematch with ' + (match.opponent.name.length > 10 ? (match.opponent.name | slice: 0:10) + '...' : match.opponent.name)" [icon]="'featherRepeat'" (click)="playAgain()"></tcd-custom-button> -->
-			<!-- <tcd-custom-button [buttonText]="'Join ' + (match.opponent.name.length > 10 ? (match.opponent.name | slice: 0:10) + '...' : match.opponent.name)" [icon]="'featherChevronsRight'" (click)="playAgain()"></tcd-custom-button> -->
+			<tcd-custom-button *ngIf="status === 'gameover' || status === 'sent-rematch'" [isDisabled]="status === 'sent-rematch'" [isBlack]="true" [buttonText]="'Rematch with ' + (match.opponent.name.length > 10 ? (match.opponent.name | slice: 0:10) + '...' : match.opponent.name)" [icon]="'featherRepeat'" (click)="rematch()"></tcd-custom-button>
+			<tcd-custom-button *ngIf="status === 'rematch'" [isBlack]="true" [buttonText]="'Join ' + (match.opponent.name.length > 10 ? (match.opponent.name | slice: 0:10) + '...' : match.opponent.name)" [icon]="'featherChevronsRight'" (click)="rematch()"></tcd-custom-button>
 		</div>
 	</div>
 
