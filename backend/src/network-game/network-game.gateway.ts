@@ -13,7 +13,7 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
   server: Namespace;
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    console.log('Client connected');
+    // console.log('Client connected');
     this.networkGameService.handleConnection(
       client,
       +client?.handshake?.query?.userId,
@@ -22,7 +22,7 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log('Client disconnected');
+    // console.log('Client disconnected');
     this.networkGameService.handleDisconnect(client); 
   }
 
