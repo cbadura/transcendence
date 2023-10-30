@@ -78,15 +78,15 @@ export class ChannelService implements OnDestroy{
   }
 
   // Todo: add password field in channel card
-  joinChannel(channel: Channel) {
+  joinChannel(channel: Channel, password: string | null) {
     let newChannel = {
       channelName: channel.name,
-      currName: channel.name
-      // password: ''
+      currName: channel.name,
+      password: ''
     }
-    /* if (password) {
+    if (password) {
       newChannel.password = password;
-    } */
+    }
     console.log('JOIN', newChannel);
     this.chatSocket?.emit(ESocketMessage.TRY_JOIN_CHANNEL, newChannel);
   }

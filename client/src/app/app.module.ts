@@ -34,6 +34,8 @@ import {
   featherUsers,
   featherPlusSquare,
   featherX,
+  featherXSquare,
+  featherCheckSquare,
   featherLock
 } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
@@ -108,6 +110,8 @@ import { GameService } from './services/game.service';
       featherUsers,
       featherPlusSquare,
       featherX,
+	  featherXSquare,
+	  featherCheckSquare,
 	  featherLock
     }),
   ],
