@@ -5,4 +5,5 @@ export enum EGameRoomState {
     RUNNING,
     DISCONNECT,
     FINISHED,
+    CLEANUP,
 }
