@@ -35,14 +35,14 @@ export class AuthService {
     return dto;
   }
 
-  private dataToImage(qr: string) {
+  private dataToImage(qr: string) { //useless, keeping it just for reference, should remove soon. 
     if (!qr)
       throw new InternalServerErrorException();
     const data = qr.replace(/^data:image\/\w+;base64,/, '');
     return qr;
   }
 
-  private async secretToImage(user: User, secret: string) {
+  private async secretToImage(user: User, secret: string) { //return qr directly
     const otpurl = authenticator.keyuri(user.name, 'pong', secret);
     const qr = await toDataURL(otpurl);
     return this.dataToImage(qr);
