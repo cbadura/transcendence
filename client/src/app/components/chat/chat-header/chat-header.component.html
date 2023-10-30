@@ -12,7 +12,7 @@
   <p>
   <tcd-custom-button
     *ngIf="invitation"
-    [buttonText]="'Click to accept game invitation'"
+    [buttonText]="'Accept ' + gameType + ' game invitation from ' + invitingUser"
     (click)="acceptInvitation()">
   </tcd-custom-button>
   <a>

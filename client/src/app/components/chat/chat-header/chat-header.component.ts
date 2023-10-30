@@ -17,8 +17,8 @@ export class ChatHeaderComponent implements OnInit, OnDestroy {
   myUser!: User;
   private eventSubscription!: Subscription;
   private userSubscription!: Subscription;
-  private gameType: "default" | "special" = "default";
-  private invitingUser: string = '';
+  public gameType: "default" | "special" = "default";
+  public invitingUser: string = '';
   invitation: boolean = false;
   private roomId: number = 0;
 

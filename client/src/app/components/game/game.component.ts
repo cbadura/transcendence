@@ -69,8 +69,7 @@ export class GameComponent implements CanComponentDeactivate {
     this.route.params.subscribe(params => {
       if (params) {
         console.log('START FROM INVITE');
-        this.gameType = params.type;
-        this.gameType = 'default';
+        this.gameType = params['gameType'];
         this.status = 'waiting';
         this.gameService.JoinQueue(this.myUser.id, this.gameType);
         this.subscribeToEventObject();

@@ -12,7 +12,10 @@ export class ChatInputComponent implements OnInit {
   @Output() sendMessage = new EventEmitter<string>();
   @Input() userIds: number[] = [];
   public popup: boolean = false;
+  public typePopup: boolean = false;
   public tempUserChanges!: [{ id: number; change: string }];
+  public gameType: "default" | "special" = "default";
+  private invitedUser!: User;
 
   constructor(private gameService: GameService,
     private router: Router) {}
@@ -32,14 +35,30 @@ export class ChatInputComponent implements OnInit {
   }
 
   onUserSelected(user: User) {
+    this.invitedUser = user;
     this.closeUserPopup();
-    this.gameService.InviteToMatch('default', user.id);
+    this.openTypePopup();
+  }
+  
+  /* onTypeSelected(gameType: string) {
+    this.setGameType(gameType);
+    
+  } */
+
+  setGameType(gameType: string) {
+    if (gameType === 'default') {
+      this.gameType = 'default';
+    } else {
+      this.gameType = 'special';
+    }
+    this.closeTypePopup();
+    this.gameService.InviteToMatch(this.gameType, this.invitedUser.id);
     let invite = {
-      gameType: 'default'
+      gameType: this.gameType
     }
     this.router.navigate(['game', 'invite', invite]);
   }
-  
+
   editTempUserChanges = (id: number, mode: string) => {
     let index = this.tempUserChanges.findIndex(
       (change) => change.id === id && change.change === mode
@@ -57,5 +76,13 @@ export class ChatInputComponent implements OnInit {
 
   closeUserPopup() {
     this.popup = false;
+  }
+
+  openTypePopup() {
+    this.typePopup = true;
+  }
+
+  closeTypePopup() {
+    this.typePopup = false;
   }
 }

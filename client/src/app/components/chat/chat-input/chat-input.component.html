@@ -29,3 +29,24 @@
     [userIds]="userIds">
   </tcd-user-search>
 </div>
+
+<!-- Type popup -->
+<div class="flex bg-blue items-center justify-center h-screen">
+  <div class="text-center p-6 bg-grey rounded-lg shadow-lg" *ngIf="typePopup">
+    <h1 class="text-white text-2xl mb-4" >
+      Set game mode
+    </h1>
+    <tcd-custom-button
+      *ngIf="typePopup" 
+      [buttonText]="'default'"
+      [isBlack]="true"
+      (click)="setGameType('default')">
+    </tcd-custom-button>
+    <tcd-custom-button
+      *ngIf="typePopup" 
+      [buttonText]="'special'"
+      [isBlack]="true"
+      (click)="setGameType('special')">
+    </tcd-custom-button>
+  </div>  
+</div>
