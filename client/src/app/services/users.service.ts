@@ -30,11 +30,9 @@ export class UserService {
     return this.http.get<UserRelationship[]>(requestUrl);
   }
 
-  getMatches(id: number) {
-	const matchesUrl = `http://localhost:3000/match`;
-	this.http.get(matchesUrl).subscribe((data) => {
-		console.log('Matches:', data);
-	});
+  getMatches(id: number) : Observable<any[]> {
+	const matchesUrl = `http://localhost:3000/users/${id}/matches`;
+	return this.http.get<any[]>(matchesUrl)
   }
 
 }
