@@ -22,6 +22,7 @@ import { NetworkGameModule } from './network-game/network-game.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { SecretBox } from './entities/secretBox.entity';
+import { DevModule } from './dev/dev.module';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
@@ -50,6 +51,7 @@ import { SecretBox } from './entities/secretBox.entity';
     RelationshipModule,
     NetworkGameModule,
     AuthModule,
+    DevModule,
   ], 
   controllers: [AppController],
   providers: [AppService],
