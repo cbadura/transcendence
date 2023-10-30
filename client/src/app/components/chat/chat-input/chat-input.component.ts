@@ -39,11 +39,6 @@ export class ChatInputComponent implements OnInit {
     this.closeUserPopup();
     this.openTypePopup();
   }
-  
-  /* onTypeSelected(gameType: string) {
-    this.setGameType(gameType);
-    
-  } */
 
   setGameType(gameType: string) {
     if (gameType === 'default') {
