@@ -47,7 +47,7 @@ export class UserController {
           // const uniqueSuffix = Date.now()
           // console.log(req);
           const extension = extname(file.originalname)
-          const filename =`profilepic_user_${userId}${extension}`;
+          const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
           callback(null,filename);
       }
     })
