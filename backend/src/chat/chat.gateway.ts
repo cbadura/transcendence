@@ -11,7 +11,7 @@ import { ChatService } from './chat.service';
 import { Socket } from 'socket.io';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { EBanMute, ESocketMessage } from './chat.interfaces';
-import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BadRequestTransformationFilter } from './chat.filter';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
@@ -22,6 +22,7 @@ import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 import { LeaveChannelDto } from './dto/leave-channel.dto';
 import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
+import { WsJwtAuthGuard } from 'src/auth/guard/ws.jwt.guard';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
@@ -59,6 +60,8 @@ export class ChatGateway
   ) {
     this.chatService.listChannels(socket);
   }
+
+  // @UseGuards(WsJwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.TRY_CREATE_CHANNEL)
   createChannel(

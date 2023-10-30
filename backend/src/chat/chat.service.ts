@@ -178,9 +178,9 @@ export class ChatService {
 
   updateBanMutelist(channel: IChannel) {
     const now: number = this.getCurrentUnixTime();
-    console.log('bans', channel.bans);
-    console.log('mutes', channel.mutes);
-    console.log('admin', channel.admins);
+    // console.log('bans', channel.bans);
+    // console.log('mutes', channel.mutes);
+    // console.log('admin', channel.admins);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
     channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now);
   }
