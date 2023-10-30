@@ -12,7 +12,8 @@
   <p>
   <tcd-custom-button
     *ngIf="invitation"
-    [buttonText]="'Click to accept game invitation'">
+    [buttonText]="'Click to accept game invitation'"
+    (click)="acceptInvitation()">
   </tcd-custom-button>
   <a>
     <tcd-chat-btn [icon]="'featherSettings'"></tcd-chat-btn>

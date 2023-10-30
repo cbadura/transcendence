@@ -103,5 +103,14 @@ export class GameService {
       };
       this.eventSubject.next(this.myEvent);
     });
+
+    this.gameSocket?.on(ESocketGameMessage.RECEIVE_ROOM_INVITE, (data: any) => {
+      console.log('RECEIVED INVITE', data);
+      this.myEvent = {
+        eventType: ESocketGameMessage.RECEIVE_ROOM_INVITE,
+        data: { data },
+      };
+      this.eventSubject.next(this.myEvent);
+    });
   }
 }
