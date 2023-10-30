@@ -20,6 +20,7 @@ export class ChatHeaderComponent implements OnInit, OnDestroy {
   private gameType: "default" | "special" = "default";
   private invitingUser: string = '';
   invitation: boolean = false;
+  private roomId: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,18 +49,16 @@ export class ChatHeaderComponent implements OnInit, OnDestroy {
         console.log('Invitation received:', event.data);
         this.invitation = true;
         this.gameType = event.data.data.gameType;
-        this.invitingUser = event.data.data.inviting_user.id;
-        // this.gameService.JoinQueue(event.data.data.inviting_user.id, this.gameType);
+        this.invitingUser = event.data.data.inviting_user.name;
+        this.roomId = event.data.data.room_id;
       }
     });
   }
 
   acceptInvitation() {
-    // this.gameService.JoinQueue(this.myUser.id, this.gameType);
     console.log('INVITE ACCEPTED', this.myUser.id, this.gameType);
+    this.gameService.JoinRoom(this.roomId, true);
     let invite = {
-      inviter: this.invitingUser,
-      invitee: this.myUser,
       gameType: this.gameType
     }
     this.router.navigate(['game', 'invite', invite]);

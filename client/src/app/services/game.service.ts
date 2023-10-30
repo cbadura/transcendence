@@ -45,8 +45,17 @@ export class GameService {
   }
   
   InviteToMatch(gameType: 'default' | 'special', id: number){
-	  this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {gameType: gameType,recipient_user_id: id})
+	  this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {
+      gameType: gameType,recipient_user_id: id
+    })
     console.log('INVITED ID TO MATCH', id);
+  }
+  
+  JoinRoom(room_id: number, response: boolean) {
+    console.log('TRYING TO JOIN ROOM');
+    this.gameSocket?.emit(ESocketGameMessage.TRY_JOIN_ROOM, {
+      room_id: room_id, response: response
+    })
   }
 
   //this function should be called if a use is queueing but switches to another tab. Or we have explicitly a button to stop queueing

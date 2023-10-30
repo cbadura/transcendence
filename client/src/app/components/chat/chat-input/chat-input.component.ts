@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
-
+import { Router } from '@angular/router';
 import { User } from 'src/app/shared/interfaces/user';
 import { GameService } from 'src/app/services/game.service';
 
@@ -14,7 +14,8 @@ export class ChatInputComponent implements OnInit {
   public popup: boolean = false;
   public tempUserChanges!: [{ id: number; change: string }];
 
-  constructor(private gameService: GameService) {}
+  constructor(private gameService: GameService,
+    private router: Router) {}
 
   ngOnInit() {
     this.tempUserChanges = [{ id: 0, change: '' }];
@@ -33,6 +34,10 @@ export class ChatInputComponent implements OnInit {
   onUserSelected(user: User) {
     this.closeUserPopup();
     this.gameService.InviteToMatch('default', user.id);
+    let invite = {
+      gameType: 'default'
+    }
+    this.router.navigate(['game', 'invite', invite]);
   }
   
   editTempUserChanges = (id: number, mode: string) => {

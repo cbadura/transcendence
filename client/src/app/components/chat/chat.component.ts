@@ -29,7 +29,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private userDataService: UserDataService,
     private route: ActivatedRoute) {
       this.messages = [];
-      // this.tempText = '';
   }
 
   ngOnInit() {

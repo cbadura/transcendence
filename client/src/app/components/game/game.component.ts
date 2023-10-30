@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Subscription, Observable } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import * as io from 'socket.io-client';
 import { CanComponentDeactivate } from 'src/app/guards/can-deactivate.guard';
 import { UserDataService } from '../../services/user-data.service';
@@ -52,6 +53,7 @@ export class GameComponent implements CanComponentDeactivate {
   constructor(
     private userDataService: UserDataService,
     private gameService: GameService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -61,6 +63,18 @@ export class GameComponent implements CanComponentDeactivate {
       this.myUser = user;
       this.saturatedColor = SaturatedColor(this.myUser.color, 50);
       this.darkerColor = LightenDarkenColor(this.myUser.color, -10);
+    });
+
+    // Get params from URL
+    this.route.params.subscribe(params => {
+      if (params) {
+        console.log('START FROM INVITE');
+        this.gameType = params.type;
+        this.gameType = 'default';
+        this.status = 'waiting';
+        this.gameService.JoinQueue(this.myUser.id, this.gameType);
+        this.subscribeToEventObject();
+      }
     });
 
     // Get game data
