@@ -172,7 +172,7 @@ export class GameRoom {
         this.disconnectedUser = userId;
 
         const otherUser = this.getClientByUserId(userId,true)
-        otherUser.socket.emit(ESocketGameMessage.OPP_LEFT_GAME)
+        otherUser.socket?.emit(ESocketGameMessage.OPP_LEFT_GAME)
 
         if( this.state == EGameRoomState.FINISHED ){ //if user doesnt want to play again
             this.state = EGameRoomState.CLEANUP;
