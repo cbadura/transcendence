@@ -29,4 +29,12 @@ export class UserService {
     const requestUrl = `${friendsUrl}?${params.toString()}`;
     return this.http.get<UserRelationship[]>(requestUrl);
   }
+
+  getMatches(id: number) {
+	const matchesUrl = `http://localhost:3000/match`;
+	this.http.get(matchesUrl).subscribe((data) => {
+		console.log('Matches:', data);
+	});
+  }
+
 }

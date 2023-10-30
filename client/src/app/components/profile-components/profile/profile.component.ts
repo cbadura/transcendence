@@ -73,7 +73,7 @@ export class ProfileComponent implements OnInit {
       });
     });
 
-
+	this.userService.getMatches(this.user.id);
     this.matches = [
     ];
   }
