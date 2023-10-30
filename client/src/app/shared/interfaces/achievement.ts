@@ -4,6 +4,7 @@ export interface Achievement {
 	achievementDefinition: {
 		id: number,
 		name: string,
+		image: string,
 		description: string,
 		criteria: {
 			matches: number

@@ -8,5 +8,4 @@ import { Achievement } from 'src/app/shared/interfaces/achievement';
 })
 export class AchievementComponent {
   @Input() achievement!: Achievement;
-
 }

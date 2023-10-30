@@ -217,4 +217,12 @@ export class UserService {
     return query.getMany();
   }
 
+  async validateRelationshipFromUser(user_id: number,other_user_id: number, relationType: string): Promise<boolean> {
+    const relations = await this.getUserRelationships(user_id,relationType);
+    const uniqueRelationship = relations.find(relation => relation.relational_user_id ==other_user_id)
+    if(uniqueRelationship == null)
+      return false;
+    return true;
+  }
+
 }

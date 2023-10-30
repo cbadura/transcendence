@@ -6,6 +6,7 @@ import { CreateMatchDto } from './dto/create-match.dto';
 import { User } from 'src/entities/user.entity';
 import { MatchUser } from 'src/entities/match-user.entity';
 import {Decimal} from 'decimal.js';
+import { AchievementService } from 'src/achievement/achievement.service';
 
 @Injectable()
 export class MatchService {
@@ -13,6 +14,7 @@ export class MatchService {
         @InjectRepository(Match) private matchRepository: Repository<Match>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(MatchUser) private matchUserRepository: Repository<MatchUser>,
+        readonly achievementService: AchievementService
     ) {}
 
     getMatches(): Promise<Match[]>{
@@ -87,7 +89,14 @@ export class MatchService {
                     wins: participant.outcome ? participant.user.wins + 1 : participant.user.wins, //increment only if user won
                     level: new Decimal(participant.user.level).plus(this.determineXPGain(participant.outcome)).toString(), //kill me -.-
                 })
-        }
+
+                //grant match achievements if possible
+                this.achievementService.checkAndGrantMatchAchievements(matchUser.user.id);
+                
+            }
+            //check each user if they were friends
+            this.achievementService.checkAndGrantPlayAFriendAchievement(createMatchDto.matchUsers[0].user_id,createMatchDto.matchUsers[1].user_id);
+            this.achievementService.checkAndGrantPlayAFriendAchievement(createMatchDto.matchUsers[1].user_id,createMatchDto.matchUsers[0].user_id);
 
         console.log(matchObject.id);
         return await this.matchRepository.findOne(

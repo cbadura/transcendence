@@ -15,10 +15,17 @@ export class AuthController {
 
   @Get('redirect')
   @UseGuards(ftAuthGuard)
-  async redirect(@Req() req: Request) {
+  async redirect(@Req() req: Request, @Res() res: Response) {
     const token = await this.authService.jwtIssueToken(req.user);
     console.log(token);
-    return token;
+    res.cookie('token', token, {
+      maxAge: 3600000,
+      httpOnly: true,
+      domain: 'localhost',
+      sameSite: 'lax',
+      secure: true,
+    });
+    res.send(token);
   }
 
   @Get('2fa/activate')

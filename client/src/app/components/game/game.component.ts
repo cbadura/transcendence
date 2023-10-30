@@ -47,6 +47,7 @@ export class GameComponent implements CanComponentDeactivate {
   public saturatedColor!: string;
   public highLightColor: string = 'black';
   public darkerColor!: string;
+  private gameSubscription!: Subscription;
 
   constructor(
     private userDataService: UserDataService,
@@ -55,7 +56,7 @@ export class GameComponent implements CanComponentDeactivate {
 
   ngOnInit() {
     // Get user data
-    this.gameService.gameSocket = this.userDataService.gameSocket;
+    // this.gameService.gameSocket = this.userDataService.gameSocket;
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
       this.saturatedColor = SaturatedColor(this.myUser.color, 50);
@@ -79,7 +80,7 @@ export class GameComponent implements CanComponentDeactivate {
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
-        //add events
+        this.gameService.leaveMatch();
         return true;
       } else return false;
     }
@@ -87,69 +88,23 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   startTrainingGame() {
-    this.gameService.subscribeToEvents();
+    // this.gameService.subscribeToEventObject();
     //make request to create room
     this.gameService.CreateTrainingMatch('special');
-
-    //forgive me lord
-    this.gameService.getEventData().subscribe((event) => {
-      //   ROOM_CREATED
-      if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
-        console.log('ROOM CREATED IN GAME COMPONENT');
-        this.gameRenderInfo = event.data.game;
-        this.render = new Render(
-          this.ctx,
-          this.gameRenderInfo,
-          event.data.userInfo.user1,
-          event.data.userInfo.user2,
-          this.myUser.id,
-        );
-      }
-
-      //   START_COUNTDOWN
-      if (event.eventType === ESocketGameMessage.START_COUNTDOWN) {
-        console.log('START COUNTDOWN IN GAME COMPONENT');
-        console.log(event.data);
-        this.status = 'playing';
-        this.render.setCountdown(event.data.countdown);
-        //let countdown = event.data.countdown;
-      }
-
-      //   UPDATE_GAME_INFO
-      if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
-        this.gameRenderInfo = event.data.gameRenderInfo;
-        if (this.gameRenderInfo && this.render) {
-          this.movePaddle();
-          if (!this.gameRenderInfo.gameOver) {
-            this.render.redraw(this.gameRenderInfo);
-          } else {
-            console.log('gameover');
-            this.status = 'gameover';
-            this.fillMatchData(this.gameRenderInfo);
-            return;
-          }
-        }
-      }
-
-      // GAME_ABORTED
-      if (event.eventType === ESocketGameMessage.GAME_ABORTED) {
-        this.status = 'aborted';
-        console.log('GAME_ABORTED', event.data);
-      }
-    });
+    this.subscribeToEventObject();
   }
 
   startGame(gameType: 'default' | 'special'): void {
     this.gameType = gameType;
     this.status = 'waiting';
     this.gameService.JoinQueue(this.myUser.id, gameType);
-    console.log('gameSocket created');
+    this.subscribeToEventObject();
+  }
 
-    this.gameService.subscribeToEvents();
-    this.gameService.getEventData().subscribe((event) => {
-      //   ROOM_CREATED
+  subscribeToEventObject() {
+    this.gameSubscription = this.gameService.event$.subscribe((event) => {
+      if (!event) return;
       if (event.eventType === ESocketGameMessage.LOBBY_COMPLETED) {
-        console.log('ROOM CREATED IN GAME COMPONENT');
         this.gameRenderInfo = event.data.game;
         this.render = new Render(
           this.ctx,
@@ -249,5 +204,6 @@ export class GameComponent implements CanComponentDeactivate {
   ngOnDestroy(): void {
     console.log('NG ON DESTROY CALLED ');
     this.userSubscription.unsubscribe();
+    if (this.gameSubscription) this.gameSubscription.unsubscribe();
   }
 }
