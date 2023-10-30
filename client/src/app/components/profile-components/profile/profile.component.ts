@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { UserDataService } from 'src/app/services/user-data.service';
@@ -113,4 +113,8 @@ export class ProfileComponent implements OnInit {
   }
 
   getFloorLevel = () => Math.floor(this.user.level);
+
+  ngOnDestroy() {
+	this.userSubscription.unsubscribe();
+  }
 }
