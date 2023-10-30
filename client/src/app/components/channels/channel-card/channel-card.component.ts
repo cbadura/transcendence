@@ -54,22 +54,22 @@ export class ChannelCardComponent {
   }
 
   hidePasswordField(event: Event) {
-	event.stopPropagation();
-	this.passwordField = false;
-	this.tempPassword = '';
+    event.stopPropagation();
+    this.passwordField = false;
+    this.tempPassword = '';
   }
 
   submitPassword(event: Event) {
-	event.stopPropagation();
-	this.tryJoinChanel();
+    event.stopPropagation();
+    this.tryJoinChanel();
   }
 
   onKeyUp(event: KeyboardEvent) {
-	if (event.key === 'Escape') {
-	  this.hidePasswordField(event);
-	} else	if (event.key === 'Enter') {
-	  this.submitPassword(event);
-	}
+    if (event.key === 'Escape') {
+      this.hidePasswordField(event);
+    } else if (event.key === 'Enter') {
+      this.submitPassword(event);
+    }
   }
 
   joinChannel(event: Event) {

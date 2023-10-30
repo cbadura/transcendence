@@ -27,34 +27,33 @@
       type="password"
       [(ngModel)]="tempPassword"
       [placeholder]="'Type in the password for ' + channel.name + '...'"
-	  (keyup)="onKeyUp($event)"
+      (keyup)="onKeyUp($event)"
     />
-	
-	<!-- Buttons -->
-	<div class="flex">
-		<tcd-chat-btn
-		[icon]="'featherXSquare'"
-		(click)="hidePasswordField($event)"
-		></tcd-chat-btn>
-		<tcd-chat-btn
-		[icon]="'featherCheckSquare'"
-		(click)="submitPassword($event)"
-		></tcd-chat-btn>
-	</div>
+
+    <!-- Buttons -->
+    <div class="flex">
+      <tcd-chat-btn
+        [icon]="'featherXSquare'"
+        (click)="hidePasswordField($event)"
+      ></tcd-chat-btn>
+      <tcd-chat-btn
+        [icon]="'featherCheckSquare'"
+        (click)="submitPassword($event)"
+      ></tcd-chat-btn>
+    </div>
   </div>
 
   <!-- Edit and join button -->
   <div *ngIf="!passwordField" class="flex">
-
-	  <tcd-chat-btn
-	  (click)="navigateToEditChannel($event, channel)"
-	  *ngIf="editMode"
-	  [icon]="'featherSettings'"
-	  ></tcd-chat-btn>
-	  <tcd-chat-btn
-	  (click)="joinChannel($event)"
-	  [icon]="'featherPlusSquare'"
-	  *ngIf="joinMode"
-	  ></tcd-chat-btn>
-	</div>
+    <tcd-chat-btn
+      (click)="navigateToEditChannel($event, channel)"
+      *ngIf="editMode"
+      [icon]="'featherSettings'"
+    ></tcd-chat-btn>
+    <tcd-chat-btn
+      (click)="joinChannel($event)"
+      [icon]="'featherPlusSquare'"
+      *ngIf="joinMode"
+    ></tcd-chat-btn>
+  </div>
 </div>
