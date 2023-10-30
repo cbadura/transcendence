@@ -217,7 +217,7 @@ export class GameRoom {
     private async sendRoomInfo() {
         let roominfo: GameRoomInfoDto;
         let peddal1User: User = await this.userService.getUser(this.clients[0].userId)
-        let peddal2User: User;
+        let peddal2User: User = new User;
         if(this.roomAccess == 'training'){
             peddal2User.avatar = peddal1User.avatar;
             peddal2User.color = '#000000'; 
