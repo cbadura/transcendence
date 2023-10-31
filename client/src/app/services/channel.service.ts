@@ -219,7 +219,8 @@ export class ChannelService implements OnDestroy{
           isBanned: false,
           isMuted: false,
           usersIds: [data.ownerId],
-          adminIds: []
+          adminIds: [],
+		  ownerId: data.ownerId
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);
@@ -334,14 +335,14 @@ export class ChannelService implements OnDestroy{
         console.log('LEFT', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
-            ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-          if (ch.role === EUserRole.OWNER) {
-            ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+            ch.usersIds = ch.usersIds.filter((id) => id !== data.userId);
+            if (ch.role === EUserRole.OWNER) {
+              ch.adminIds = ch.adminIds.filter((id) => id !== data.userId);
+            }
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.NONE;
+            }
           }
-          if (data.userId === this.myUser.id) {
-            ch.role = EUserRole.NONE;
-          }
-         }
        });
        this.serverChannels.next(this.channels);
      });

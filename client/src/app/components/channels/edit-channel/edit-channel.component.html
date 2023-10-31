@@ -49,6 +49,14 @@
     />
   </div>
 
+  <!-- Owner -->
+  <div *ngIf="!emptyChannel && channelOwner" class="w-full flex flex-col gap-2">
+    <label class="font-bold" for="name">Owner</label>
+    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+      <tcd-profile-card [user]="channelOwner"></tcd-profile-card>
+    </div>
+  </div>
+
   <!-- Admins -->
   <div
     *ngIf="!emptyChannel && channelAdmins.length > 0"
@@ -90,9 +98,13 @@
     </div>
   </div>
 
-	<!-- Popup -->
-	<tcd-user-search *ngIf="popup" (userSelected)="onUserSelected($event)" (closeClicked)="closeUserPopup()"
-		[invitation]="'Invite user to channel'"></tcd-user-search>
+  <!-- Popup -->
+  <tcd-user-search
+    *ngIf="popup"
+    (userSelected)="onUserSelected($event)"
+    (closeClicked)="closeUserPopup()"
+    [invitation]="'Invite user to channel'"
+  ></tcd-user-search>
 
   <!-- Invited users -->
   <div *ngIf="invitedUsers.length > 0" class="w-full flex flex-col gap-2">

@@ -45,6 +45,10 @@ export class ChannelDto {
   @IsNumber({}, { each: true })
   @IsOptional()
   adminIds?: number[];
+
+  @IsNumber()
+  @IsOptional()
+  ownerId?: number;
 }
 
 export class ListChannelsDto {

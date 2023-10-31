@@ -84,6 +84,7 @@ export class Render {
   }
 
   drawName(user:User,x:number,y:number,rotation: number = 0) {
+	const name = user.name.length > 10 ? user.name.substring(0,10) + '...' : user.name;
     this.ctx.font = 'bold 25pt Inter';
     this.ctx.fillStyle = SaturatedColor(user.color, 20);
     this.ctx.textAlign = 'center';
@@ -91,7 +92,7 @@ export class Render {
     this.ctx.save();
     this.ctx.translate(x,y);
     this.ctx.rotate(rotation);
-    this.ctx.fillText(user.name, 0, 0);
+    this.ctx.fillText(name, 0, 0);
     this.ctx.restore();
   }
 
@@ -164,7 +165,7 @@ export class Render {
     if (this.gameRenderInfo.hits < 1000) {
       this.drawString(
         midX,
-        midY + 50,
+        midY + 10,
         lineColor,
         'bold 100pt Sniglet',
         this.gameRenderInfo.hits.toString()
@@ -172,13 +173,13 @@ export class Render {
     } else if (this.gameRenderInfo.hits < 10000) {
       this.drawString(
         midX,
-        midY + 40,
+        midY + 10,
         lineColor,
         'bold 80pt Sniglet',
         this.gameRenderInfo.hits.toString()
       );
     } else {
-      this.drawString(midX, midY + 35, lineColor, 'bold 65pt Sniglet', '1000+');
+      this.drawString(midX, midY + 10, lineColor, 'bold 65pt Sniglet', '1000+');
     }
   }
 
@@ -243,7 +244,7 @@ export class Render {
       this.countdown--;
       this.redraw(this.gameRenderInfo);
       console.log('COUNTDOWN RENDER: ' + this.countdown);
-      if (this.countdown === 0) {
+      if (this.countdown <= 0) {
         clearInterval(countdownInterval);
       }
     }, 1000);

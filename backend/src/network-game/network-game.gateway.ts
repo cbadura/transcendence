@@ -69,4 +69,9 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
     @MessageBody() dto: JoinRoomDto, ) {
     this.networkGameService.JoinPrivateRoom(client,dto);
   }
+
+  @SubscribeMessage(ESocketGameMessage.TRY_PLAY_AGAIN)  
+  PlayAgain( @ConnectedSocket() client: Socket) {
+    this.networkGameService.PlayAgain(client);
+  }
 }

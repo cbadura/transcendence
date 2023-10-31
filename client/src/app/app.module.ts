@@ -33,10 +33,18 @@ import {
   featherUser,
   featherUsers,
   featherPlusSquare,
+  featherUserPlus,
+  featherUserMinus,
+  featherUserX,
+  featherUserCheck,
+  featherChevronsRight,
+  featherRepeat,
+  featherPlus,
   featherX,
   featherXSquare,
   featherCheckSquare,
-  featherLock
+  featherLock,
+  featherArrowLeft,
 } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
@@ -56,10 +64,10 @@ import { ChannelService } from './services/channel.service';
 import { ChatHistoryService } from './services/chat-history.service';
 import { ActivateTwofaComponent } from './components/profile-components/activate-twofa/activate-twofa.component';
 import { GameService } from './services/game.service';
+import { WinsLossesComponent } from './components/profile-components/wins-losses/wins-losses.component';
 
 // const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
-
 
 @NgModule({
   declarations: [
@@ -95,6 +103,7 @@ import { GameService } from './services/game.service';
     TokenComponent,
     TwofaComponent,
     ActivateTwofaComponent,
+    WinsLossesComponent,
   ],
   imports: [
     HttpClientModule,
@@ -103,16 +112,24 @@ import { GameService } from './services/game.service';
     FormsModule,
     NgIconsModule.withIcons({
       featherSettings,
-	  featherUnlock,
+      featherUnlock,
       featherSend,
-	  featherCheckCircle,
+      featherCheckCircle,
       featherUser,
       featherUsers,
       featherPlusSquare,
+      featherUserPlus,
+      featherUserMinus,
+      featherUserX,
+      featherUserCheck,
+	  featherChevronsRight,
+      featherRepeat,
+      featherPlus,
       featherX,
 	  featherXSquare,
 	  featherCheckSquare,
-	  featherLock
+	  featherLock,
+      featherArrowLeft,
     }),
   ],
   providers: [
@@ -120,9 +137,7 @@ import { GameService } from './services/game.service';
     ChannelService,
     ChatHistoryService,
     DatePipe,
-	GameService,
-    // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
-    // { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
+    GameService,
   ],
   bootstrap: [AppComponent],
 })

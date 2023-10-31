@@ -25,12 +25,13 @@ export class ActivateTwofaComponent implements OnInit {
     private el: ElementRef,
   ) {}
   ngOnInit(): void {
+	console.log('user:', this.user);
     this.userDataService.getQRCode();
-    const firestInput =
-      this.el.nativeElement.querySelector(`input:nth-child(1)`);
-    if (firestInput) {
-      this.renderer.selectRootElement(firestInput).focus();
-    }
+    // const firestInput =
+    //   this.el.nativeElement.querySelector(`input:nth-child(1)`);
+    // if (firestInput) {
+    //   this.renderer.selectRootElement(firestInput).focus();
+    // }
   }
 
   closeTwoFAPopup() {

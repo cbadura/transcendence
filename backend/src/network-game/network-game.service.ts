@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      this.LogGameRooms();
+      // this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -102,6 +102,7 @@ export class NetworkGameService {
         }
         if(instigator.room_id != -1){
           console.log('exception','Instigator (You) have already invited somebody in the last 10 seconds')
+          instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Instigator (You) have already invited somebody in the last 10 seconds')
           return;
         }
 
@@ -112,12 +113,12 @@ export class NetworkGameService {
           recipient = this.getISocketUserFromUserId(dto.recipient_user_id);
           if(recipient == null){
             console.log('exception','Recipient is not registered')
-            instigator.socket.emit('exception','Recipient is not registered');
+            instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Recipient is not registered');
             return;
           }
           if(recipient.status != EUserStatus.ONLINE){
             console.log('exception','Recipient is currently',recipient.status);
-            instigator.socket.emit('exception','Recipient is ',recipient.status);
+            instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Recipient is ',recipient.status);
             return;
           }
         }
@@ -127,7 +128,7 @@ export class NetworkGameService {
         const roomID = this.InsertRoom(new GameRoom(this.matchService,this.userService,roomAccess,dto.gameType))
         if(roomID == -1) {
           console.log('Room could not be created. All Rooms are currently occupied')
-          instigator.socket.emit('exception','Room could not be created. All Rooms are currently occupied')
+          instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Room could not be created. All Rooms are currently occupied')
           return
         }
         const newRoom = this.gameRooms[roomID];
@@ -156,12 +157,12 @@ export class NetworkGameService {
         }
         if( room == null){
           console.log('Room no longer exists');
-          user.socket.emit('exception','Room no longer exists');
+          user.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Room no longer exists');
           return
         }
         if(room.CanUserJoin(user.userId) == false){
           console.log('You have no permission to join this room');
-          user.socket.emit('exception','You have no permission to join this room');
+          user.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'You have no permission to join this room');
           return
         }
         if(dto.response == false){
@@ -274,15 +275,24 @@ export class NetworkGameService {
         }
       }
 
+      PlayAgain(client: Socket){
+        const currUser = this.getISocketUserFromSocket(client);
+
+        //check if gameRoom exists
+
+        if(currUser.room_id != -1)
+          this.gameRooms[currUser.room_id].votePlayAgain(currUser);
+      }
+
+
       monitorGameRooms(){
         const gameLoop = setInterval(()=>{
           for (let i = 0; i < this.gameRooms?.length; i++) {
             if( this.gameRooms[i] == null)
               return;
               this.gameRooms[i].checkRoomExpiration();
-              if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED) {
+              if(this.gameRooms[i].getGameRoomState() == EGameRoomState.CLEANUP) {
                   for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
-                    console.log(this.gameRooms[i]?.clients[j])
                     if(this.gameRooms[i].clients[j] != null){
                       this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                       this.gameRooms[i].clients[j].room_id = -1;
