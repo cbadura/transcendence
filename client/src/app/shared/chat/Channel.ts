@@ -12,4 +12,5 @@ export interface Channel {
     usersIds: number[];
 	password?: string;
 	adminIds: number[];
+	ownerId: number;
 }

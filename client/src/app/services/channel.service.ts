@@ -219,7 +219,8 @@ export class ChannelService implements OnDestroy{
           isBanned: false,
           isMuted: false,
           usersIds: [data.ownerId],
-          adminIds: []
+          adminIds: [],
+		  ownerId: data.ownerId
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);

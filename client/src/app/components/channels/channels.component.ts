@@ -1,11 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import { ChannelService } from 'src/app/services/channel.service';
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
 import { EUserRole } from 'src/app/shared/macros/EUserRole';
-import { dummyChannels } from 'src/app/temp/dummyChannels';
 
 @Component({
   selector: 'tcd-channels',
@@ -14,7 +12,6 @@ import { dummyChannels } from 'src/app/temp/dummyChannels';
 export class ChannelsComponent implements OnInit, OnDestroy {
   public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
   public selectedPage! : string;
-  public dummyChannels: Channel[] = dummyChannels;
   public serverChannels: Channel[] = [];
   public filteredChannels: Channel[] = [];
   public ownChannels: Channel[] = [];
@@ -57,6 +54,9 @@ export class ChannelsComponent implements OnInit, OnDestroy {
       this.ownChannels = this.serverChannels.filter(channel => channel.role === EUserRole.OWNER);
       this.adminChannels = this.serverChannels.filter(channel => channel.role === EUserRole.ADMIN);
 	  this.joinedChannels = this.serverChannels.filter(channel => !this.checkUserJoinedStatus(channel));
+	  this.adminChannels = this.adminChannels.filter(channel => !this.ownChannels.includes(channel));
+	  this.joinedChannels = this.joinedChannels.filter(channel => !this.adminChannels.includes(channel));
+	  this.joinedChannels = this.joinedChannels.filter(channel => !this.ownChannels.includes(channel));
 		console.log('JOINED CHANNELS', this.joinedChannels);
 	}
     else if (selectedPage === 'DMs') {
