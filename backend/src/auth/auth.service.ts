@@ -26,7 +26,6 @@ export class AuthService {
     const payload = {
       verified: verified,
       id: user.id,
-      ftid: user.ftid
     };
     const dto: verifyDto = {
       verified: verified,
@@ -75,6 +74,9 @@ export class AuthService {
   }
 
   async jwtIssueToken(user: any) {
+    // const dto: verifyDto = { verified: !user.tfa };
+    // const access_token = this.generateToken(user, !user.tfa);
+    // return { dto: dto, access_token: access_token };
     if (user.tfa === true)
       return this.generateToken(user, false);
     if (user.tfa === false)
@@ -98,6 +100,8 @@ export class AuthService {
   async verifyActivate(ruser: any, body: any) {
     const user: User = await this.userService.getUser(ruser.id);
     const box: SecretBox = await this.boxRepo.findOne({where: {id: user.id}});
+    if (!box)
+      throw new UnauthorizedException();
     const verified: boolean = authenticator.check(body['key'], box.tempSecret);
     const dto = new verifyDto;
     if (verified) {

@@ -4,6 +4,7 @@ import { ftAuthGuard } from './guard/ft.guard';
 import { AuthService } from './auth.service';
 import { jwtAuthGuard } from './guard/jwt.guard';
 import { simplejwtAuthGuard } from './guard/simple.jwt.guard';
+import { cookieConfig } from './cookie.config';
 
 @Controller('auth')
 export class AuthController {
@@ -20,13 +21,7 @@ export class AuthController {
   async redirect(@Req() req: Request, @Res() res: Response) {
     const token = await this.authService.jwtIssueToken(req.user);
     console.log(token);
-    res.cookie('token', token, {
-      maxAge: 3600000,
-      httpOnly: true,
-      domain: 'localhost',
-      sameSite: 'lax',
-      secure: true,
-    });
+    res.cookie('token', token.access_token, cookieConfig);
     // console.log(req);
     // console.log(res);
     // console.log(req.cookies.token);
@@ -59,17 +54,19 @@ export class AuthController {
 
   @Post('2fa/verify')
   @UseGuards(simplejwtAuthGuard)
-  tfa(@Req() req: Request, @Body() body: any) {
+  tfa(@Req() req: Request, @Body() body: any, @Res() res: Response) {
+    const token = this.authService.tfaVerify(req.user, body);
+    res.cookie('token', token, cookieConfig);
     // verify and issue a "verified" jwt
     console.log(body);
-    return this.authService.tfaVerify(req.user, body);
-    // return token;
+    res.send(token);
+    // return this.authService.tfaVerify(req.user, body);
   }
 
   @Get('profile')
   @UseGuards(jwtAuthGuard)
   profile(@Req() req: Request) {
-    // console.log(req.cookies);
+    console.log(req.cookies);
     return req.user;
   }
 

@@ -23,7 +23,7 @@ export class jwtAuthGuard extends AuthGuard('jwt') {
     try {
       const payload = await this.jwtService.verifyAsync(
         token,
-        {secret: process.env.JWT_SECRET},
+        { secret: process.env.JWT_SECRET },
       );
       if (payload.verified === false)
         return false;
