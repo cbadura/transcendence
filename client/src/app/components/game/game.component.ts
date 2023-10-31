@@ -29,15 +29,12 @@ export class GameComponent implements CanComponentDeactivate {
   private ctx!: CanvasRenderingContext2D;
   private userSubscription!: Subscription;
   public myUser!: User;
-  public match!: Match;
+  private paddle!: number;
+  private opponent!: User | null;
+  public match!: Match | null;
   public status: string = 'new-game';
-
-  // Render class
-  private render!: Render;
-  // GameControl class
-  // private game!: Game;
+  private render!: Render | null;
   private gameRenderInfo!: GameRenderInfo;
-
   private gameType: 'default' | 'special' = 'default';
 
   // Paddle movement
@@ -58,7 +55,6 @@ export class GameComponent implements CanComponentDeactivate {
 
   ngOnInit() {
     // Get user data
-    // this.gameService.gameSocket = this.userDataService.gameSocket;
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
       this.myUser = user;
       this.saturatedColor = SaturatedColor(this.myUser.color, 50);
@@ -79,7 +75,7 @@ export class GameComponent implements CanComponentDeactivate {
     // Get game data
   }
 
-  // Initialize canvas and render after view Init
+  // Initialize canvas after view Init
   ngAfterViewInit(): void {
     // Initialize canvas
     this.ctx = this.canvas.nativeElement.getContext(
@@ -93,7 +89,7 @@ export class GameComponent implements CanComponentDeactivate {
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
-        this.gameService.leaveMatch();
+		this.status === 'waiting' ? this.gameService.leaveQueue() : this.gameService.leaveMatch();
         return true;
       } else return false;
     }
@@ -126,6 +122,8 @@ export class GameComponent implements CanComponentDeactivate {
           event.data.userInfo.user2,
           this.myUser.id,
         );
+		this.myUser.id === event.data.userInfo.user1.id ? this.paddle = 1 : this.paddle = 2;
+		this.myUser.id === event.data.userInfo.user1.id ? this.opponent = event.data.userInfo.user2 : this.opponent = event.data.userInfo.user1;
       }
 
       //   START_COUNTDOWN
@@ -133,19 +131,19 @@ export class GameComponent implements CanComponentDeactivate {
         console.log('START COUNTDOWN IN GAME COMPONENT');
         console.log(event.data);
         this.status = 'playing';
-        this.render.setCountdown(event.data.countdown);
-        //let countdown = event.data.countdown;
+        this.render?.setCountdown(event.data.countdown);
       }
 
       //   UPDATE_GAME_INFO
       if (event.eventType === ESocketGameMessage.UPDATE_GAME_INFO) {
         this.gameRenderInfo = event.data.gameRenderInfo;
         if (this.gameRenderInfo && this.render) {
-          this.movePaddle();
-          if (!this.gameRenderInfo.gameOver) {
-            this.render.redraw(this.gameRenderInfo);
-          } else {
-            console.log('gameover');
+			this.movePaddle();
+			if (!this.gameRenderInfo.gameOver) {
+				this.render.redraw(this.gameRenderInfo);
+			} else {
+				console.log('gameover data', event.data);
+				console.log('gameover');
             this.status = 'gameover';
             this.fillMatchData(this.gameRenderInfo);
             return;
@@ -158,6 +156,12 @@ export class GameComponent implements CanComponentDeactivate {
         this.status = 'aborted';
         console.log('GAME_ABORTED', event.data);
       }
+
+	// OPP_PLAY_AGAIN
+	if (event.eventType === ESocketGameMessage.OPP_PLAY_AGAIN) {
+		if (this.status === 'gameover') this.status = 'rematch';
+        console.log('OPP_PLAY_AGAIN');
+      }
     });
   }
 
@@ -166,17 +170,29 @@ export class GameComponent implements CanComponentDeactivate {
   playAgain(): void {
     //clean up prev field
     this.status = 'new-game';
-    this.render.reset();
-    this.startGame(this.gameType);
+	this.gameType = 'default';
+	this.match = null;
+	this.opponent = null;
+	this.render = null;
+	this.paddle = 0;
+	this.gameSubscription.unsubscribe();	
+  }
+
+  rematch(): void {
+	this.gameService.playAgain();
+	this.status = 'sent-rematch';
   }
 
   fillMatchData(game: GameRenderInfo): void {
+	if (!this.opponent) return;
+	console.log('this paddle', this.paddle);
     this.match = {
-      opponent: this.myUser, //change to real opponent
-      myScore: game.paddles[0].score,
-      opponentScore: game.paddles[1].score,
+      opponent: this.opponent,
+      myScore: this.paddle === 1 ? game.paddles[0].score : game.paddles[1].score,
+      opponentScore: this.paddle === 1 ? game.paddles[1].score : game.paddles[0].score,
       dateTime: new Date().toISOString(),
     };
+	console.log('match', this.match);
   }
 
   leaveQueue() {
