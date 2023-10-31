@@ -39,7 +39,7 @@
 
   <!-- My channels -->
   <div *ngIf="selectedPage === 'My channels'" class="w-full pb-4">
-    <div *ngIf="joinedChannels.length > 0" class="w-full">
+    <div *ngIf="joinedChannels && joinedChannels.length > 0" class="w-full">
       <p class="font-bold p-4">Channels I am in</p>
       <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
         <tcd-channel-card
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div *ngIf="adminChannels.length > 0" class="w-full">
+    <div *ngIf="adminChannels && adminChannels.length > 0" class="w-full">
       <p class="font-bold p-4">Channels I administrate</p>
       <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
         <tcd-channel-card
@@ -60,18 +60,18 @@
         ></tcd-channel-card>
       </div>
     </div>
-  </div>
-
-  <div *ngIf="ownChannels.length > 0" class="w-full">
-    <p class="font-bold p-4">Channels I own</p>
-    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-      <tcd-channel-card
-        *ngFor="let channel of ownChannels"
-        [channel]="channel"
-        [editMode]="true"
-      ></tcd-channel-card>
-    </div>
-  </div>
+	
+	<div *ngIf="ownChannels.length > 0" class="w-full">
+		<p class="font-bold p-4">Channels I own</p>
+		<div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+			<tcd-channel-card
+			*ngFor="let channel of ownChannels"
+			[channel]="channel"
+			[editMode]="true"
+			></tcd-channel-card>
+		</div>
+	</div>
+</div>
 
   <!-- Not found page -->
   <div

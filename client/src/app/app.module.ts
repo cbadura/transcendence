@@ -64,6 +64,7 @@ import { ChannelService } from './services/channel.service';
 import { ChatHistoryService } from './services/chat-history.service';
 import { ActivateTwofaComponent } from './components/profile-components/activate-twofa/activate-twofa.component';
 import { GameService } from './services/game.service';
+import { WinsLossesComponent } from './components/profile-components/wins-losses/wins-losses.component';
 
 // const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -102,6 +103,7 @@ import { GameService } from './services/game.service';
     TokenComponent,
     TwofaComponent,
     ActivateTwofaComponent,
+    WinsLossesComponent,
   ],
   imports: [
     HttpClientModule,

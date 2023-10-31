@@ -38,6 +38,7 @@ export class UserDataService {
   console.log('IN NEWEST USER')
     const url = `http://localhost:3000/auth/profile?token=${token}`;
     this.http.get(url).subscribe((response: any) => {
+		console.log('RESPONSE', response)
       const user: User = {
         id: response.id,
         name: response.name,
