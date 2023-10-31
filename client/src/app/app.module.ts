@@ -41,14 +41,10 @@ import {
   featherRepeat,
   featherPlus,
   featherX,
-<<<<<<< HEAD
   featherXSquare,
   featherCheckSquare,
-  featherLock
-=======
   featherLock,
   featherArrowLeft,
->>>>>>> game-network
 } from '@ng-icons/feather-icons';
 import { ChatHeaderComponent } from './components/chat/chat-header/chat-header.component';
 import { ChatInputComponent } from './components/chat/chat-input/chat-input.component';
@@ -128,14 +124,10 @@ import { GameService } from './services/game.service';
       featherRepeat,
       featherPlus,
       featherX,
-<<<<<<< HEAD
 	  featherXSquare,
 	  featherCheckSquare,
-	  featherLock
-=======
-      featherLock,
+	  featherLock,
       featherArrowLeft,
->>>>>>> game-network
     }),
   ],
   providers: [
@@ -144,8 +136,6 @@ import { GameService } from './services/game.service';
     ChatHistoryService,
     DatePipe,
     GameService,
-    // { provide: 'gameSocket', useFactory: (config: SocketIoConfig) => new Socket(gameConfig) },
-    // { provide: 'chatSocket', useFactory: (config: SocketIoConfig) => new Socket(chatConfig) }
   ],
   bootstrap: [AppComponent],
 })
