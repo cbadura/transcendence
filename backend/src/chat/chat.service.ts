@@ -147,6 +147,7 @@ export class ChatService {
       socket.disconnect(true);
       return;
     }
+    // console.log('hitherererer', socket.handshake);
     const client: ISocketUser = {
       socket,
       userId: userId,

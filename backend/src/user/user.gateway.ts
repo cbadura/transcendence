@@ -10,7 +10,10 @@ import { Socket } from 'socket.io';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
-  cors: true,
+  cors: {
+    origin: 'http://localhost:4200',
+    credentials: true
+  },
 })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly userService: UserService) {}

@@ -6,7 +6,13 @@ import { JoinQueueDto } from './dto/join-queue.dto';
 import { CreatePrivateRoomDto } from './dto/create-private-room.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
 
-@WebSocketGateway({ cors: true , namespace: 'game' })
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:4200',
+    credentials: true
+  },
+  namespace: 'game'
+})
 export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly networkGameService: NetworkGameService) {}
   @WebSocketServer()

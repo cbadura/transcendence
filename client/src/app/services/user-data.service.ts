@@ -204,13 +204,18 @@ export class UserDataService {
 
     const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
     if (!this.gameSocket) {
-      this.gameSocket = new Socket({ url: gameUrl, options: {} });
+      this.gameSocket = new Socket({
+        url: gameUrl,
+        options: {
+          withCredentials: true
+        }});
     }
 
     if (!this.chatSocket) {
       this.chatSocket = new Socket({
         url: "http://localhost:3000/chat",
         options: {
+          withCredentials: true,
           query: { 'userId': String(this.myUser.id) },
           forceNew: true
       } });
@@ -221,6 +226,7 @@ export class UserDataService {
       this.userSocket = new Socket({
         url: "http://localhost:3000/",
         options: {
+          withCredentials: true,
           query: { 'userId': String(this.myUser.id) },
           forceNew: true
         } });

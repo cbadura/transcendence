@@ -26,7 +26,10 @@ import { WsJwtAuthGuard } from 'src/auth/guard/ws.jwt.guard';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
-  cors: true,
+  cors:{
+    origin: 'http://localhost:4200',
+    credentials: true
+  },
   namespace: 'chat',
 })
 export class ChatGateway
