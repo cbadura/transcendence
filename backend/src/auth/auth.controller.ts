@@ -29,6 +29,7 @@ export class AuthController {
     });
     // console.log(req);
     // console.log(res);
+    // console.log(req.cookies.token);
     res.send(token);
   }
 
