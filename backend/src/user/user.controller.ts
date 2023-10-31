@@ -47,7 +47,7 @@ export class UserController {
           // const uniqueSuffix = Date.now()
           // console.log(req);
           const extension = extname(file.originalname)
-          const filename =`profilepic_user_${userId}${extension}`;
+          const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
           callback(null,filename);
       }
     })
@@ -72,6 +72,12 @@ export class UserController {
     }
       return {img: userProfileImageURL};
   }
+
+  // @Get(':id/matches')
+  // getUserMatchHistory(@Param('id',ParseIntPipe) id: number) {
+  //   return this.userService.getUserMatchHistory();
+  // }
+
 
   // this makes sense, but blocks the other
   @Get('profilepic/:filename')

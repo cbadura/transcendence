@@ -14,7 +14,7 @@ export class GameService {
   // game!: Game;
   gameRenderInfo!: GameRenderInfo;
   countdown!: number;
-  gameSocket: Socket | null = null; //will be set on gameComponent Initialize (by that time a socket should already exist)
+  gameSocket: Socket | null = null;
   myEvent!: { eventType: string; data: any };
 
   private eventSubject = new BehaviorSubject<{ eventType: string; data: any }>(
@@ -71,6 +71,10 @@ export class GameService {
     this.gameSocket?.emit(ESocketGameMessage.TRY_MOVE_PADDLE, id, step);
   }
 
+  playAgain() {
+	this.gameSocket?.emit(ESocketGameMessage.TRY_PLAY_AGAIN);
+  }
+
   subscribeToEvents() {
     console.log('GameService constructor subscribed to events');
 
@@ -121,5 +125,13 @@ export class GameService {
       };
       this.eventSubject.next(this.myEvent);
     });
+	
+	this.gameSocket?.on(ESocketGameMessage.OPP_PLAY_AGAIN, (data: any) => {
+		this.myEvent = {
+			eventType: ESocketGameMessage.OPP_PLAY_AGAIN,
+			data: { data },
+		  };
+		  this.eventSubject.next(this.myEvent);
+	})
   }
 }

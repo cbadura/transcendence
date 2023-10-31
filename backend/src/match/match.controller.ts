@@ -26,13 +26,19 @@ export class MatchController {
     @Get('/dummy/:user_id')
     async createDummyMatches(@Param('user_id',ParseIntPipe) id: number ){
         console.log(id);
+        //'default' | 'special'
         for (let i = 0; i < 10; i++) {
             let score = Math.floor(Math.random() * 1000);
             let oppID = await this.matchService.getRandomUserID(id);
             let oppScore = Math.floor(Math.random() * 1000);
+            let matchtype = Math.floor(Math.random() * 1000) % 2 == 0 ? 'default' : 'special';
             if(score == oppScore)
                 score++;
             let matchDTo= {
+                matchType: matchtype,
+                matchEndReason: {
+                    reason: 'score',
+                },
                 "matchUsers":[
                     {"user_id": id,"score": score},
                     {"user_id": oppID,"score": oppScore}

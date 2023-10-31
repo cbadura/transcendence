@@ -29,4 +29,10 @@ export class UserService {
     const requestUrl = `${friendsUrl}?${params.toString()}`;
     return this.http.get<UserRelationship[]>(requestUrl);
   }
+
+  getMatches(id: number) : Observable<any[]> {
+	const matchesUrl = `http://localhost:3000/users/${id}/matches`;
+	return this.http.get<any[]>(matchesUrl)
+  }
+
 }

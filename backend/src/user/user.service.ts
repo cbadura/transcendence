@@ -14,6 +14,7 @@ import { UserStatusUpdateDto } from './dto/user-status-update.dto';
 import { EUserMessages } from './user.interface';
 import { WsException } from '@nestjs/websockets';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
+import { promises as fsPromises } from 'fs';
 
 @Injectable()
 export class UserService {
@@ -134,6 +135,9 @@ export class UserService {
       })
     }
     const currUser = await this.userRepository.findOne({ where: { id }});
+    if(dto.avatar != null && currUser != null){
+      await this.deleteExistingImage(currUser);
+    }
     // console.log(currUser);
     this.userRepository.merge(currUser, dto);
     // console.log(currUser);
@@ -163,6 +167,31 @@ export class UserService {
     await this.userRepository.remove(DeletedUser);
 
     return DeletedUser;
+  }
+
+  async deleteExistingImage(user: User){
+    if(!user.avatar.includes('http://localhost:3000/users/profilepic/default_0')){
+        const filePath = this.createImageFilePath(user.avatar)
+        try {
+          await fsPromises.unlink(filePath); 
+          console.log(`Deleted file: ${filePath}`);
+      } catch (error) {
+          if (error.code === 'ENOENT') {
+              console.error(`File not found: ${filePath}`);
+          } else {
+              console.error(`Error deleting file: ${error.message}`);
+          }
+      }
+    }
+  }
+
+  private createImageFilePath(url:string):string {
+    const lastIndex = url.lastIndexOf('/');
+    const fileName = url.slice(lastIndex + 1);
+    const pathIndex = __dirname.lastIndexOf('backend')
+    const path = __dirname.slice(0,pathIndex);
+    const filePath = path +'backend/uploadedData/profilepictures/'+ fileName;
+    return filePath;
   }
 
   async createDummyUsers() {
