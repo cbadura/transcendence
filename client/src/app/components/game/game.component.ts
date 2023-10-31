@@ -67,7 +67,6 @@ export class GameComponent implements CanComponentDeactivate {
         console.log('START FROM INVITE');
         this.gameType = params['gameType'];
         this.status = 'waiting';
-        this.gameService.JoinQueue(this.myUser.id, this.gameType);
         this.subscribeToEventObject();
       }
     });
