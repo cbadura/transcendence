@@ -91,6 +91,7 @@ export class ChatService {
         const channel: ChannelDto = new ChannelDto();
         channel.name = ch.name;
         channel.mode = ch.mode;
+        channel.ownerId = ch.ownerId;
         channel.role = this.getUserRole(ch, user.userId);
         channel.isBanned = !!ch.bans.find((ban) => ban.userId === user.userId);
         if (channel.isBanned)
