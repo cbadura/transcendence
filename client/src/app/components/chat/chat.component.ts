@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { GameService } from 'src/app/services/game.service';
 import { UserDataService } from '../../services/user-data.service';
 import { ChatHistoryService } from '../../services/chat-history.service';
+import { ChannelService } from 'src/app/services/channel.service';
 import { ESocketGameMessage } from 'src/app/shared/macros/ESocketGameMessage';
 import { Post } from 'src/app/shared/interfaces/post';
 import { User } from 'src/app/shared/interfaces/user';
@@ -24,7 +25,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private gameSubscription!: Subscription;
   public gameType: "default" | "special" = "default";
   private roomId: number = 0;
-
+  public ownerLeavePopup: boolean = false;
 
   myUser!: User;
   channel!: Channel;
@@ -33,6 +34,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private chatHistoryService: ChatHistoryService,
     private userDataService: UserDataService,
 	private gameService: GameService,
+	private channelService: ChannelService,
 	private router: Router,
     private route: ActivatedRoute) {
       this.messages = [];
@@ -88,6 +90,26 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.router.navigate(['game', 'invite', invite]);
   } 
 
+  tryLeaveChannel() {
+	if (this.channel.role !== 'owner') this.leaveChannel();
+	else this.ownerLeavePopup = true;
+  }
+
+  transferOwnership(id: number) {
+	this.channelService.leaveChannel(this.channel.name, 'keep', id);
+	this.router.navigate(['channels']);
+  }
+
+
+  closeLeavePopup() {
+	this.ownerLeavePopup = false;
+  }
+
+  leaveChannel() {
+	this.channelService.leaveChannel(this.channel.name, 'delete');
+	this.router.navigate(['channels']);
+  }
+
   ngAfterViewChecked() {
     this.scrollToBottom();
   }
@@ -112,6 +134,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnDestroy() {
     this.userSubscription.unsubscribe();
+	this.gameSubscription.unsubscribe();
     if (this.postSubscription) {
       this.postSubscription.unsubscribe();
     }

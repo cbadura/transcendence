@@ -2,8 +2,10 @@
   <!-- Chat window -->
   <div class="border border-zinc-800 bg-zinc-800 rounded-3xl h-full relative">
     <!-- Chat header -->
-    <tcd-chat-header></tcd-chat-header>
+    <tcd-chat-header (leave)="tryLeaveChannel()"></tcd-chat-header>
 
+	<!-- Leave popup -->
+	<tcd-leave-chat *ngIf="ownerLeavePopup" [channel]="channel" (closeClicked)="closeLeavePopup()" (deleteClicked)="leaveChannel()" (ownershipClicked)="transferOwnership($event)"></tcd-leave-chat>
     <!-- Messages div -->
     <div
       #messagesDiv

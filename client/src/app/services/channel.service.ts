@@ -154,12 +154,11 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.emit(ESocketMessage.TRY_INVITE_TO_CHANNEL, invite);
   }
 
-  leaveChannel(chName: string) {
-    //TODO add info if owner is leaving :
-    //  option: EChannelLeaveOption;
-    //  transferId: number;
+  leaveChannel(chName: string, option: string, id?: number) {
     let leave = {
-      channelName: chName
+      channelName: chName,
+	  option: option,
+	  transferId: id ? id : -1
     }
     console.log('LEAVE', leave);
     this.chatSocket?.emit(ESocketMessage.TRY_LEAVE_CHANNEL, leave);
@@ -342,6 +341,12 @@ export class ChannelService implements OnDestroy{
             if (data.userId === this.myUser.id) {
               ch.role = EUserRole.NONE;
             }
+
+			if (ch.usersIds.length <= 0) {
+				this.channels = this.channels.filter((ch) =>
+					ch.name !== data.channelName
+				);
+			}
           }
        });
        this.serverChannels.next(this.channels);
