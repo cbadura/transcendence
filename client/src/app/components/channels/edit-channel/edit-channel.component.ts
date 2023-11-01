@@ -20,7 +20,7 @@ export class EditChannelComponent implements OnInit {
     EChannelMode.PRIVATE,
     EChannelMode.PROTECTED,
   ];
-  private channel!: Channel;
+  public channel!: Channel;
   public emptyChannel: boolean = false;
   public channelAdmins: User[] = [];
   public channelMembers: User[] = [];

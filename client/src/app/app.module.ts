@@ -27,6 +27,7 @@ import { MessageInfoComponent } from './components/chat/message-info/message-inf
 import { NgIconsModule } from '@ng-icons/core';
 import {
   featherSettings,
+  featherMail,
   featherUnlock,
   featherSend,
   featherCheckCircle,
@@ -65,6 +66,7 @@ import { ChatHistoryService } from './services/chat-history.service';
 import { ActivateTwofaComponent } from './components/profile-components/activate-twofa/activate-twofa.component';
 import { GameService } from './services/game.service';
 import { WinsLossesComponent } from './components/profile-components/wins-losses/wins-losses.component';
+import { LeaveChatComponent } from './components/chat/leave-chat/leave-chat.component';
 
 // const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -104,6 +106,7 @@ import { WinsLossesComponent } from './components/profile-components/wins-losses
     TwofaComponent,
     ActivateTwofaComponent,
     WinsLossesComponent,
+    LeaveChatComponent,
   ],
   imports: [
     HttpClientModule,
@@ -112,6 +115,7 @@ import { WinsLossesComponent } from './components/profile-components/wins-losses
     FormsModule,
     NgIconsModule.withIcons({
       featherSettings,
+	  featherMail,
       featherUnlock,
       featherSend,
       featherCheckCircle,

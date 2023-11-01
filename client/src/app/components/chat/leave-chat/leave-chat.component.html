@@ -1,0 +1,57 @@
+<div
+  (click)="closePopup($event)"
+  class="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 bg-black"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="bg-zinc-800 items-center justify-center rounded-3xl text-white p-4 shadow-md max-w-lg w-full flex flex-col gap-4"
+  >
+    <!-- Confirm -->
+    <div *ngIf="!transfer" class="flex gap-4">
+      <tcd-chat-btn
+        (click)="closeLeave()"
+        [icon]="'featherX'"
+        [white]="true"
+      ></tcd-chat-btn>
+      <div class="p-4 bg-zinc-900 rounded-3xl">
+        <h1>You are the owner of this channel.</h1>
+        <h1>Would you like to transfer the ownership to another user?</h1>
+      </div>
+    </div>
+    <div *ngIf="!transfer" class="flex gap-4">
+      <tcd-custom-button
+        (click)="toggleTransfer()"
+        [isBlack]="true"
+        [buttonText]="'Yes'"
+      ></tcd-custom-button>
+      <tcd-custom-button
+        (click)="deleteLeave()"
+        [isBlack]="true"
+        [buttonText]="'No, and delete the channel'"
+      ></tcd-custom-button>
+    </div>
+
+    <!-- Transfer -->
+    <div *ngIf="transfer" class="flex gap-4 items-center w-full">
+      <tcd-chat-btn
+        (click)="toggleTransfer()"
+        [icon]="'featherArrowLeft'"
+        [white]="true"
+      ></tcd-chat-btn>
+      <div class="p-4 bg-zinc-900 rounded-3xl w-full">
+        <h1>Choose the new channel owner</h1>
+      </div>
+    </div>
+    <div *ngIf="transfer" class="p-4 bg-zinc-900 rounded-3xl w-full">
+      <h1 *ngIf="!members || members.length === 0">
+        There is no one left in the channel...
+      </h1>
+      <tcd-profile-card
+        *ngFor="let member of members"
+        (click)="transferOwnership(member.id)"
+        [user]="member"
+        [redirect]="false"
+      ></tcd-profile-card>
+    </div>
+  </div>
+</div>

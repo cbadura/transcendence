@@ -73,6 +73,12 @@
     </div>
   </div>
 
+  <tcd-custom-button
+  class="ml-auto"
+	(click)="openUserPopup()"
+	[buttonText]="'Add member'"
+  ></tcd-custom-button>
+
   <!-- Members -->
   <div
     *ngIf="!emptyChannel && channelMembers.length > 0"
@@ -80,10 +86,6 @@
   >
     <div class="w-full flex items-center justify-between">
       <label class="font-bold" for="name">Members</label>
-      <tcd-custom-button
-        (click)="openUserPopup()"
-        [buttonText]="'Add member'"
-      ></tcd-custom-button>
     </div>
     <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
       <div class="p-4" *ngFor="let user of channelMembers">
@@ -104,6 +106,8 @@
     (userSelected)="onUserSelected($event)"
     (closeClicked)="closeUserPopup()"
     [invitation]="'Invite user to channel'"
+	[searchIds]="channel.usersIds"
+	[onlyIds]="false"
   ></tcd-user-search>
 
   <!-- Invited users -->

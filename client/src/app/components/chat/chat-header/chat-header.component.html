@@ -1,21 +1,21 @@
-<div class="h-24 rounded-2xl text-white p-4 absolute w-[95%] left-1/2 transform translate-x-[-50%]  bg-zinc-800"></div>
+<!-- Top background -->
+<div
+  class="h-24 rounded-2xl text-white p-4 absolute w-[95%] left-1/2 transform translate-x-[-50%] bg-zinc-800"
+></div>
 
+<!-- Header -->
 <div
   class="bg-black h-24 rounded-2xl text-white p-4 flex justify-between items-center absolute w-[95%] left-1/2 transform translate-x-[-50%] top-5"
 >
+  <!-- Name and users count -->
   <div class="flex flex-col justify-center">
     <h1 class="font-bold">🎮 {{ this.channel.name }} 🕹️</h1>
-    <p>{{ this.channel.usersIds.length}}</p>
+    <div class="flex items-center gap-2">
+      <ng-icon class="cursor-pointer" name="{{ 'featherUsers' }}"></ng-icon>
+      <p>{{ this.channel.usersIds.length }}</p>
+    </div>
   </div>
-  <p *ngIf="!invitation">
-    No game invitations
-  <p>
-  <tcd-custom-button
-    *ngIf="invitation"
-    [buttonText]="'Accept ' + gameType + ' game invitation from ' + invitingUser"
-    (click)="acceptInvitation()">
-  </tcd-custom-button>
-  <a>
-    <tcd-chat-btn [icon]="'featherSettings'"></tcd-chat-btn>
-  </a>
+
+  <!-- Leave channel -->
+  <tcd-chat-btn (click)="onLeave()" [icon]="'featherXSquare'"></tcd-chat-btn>
 </div>
