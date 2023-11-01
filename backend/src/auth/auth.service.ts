@@ -13,6 +13,7 @@ import { verifyDto } from './dto/verify.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { Response } from 'express';
 import { cookieConfig } from './cookie.config';
+import { Handshake } from 'socket.io/dist/socket';
 
 @Injectable()
 export class AuthService {
@@ -146,11 +147,33 @@ export class AuthService {
     }
   }
 
-  async test() {
-    const secret = authenticator.generateSecret();
-    console.log(authenticator.check('546750', 'HN7EYWI5HQVEMFCW'));
-    // return this.secretToImage(qrcode);
-  }
+  // private getTokenFromWsHandshake(handshake: Handshake) {
+  //   const cookies = handshake.headers.cookie?.split(';').map((cook) => cook.trim());
+  //   const tokenstr = cookies?.find((cookie) => cookie.startsWith('token='));
+  //   if (tokenstr) {
+  //     return tokenstr.split('=')[1];
+  //     // const token = tokenstr.split('=')[1];
+  //     // console.log('token from handshake cookie', token);
+  //     // return token;
+  //   }
+  //   return null;
+  // }
+  
+  // async verifyJwtFromHandshake(handshake: Handshake): Promise<number | null> {
+  //   const token = this.getTokenFromWsHandshake(handshake);
+  //   if (!token)
+  //     return null;
+  //   let payload: any;
+  //   try {
+  //     payload = await this.jwtService.verifyAsync(token,{secret: process.env.JWT_SECRET});
+  //     if (payload.verified === false)
+  //       return null;
+  //   } catch (error) {
+  //     return null;
+  //     // throw new UnauthorizedException();
+  //   }
+  //   return payload.id;
+  // }
   
   findUser(ftid: number): Promise<User | undefined> {
     return this.userRepo.findOne({where: {ftid} });

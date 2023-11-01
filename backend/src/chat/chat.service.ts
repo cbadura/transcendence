@@ -25,13 +25,18 @@ import {InviteToChannelDto} from './dto/invite-to-channel.dto';
 import {LeaveChannelDto} from './dto/leave-channel.dto';
 import {AddRemoveAdminDto} from './dto/add-remove-admin.dto';
 import { User } from 'src/entities/user.entity';
+import { AuthService } from 'src/auth/auth.service';
+import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 
 @Injectable()
 export class ChatService {
   channels: IChannel[] = [];
   private clients: ISocketUser[] = [];
 
-  constructor(readonly userService: UserService) {}
+  constructor(
+    readonly userService: UserService,
+    private readonly authService: AuthService,
+    ) {}
 
   private getUserRole(channel: IChannel, userId: number): EUserRole {
     if (userId === channel.ownerId) return EUserRole.OWNER;
@@ -137,8 +142,19 @@ export class ChatService {
   }
 
   // TODO change later userId into token and extract userId from token
-  async handleConnection(socket: Socket, userId: number) {
-    // console.log('chatttttttt', socket.handshake.headers.cookie);
+  async handleConnection(socket: Socket) {
+  
+    // // temporary solution, check token from cookie and verify it after connection
+    // // need to make a middleware to validate cookie/token before connection
+    // const userId = await this.authService.verifyJwtFromHandshake(socket.handshake);
+    const userId = await verifyJwtFromHandshake(socket.handshake);
+    if (!userId) {
+      socket.emit('exception', 'Invalid token');
+      socket.disconnect(true);
+      return ;
+    }
+
+    // console.log('userId', userId);
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
       socket.disconnect(true);
@@ -149,12 +165,12 @@ export class ChatService {
       socket.disconnect(true);
       return;
     }
-    // console.log('hitherererer', socket.handshake);
     const client: ISocketUser = {
       socket,
       userId: userId,
     };
     this.clients.push(client);
+    console.log(`userId ${userId} connected to chat`);
     // send channel list on connection
     // client.socket.emit(
     //   ESocketMessage.LIST_CHANNELS,

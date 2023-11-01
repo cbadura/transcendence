@@ -13,6 +13,7 @@ import { GameRoomInfoDto, GameRoomUserInfo } from './dto/game-room-info.dto';
 import { CreatePrivateRoomDto } from './dto/create-private-room.dto';
 import { privateRoomInvitationInfo } from './dto/private-room-info.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
+import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 
 @Injectable()
 export class NetworkGameService {
@@ -26,7 +27,16 @@ export class NetworkGameService {
     private gameRooms: (GameRoom | null)[] = new Array(1000).fill(null);
 
 
-    async handleConnection(socket: Socket, userId: number) {
+    async handleConnection(socket: Socket) {
+
+    // temporary solution, check token from cookie and verify it after connection
+    // need to make a middleware to validate cookie/token before connection
+    const userId = await verifyJwtFromHandshake(socket.handshake);
+    if (!userId) {
+      socket.emit('exception', 'Invalid token');
+      socket.disconnect(true);
+      return ;
+    }
       // console.log('userId',userId)
       if (isNaN(userId)) {
         socket.emit('exception', 'Invalid user id');

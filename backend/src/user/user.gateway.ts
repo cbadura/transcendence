@@ -18,10 +18,7 @@ import { Socket } from 'socket.io';
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly userService: UserService) {}
   handleConnection(client: Socket) {
-    this.userService.handleConnection(
-      client,
-      +client?.handshake?.query?.userId, // TODO change to token
-    );
+    this.userService.handleConnection(client);
   }
 
   handleDisconnect(client: Socket) {

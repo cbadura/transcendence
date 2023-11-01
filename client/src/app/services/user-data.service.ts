@@ -203,7 +203,7 @@ export class UserDataService {
   CreateSocketConnections() {
     console.log('trying to create Sockets', this.myUser.id);
 
-    const gameUrl = 'http://localhost:3000/game?userId=' + this.myUser.id;
+    const gameUrl = 'http://localhost:3000/game';
     if (!this.gameSocket) {
       this.gameSocket = new Socket({
         url: gameUrl,
@@ -217,7 +217,6 @@ export class UserDataService {
         url: "http://localhost:3000/chat",
         options: {
           withCredentials: true,
-          query: { 'userId': String(this.myUser.id) },
           forceNew: true
       } });
       console.log('connecting chat socket', this.chatSocket);
@@ -228,7 +227,6 @@ export class UserDataService {
         url: "http://localhost:3000/",
         options: {
           withCredentials: true,
-          query: { 'userId': String(this.myUser.id) },
           forceNew: true
         } });
       console.log('connecting user socket', this.userSocket);

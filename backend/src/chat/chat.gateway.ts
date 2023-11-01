@@ -38,11 +38,7 @@ export class ChatGateway
   constructor(private readonly chatService: ChatService) {}
 
   handleConnection(client: Socket) {
-    this.chatService.handleConnection(
-      client,
-      +client?.handshake?.query?.userId,
-      // 1,
-    );
+    this.chatService.handleConnection(client);
   }
 
   handleDisconnect(client: Socket) {

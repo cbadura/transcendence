@@ -15,6 +15,8 @@ import { EUserMessages } from './user.interface';
 import { WsException } from '@nestjs/websockets';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
+import { AuthService } from 'src/auth/auth.service';
+import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,7 @@ export class UserService {
     @InjectRepository(Match) private matchRepository: Repository<Match>,
     @InjectRepository(Relationship) private relationshipRepository: Repository<Relationship>,
     private readonly entityManager: EntityManager,
+    // private readonly authService: AuthService
   ) {}
 
   // ~~~~~~~
@@ -36,7 +39,18 @@ export class UserService {
     if (!user) throw new WsException('Unexpected error');
     return user.userId;
   }
-  async handleConnection(socket: Socket, userId: number) {
+  async handleConnection(socket: Socket) {
+    
+    // temporary solution, check token from cookie and verify it after connection
+    // need to make a middleware to validate cookie/token before connection
+    // const userId = await this.authService.verifyJwtFromHandshake(socket.handshake);
+    const userId = await verifyJwtFromHandshake(socket.handshake);
+    if (!userId) {
+      socket.emit('exception', 'Invalid token');
+      socket.disconnect(true);
+      return ;
+    }
+
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
       socket.disconnect(true);

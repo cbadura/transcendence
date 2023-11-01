@@ -20,10 +20,7 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
 
   handleConnection(@ConnectedSocket() client: Socket) {
     // console.log('Client connected');
-    this.networkGameService.handleConnection(
-      client,
-      +client?.handshake?.query?.userId,
-    );
+    this.networkGameService.handleConnection(client);
   }
 
 
