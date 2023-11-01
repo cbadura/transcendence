@@ -1,15 +1,14 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException } from '@nestjs/common';
+import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException, UseGuards } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Express } from 'express'
+import { Express, Request, Response } from 'express'
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import {Response} from 'express'
 import * as path from 'path';
-import { Request } from 'express';
+import { jwtAuthGuard } from 'src/auth/guard/jwt.guard';
 
 @Controller('users')
 export class UserController {
@@ -87,6 +86,13 @@ export class UserController {
       res.sendFile(filePath)
   }
 
+  // dont need to pass id for own profile
+  // token is passed through cookie and user data will pass to request after guard
+  @Get('profile')
+  @UseGuards(jwtAuthGuard)
+  getProfile(@Req() req: Request) {
+    return req.user;
+  }
 
   // GET /user/:id --> {...} get a single ninja
   @Get(':id')

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Res, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -11,6 +11,8 @@ import { secretBoxDto } from './dto/secretBox.dto';
 import { SecretBox } from 'src/entities/secretBox.entity';
 import { verifyDto } from './dto/verify.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { Response } from 'express';
+import { cookieConfig } from './cookie.config';
 
 @Injectable()
 export class AuthService {
@@ -22,16 +24,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  private generateToken(user: User, verified: boolean): verifyDto {
+  private signToken(user: User, verified: boolean) {
     const payload = {
       verified: verified,
       id: user.id,
     };
-    const dto: verifyDto = {
-      verified: verified,
-      access_token: this.jwtService.sign(payload)
-    };
-    return dto;
+    return this.jwtService.sign(payload);
+    // return {
+    //   verified: verified,
+    //   access_token: this.jwtService.sign(payload)
+    // };
   }
 
   private dataToImage(qr: string) { //useless, keeping it just for reference, should remove soon. 
@@ -73,14 +75,13 @@ export class AuthService {
     return this.userService.createUser(newUser);
   }
 
-  async jwtIssueToken(user: any) {
-    // const dto: verifyDto = { verified: !user.tfa };
-    // const access_token = this.generateToken(user, !user.tfa);
-    // return { dto: dto, access_token: access_token };
+  async jwtIssueToken(user: any, @Res() res: Response) {
+    res.cookie('token', this.signToken(user, !user.tfa), cookieConfig);
+    return {verified: !user.tfa};
     if (user.tfa === true)
-      return this.generateToken(user, false);
+      return this.signToken(user, false);
     if (user.tfa === false)
-      return this.generateToken(user, true);
+      return this.signToken(user, true);
   }
 
   async getTempQRcode(ruser: any) {
@@ -126,7 +127,9 @@ export class AuthService {
     return box;
   }
 
-  async tfaVerify(ruser: any, body: any) {
+  async tfaVerify(ruser: any, body: any, @Res() res: Response) {
+    if (!body || !body['key'])
+      return {verified: false};
     const user: User = await this.userService.getUser(ruser.id);
     const box: SecretBox = await this.boxRepo.findOne({where: {id: user.id}});
     if (!box)
@@ -134,7 +137,9 @@ export class AuthService {
     const verified: boolean = authenticator.check(body['key'], box.secret);
     const dto = new verifyDto;
     if (verified) {
-      return this.generateToken(user, true);
+      res.cookie('token', this.signToken(user, true), cookieConfig);
+      return {verified: true};
+      // return this.signToken(user, true);
     }
     if (!verified) {
       return {verified: false};

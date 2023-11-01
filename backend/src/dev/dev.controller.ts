@@ -16,16 +16,8 @@ export class DevController {
   @Post('register')
   register(@Res() res: Response, @Body() dto: CreateUserDto) {
     const user = this.userService.createUser(dto);
-    const token = this.authService.jwtIssueToken(user);
-    res.cookie(
-      'token', token, {
-        maxAge: 3600000,
-        httpOnly: true,
-        domain: 'localhost',
-        sameSite: 'lax',
-        secure: true,
-      }
-    );
+    // const token = this.authService.jwtIssueToken(user);
+    
     res.send(user);
   }
 

@@ -25,24 +25,24 @@ export class TokenComponent implements OnInit {
 
     if (code) {
       this.http
-        .get(`http://localhost:3000/auth/redirect?code=${code}`, {withCredentials: true})
+        .get(`http://localhost:3000/auth/redirect?code=${code}`, { withCredentials: true })
         .subscribe(
           (response: any) => {
             console.log('login response', response);
-            const token = response.access_token;
-            if (token) {
+            // const token = response.access_token;
+            // if (token) {
              // this.userDataService.setToken(token);
-			  this.cookieService.set('token', token);
+			  // this.cookieService.set('token', token);
               if (response.verified) {
                 this.userDataService.getNewestUser();
                 this.router.navigate(['/create-profile']);
               } else {
                 this.router.navigate(['/signin/2fa']);
               }
-            } else {
-              this.status = 'error';
-              console.log('No token received in the response.');
-            }
+            // } else {
+            //   // this.status = 'error';
+            //   console.log('No token received in the response.');
+            // }
           },
           (error) => {
             this.status = 'error';

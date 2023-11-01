@@ -19,9 +19,9 @@ export class AuthController {
   @Get('redirect')
   @UseGuards(ftAuthGuard)
   async redirect(@Req() req: Request, @Res() res: Response) {
-    const token = await this.authService.jwtIssueToken(req.user);
+    const token = await this.authService.jwtIssueToken(req.user, res);
     console.log(token);
-    res.cookie('token', token.access_token, cookieConfig);
+    // res.cookie('token', token.access_token, cookieConfig);
     // console.log(req);
     // console.log(res);
     // console.log(req.cookies.token);
@@ -54,13 +54,11 @@ export class AuthController {
 
   @Post('2fa/verify')
   @UseGuards(simplejwtAuthGuard)
-  tfa(@Req() req: Request, @Body() body: any, @Res() res: Response) {
-    const token = this.authService.tfaVerify(req.user, body);
-    res.cookie('token', token, cookieConfig);
+  async tfa(@Req() req: Request, @Body() body: any, @Res() res: Response) {
+    const data = await this.authService.tfaVerify(req.user, body, res);
     // verify and issue a "verified" jwt
     console.log(body);
-    res.send(token);
-    // return this.authService.tfaVerify(req.user, body);
+    res.send(data);
   }
 
   @Get('profile')

@@ -138,6 +138,7 @@ export class ChatService {
 
   // TODO change later userId into token and extract userId from token
   async handleConnection(socket: Socket, userId: number) {
+    // console.log('chatttttttt', socket.handshake.headers.cookie);
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
       socket.disconnect(true);

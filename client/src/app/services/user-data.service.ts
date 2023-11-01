@@ -34,10 +34,10 @@ export class UserDataService {
   }
 
   getNewestUser() {
-	const token = this.getTokenCookie();
+	// const token = this.getTokenCookie();
   console.log('IN NEWEST USER')
-    const url = `http://localhost:3000/auth/profile?token=${token}`;
-    this.http.get(url, {withCredentials: true}).subscribe((response: any) => {
+    const url = `http://localhost:3000/auth/profile`;
+    this.http.get(url, { withCredentials: true }).subscribe((response: any) => {
 		console.log('RESPONSE', response)
       const user: User = {
         id: response.id,
@@ -142,11 +142,11 @@ export class UserDataService {
     interface QRCodeResponse {
       qr: string;
     }
-	const token = this.getTokenCookie();
-    const params = new HttpParams().set('token', token);
+	// const token = this.getTokenCookie();
+    // const params = new HttpParams().set('token', token);
     this.http
       .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
-        params,
+        /*params*/ withCredentials: true,
       })
       .subscribe(
         (data) => {
@@ -161,33 +161,33 @@ export class UserDataService {
   }
 
   activateTFA(code: string): Observable<any> {
-	const token = this.getTokenCookie();
-    const params = new HttpParams().set('token', token);
+	// const token = this.getTokenCookie();
+    // const params = new HttpParams().set('token', token);
     const data = {
       key: code,
     };
     return this.http.post(this.serverAddress + '/auth/2fa/activate', data, {
-      params,
+      /*params*/ withCredentials: true,
     });
   }
 
   verifyTFA(code: string): Observable<any> {
-	const token = this.getTokenCookie();
-    const params = new HttpParams().set('token', token);
+	// const token = this.getTokenCookie();
+    // const params = new HttpParams().set('token', token);
     const data = {
       key: code,
     };
     return this.http.post(this.serverAddress + '/auth/2fa/verify', data, {
-      params,
+      /*params*/ withCredentials: true,
     });
   }
 
   deactivateTFA() {
-	const token = this.getTokenCookie();
-    const params = new HttpParams().set('token', token);
+	// const token = this.getTokenCookie();
+    // const params = new HttpParams().set('token', token);
     this.http
       .get(this.serverAddress + '/auth/2fa/deactivate', {
-        params,
+        /*params*/ withCredentials: true,
       })
       .subscribe(
         (data) => {
