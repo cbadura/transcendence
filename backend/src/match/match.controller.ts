@@ -1,12 +1,13 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { CreateMatchDto } from './dto/create-match.dto';
+import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
 
 @Controller('match')
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
-
+    @UseGuards(DebugRoute) //this route is not necessary, will be handled by server internally
     @Post()
     createMatch(@Body() createMatchDto: CreateMatchDto){
         return this.matchService.createMatch(createMatchDto);
@@ -23,6 +24,7 @@ export class MatchController {
         return await this.matchService.getMatch(id);
     } 
 
+    @UseGuards(DebugRoute)
     @Get('/dummy/:user_id')
     async createDummyMatches(@Param('user_id',ParseIntPipe) id: number ){
         console.log(id);
