@@ -27,6 +27,7 @@ import { MessageInfoComponent } from './components/chat/message-info/message-inf
 import { NgIconsModule } from '@ng-icons/core';
 import {
   featherSettings,
+  featherMail,
   featherUnlock,
   featherSend,
   featherCheckCircle,
@@ -112,6 +113,7 @@ import { WinsLossesComponent } from './components/profile-components/wins-losses
     FormsModule,
     NgIconsModule.withIcons({
       featherSettings,
+	  featherMail,
       featherUnlock,
       featherSend,
       featherCheckCircle,
