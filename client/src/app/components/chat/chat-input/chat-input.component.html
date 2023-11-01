@@ -1,10 +1,11 @@
-<div class="h-10 absolute w-[95%] left-1/2 transform translate-x-[-50%] bottom-0  bg-zinc-800"></div>
+<div
+  class="h-10 absolute w-[95%] left-1/2 transform translate-x-[-50%] bottom-0 bg-zinc-800"
+></div>
 <div
   class="bg-zinc-950 h-16 pr-2 rounded-2xl text-white flex justify-between items-center cursor-pointer absolute w-[95%] left-1/2 transform translate-x-[-50%] bottom-5"
 >
-
-<!-- Input -->
-  <div class="h-full p-4 w-full " (click)="focusInputField()">
+  <!-- Input -->
+  <div class="h-full p-4 w-full" (click)="focusInputField()">
     <input
       #inputField
       class="h-full w-full bg-inherit outline-none cursor-pointer"
@@ -19,36 +20,41 @@
   <tcd-chat-btn [icon]="'featherUser'" (click)="openUserPopup()"></tcd-chat-btn>
 </div>
 
-<!-- Popup -->
-<div class="text-white">
-  <tcd-user-search 
-    *ngIf="popup" 
-    (userSelected)="onUserSelected($event)" 
-    (closeClicked)="closeUserPopup()"
-    [invitation]="'Invite user for a game'"
-    [searchIds]="userIds"
-	[onlyIds]="true"
-	>
-  </tcd-user-search>
-</div>
+<!-- User search Popup -->
+<tcd-user-search
+  *ngIf="popup"
+  (userSelected)="onUserSelected($event)"
+  (closeClicked)="closeUserPopup()"
+  [invitation]="'Invite user for a game'"
+  [searchIds]="userIds"
+  [onlyIds]="true"
+>
+</tcd-user-search>
 
 <!-- Type popup -->
-<div class="flex bg-blue items-center justify-center h-screen">
-  <div class="text-center p-6 bg-grey rounded-lg shadow-lg" *ngIf="typePopup">
-    <h1 class="text-white text-2xl mb-4" >
-      Set game mode
-    </h1>
-    <tcd-custom-button
-      *ngIf="typePopup" 
-      [buttonText]="'default'"
-      [isBlack]="true"
-      (click)="setGameType('default')">
-    </tcd-custom-button>
-    <tcd-custom-button
-      *ngIf="typePopup" 
-      [buttonText]="'special'"
-      [isBlack]="true"
-      (click)="setGameType('special')">
-    </tcd-custom-button>
-  </div>  
+<div
+  class="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50 bg-black"
+  *ngIf="typePopup"
+>
+  <div
+    class="bg-zinc-800 rounded-3xl p-4 shadow-md max-w-lg w-full flex flex-col gap-4 items-center justify-center"
+  >
+    <h1 class="text-white text-2xl mb-4">Set game mode</h1>
+    <div class="flex gap-4 items-center justify-center">
+      <div
+        (click)="setGameType('default')"
+        class="p-4 flex flex-col bg-black items-center justify-center w-40 aspect-square text-xl rounded-3xl cursor-pointer text-white hover:text-black hover:bg-white transition-all active:scale-95"
+      >
+        <h1 class="font-light">Classic</h1>
+        <h1 class="font-Sniglet font-bold">PONG</h1>
+      </div>
+      <div
+        (click)="setGameType('special')"
+        class="p-4 flex flex-col bg-black items-center justify-center w-40 aspect-square text-xl rounded-3xl cursor-pointer text-white hover:text-black hover:bg-white transition-all active:scale-95"
+      >
+        <h1 class="font-Sniglet font-bold">PONG</h1>
+        <h1 class="font-light">Ultimate</h1>
+      </div>
+    </div>
+  </div>
 </div>
