@@ -1,31 +1,37 @@
 <div class="h-full-header pb-2 ml-2 mr-2">
- 
-    <!-- Chat window -->
-    <div
-    class="border border-zinc-800 bg-zinc-800 rounded-3xl h-full relative"
-    >
+  <!-- Chat window -->
+  <div class="border border-zinc-800 bg-zinc-800 rounded-3xl h-full relative">
     <!-- Chat header -->
     <tcd-chat-header></tcd-chat-header>
 
     <!-- Messages div -->
     <div
-    #messagesDiv
-    class="overflow-y-auto h-[calc(100%-180px)] pl-9 pr-9 scrollbar-hide mt-24 pt-6 pb-8 "
+      #messagesDiv
+      class="overflow-y-auto h-[calc(100%-180px)] pl-9 pr-9 scrollbar-hide mt-24 pt-6 pb-8"
     >
-    <!-- Each message -->
-    <div *ngFor="let message of messages; let i = index">
-      
-      <!-- Render message info conditionally -->
-      <ng-container
-      *ngIf="i === 0 || message.senderId !== messages[i - 1].senderId"
-      >
-      <tcd-message-info [post]="message" [isMe]="myUser.id == message.senderId" ></tcd-message-info>
-    </ng-container>
-    <tcd-message-bubble [post]="message" [isMe]="myUser.id == message.senderId" class="flex"></tcd-message-bubble>
-    
-    </div>
+      <!-- Each message -->
+      <div *ngFor="let message of messages; let i = index">
+        <!-- Render message info conditionally -->
+        <ng-container
+          *ngIf="i === 0 || message.senderId !== messages[i - 1].senderId"
+        >
+          <tcd-message-info
+            [post]="message"
+            [isMe]="myUser.id == message.senderId"
+          ></tcd-message-info>
+        </ng-container>
+        <tcd-message-bubble
+          [post]="message"
+          [isMe]="myUser.id == message.senderId"
+          class="flex"
+        ></tcd-message-bubble>
+      </div>
 
-    <!-- Input field -->
-    <tcd-chat-input (sendMessage)="savePost($event)" [userIds]="this.channel.usersIds"></tcd-chat-input>
+      <!-- Input field -->
+      <tcd-chat-input
+        (sendMessage)="savePost($event)"
+        [userIds]="this.channel.usersIds"
+      ></tcd-chat-input>
+    </div>
   </div>
 </div>

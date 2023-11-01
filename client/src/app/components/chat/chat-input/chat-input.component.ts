@@ -22,6 +22,8 @@ export class ChatInputComponent implements OnInit {
 
   ngOnInit() {
     this.tempUserChanges = [{ id: 0, change: '' }];
+	//split userIds by comma, and create a new array of numbers
+	
   }
 
   focusInputField() {

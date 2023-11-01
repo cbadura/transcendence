@@ -40,6 +40,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.route.params.subscribe(params => {
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
+	  this.channel.usersIds = params['usersIds']?.split(',').map((num: string) => +num);
+	  console.log('channel from params', this.channel);
     });
     // Unsubscribe from any previous subscription
     if (this.postSubscription) {
