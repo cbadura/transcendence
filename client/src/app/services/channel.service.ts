@@ -1,12 +1,12 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import {Injectable, OnDestroy} from '@angular/core';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 
-import { Channel } from '../shared/chat/Channel';
-import { User } from 'src/app/shared/interfaces/user';
-import { EUserRole } from '../shared/macros/EUserRole';
-import { ESocketMessage } from '../shared/chat/ESocketMessage';
-import { Socket } from 'ngx-socket-io';
-import { UserDataService } from './user-data.service';
+import {Channel} from '../shared/chat/Channel';
+import {User} from 'src/app/shared/interfaces/user';
+import {EUserRole} from '../shared/macros/EUserRole';
+import {ESocketMessage} from '../shared/chat/ESocketMessage';
+import {Socket} from 'ngx-socket-io';
+import {UserDataService} from './user-data.service';
 
 interface Change {
   id: number,
@@ -257,7 +257,10 @@ export class ChannelService implements OnDestroy{
         console.log('JOINED', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
+            ch = data;
             ch.usersIds = data.channelUsersIds;
+            ch.role = EUserRole.USER;
+            ch.isBanned = false;
           }
         });
         this.serverChannels.next(this.channels);
@@ -361,12 +364,9 @@ export class ChannelService implements OnDestroy{
           {
             if (data.userId === this.myUser.id) {
               ch.role = EUserRole.ADMIN;
+              ch.ownerId = data.ownerId;
             }
-            if (ch.adminIds) {
-              ch.adminIds.push(data.userId);
-            } else {
-              ch.adminIds = [data.userId];
-          }
+            ch.adminIds = data.adminIds;
           }
         });
         this.serverChannels.next(this.channels);

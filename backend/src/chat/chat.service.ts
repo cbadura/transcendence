@@ -594,6 +594,11 @@ export class ChatService {
     if (channel.ownerId === dto.userId)
       throw new WsException('You are a channel owner. You cannot demote yourself.');
     channel.admins.push(dto.userId);
+    const adminAdded : AddRemoveAdminDto = {
+      ...dto,
+      adminIds: channel.admins,
+      ownerId: channel.ownerId,
+    }
     this.getUserSocketsByID(who).forEach((u) => {
       u.emit(ESocketMessage.ADDED_ADMIN, dto);
     });
