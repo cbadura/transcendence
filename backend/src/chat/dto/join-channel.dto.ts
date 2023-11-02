@@ -24,6 +24,7 @@ export class JoinChannelDto {
   channelUsersIds?: number[];
 
   @IsBoolean()
+  @IsOptional()
   isMuted?: boolean;
 
   @IsNumber()
