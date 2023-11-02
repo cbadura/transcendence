@@ -442,6 +442,7 @@ export class ChatService {
   // I actually am \(O.O)/
   // Random tips: use chopsticks to eat chips,
   //  this will keep your fingers and keyboard clean
+  // good one :D
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     const user: number = this.getUserIdFromSocket(socket);
@@ -455,15 +456,19 @@ export class ChatService {
     if (channel.invites.find((user) => user === targetUser.userId))
       throw new WsException('Target user already on invite list');
 
+    const invDto : InviteToChannelDto = {
+      usersIds: channel.users,
+      ...dto,
+    }
     this.broadcastToAllUserSockets(
       targetUser.userId,
       ESocketMessage.INVITED_TO_CHANNEL,
-      dto,
+      invDto,
     );
     this.broadcastToAllUserSockets(
       user,
       ESocketMessage.INVITED_TO_CHANNEL,
-      dto,
+      invDto,
     );
     channel.invites.push(targetUser.userId);
   }
