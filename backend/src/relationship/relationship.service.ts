@@ -13,16 +13,20 @@ export class RelationshipService {
         @InjectRepository(User) private userRepository: Repository<User>
          ) {}
 
+
+        private async getUser(userId: number): Promise<User> {
+            let user = await this.userRepository.findOne({where: {id: userId}});
+            if(user == null)
+                throw new NotFoundException(`Did not find User with User ID ${userId}`);
+            return user;
+        }
+
         async createOrUpdateRelationship(dto: CreateRelationshipDto): Promise<Relationship> {
 
             //check if both IDs are valid REFACTOR THIS CODE TO HAVE A GENERIC MODULE THAT HANDLES VALIDATION OF EXISTING RECORDS
-            let user = await this.userRepository.findOne({where: {id: dto.user_id}});
-            if(user == null)
-                throw new NotFoundException(`Did not find User with User ID ${dto.user_id}`);
-            user = await this.userRepository.findOne({where: {id: dto.relationship_user_id}});
-            if(user == null)
-                throw new NotFoundException(`Did not find User with User ID ${dto.relationship_user_id}`);
-            if(dto.user_id == dto.relationship_user_id)
+            const user = await this.getUser(dto.user_id);
+            const otherUser = await this.getUser(dto.relationship_user_id);
+            if(user.id == otherUser.id)
                 throw new NotFoundException(`You can't create a relationship with yourself! Go get a room...`);
 
             const existingRecord = await this.relationshipRepository.findOne({where: {primary_user_id: dto.user_id, relational_user_id: dto.relationship_user_id}});

@@ -7,7 +7,7 @@ import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
-    @UseGuards(DebugRoute) //this route is not necessary, will be handled by server internally
+    @UseGuards(DebugRoute) 
     @Post()
     createMatch(@Body() createMatchDto: CreateMatchDto){
         return this.matchService.createMatch(createMatchDto);
