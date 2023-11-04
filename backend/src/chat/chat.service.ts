@@ -603,10 +603,10 @@ export class ChatService {
       ownerId: channel.ownerId,
     }
     this.getUserSocketsByID(who).forEach((u) => {
-      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+      u.emit(ESocketMessage.ADDED_ADMIN, adminAdded);
     });
     this.getUserSocketsByID(dto.userId).forEach((u) => {
-      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+      u.emit(ESocketMessage.ADDED_ADMIN, adminAdded);
     });
   }
 
