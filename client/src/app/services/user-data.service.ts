@@ -59,17 +59,19 @@ export class UserDataService {
   async createDevelopmentUser() {
 
     const username = 'Dummy_' + new Date().getTime().toString();
-    await this.editUserById(username,'#E7C9FF')
-    // this.http.post(
-    //   this.serverAddress + '/dev/register',
-    //   { name: username },
-    //   { withCredentials: true }
-    //   ).subscribe(
-    //     (data) => {
-    //       this.replaceUser(data as User);
-    //     }
-    //   );
-    this.CreateSocketConnections();
+    // await this.editUserById(username,'#E7C9FF')
+    this.http.post(
+      this.serverAddress + '/dev/register', {
+        name: username,
+        tfa: false,
+      },
+      { withCredentials: true }
+      ).subscribe(
+        (data) => {
+          this.replaceUser(data as User);
+          this.CreateSocketConnections();
+        }
+      )
   }
 
   replaceUser(user: any) {
