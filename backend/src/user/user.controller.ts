@@ -37,7 +37,7 @@ export class UserController {
   /*---------dev---------*/
 
   //todo: prevent uploading files if user doesnt exist 
-  @Post(':id/profilepic')
+  @Post(':id/profilepic') //remove id
   @UseInterceptors(FileInterceptor('file',{
     storage: diskStorage({
       destination: './uploadedData/profilepictures',
@@ -104,7 +104,7 @@ export class UserController {
       }
   };
 
-  @Put(':id')
+  @Put(':id') //remove id
   updateUser(@Param('id',ParseIntPipe ) id: number,@Body() dto: UpdateUserDto) {
       try {
           return this.userService.updateUser(id,dto);
@@ -113,7 +113,7 @@ export class UserController {
       }
   };
 
-  @Delete(':id')
+  @Delete(':id') //remove id
   deleteUser(@Param('id',ParseIntPipe) id: number){
     return this.userService.deleteUser(id);
   }
@@ -123,7 +123,7 @@ export class UserController {
     return this.userService.getUserMatches(id);
   }
 
-  @Get(':id/relationship')
+  @Get(':id/relationship') // remove id
   getUserRelationships(@Param('id',ParseIntPipe) id: number,
   @Query('filter') filter?: string,
   ){

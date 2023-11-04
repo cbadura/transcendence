@@ -9,15 +9,12 @@ import { AuthService } from 'src/auth/auth.service';
 export class DevController {
   constructor(
     private readonly devService: DevService,
-    private readonly userService: UserService,
-    private readonly authService: AuthService
     ) {}
 
   @Post('register')
-  register(@Res() res: Response, @Body() dto: CreateUserDto) {
-    const user = this.userService.createUser(dto);
-    // const token = this.authService.jwtIssueToken(user);
-    
+  async register(@Req() req: Request, @Res() res: Response, @Body() dto: CreateUserDto) {
+    console.log('herererer');
+    const user = await this.devService.createDevAcc(res, dto);
     res.send(user);
   }
 
@@ -28,12 +25,10 @@ export class DevController {
   
   @Get('dummy')
   createDummy() {
-    this.userService.createDummyUsers();
   }
   
   @Delete('dummy')
   deleteDummy() {
-    this.userService.deleteUserDatabase();
   }
 
 
