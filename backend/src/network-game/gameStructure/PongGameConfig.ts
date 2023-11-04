@@ -20,6 +20,7 @@ export const trainingGameConfig: PongGameConfig = {
       type: EBallType.DEFAULT,
       defaultPos: new Vector2D(1280 / 2,720 / 2),
       defaultDir: new Vector2D(-1,0),
+      // defaultSpeed: 1,
     }],
     powerUps: [
       {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 10,},weight: 1},
