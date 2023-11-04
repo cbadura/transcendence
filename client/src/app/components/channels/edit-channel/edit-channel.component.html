@@ -125,7 +125,10 @@
 
   <!-- Delete and Save buttons -->
   <div class="flex justify-between w-full">
-    <tcd-custom-button [buttonText]="'Delete channel'"></tcd-custom-button>
+    <tcd-custom-button
+      [buttonText]="'Delete channel'"
+      (click)="handleDelete()"
+    ></tcd-custom-button>
     <tcd-custom-button
       [buttonText]="'Save changes'"
       (click)="handleClick()"

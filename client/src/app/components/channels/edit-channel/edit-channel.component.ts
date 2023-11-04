@@ -88,6 +88,11 @@ export class EditChannelComponent implements OnInit {
     }
   }
 
+  handleDelete(){
+    this.channelService.deleteChannel(this.tempChannel.name);
+    this.router.navigate(['/channels']);
+  }
+
   getMembers() {
     if (!this.channel.usersIds) return;
 	console.log('this.channel', this.channel);
