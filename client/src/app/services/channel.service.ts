@@ -254,14 +254,15 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.on(
       ESocketMessage.JOINED_TO_CHANNEL,
       (data: any) => {
-        console.log('JOINED', data);
+        console.log('JOINED data', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
-            ch = data;
             ch.usersIds = data.channelUsersIds;
             if (data.userId === this.myUser.id) {
               ch.role = EUserRole.USER;
               ch.isBanned = false;
+              ch.isMuted = data.isMuted;
+              ch.muteExpTime = data.muteExpTime;
             }
           }
         });
