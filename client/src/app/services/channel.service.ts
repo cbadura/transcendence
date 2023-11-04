@@ -259,8 +259,10 @@ export class ChannelService implements OnDestroy{
           if (ch.name === data.channelName) {
             ch = data;
             ch.usersIds = data.channelUsersIds;
-            ch.role = EUserRole.USER;
-            ch.isBanned = false;
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.USER;
+              ch.isBanned = false;
+            }
           }
         });
         this.serverChannels.next(this.channels);
