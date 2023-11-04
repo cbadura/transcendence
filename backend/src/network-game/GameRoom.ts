@@ -175,6 +175,8 @@ export class GameRoom {
             otherUser.socket?.emit(ESocketGameMessage.OPP_LEFT_GAME)
 
         if( this.state == EGameRoomState.IDLE ){ //if user doesnt want to play again
+            otherUser.socket?.emit(ESocketGameMessage.GAME_ABORTED,'User left game room, does not want to play again')
+            // this.abortGame('User left game room, does not want to play again');
             this.state = EGameRoomState.CLEANUP;
         }
         else if( this.state != EGameRoomState.CLEANUP ){

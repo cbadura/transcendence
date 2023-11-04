@@ -25,7 +25,7 @@
 		<div class="m-4 p-8 rounded-xl" [ngStyle]="{ 'background-color': darkerColor }">
 			<h1>Your opponent has left the match...</h1>
 		</div>
-		<tcd-custom-button buttonText="Play again" (click)="playAgain()" [isBlack]="true"></tcd-custom-button>
+		<tcd-custom-button buttonText="Back to lobby" (click)="returnToGameSelectionScreen()" [isBlack]="true"></tcd-custom-button>
 	</div>
 
 	<!-- Canvas -->
@@ -44,7 +44,7 @@
 			<tcd-match [match]="match" [me]="myUser"></tcd-match>
 		</div>
 		<div class="flex justify-between items-center w-full">
-			<tcd-custom-button class="self-start" buttonText="Back to lobby" [icon]="'featherArrowLeft'" (click)="playAgain()"></tcd-custom-button>
+			<tcd-custom-button class="self-start" buttonText="Back to lobby" [icon]="'featherArrowLeft'" (click)="returnToGameSelectionScreen()"></tcd-custom-button>
 			<tcd-custom-button *ngIf="status === 'gameover' || status === 'sent-rematch'" [isDisabled]="status === 'sent-rematch'" [isBlack]="true" [buttonText]="'Rematch with ' + (match.opponent.name.length > 10 ? (match.opponent.name | slice: 0:10) + '...' : match.opponent.name)" [icon]="'featherRepeat'" (click)="rematch()"></tcd-custom-button>
 			<tcd-custom-button *ngIf="status === 'rematch'" [isBlack]="true" [buttonText]="'Join ' + (match.opponent.name.length > 10 ? (match.opponent.name | slice: 0:10) + '...' : match.opponent.name)" [icon]="'featherChevronsRight'" (click)="rematch()"></tcd-custom-button>
 		</div>
