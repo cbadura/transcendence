@@ -83,13 +83,13 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   canDeactivate(): Observable<boolean> | boolean {
-    if (this.status === 'waiting' || this.status === 'playing') {
+    if (this.status === 'waiting' || this.status === 'playing' || this.status === 'gameover') {
       const navigate = window.confirm(
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
         console.log('navigating boiiiiiiiiiiiii')
-		this.status === 'waiting' ? this.gameService.leaveQueue() : this.gameService.leaveMatch();
+		this.status === 'playing' || this.status === 'gameover' ?  this.gameService.leaveMatch() : this.gameService.leaveQueue() ;
         return true;
       } else return false;
     }
