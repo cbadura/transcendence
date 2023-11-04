@@ -17,4 +17,8 @@ export class InviteToChannelDto {
 
   @IsNumber()
   targetUserId: number;
+
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  usersIds?: number[];
 }

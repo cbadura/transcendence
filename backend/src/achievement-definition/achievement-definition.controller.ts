@@ -21,7 +21,6 @@ export class AchievementDefinitionController {
     @Get('achievementImages/:filename')
     ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
         const filePath = path.join(__dirname, '../../', 'uploadedData/achievementImages/', filename);
-        console.log(filePath);
         res.sendFile(filePath)
     }
 }

@@ -63,7 +63,8 @@ export class GameRoom {
                             resultReason = 'disconnect';
                         }
                         else{
-                            this.state = EGameRoomState.FINISHED; //will not cleanup room
+                            this.state = EGameRoomState.IDLE; //will not cleanup room
+                            this.setRoomExpirationDate();
                         }
 
                         if(this.roomAccess != 'training'){
@@ -124,8 +125,6 @@ export class GameRoom {
 
     private resetRoom(){
         this.setupGameMode();
-        this.setRoomExpirationDate(); //after match room can expire again
-        this.state = EGameRoomState.IDLE;
         this.playAgainVotes[0] = -1;
         this.playAgainVotes[1] = -1;
 
@@ -172,9 +171,12 @@ export class GameRoom {
         this.disconnectedUser = userId;
 
         const otherUser = this.getClientByUserId(userId,true)
-        otherUser.socket?.emit(ESocketGameMessage.OPP_LEFT_GAME)
+        if(this.roomAccess != 'training')
+            otherUser.socket?.emit(ESocketGameMessage.OPP_LEFT_GAME)
 
-        if( this.state == EGameRoomState.FINISHED ){ //if user doesnt want to play again
+        if( this.state == EGameRoomState.IDLE ){ //if user doesnt want to play again
+            otherUser.socket?.emit(ESocketGameMessage.GAME_ABORTED,'User left game room, does not want to play again')
+            // this.abortGame('User left game room, does not want to play again');
             this.state = EGameRoomState.CLEANUP;
         }
         else if( this.state != EGameRoomState.CLEANUP ){
@@ -252,6 +254,10 @@ export class GameRoom {
     }
 
     checkRoomExpiration() {
+        console.log('checking room expiration')
+        console.log(this.expirationDate)
+        console.log(new Date().getTime())
+        console.log('should clean up = ',this.expirationDate < new Date().getTime())
         if(this.state == EGameRoomState.IDLE && this.expirationDate < new Date().getTime()){
             console.log('expiration date',this.expirationDate);
             console.log('current time',new Date().getTime())
@@ -261,7 +267,7 @@ export class GameRoom {
 
     private setRoomExpirationDate(){
         console.log('Setting expiration date to', new Date().getTime() + this.expirationTime * 1000)
-        this.expirationTime = new Date().getTime() + this.expirationTime * 1000;
+        this.expirationDate = new Date().getTime() + this.expirationTime * 1000;
     }
 
     private getClientByUserId(userId: number,invertSelection: boolean = false): IGameSocketUser {

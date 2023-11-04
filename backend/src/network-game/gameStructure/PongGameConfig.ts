@@ -20,6 +20,7 @@ export const trainingGameConfig: PongGameConfig = {
       type: EBallType.DEFAULT,
       defaultPos: new Vector2D(1280 / 2,720 / 2),
       defaultDir: new Vector2D(-1,0),
+      // defaultSpeed: 1,
     }],
     powerUps: [
       {type: EPowerUpType.SPLITBALL,config: { splitBallAmount: 2,maxAngle: 10,},weight: 1},
@@ -44,14 +45,15 @@ export const defaultConfig: PongGameConfig = {
         step: 10,
         minLength: 20,
         maxLength: 400,
+        defaultSpeed: 1,
       },
       balls: [{
         type:EBallType.DEFAULT,
         defaultPos: new Vector2D(1280 / 2,720 / 2),
         defaultDir: new Vector2D(Math.floor(Math.random() * 2) === 0 ? 1 : -1, Math.floor(Math.random() * 2) === 0 ? 0.5 : -0.5),
-        defaultSpeed: 5,
+        defaultSpeed: 8,
       }],
-      maxScore: 1,
+      maxScore: 5,
 } 
 
 export const specialConfig: PongGameConfig = {
@@ -67,7 +69,7 @@ export const specialConfig: PongGameConfig = {
       step: 10,
       minLength: 20,
       maxLength: 500,
-      defaultSpeed: 3,
+      defaultSpeed: 1,
     },
     balls: [
       {

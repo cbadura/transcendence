@@ -1,12 +1,12 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import {Injectable, OnDestroy} from '@angular/core';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 
-import { Channel } from '../shared/chat/Channel';
-import { User } from 'src/app/shared/interfaces/user';
-import { EUserRole } from '../shared/macros/EUserRole';
-import { ESocketMessage } from '../shared/chat/ESocketMessage';
-import { Socket } from 'ngx-socket-io';
-import { UserDataService } from './user-data.service';
+import {Channel} from '../shared/chat/Channel';
+import {User} from 'src/app/shared/interfaces/user';
+import {EUserRole} from '../shared/macros/EUserRole';
+import {ESocketMessage} from '../shared/chat/ESocketMessage';
+import {Socket} from 'ngx-socket-io';
+import {UserDataService} from './user-data.service';
 
 interface Change {
   id: number,
@@ -45,10 +45,12 @@ export class ChannelService implements OnDestroy{
 			  this.kickUser(channel.name, change.id);
 		  }
 		  else if (change.change === 'ban') {
-			  this.banUser(channel.name, change.id, 1000);
+			  this.banUser(channel.name, change.id,
+          +(prompt(`For how many seconds do you want to ban this user with id: ${change.id}?`)??0)* 1000 + Date.now());
 		  }
 		  else if (change.change === 'mute') {
-			  this.muteUser(channel.name, change.id, 1000);
+			  this.muteUser(channel.name, change.id,
+          +(prompt(`For how many seconds do you want to mute this user with id: ${change.id}?`)??0) * 1000 + Date.now());
 		  }
 		  else if (change.change === 'makeAdmin') {
 			  this.addAdmin(channel.name, change.id);
@@ -200,6 +202,7 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.on(
       'exception',
       (data: any) => {
+        alert(data.message);
         console.log('EXCEPTION', data);
     });
 
@@ -254,10 +257,16 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.on(
       ESocketMessage.JOINED_TO_CHANNEL,
       (data: any) => {
-        console.log('JOINED', data);
+        console.log('JOINED data', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName) {
             ch.usersIds = data.channelUsersIds;
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.USER;
+              ch.isBanned = false;
+              ch.isMuted = data.isMuted;
+              ch.muteExpTime = data.muteExpTime;
+            }
           }
         });
         this.serverChannels.next(this.channels);
@@ -361,12 +370,9 @@ export class ChannelService implements OnDestroy{
           {
             if (data.userId === this.myUser.id) {
               ch.role = EUserRole.ADMIN;
+              ch.ownerId = data.ownerId;
             }
-            if (ch.adminIds) {
-              ch.adminIds.push(data.userId);
-            } else {
-              ch.adminIds = [data.userId];
-          }
+            ch.adminIds = data.adminIds;
           }
         });
         this.serverChannels.next(this.channels);

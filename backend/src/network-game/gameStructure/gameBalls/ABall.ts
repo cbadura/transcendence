@@ -58,7 +58,7 @@ export abstract class ABall {
         }
         const paddleID = this.getCourtHalfFromPosition(this.pos.x,config.canvas.width)
         const targetPaddle = game.userPaddles[paddleID]
-        if(this.hitPaddle(targetPaddle,config.canvas.width)){
+        if(this.hitPaddle(targetPaddle,config.canvas.width) && this.checkpaddleOwnerCollision(paddleID)){
             this.ownerID = paddleID;
             this.setBounceDirection(targetPaddle);            
             this.increaseBallSpeed();
@@ -179,6 +179,12 @@ export abstract class ABall {
         return (
         this.checkPaddleCollisionX(paddle,courtWidth) &&
         this.checkPaddleCollisionY(paddle))
+    }
+
+    private checkpaddleOwnerCollision(paddleID: number) {
+        if(paddleID == this.ownerID)
+            return false;
+        return true;
     }
 
     private checkPaddleCollisionY(paddle: GamePaddle): boolean {

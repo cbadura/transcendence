@@ -19,7 +19,7 @@ import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      // this.LogGameRooms();
+      this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -317,13 +317,13 @@ export class NetworkGameService {
 
       LogGameRooms(){
         const gameLoop = setInterval(()=>{
-          // console.log(`---------- Connected Sockets----------`);
+          console.log(`---------- Connected Sockets----------`);
           this.printConnectedSockets();
-          // console.log(`---------- DEFAULT Queueing Sockets----------`);
+          console.log(`---------- DEFAULT Queueing Sockets----------`);
           for (let i = 0; i < this.defaultQueue.length; i++) {
             console.log(`Element [${i}] =`,this.defaultQueue[i].userId); 
           }
-          // console.log(`---------- SPECIAL Queueing Sockets----------`);
+          console.log(`---------- SPECIAL Queueing Sockets----------`);
           for (let i = 0; i < this.specialQueue.length; i++) {
             console.log(`Element [${i}] =`,this.specialQueue[i].userId); 
           }

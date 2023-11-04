@@ -118,7 +118,7 @@ export class ChatService {
   }
 
   private getCurrentUnixTime(): number {
-    return Math.floor(new Date().getTime() / 1000);
+    return Math.floor(Date.now());
   }
 
   private broadcastToAllUserSockets(
@@ -200,6 +200,7 @@ export class ChatService {
     // console.log('bans', channel.bans);
     // console.log('mutes', channel.mutes);
     // console.log('admin', channel.admins);
+    // console.log('member', channel.users);
     channel.bans = channel.bans.filter((ban) => ban.expireTimestamp > now);
     channel.mutes = channel.mutes.filter((mute) => mute.expireTimestamp > now);
   }
@@ -460,6 +461,7 @@ export class ChatService {
   // I actually am \(O.O)/
   // Random tips: use chopsticks to eat chips,
   //  this will keep your fingers and keyboard clean
+  // good one :D
   inviteUser(socket: Socket, dto: InviteToChannelDto) {
     const channel: IChannel = this.getChannelfromName(dto.channelName);
     const user: number = this.getUserIdFromSocket(socket);
@@ -473,15 +475,19 @@ export class ChatService {
     if (channel.invites.find((user) => user === targetUser.userId))
       throw new WsException('Target user already on invite list');
 
+    const invDto : InviteToChannelDto = {
+      usersIds: channel.users,
+      ...dto,
+    }
     this.broadcastToAllUserSockets(
       targetUser.userId,
       ESocketMessage.INVITED_TO_CHANNEL,
-      dto,
+      invDto,
     );
     this.broadcastToAllUserSockets(
       user,
       ESocketMessage.INVITED_TO_CHANNEL,
-      dto,
+      invDto,
     );
     channel.invites.push(targetUser.userId);
   }
@@ -523,7 +529,7 @@ export class ChatService {
       throw new WsException('Permission denied: Password incorrect');
 
     // check of ban expiration time
-    const currTimestamp: number = Math.floor(Date.now() / 1000);
+    const currTimestamp: number = Math.floor(Date.now());
     if (userBanned && userBanned.expireTimestamp > currTimestamp)
       throw new WsException('Permission denied: You have been banned');
     if (userBanned && userBanned.expireTimestamp < currTimestamp)
@@ -536,6 +542,8 @@ export class ChatService {
     joinedDto.userId = who;
     joinedDto.channelName = dto.channelName;
     joinedDto.channelUsersIds = channel.users;
+    joinedDto.isMuted = !!channel.mutes.find((mute) => mute.userId === who);
+    joinedDto.muteExpTime = channel.mutes.find((mute) => mute.userId === who)?.expireTimestamp;
 
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
@@ -607,11 +615,16 @@ export class ChatService {
     if (channel.ownerId === dto.userId)
       throw new WsException('You are a channel owner. You cannot demote yourself.');
     channel.admins.push(dto.userId);
+    const adminAdded : AddRemoveAdminDto = {
+      ...dto,
+      adminIds: channel.admins,
+      ownerId: channel.ownerId,
+    }
     this.getUserSocketsByID(who).forEach((u) => {
-      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+      u.emit(ESocketMessage.ADDED_ADMIN, adminAdded);
     });
     this.getUserSocketsByID(dto.userId).forEach((u) => {
-      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+      u.emit(ESocketMessage.ADDED_ADMIN, adminAdded);
     });
   }
 

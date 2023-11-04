@@ -83,12 +83,13 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   canDeactivate(): Observable<boolean> | boolean {
-    if (this.status === 'waiting' || this.status === 'playing') {
+    if (this.status === 'waiting' || this.status === 'playing' || this.status === 'gameover') {
       const navigate = window.confirm(
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
-		this.status === 'waiting' ? this.gameService.leaveQueue() : this.gameService.leaveMatch();
+        console.log('navigating boiiiiiiiiiiiii')
+		this.status === 'playing' || this.status === 'gameover' ?  this.gameService.leaveMatch() : this.gameService.leaveQueue() ;
         return true;
       } else return false;
     }
@@ -164,9 +165,13 @@ export class GameComponent implements CanComponentDeactivate {
     });
   }
 
+  returnToGameSelectionScreen(){
+    this.gameService.leaveMatch();
+    this.cleanUpPrevMatch();
+  }
+
   //right now this play again will just queue up the user again.
-  // later we probably want to enable users to play agains the same opponent again
-  playAgain(): void {
+  cleanUpPrevMatch(): void {
     //clean up prev field
     this.status = 'new-game';
 	this.gameType = 'default';
