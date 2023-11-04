@@ -81,7 +81,6 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.emit('tryCreateChannel', newChannel);
   }
 
-  // Todo: add password field in channel card
   joinChannel(channel: Channel, password: string | null) {
     let newChannel = {
       channelName: channel.name,
@@ -224,7 +223,7 @@ export class ChannelService implements OnDestroy{
           isMuted: false,
           usersIds: [data.ownerId],
           adminIds: [],
-		  ownerId: data.ownerId
+		      ownerId: data.ownerId
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);
@@ -238,7 +237,6 @@ export class ChannelService implements OnDestroy{
           if (ch.name === data.currName) {
             ch.name = data.channelName;
             ch.mode = data.mode;
-            ch.password = data.password;
           }
         });
         this.serverChannels.next(this.channels);

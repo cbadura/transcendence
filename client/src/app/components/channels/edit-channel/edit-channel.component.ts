@@ -79,11 +79,16 @@ export class EditChannelComponent implements OnInit {
       this.router.navigate(['/channels']);
     } else {
       this.channelService.execActions(this.tempChannel, this.tempUserChanges);
-      this.channelService.updateChannel(
-        this.tempChannel,
-        this.tempPassword,
-        this.oldName,
-      );
+      //upd channel only when necessary
+      if (this.channel.name !== this.tempChannel.name ||
+        this.channel.mode !== this.tempChannel.mode ||
+        (this.tempChannel.mode === EChannelMode.PROTECTED && this.tempPassword)){
+          this.channelService.updateChannel(
+            this.tempChannel,
+            this.tempPassword,
+            this.oldName,
+          );
+      }
       this.router.navigate(['/channels']);
     }
   }
