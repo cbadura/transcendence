@@ -45,10 +45,12 @@ export class ChannelService implements OnDestroy{
 			  this.kickUser(channel.name, change.id);
 		  }
 		  else if (change.change === 'ban') {
-			  this.banUser(channel.name, change.id, 1000);
+			  this.banUser(channel.name, change.id,
+          +(prompt(`For how many seconds do you want to ban this user with id: ${change.id}?`)??0)* 1000 + Date.now());
 		  }
 		  else if (change.change === 'mute') {
-			  this.muteUser(channel.name, change.id, 1000);
+			  this.muteUser(channel.name, change.id,
+          +(prompt(`For how many seconds do you want to mute this user with id: ${change.id}?`)??0) * 1000 + Date.now());
 		  }
 		  else if (change.change === 'makeAdmin') {
 			  this.addAdmin(channel.name, change.id);
