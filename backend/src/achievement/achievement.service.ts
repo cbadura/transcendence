@@ -28,11 +28,10 @@ export class AchievementService {
             return {message: `Achievement with ID ${createachievementdto.achievement_id} not found.`,success: false};
             
         const existingAchievement = await this.checkExistingAchievementFromID(user.id,achievementDef.id)
-
         if(existingAchievement){
            return { message: `Achievement for User ID ${createachievementdto.user_id} and Achievement ID ${createachievementdto.achievement_id} already exists.`, success: false}
         }
-        //do more error checking if a user has already unlocked this achievement
+
         const achievement = this.saveAchievement(user,achievementDef);
         return {message: `Successfully created Achievement Entry.`,success: true,data: achievement };
     }
@@ -76,7 +75,7 @@ export class AchievementService {
         return unlockableAchievements.filter((definition)=> user.achievements.find((achievement)=>achievement.achievementDefinition.id == definition.id) == null)
     }
 
-    async checkExistingAchievementFromID(user_id: number,achievement_def_id){
+    private async checkExistingAchievementFromID(user_id: number,achievement_def_id){
         return await this.achievementRepository.findOne({
             where: {
                 owner: {id: user_id},

@@ -1,4 +1,4 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException } from '@nestjs/common';
+import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException, UseGuards } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -10,6 +10,7 @@ import { extname } from 'path';
 import {Response} from 'express'
 import * as path from 'path';
 import { Request } from 'express';
+import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
 
 @Controller('users')
 export class UserController {
@@ -21,16 +22,19 @@ export class UserController {
   }
 
   /*--------dev--------*/
+  @UseGuards(DebugRoute)
   @Post()
   createUser(@Body() dto: CreateUserDto): Promise<User> {
     return this.userService.createUser(dto);
   }
 
+  @UseGuards(DebugRoute)
   @Get('dummy')
   createDummyUsers(){
     this.userService.createDummyUsers();
   }
 
+  @UseGuards(DebugRoute)
   @Delete('dummy')
   deleteUserDatabase(){
     this.userService.deleteUserDatabase();
@@ -44,8 +48,6 @@ export class UserController {
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
           const userId = req.params.id;
-          // const uniqueSuffix = Date.now()
-          // console.log(req);
           const extension = extname(file.originalname)
           const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
           callback(null,filename);
@@ -73,12 +75,6 @@ export class UserController {
       return {img: userProfileImageURL};
   }
 
-  // @Get(':id/matches')
-  // getUserMatchHistory(@Param('id',ParseIntPipe) id: number) {
-  //   return this.userService.getUserMatchHistory();
-  // }
-
-
   // this makes sense, but blocks the other
   @Get('profilepic/:filename')
   ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
@@ -88,7 +84,6 @@ export class UserController {
   }
 
 
-  // GET /user/:id --> {...} get a single ninja
   @Get(':id')
   getUser(@Param('id',ParseIntPipe) id: number) {
       try {
@@ -107,6 +102,7 @@ export class UserController {
       }
   };
 
+  @UseGuards(DebugRoute)
   @Delete(':id')
   deleteUser(@Param('id',ParseIntPipe) id: number){
     return this.userService.deleteUser(id);

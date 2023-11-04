@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AchievementService } from './achievement.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { Achievement } from 'src/entities/achievement.entity';
+import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
 
 
 interface ApiResponse {
@@ -14,14 +15,10 @@ interface ApiResponse {
 export class AchievementController {
     constructor(private readonly achievementService: AchievementService){}
 
-
-    @Post() //this is just for debugging. Should be removed later
+    @UseGuards(DebugRoute)
+    @Post()
     GrantAchievement(@Body() createachievementdto: CreateAchievementDto): Promise<ApiResponse>{
         return this.achievementService.GrantAchievement(createachievementdto);
     }
     
-    // @Get() //this is just for debugging. Should be removed later
-    // GrantMatchAchievement(): Promise<ApiResponse>{
-    //     return this.achievementService.checkAndGrantMatchAchievements(1); 
-    // }
 }

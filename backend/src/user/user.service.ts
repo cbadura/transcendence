@@ -36,6 +36,8 @@ export class UserService {
     if (!user) throw new WsException('Unexpected error');
     return user.userId;
   }
+
+
   async handleConnection(socket: Socket, userId: number) {
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
@@ -66,6 +68,7 @@ export class UserService {
         client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
       });
   }
+
   handleDisconnect(client: Socket) {
     const statusUpdate: UserStatusUpdateDto = {
       userId: this.getUserIdFromSocket(client),
@@ -169,7 +172,7 @@ export class UserService {
     return DeletedUser;
   }
 
-  async deleteExistingImage(user: User){
+  private async deleteExistingImage(user: User){
     if(!user.avatar.includes('http://localhost:3000/users/profilepic/default_0')){
         const filePath = this.createImageFilePath(user.avatar)
         try {
@@ -190,7 +193,7 @@ export class UserService {
     const fileName = url.slice(lastIndex + 1);
     const pathIndex = __dirname.lastIndexOf('backend')
     const path = __dirname.slice(0,pathIndex);
-    const filePath = path +'backend/uploadedData/profilepictures/'+ fileName;
+    const filePath = path + 'backend/uploadedData/profilepictures/'+ fileName;
     return filePath;
   }
 
@@ -220,14 +223,13 @@ export class UserService {
     await this.userRepository.createQueryBuilder().delete().from(User).execute();
     const query = `ALTER SEQUENCE User_id_seq RESTART WITH 1;`;
     await this.entityManager.query(query);
-    // await this.userRepository.clear();
   }
 
   async getUserMatches(id: number): Promise<Match[]> {
     const user = await this.userRepository.findOne({where: {id: id}})
     // console.log(user);
     const matchUsers = await this.matchUserRepository.find({where:{user: {id: user.id}},
-      relations: ['match','match.matchUsers',"match.matchUsers.user"], //might be cost intensive?
+      relations: ['match','match.matchUsers',"match.matchUsers.user"], 
     })
     const matchesParticipated = matchUsers.map((matchUser)=> matchUser.match);
     return matchesParticipated;
@@ -252,6 +254,11 @@ export class UserService {
     if(uniqueRelationship == null)
       return false;
     return true;
+  }
+
+
+  validateFileExtension() {
+    
   }
 
 }
