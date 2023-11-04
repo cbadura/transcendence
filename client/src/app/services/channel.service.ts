@@ -200,6 +200,7 @@ export class ChannelService implements OnDestroy{
     this.chatSocket?.on(
       'exception',
       (data: any) => {
+        alert(data.message);
         console.log('EXCEPTION', data);
     });
 
