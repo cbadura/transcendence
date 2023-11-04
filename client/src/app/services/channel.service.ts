@@ -8,6 +8,8 @@ import {ESocketMessage} from '../shared/chat/ESocketMessage';
 import {Socket} from 'ngx-socket-io';
 import {UserDataService} from './user-data.service';
 
+import * as CryptoJS from 'crypto-js'
+
 interface Change {
   id: number,
   change: string
@@ -74,7 +76,7 @@ export class ChannelService implements OnDestroy{
       password: ''
     }
     if (password) {
-      newChannel.password = password;
+      newChannel.password = CryptoJS.SHA256(password).toString();
     }
     this.chatSocket?.emit('tryCreateChannel', newChannel);
   }
@@ -87,7 +89,7 @@ export class ChannelService implements OnDestroy{
       password: ''
     }
     if (password) {
-      newChannel.password = password;
+      newChannel.password = CryptoJS.SHA256(password).toString();
     }
     console.log('JOIN', newChannel);
     this.chatSocket?.emit(ESocketMessage.TRY_JOIN_CHANNEL, newChannel);
@@ -101,7 +103,7 @@ export class ChannelService implements OnDestroy{
       password: ''
     }
     if (password) {
-      newChannel.password = password;
+      newChannel.password = CryptoJS.SHA256(password).toString();
     }
     console.log('UPDATE', newChannel);
     this.chatSocket?.emit(ESocketMessage.TRY_UPDATE_CHANNEL, newChannel);
