@@ -113,7 +113,7 @@ export class ChatService {
   }
 
   private getCurrentUnixTime(): number {
-    return Math.floor(new Date().getTime() / 1000);
+    return Math.floor(Date.now());
   }
 
   private broadcastToAllUserSockets(
@@ -511,7 +511,7 @@ export class ChatService {
       throw new WsException('Permission denied: Password incorrect');
 
     // check of ban expiration time
-    const currTimestamp: number = Math.floor(Date.now() / 1000);
+    const currTimestamp: number = Math.floor(Date.now());
     if (userBanned && userBanned.expireTimestamp > currTimestamp)
       throw new WsException('Permission denied: You have been banned');
     if (userBanned && userBanned.expireTimestamp < currTimestamp)
@@ -603,10 +603,10 @@ export class ChatService {
       ownerId: channel.ownerId,
     }
     this.getUserSocketsByID(who).forEach((u) => {
-      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+      u.emit(ESocketMessage.ADDED_ADMIN, adminAdded);
     });
     this.getUserSocketsByID(dto.userId).forEach((u) => {
-      u.emit(ESocketMessage.ADDED_ADMIN, dto);
+      u.emit(ESocketMessage.ADDED_ADMIN, adminAdded);
     });
   }
 
