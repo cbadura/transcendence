@@ -21,6 +21,7 @@
     "@ng-icons/core": "^25.3.1",
     "@ng-icons/feather-icons": "^25.3.1",
     "@ng-icons/heroicons": "^25.3.1",
+    "ngx-cookie-service": "^16.0.1",
     "ngx-socket-io": "^4.5.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -39,6 +40,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.4.30",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.6",
     "tailwindcss": "^3.3.3",
     "typescript": "~5.1.3"
   }

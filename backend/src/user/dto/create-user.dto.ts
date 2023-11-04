@@ -1,4 +1,4 @@
-import { IsNotEmpty,IsOptional,IsString, IsHexColor } from "class-validator";
+import { IsNotEmpty,IsOptional,IsString, IsHexColor, IsNumber, IsBoolean } from "class-validator";
 
 export class CreateUserDto {
 
@@ -6,18 +6,25 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
+  @IsNumber()
+  @IsOptional()
+  ftid: number;
+
+  @IsBoolean()
+  tfa: boolean;
+
   @IsOptional()
   @IsString()
-  avatar: string=`http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+  avatar: string;
 
   @IsNotEmpty()
   @IsHexColor()
   @IsOptional()
-  color: string='#E7C9FF';
+  color: string;
 
-  level: number=1.00;
+  level: number;
 
-  matches: number=0;
+  matches: number;
 
-  wins: number=0;
+  wins: number;
 }

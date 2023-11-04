@@ -1,4 +1,4 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException } from '@nestjs/common';
+import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException, UseGuards } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -10,6 +10,7 @@ import { extname } from 'path';
 import {Response} from 'express'
 import * as path from 'path';
 import { Request } from 'express';
+import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
 
 @Controller('users')
 export class UserController {
@@ -20,15 +21,25 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  /*--------dev--------*/
+  @UseGuards(DebugRoute)
+  @Post()
+  createUser(@Body() dto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(dto);
+  }
+
+  @UseGuards(DebugRoute)
   @Get('dummy')
   createDummyUsers(){
     this.userService.createDummyUsers();
   }
 
+  @UseGuards(DebugRoute)
   @Delete('dummy')
   deleteUserDatabase(){
     this.userService.deleteUserDatabase();
   }
+  /*---------dev---------*/
 
   //todo: prevent uploading files if user doesnt exist 
   @Post(':id/profilepic')
@@ -37,10 +48,8 @@ export class UserController {
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
           const userId = req.params.id;
-          // const uniqueSuffix = Date.now() 
-          // console.log(req);
           const extension = extname(file.originalname)
-          const filename =`profilepic_user_${userId}${extension}`;
+          const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
           callback(null,filename);
       }
     })
@@ -52,6 +61,7 @@ export class UserController {
     ) {
 
     // const baseUrl = request.protocol + '://' + request.get('host');
+    // dirty fix by cosmo :(, prepended `http://localhost:3000` to the imageURL 
     const userProfileImageURL = `http://localhost:3000/users/profilepic/${file.filename}`
 
     let updateDTO = new UpdateUserDto();
@@ -62,18 +72,18 @@ export class UserController {
     } catch (error) {
         throw new NotFoundException()
     }
-      return userProfileImageURL;
+      return {img: userProfileImageURL};
   }
 
   // this makes sense, but blocks the other
   @Get('profilepic/:filename')
   ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
       const filePath = path.join(__dirname, '../../', 'uploadedData/profilepictures/', filename);
+      console.log(filePath);
       res.sendFile(filePath)
   }
 
 
-  // GET /user/:id --> {...} get a single ninja
   @Get(':id')
   getUser(@Param('id',ParseIntPipe) id: number) {
       try {
@@ -92,6 +102,7 @@ export class UserController {
       }
   };
 
+  @UseGuards(DebugRoute)
   @Delete(':id')
   deleteUser(@Param('id',ParseIntPipe) id: number){
     return this.userService.deleteUser(id);
@@ -111,9 +122,6 @@ export class UserController {
     return this.userService.getUserRelationships(id,filter);
   }
 
-  @Post()
-  createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(dto);
-  }
+  
 
 }

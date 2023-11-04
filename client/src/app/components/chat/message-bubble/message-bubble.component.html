@@ -1,17 +1,31 @@
 <ng-container *ngIf="!isMe">
   <div
-    class="p-2 rounded-tr-xl rounded-br-xl rounded-bl-xl m-1 inline-block"
-    [ngStyle]="{ 'background-color': post.senderColor }"
+    class="p-2 overflow-x-auto break-words rounded-tr-xl rounded-br-xl rounded-bl-xl m-1 inline-block whitespace-normal break-words"
+    [ngStyle]="{
+      'background-color': post.gameInvite ? 'black' : post.senderColor
+    }"
+    [ngClass]="{ 'text-white': post.gameInvite }"
   >
-    <p class="">{{ post.message }}</p>
+    <p *ngIf="!post.gameInvite">{{ post.message }}</p>
+	<div *ngIf="post.gameInvite" class="m-3">
+		<p class="font-bold mb-2" [ngStyle]="{'color': post.senderColor}"> {{ invite }}</p>
+		<div class="flex gap-4">
+			<button (click)="onAccept()" [ngStyle]="{
+				'background-color': post.senderColor
+			}" class="rounded-full text-black p-2 cursor-pointer transition-all active:scale-95">Join</button>
+			<button [ngStyle]="{
+			'background-color': post.senderColor
+		  }" class="rounded-full text-black p-2 cursor-pointer transition-all active:scale-95">Decline</button>
+		</div>
+	</div>
   </div>
 </ng-container>
 
-
 <ng-container *ngIf="isMe">
   <div
-    class="p-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl m-1 inline-block ml-auto"
+    class="p-2 overflow-x-auto break-words rounded-tl-xl rounded-tr-xl rounded-bl-xl m-1 inline-block ml-auto"
     [ngStyle]="{ 'background-color': post.senderColor }"
   >
     <p class="">{{ post.message }}</p>
-  </div>
+  </div></ng-container
+>

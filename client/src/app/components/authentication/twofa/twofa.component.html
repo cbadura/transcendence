@@ -1,0 +1,47 @@
+<div [class]="animationClass"  class="animation-div h-full-header flex flex-col justify-center items-center">
+<h1 class="text-4xl">Enter your 2FA code</h1>
+	<div class="space-x-2 m-10">
+		<input
+		type="text"
+		maxlength="1"
+	  class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+	  (keyup)="onKeyUp(1, $event)"
+	  (keydown)="onKeyDown(1, $event)"
+	/>
+	<input
+	  type="text"
+	  maxlength="1"
+	  class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+	  (keyup)="onKeyUp(2, $event)"
+	  (keydown)="onKeyDown(2, $event)"
+	  />
+	  <input
+	  type="text"
+	  maxlength="1"
+	  class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+	  (keyup)="onKeyUp(3, $event)"
+	  (keydown)="onKeyDown(3, $event)"
+	  />
+	  <input
+	  type="text"
+	  maxlength="1"
+	  class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+	  (keyup)="onKeyUp(4, $event)"
+	  (keydown)="onKeyDown(4, $event)"
+	  />
+	  <input
+	  type="text"
+	  maxlength="1"
+	  class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+	  (keyup)="onKeyUp(5, $event)"
+	  (keydown)="onKeyDown(5, $event)"
+	  />
+	  <input
+	  type="text"
+	  maxlength="1"
+	  class="w-10 aspect-square rounded-full bg-black text-white font-bold text-center outline-none focus:ring-transparent"
+	  (keyup)="onKeyUp(6, $event)"
+	  (keydown)="onKeyDown(6, $event)"
+	  />
+	</div>
+</div>

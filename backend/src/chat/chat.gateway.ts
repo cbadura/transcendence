@@ -36,8 +36,8 @@ export class ChatGateway
   handleConnection(client: Socket) {
     this.chatService.handleConnection(
       client,
-      //+client?.handshake?.query?.userId,
-      1,
+      +client?.handshake?.query?.userId,
+      // 1,
     );
   }
 
@@ -52,6 +52,13 @@ export class ChatGateway
     }, 1000);
   }
 
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_LIST_CHANNELS)
+  listChannels(
+      @ConnectedSocket() socket: Socket,
+  ) {
+    this.chatService.listChannels(socket);
+  }
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.TRY_CREATE_CHANNEL)
   createChannel(

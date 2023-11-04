@@ -18,7 +18,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      // this.LogGameRooms();
+      this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];
@@ -27,6 +27,7 @@ export class NetworkGameService {
 
 
     async handleConnection(socket: Socket, userId: number) {
+      console.log('userId',userId)
       if (isNaN(userId)) {
         socket.emit('exception', 'Invalid user id');
         socket.disconnect(true);
@@ -94,23 +95,30 @@ export class NetworkGameService {
       async CreatePrivateRoom(client: Socket,dto: CreatePrivateRoomDto ) {
 
         const instigator = this.getISocketUserFromSocket(client);
+        //validate instigator
         if(instigator == null){
           console.log('exception','Instigator (You) are not registered')
           return;
         }
-        //could check if user is online and not in a match
+        if(instigator.room_id != -1){
+          console.log('exception','Instigator (You) have already invited somebody in the last 10 seconds')
+          instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Instigator (You) have already invited somebody in the last 10 seconds')
+          return;
+        }
+
+        //validate recipient
         let recipient;
         if(dto.recipient_user_id != -1){
 
           recipient = this.getISocketUserFromUserId(dto.recipient_user_id);
           if(recipient == null){
             console.log('exception','Recipient is not registered')
-            instigator.socket.emit('exception','Recipient is not registered');
+            instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Recipient is not registered');
             return;
           }
           if(recipient.status != EUserStatus.ONLINE){
             console.log('exception','Recipient is currently',recipient.status);
-            instigator.socket.emit('exception','Recipient is ',recipient.status);
+            instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Recipient is ',recipient.status);
             return;
           }
         }
@@ -120,7 +128,7 @@ export class NetworkGameService {
         const roomID = this.InsertRoom(new GameRoom(this.matchService,this.userService,roomAccess,dto.gameType))
         if(roomID == -1) {
           console.log('Room could not be created. All Rooms are currently occupied')
-          instigator.socket.emit('exception','Room could not be created. All Rooms are currently occupied')
+          instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Room could not be created. All Rooms are currently occupied')
           return
         }
         const newRoom = this.gameRooms[roomID];
@@ -149,12 +157,12 @@ export class NetworkGameService {
         }
         if( room == null){
           console.log('Room no longer exists');
-          user.socket.emit('exception','Room no longer exists');
+          user.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Room no longer exists');
           return
         }
         if(room.CanUserJoin(user.userId) == false){
           console.log('You have no permission to join this room');
-          user.socket.emit('exception','You have no permission to join this room');
+          user.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'You have no permission to join this room');
           return
         }
         if(dto.response == false){
@@ -211,6 +219,11 @@ export class NetworkGameService {
           console.log("in Join queue currUser is NULL");
           return;
         } 
+        if(currUser.room_id != -1){
+          console.log("Current User is already in a room. Likely due to an invitation");
+          return;
+        }
+
 
         if(dto.gameType == 'default') {
             if(this.defaultQueue.find( (user)=>user.socket.id == client.id) != null){
@@ -251,17 +264,35 @@ export class NetworkGameService {
             (currentClient) => currentClient.socket.id !== client.id,
             );
           }
-
       }
 
+      LeaveMatch(client: Socket) {
+        const currUser = this.getISocketUserFromSocket(client);
+        if(currUser != null){
+          if(currUser.room_id != -1){ //let room know that user left
+            this.gameRooms[currUser.room_id]?.clientDisconnected(currUser.userId);
+          }
+        }
+      }
+
+      PlayAgain(client: Socket){
+        const currUser = this.getISocketUserFromSocket(client);
+
+        //check if gameRoom exists
+
+        if(currUser.room_id != -1)
+          this.gameRooms[currUser.room_id].votePlayAgain(currUser);
+      }
 
 
       monitorGameRooms(){
         const gameLoop = setInterval(()=>{
-          for (let i = 0; i < this.gameRooms.length; i++) {
-              if( this.gameRooms[i] != null) {
-                if(this.gameRooms[i].getGameRoomState() == EGameRoomState.FINISHED){
-                  for (let j = 0; j < this.gameRooms[i].clients.length; i++) {
+          for (let i = 0; i < this.gameRooms?.length; i++) {
+            if( this.gameRooms[i] == null)
+              return;
+              this.gameRooms[i].checkRoomExpiration();
+              if(this.gameRooms[i].getGameRoomState() == EGameRoomState.CLEANUP) {
+                  for (let j = 0; j < this.gameRooms[i]?.clients?.length; j++) {
                     if(this.gameRooms[i].clients[j] != null){
                       this.gameRooms[i].clients[j].status = EUserStatus.ONLINE;
                       this.gameRooms[i].clients[j].room_id = -1;
@@ -270,7 +301,6 @@ export class NetworkGameService {
                   }
                   this.gameRooms[i] = null;
                 }
-              }
           }
         },1000);
       }
@@ -289,13 +319,13 @@ export class NetworkGameService {
           }
           //game rooms
           console.log(`---------- Game Room states (${this.gameRooms.filter(room => room !== null).length})--------------`)
-          for (let i = 0; i < this.gameRooms.length; i++) {
+          for (let i = 0; i < this.gameRooms?.length; i++) {
               if( this.gameRooms[i] != null) {
-                const game = this.gameRooms[i].game.getGameState();
+                const game = this.gameRooms[i]?.game.getGameState();
                 // const game = this.gameRooms[i]?.gameControl.getGame();
                 console.log(`Room [${i}] =`,this.gameRooms[i]?.gameType,this.gameRooms[i]?.getRoomAccess(),
                 this.gameRooms[i]?.getGameRoomStateString(),this.gameRooms[i]?.clients[0]?.userId,'vs',this.gameRooms[i]?.clients[1]?.userId,
-                game.paddles[0].score,':',game.paddles[1].score);
+                game?.paddles[0].score,':',game.paddles[1].score);
               }
 
           }

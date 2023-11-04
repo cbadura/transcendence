@@ -1,60 +1,132 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-
-import { dummyUsers } from 'src/app/temp/dummyUsers';
+import { ActivatedRoute } from '@angular/router';
 import { UserDataService } from 'src/app/services/user-data.service';
+import { UserService } from 'src/app/services/users.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
-
 })
 export class ProfileComponent implements OnInit {
+  user!: User;
   myUser!: User;
   private userSubscription!: Subscription;
-  achievements: Achievement[] = [];
+  friends: User[] = [];
   matches: Match[] = [];
+  relation: string = 'none';
+  relationID!: number;
+  public myProfile: boolean = false;
 
   constructor(
-    private userDataService: UserDataService) {
+    private route: ActivatedRoute,
+    private userDataService: UserDataService,
+    private userService: UserService,
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
-    const currentUser = this.userDataService.getUser();
-    console.log('Current User ID:', currentUser.id);
+  getUserRelation() {
+    this.userService.getFriends(this.myUser.id).subscribe((data) => {
+      data.forEach((friend) => {
+        if (friend.relational_user_id === Number(this.user.id)) {
+          console.log('Friend object that represents relationship:', friend);
+          this.relation = friend.relationship_status;
+          this.relationID = friend.id;
+        }
+      });
+    });
   }
 
   ngOnInit() {
-    this.userSubscription = this.userDataService.user$.subscribe(
-      (user) => {
-        this.myUser = user;
-        if (this.myUser && this.myUser.id) {
-          this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
-            this.myUser = data;
-            console.log('Profile', data);
-          });
+    this.route.params.subscribe((params: any) => {
+      const { profile, ...rest } = params;
+      this.user = rest as User;
+
+      this.userSubscription = this.userDataService.user$.subscribe((user) => {
+        if (!this.user.name) {
+          // My profile
+          this.user = user;
+          console.log('My profile user:', this.user);
+          this.myProfile = true;
+        } else {
+          // Profile from other user
+          console.log('Profile from other user');
+          this.myUser = user;
+          if (this.myUser.id === Number(this.user.id))
+            this.router.navigate(['/profile']);
+          this.getUserRelation();
         }
-      }
-    );
+      });
 
-    this.achievements = [
-      { name: 'Paddle Master', url: 'https://picsum.photos/100' },
-      { name: 'Ping Pong Champion', url: 'https://picsum.photos/100' },
-      { name: 'Pong Prodigy', url: 'https://picsum.photos/100' },
-      { name: 'Rally King', url: 'https://picsum.photos/100' },
-      { name: 'Paddle Wizard', url: 'https://picsum.photos/100' },
-      { name: 'Table Tennis Titan', url: 'https://picsum.photos/100' },
-    ];
+      this.userService.getFriends(this.user.id).subscribe((data) => {
+        data.forEach((friend) => {
+          this.fetchUser(friend.relational_user_id);
+        });
+      });
+    });
 
-
-
-    this.matches = [
-      { opponent: dummyUsers[0], dateTime: '2021-04-01T12:00:00', myScore: 10, opponentScore: 5 },
-      { opponent: dummyUsers[1], dateTime: '2021-04-02T12:00:00', myScore: 5, opponentScore: 10 },
-      { opponent: dummyUsers[2], dateTime: '2021-04-03T12:00:00', myScore: 2, opponentScore: 3 },
-    ];
+    this.userService.getMatches(this.user.id).subscribe((data) => {
+      data.forEach((obj) => {
+        let userIndex;
+        let oppIndex;
+        obj.matchUsers[0].user.id == this.user.id
+          ? (userIndex = 0)
+          : (userIndex = 1);
+        oppIndex = userIndex === 0 ? 1 : 0;
+        const match: Match = {
+          opponent: obj.matchUsers[oppIndex].user,
+          dateTime: obj.timestamp,
+          myScore: obj.matchUsers[userIndex].score,
+          opponentScore: obj.matchUsers[oppIndex].score,
+        };
+        this.matches.push(match);
+      });
+    });
   }
 
-  getFloorLevel = () => Math.floor(this.myUser.level);
+  fetchUser(id: number) {
+    const url = `http://localhost:3000/users/${id}`;
+    this.http.get<User>(url).subscribe((data) => {
+      if (data) {
+        this.friends.push(data);
+      }
+    });
+  }
+
+  addRelation(status: string): void {
+    this.userDataService.addRelation(status, this.user.id).subscribe(
+      (data) => {
+        console.log(data);
+        this.relation = data.relationship_status;
+        this.relationID = data.id;
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+  }
+
+  removeRelation(): void {
+    this.userDataService.removeRelation(this.relationID).subscribe(
+      (data) => {
+        console.log(data);
+        this.relation = 'none';
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+  }
+
+  getFloorLevel = () => Math.floor(this.user.level);
+
+  ngOnDestroy() {
+	this.userSubscription.unsubscribe();
+  }
 }

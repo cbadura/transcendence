@@ -3,7 +3,7 @@
   <!-- Only render image and name for other users -->
   <ng-container *ngIf="!isMe">
     <tcd-thumbnail
-      [imgUrl]="'http://localhost:3000' + post.senderAvatar"
+      [imgUrl]= "post.senderAvatar"
       [size]="'2.5rem'"
     ></tcd-thumbnail>
     <p>{{ post.senderName }}</p>

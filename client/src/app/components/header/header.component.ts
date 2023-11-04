@@ -22,6 +22,7 @@ export class HeaderComponent implements OnInit {
 	
 	constructor(private router: Router,
     private userDataService: UserDataService) {
+      console.log(userDataService)
   }
 	
 
@@ -34,6 +35,11 @@ export class HeaderComponent implements OnInit {
 			this.saturatedColor = LightenDarkenColor(SaturatedColor(this.myUser.color, 20), -10);
       }
     );
+  }
+
+  createDevUser() {
+    console.log("WTF")
+    this.userDataService.createDevelopmentUser();
   }
 
   isCurrentPage(page: string): boolean {

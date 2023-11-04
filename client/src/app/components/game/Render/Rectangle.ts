@@ -19,16 +19,16 @@ export class Rectangle {
     this.height = this.renderPaddle.length;
     this.color = SaturatedColor(this.user.color, 20);
     this.name = user.name.toLowerCase();
-    this.x = this.renderPaddle.posX - (this.renderPaddle.width / 2)
-    this.y = this.renderPaddle.posY - (this.renderPaddle.length / 2)
+    this.x = this.renderPaddle.pos.x - (this.renderPaddle.width / 2)
+    this.y = this.renderPaddle.pos.y - (this.renderPaddle.length / 2)
   }
 
   draw(newPaddle: PaddleRenderInfo,canvas: CanvasRenderInfo) {
     this.renderPaddle = newPaddle;
     this.width = this.renderPaddle.width;
     this.height = this.renderPaddle.length;
-    this.x = this.renderPaddle.posX - (this.renderPaddle.width / 2)
-    this.y = this.renderPaddle.posY - (this.renderPaddle.length / 2)
+    this.x = this.renderPaddle.pos.x - (this.renderPaddle.width / 2)
+    this.y = this.renderPaddle.pos.y - (this.renderPaddle.length / 2)
     // console.log(`DRAWING PADDLE AT LOCATION: [${this.x},${this.y}]`)
     this.ctx.fillStyle = this.color;
     let radius = this.width / 2;

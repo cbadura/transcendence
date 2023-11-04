@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 
@@ -13,12 +15,15 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
   styleUrls: ['./create-edit-profile.component.css'],
 })
 export class CreateProfileComponent implements OnInit {
-  myUser!: User;
-  tempUser!: User;
+  @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
+  public oldUser!: User;
   private userSubscription!: Subscription;
-  tempUserName!: string;
+  tempName!: string;
   tempColor!: string;
-  tempFile!: File;
+  tempFile!: File | null;
+  tempPic!: string;
+  tempCode!: string;
+  twoFAPopup : boolean = false;
   availableColors: string[] = [
     '#E7C9FF',
     '#C9FFE5',
@@ -27,77 +32,38 @@ export class CreateProfileComponent implements OnInit {
     '#FFFDC9',
     '#C9FFFC',
   ];
-  imageData: { blobUrl: string; filePath: string }[] = [];
 
   constructor(
+    private router: Router,
     private userDataService: UserDataService,
-    private location: Location
+    private location: Location,
   ) {
-    this.tempUserName = '';
+    this.tempName = '';
     this.tempColor = '';
   }
 
   ngOnInit() {
     this.userSubscription = this.userDataService.user$.subscribe((user) => {
-      this.tempUser = user;
+      this.oldUser = user;
+      this.tempName = this.oldUser.name;
+      this.tempColor = this.oldUser.color;
+      console.log('old user:', user);
     });
-
-    this.userSubscription = this.userDataService.user$.subscribe((user) => {
-      this.myUser = user;
-      this.userDataService.fetchUserById(this.myUser.id).subscribe((data) => {
-        this.myUser = data;
-        console.log('Profile', data);
-      });
-    });
-
-    this.tempUserName = this.tempUser.name;
-    this.tempColor = this.tempUser.color;
-
-    this.userDataService.getProfilePics().subscribe(
-      (data) => {
-        this.imageData = data;
-      },
-      (error) => console.error('Error fetching pics:', error)
-    );
   }
 
-  getUsers() {
-    this.userDataService.getUsers();
-  }
+  saveChanges = async () => {
 
-  createOrEditUser = async () => {
-    if (!this.tempUser || !this.tempColor) {
-      window.alert('Please fill in name and color');
-      return;
+    console.log('save changes', this.tempName, this.tempColor, this.oldUser);
+
+    if (
+      this.tempName !== this.oldUser.name ||
+      this.tempColor !== this.oldUser.color
+    ) {
+      this.userDataService.editUserById(this.tempName, this.tempColor);
     }
-    this.userDataService
-      .createEditUser(this.tempUserName, this.tempColor, this.tempFile)
-      .subscribe(
-        (user) => {
-          this.userDataService.CreateSocketConnections();
-          console.log('User created with ID:', user.id);
-        },
-        (error) => {
-          window.alert('Error editing user: ' + JSON.stringify(error));
-        }
-      );
-    await delay(80);
-    this.goBack();
+    if (this.tempFile) this.userDataService.uploadProfilePic(this.tempFile);
+    this.router.navigate(['/profile']);
   };
-
-  createQuickUser = async () => {
-    this.userDataService
-      .createEditUser('Dummy user', '#E7C9FF', this.tempFile)
-      .subscribe((user) => {
-        console.log('Dummy created with ID:', user.id);
-      });
-    await delay(50);
-    this.goBack();
-  };
-
-  goBack() {
-    this.location.back();
-  }
 
   editColor(color: string) {
     this.tempColor = color;
@@ -105,6 +71,39 @@ export class CreateProfileComponent implements OnInit {
 
   onFileSelected(event: any) {
     this.tempFile = event.target.files[0];
+    console.log('file selected', this.tempFile);
+    if (!this.tempFile) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(this.tempFile);
+    reader.onload = () => {
+      this.tempPic = reader.result as string;
+    };
+  }
+
+  getCorrectPic(): string {
+    if (!this.tempPic) return this.oldUser.avatar;
+    else return this.tempPic;
+  }
+
+  deleteTempPic() {
+    this.tempPic = '';
+    this.tempFile = null;
+    this.fileInput.nativeElement.value = null;
+  }
+
+  open2FAPopup()
+  {
+	this.twoFAPopup = true;
+  }
+
+  close2FAPopup()
+  {
+	this.twoFAPopup = false;
+  }
+
+  deactivateTFA()
+  {
+	this.userDataService.deactivateTFA();
   }
 
   ngOnDestroy(): void {

@@ -1,36 +1,31 @@
+import { Vector2D } from "../Vector2D";
+import { ABall } from "../gameBalls/ABall";
+import { SpecialPongGame } from "../gameModes/SpecialPongGame";
 
 
 export abstract class APowerUp {
-    public posX: number;
-    public posY: number;    
+    public pos: Vector2D;
     public type: string = 'APowerUp';
     public radius: number = 30;
     public isConsumed: boolean = false;
-    private lifeTime: Date;
-    constructor(type: string = 'APowerUp'){
+    protected game: SpecialPongGame;
+
+    constructor(game:SpecialPongGame,type: string = 'APowerUp',pos: Vector2D){
+        this.game = game;
         this.type = type;
-        console.log(`NEW POWERUP CREATED OF TYPE [${this.type}]`);
+        this.pos = pos;
+        // console.log(`NEW POWERUP CREATED OF TYPE [${this.type}]`);
     }
 
 
 
-    abstract TriggerEffect(ownerId: number):void;
+    abstract OnCollision(instigator: ABall):void;
 
-    protected markConsumed() {
+    markConsumed() {
         this.isConsumed = true;
     }
-}
 
-
-export class PowerUpDummy extends APowerUp {
-    constructor(x: number,y: number){
-        super('Dummy');
-        this.posX = x;
-        this.posY = y;
-    }
-
-    TriggerEffect(ownerId: number): void {
-        console.log("TRIGGERING EFFECT ON PADDLE ID: ",ownerId)
-        this.markConsumed();
+    getIsConsumed() {
+        return this.isConsumed;
     }
 }

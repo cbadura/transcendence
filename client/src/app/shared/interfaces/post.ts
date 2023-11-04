@@ -6,4 +6,5 @@ export interface Post {
     message: string;
     channel?: string;
     timestamp: string;
+	gameInvite?: boolean;
 }

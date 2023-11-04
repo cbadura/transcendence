@@ -1,0 +1,10 @@
+.tooltip .tooltiptext {
+	visibility: hidden;
+	left: 50%; 
+	bottom: 100%;
+	margin-left: -50%;
+}
+
+.tooltip:hover .tooltiptext {
+visibility: visible;
+}

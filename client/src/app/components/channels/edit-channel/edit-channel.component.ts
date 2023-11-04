@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
-import { EUserRole } from 'src/app/shared/macros/EUserRole';
+// import { EUserRole } from 'src/app/shared/macros/EUserRole';
 import { ChannelService } from 'src/app/services/channel.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { EUserRole } from 'src/app/shared/macros/EUserRole';
+// import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'tcd-edit-channel',
@@ -18,10 +20,11 @@ export class EditChannelComponent implements OnInit {
     EChannelMode.PRIVATE,
     EChannelMode.PROTECTED,
   ];
-  private channel!: Channel;
+  public channel!: Channel;
   public emptyChannel: boolean = false;
   public channelAdmins: User[] = [];
   public channelMembers: User[] = [];
+  public channelOwner!: User;
   private oldName: string = '';
   public tempChannel!: Channel;
   public tempPassword!: string;
@@ -33,7 +36,7 @@ export class EditChannelComponent implements OnInit {
     private route: ActivatedRoute,
     private channelService: ChannelService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
@@ -45,6 +48,10 @@ export class EditChannelComponent implements OnInit {
     this.route.params.subscribe((params) => {
       const { channel, ...rest } = params;
       this.channel = rest as Channel;
+      this.channel.usersIds = params['usersIds']
+        ?.split(',')
+        .map((num: string) => +num);
+
       this.tempChannel = { ...this.channel };
       this.oldName = this.tempChannel.name;
       if (!this.tempChannel.name) {
@@ -53,7 +60,7 @@ export class EditChannelComponent implements OnInit {
       if (!this.emptyChannel) this.getMembers();
     });
   }
-	
+
   selectMode(mode: EChannelMode) {
     this.tempChannel.mode = mode;
   }
@@ -75,7 +82,7 @@ export class EditChannelComponent implements OnInit {
       this.channelService.updateChannel(
         this.tempChannel,
         this.tempPassword,
-        this.oldName
+        this.oldName,
       );
       this.router.navigate(['/channels']);
     }
@@ -83,26 +90,32 @@ export class EditChannelComponent implements OnInit {
 
   getMembers() {
     if (!this.channel.usersIds) return;
+	console.log('this.channel', this.channel);
     for (let id of this.channel.usersIds) {
-      this.fetchUser(id);
+      if (id) {
+        this.fetchUser(id);
+      }
     }
   }
 
   fetchUser(id: number) {
     const url = `http://localhost:3000/users/${id}`;
     this.http.get<User>(url).subscribe((data) => {
-      if (data) {
-        this.channelMembers.push(data);
+      if (data && data.id !== Number(this.channel.ownerId)) {
         if (this.channel.adminIds?.includes(data.id)) {
           this.channelAdmins.push(data);
+        } else{
+          this.channelMembers.push(data);
         }
-      }
+      } else if (data) {
+		this.channelOwner = data;
+	  }
     });
   }
 
-	editTempUserChanges = (id: number, mode: string) => {
+  editTempUserChanges = (id: number, mode: string) => {
     let index = this.tempUserChanges.findIndex(
-      (change) => change.id === id && change.change === mode
+      (change) => change.id === id && change.change === mode,
     );
     if (index !== -1) {
       this.tempUserChanges.splice(index, 1);
@@ -111,12 +124,12 @@ export class EditChannelComponent implements OnInit {
     }
   };
 
-	kick = (event: Event, user: User) => {
+  kick = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'kick');
   };
 
-	ban = (event: Event, user: User) => {
+  ban = (event: Event, user: User) => {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'ban');
   };
@@ -135,15 +148,15 @@ export class EditChannelComponent implements OnInit {
     event.stopPropagation();
     this.editTempUserChanges(user.id, 'removeAdmin');
   };
-	
-	disinvite = (event: Event, user: User) => {
-		event.stopPropagation();
-		this.editTempUserChanges(user.id, 'invite');
-		let index = this.invitedUsers.findIndex((u) => u.id === user.id);
-		if (index !== -1) {
-			this.invitedUsers.splice(index, 1);
-		}
-	}
+
+  disinvite = (event: Event, user: User) => {
+    event.stopPropagation();
+    this.editTempUserChanges(user.id, 'invite');
+    let index = this.invitedUsers.findIndex((u) => u.id === user.id);
+    if (index !== -1) {
+      this.invitedUsers.splice(index, 1);
+    }
+  };
 
   onUserSelected(user: User) {
     this.closeUserPopup();

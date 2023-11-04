@@ -7,4 +7,5 @@ import { Component, Input } from '@angular/core';
 export class ChatBtnComponent {
 	@Input() icon!: string;
 	@Input() white!: boolean;
+	@Input() notification: boolean = false;
 }

@@ -8,7 +8,13 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true, unique: true })
+  ftid: number;
+
+  @Column({nullable: true})
+  tfa: boolean;
+
+  @Column({nullable: true}) //set null for auth test
   name: string;
 
   @Column({ nullable: false })

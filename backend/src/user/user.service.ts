@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Match } from 'src/entities/match.entity';
@@ -14,6 +14,7 @@ import { UserStatusUpdateDto } from './dto/user-status-update.dto';
 import { EUserMessages } from './user.interface';
 import { WsException } from '@nestjs/websockets';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
+import { promises as fsPromises } from 'fs';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,7 @@ export class UserService {
     @InjectRepository(MatchUser) private matchUserRepository: Repository<MatchUser>,
     @InjectRepository(Match) private matchRepository: Repository<Match>,
     @InjectRepository(Relationship) private relationshipRepository: Repository<Relationship>,
+    private readonly entityManager: EntityManager,
   ) {}
 
   // ~~~~~~~
@@ -34,6 +36,8 @@ export class UserService {
     if (!user) throw new WsException('Unexpected error');
     return user.userId;
   }
+
+
   async handleConnection(socket: Socket, userId: number) {
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
@@ -64,6 +68,7 @@ export class UserService {
         client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
       });
   }
+
   handleDisconnect(client: Socket) {
     const statusUpdate: UserStatusUpdateDto = {
       userId: this.getUserIdFromSocket(client),
@@ -112,8 +117,30 @@ export class UserService {
    });
   }
 
+  async getUserFromftid(ftid: number): Promise<User | undefined> {
+    return await this.userRepository.findOne({
+      where: {ftid},
+      relations: ['achievements','achievements.achievementDefinition'],
+    });
+  }
+
   async updateUser(id: number, dto: UpdateUserDto) {
+    if (id === 0) { // temp fix until dev specific endpoint
+      return this.createUser({
+        ftid: null,
+        name: dto.name,
+        color: dto.color,
+        avatar: `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`,
+        tfa: false,
+        level:1.00,
+        matches: 0,
+        wins: 0
+      })
+    }
     const currUser = await this.userRepository.findOne({ where: { id }});
+    if(dto.avatar != null && currUser != null){
+      await this.deleteExistingImage(currUser);
+    }
     // console.log(currUser);
     this.userRepository.merge(currUser, dto);
     // console.log(currUser);
@@ -125,8 +152,15 @@ export class UserService {
   createUser(dtoUserCreator: CreateUserDto): Promise<User> {
     console.log(dtoUserCreator);
     if(dtoUserCreator.avatar == null)
-      dtoUserCreator.avatar = `/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
-    const newUser:CreateUserDto = {...dtoUserCreator, level:1.00,matches: 0, wins: 0};
+      dtoUserCreator.avatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
+    const newUser:CreateUserDto = {
+      ...dtoUserCreator,
+      tfa: false,
+      color: '#E7C9FF',
+      level:1.00,
+      matches: 0,
+      wins: 0
+    };
     return this.userRepository.save(newUser);
   }
 
@@ -138,6 +172,31 @@ export class UserService {
     return DeletedUser;
   }
 
+  private async deleteExistingImage(user: User){
+    if(!user.avatar.includes('http://localhost:3000/users/profilepic/default_0')){
+        const filePath = this.createImageFilePath(user.avatar)
+        try {
+          await fsPromises.unlink(filePath); 
+          console.log(`Deleted file: ${filePath}`);
+      } catch (error) {
+          if (error.code === 'ENOENT') {
+              console.error(`File not found: ${filePath}`);
+          } else {
+              console.error(`Error deleting file: ${error.message}`);
+          }
+      }
+    }
+  }
+
+  private createImageFilePath(url:string):string {
+    const lastIndex = url.lastIndexOf('/');
+    const fileName = url.slice(lastIndex + 1);
+    const pathIndex = __dirname.lastIndexOf('backend')
+    const path = __dirname.slice(0,pathIndex);
+    const filePath = path + 'backend/uploadedData/profilepictures/'+ fileName;
+    return filePath;
+  }
+
   async createDummyUsers() {
     const colors: string[] = ['#E7C9FF','#C9FFE5','#C9CBFF','#FFC9C9','#FFFDC9','#C9FFFC'];
     try{
@@ -145,27 +204,32 @@ export class UserService {
       for(let i: number = 0 ; i < 100 ;i++){
         let user = new CreateUserDto;
         user.name = 'DummyUser_' + Math.floor(100000 + Math.random() * 900000).toString();
+        user.avatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
         user.color = colors[Math.floor(100000 + Math.random() * 900000) % 6];
         user.level = Number(((100000 + Math.random() * 10000) % 100).toFixed(2)); 
         user.matches = Math.floor(100000 + Math.random() * 900000) % 500;
         user.wins = Math.floor(user.matches * Math.random());
-        await this.userRepository.save(user);
+        user.tfa = false;
+        const newUser = await this.userRepository.save(user);
+        // const newUser = await this.createUser(user);
+        await this.updateUser(newUser.id, {ftid: newUser.id});
       }
-    } catch(error){
+    } catch(error){ 
       console.log(error);
     }
   }
-
+ 
   async deleteUserDatabase(){
-    await this.userRepository.clear();
+    await this.userRepository.createQueryBuilder().delete().from(User).execute();
+    const query = `ALTER SEQUENCE User_id_seq RESTART WITH 1;`;
+    await this.entityManager.query(query);
   }
-
 
   async getUserMatches(id: number): Promise<Match[]> {
     const user = await this.userRepository.findOne({where: {id: id}})
     // console.log(user);
     const matchUsers = await this.matchUserRepository.find({where:{user: {id: user.id}},
-      relations: ['match','match.matchUsers',"match.matchUsers.user"], //might be cost intensive?
+      relations: ['match','match.matchUsers',"match.matchUsers.user"], 
     })
     const matchesParticipated = matchUsers.map((matchUser)=> matchUser.match);
     return matchesParticipated;
@@ -182,6 +246,19 @@ export class UserService {
     }
 
     return query.getMany();
+  }
+
+  async validateRelationshipFromUser(user_id: number,other_user_id: number, relationType: string): Promise<boolean> {
+    const relations = await this.getUserRelationships(user_id,relationType);
+    const uniqueRelationship = relations.find(relation => relation.relational_user_id ==other_user_id)
+    if(uniqueRelationship == null)
+      return false;
+    return true;
+  }
+
+
+  validateFileExtension() {
+    
   }
 
 }

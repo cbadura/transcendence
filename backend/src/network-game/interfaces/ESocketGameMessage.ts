@@ -12,9 +12,16 @@ export enum ESocketGameMessage {
     UPDATE_GAME_INFO = 'updateGame',
     GAME_ENDED = 'gameEnded',
     TRY_MOVE_PADDLE = 'tryMovePaddle',
+
+    TRY_LEAVE_MATCH = 'tryLeaveMatch',
     
+    MATCH_INVITATION_FAILED = 'matchInvitationFailed', //message for all the cases when an invitation could fail
     
     TRY_JOIN_QUEUE = 'tryJoinQueue',
     TRY_LEAVE_QUEUE = 'tryLeaveQueue',
     
+    TRY_PLAY_AGAIN = 'tryPlayAgain',
+    OPP_PLAY_AGAIN = 'OppPlayAgain',
+    OPP_LEFT_GAME = 'OppLeftGame',
+
 }

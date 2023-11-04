@@ -1,26 +1,34 @@
-import { BallRenderInfo, GameRenderInfo, PaddleRenderInfo } from "../RenderInfo";
-import { GameBall } from "../GameBall";
+import { GameRenderInfo } from "../RenderInfo";
+import { ABall } from "../gameBalls/ABall";
 import { GamePaddle } from "../GamePaddle";
-import { PongGameConfig, defaultConfig, specialConfig } from "../PongGameConfig";
+import { PongGameConfig } from "../PongGameConfig";
 import { APowerUp } from "../PowerUps/APowerUp";
+import { AGameEffect } from "../gameEffects/AGameEffect";
+import { BallFactory } from "../gameBalls/BallFactory";
 
 export abstract class APongGame {
     constructor(protected config: PongGameConfig) {
         for (let i = 0; i < 2; i++) { //hard coded exactly 2 
-            this.userPaddles.push(new GamePaddle(config.paddle));
+            this.userPaddles.push(new GamePaddle(config.canvas,config.paddle));
         }
-        this.userPaddles[0].posX = config.canvas.goalLineOffset;
-        this.userPaddles[1].posX = config.canvas.width - config.canvas.goalLineOffset;
+        this.userPaddles[0].pos.x = config.canvas.goalLineOffset;
+        this.userPaddles[1].pos.x = config.canvas.width - config.canvas.goalLineOffset;
         
         for (let i = 0; i < config.balls.length; i++) {
-            this.gameBalls.push(new GameBall(config.canvas,config.balls[i]));
+            this.gameBalls.push(BallFactory(config.balls[i].type,{startPos: config.balls[i].defaultPos,startDir: config.balls[i].defaultDir,startSpeed: config.balls[i].defaultSpeed}));
         }
+        this.centerX = this.config.canvas.width/2
+        this.centerY = this.config.canvas.height/2
     }
-    powerUps: APowerUp[] = []
-    gameBalls: GameBall[] = [];
     userPaddles: GamePaddle[] = [];
+    gameBalls: ABall[] = [];
+    powerUps: APowerUp[] = [];
+    gameEffects: AGameEffect[] = [];
     private gameOver: boolean = false;
     hits : number = 0;
+
+    protected centerX: number;
+    protected centerY: number;
 
     //make sure that you get 0 or 1... currently its 1 and 2
     movePaddle(id: number, direction: number): void {
@@ -28,17 +36,7 @@ export abstract class APongGame {
             console.log('Wrong Paddle ID it should be 0 or 1, but got:',id)
             return
         }
-        const paddle = this.userPaddles[id]
-
-        const maxTop = paddle.length / 2; //dafuq is that
-        const maxBottom = this.config.canvas.height - maxTop;
-        const step = direction * paddle.step;
-        
-        const newPaddlePos = paddle.posY + step;
-        if (newPaddlePos > maxTop && newPaddlePos < maxBottom){
-            paddle.posY = newPaddlePos;
-        }
-
+        this.userPaddles[id].move(direction)
       }
     
     setGameOver(newState: boolean) {
@@ -59,7 +57,7 @@ export abstract class APongGame {
     abstract gameLoop(): void 
     abstract getGameState(): GameRenderInfo
 
-    getConfig(): any{
+    getConfig(): PongGameConfig{
         return this.config;
     }
 }

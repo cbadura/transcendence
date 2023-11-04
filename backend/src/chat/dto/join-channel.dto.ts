@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import {IsBoolean, IsNumber, IsOptional, IsString} from 'class-validator';
 
 /**
  * Dto for joining a channel.
@@ -22,4 +22,12 @@ export class JoinChannelDto {
 
   @IsOptional()
   channelUsersIds?: number[];
+
+  @IsBoolean()
+  @IsOptional()
+  isMuted?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  muteExpTime?: number;
 }

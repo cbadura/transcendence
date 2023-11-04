@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import {IsNumber, IsOptional, IsString} from 'class-validator';
 
 /**
  * Dto for leaving a channel.
@@ -12,4 +12,12 @@ export class AddRemoveAdminDto {
 
   @IsNumber()
   userId: number;
+
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  adminIds?: number[];
+
+  @IsNumber()
+  @IsOptional()
+  ownerId?: number;
 }

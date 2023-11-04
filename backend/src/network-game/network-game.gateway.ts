@@ -32,7 +32,7 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
     this.networkGameService.movePaddle(client,data);
   }
 
-  @SubscribeMessage(ESocketGameMessage.TRY_JOIN_QUEUE) //should have info 
+  @SubscribeMessage(ESocketGameMessage.TRY_JOIN_QUEUE) 
   JoinQueue(
     @ConnectedSocket() client: Socket, 
     @MessageBody() dto: JoinQueueDto, ) {
@@ -40,12 +40,17 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
     this.networkGameService.JoinQueue(client,dto);
   }
   
-  @SubscribeMessage(ESocketGameMessage.TRY_LEAVE_QUEUE) //should have info 
+  @SubscribeMessage(ESocketGameMessage.TRY_LEAVE_QUEUE)  
   LeaveQueue( @ConnectedSocket() client: Socket) {
     this.networkGameService.LeaveQueue(client);
   }
 
-  @SubscribeMessage(ESocketGameMessage.TRY_CREATE_ROOM) //should have info 
+  @SubscribeMessage(ESocketGameMessage.TRY_LEAVE_MATCH) 
+  LeaveMatch( @ConnectedSocket() client: Socket) {
+    this.networkGameService.LeaveMatch(client);
+  }
+
+  @SubscribeMessage(ESocketGameMessage.TRY_CREATE_ROOM) 
   CreatePrivateRoom(
     @ConnectedSocket() client: Socket, 
     @MessageBody() dto: CreatePrivateRoomDto, ) {
@@ -57,5 +62,10 @@ export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconn
     @ConnectedSocket() client: Socket, 
     @MessageBody() dto: JoinRoomDto, ) {
     this.networkGameService.JoinPrivateRoom(client,dto);
+  }
+
+  @SubscribeMessage(ESocketGameMessage.TRY_PLAY_AGAIN)  
+  PlayAgain( @ConnectedSocket() client: Socket) {
+    this.networkGameService.PlayAgain(client);
   }
 }

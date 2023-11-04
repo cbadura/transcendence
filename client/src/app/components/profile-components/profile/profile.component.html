@@ -1,50 +1,115 @@
-<section class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4 p-4">
+<section
+  class="m-4 flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto gap-4 p-4"
+>
+  <!-- Profile picture -->
+  <tcd-profile-pic [profilePic]="user.avatar" [size]="'8rem'"></tcd-profile-pic>
 
-<!-- Profile picture -->
-<tcd-profile-pic [profilePic]="myUser.avatar" [size]="'8rem'"></tcd-profile-pic>
-
-<!-- Name , level and status -->
-<div class="flex flex-col items-center">
+  <!-- Name , level and status -->
+  <div class="flex flex-col items-center">
     <div class="flex items-center gap-2">
-        <div [ngClass] = "{ 'h-4 aspect-square  rounded-full border border-black' : true,
-            'bg-green-300' : myUser.status === 'online',
-            'bg-red-400' : myUser.status === 'offline',
-            'bg-blue-400' : myUser.status === 'ingame'}">
-        </div>
-        <h1 class="font-bold text-2xl">{{myUser.name}}</h1>
+      <div
+        [ngClass]="{
+          'h-4 aspect-square  rounded-full border border-black': true,
+          'bg-green-300': user.status === 'online',
+          'bg-red-400': user.status === 'offline',
+          'bg-blue-400': user.status === 'ingame'
+        }"
+      ></div>
+      <h1 class="font-bold text-2xl">{{ user.name }}</h1>
     </div>
-    <p>level {{getFloorLevel()}}</p>
-</div>
+    <p>level {{ getFloorLevel() }}</p>
+  </div>
 
-<!-- Add, remove, block friend -->
-<div class="flex gap-4">
-    <tcd-custom-button buttonText="Add friend"></tcd-custom-button>
-    <tcd-custom-button buttonText="Block"></tcd-custom-button>
-    <tcd-custom-button buttonText="Edit profile" [customRoute]="'/create-profile'"></tcd-custom-button>
-</div>
+  <!-- Buttons -->
+  <div class="flex gap-4">
+    <!-- Add friend -->
+    <tcd-custom-button
+      (click)="addRelation('friend')"
+      *ngIf="!myProfile && relation === 'none'"
+      buttonText="Add friend"
+      [icon]="'featherUserPlus'"
+    ></tcd-custom-button>
+    <!-- Block -->
+    <tcd-custom-button
+      (click)="addRelation('blocked')"
+      *ngIf="!myProfile && relation === 'none'"
+      buttonText="Block"
+      [icon]="'featherUserX'"
+    ></tcd-custom-button>
+    <!-- Remove friend -->
+    <tcd-custom-button
+      (click)="removeRelation()"
+      *ngIf="!myProfile && relation === 'friend'"
+      buttonText="Remove friend"
+      [icon]="'featherUserMinus'"
+    ></tcd-custom-button>
+    <!-- Unblock -->
+    <tcd-custom-button
+      (click)="removeRelation()"
+      *ngIf="!myProfile && relation === 'blocked'"
+      buttonText="Unblock"
+      [icon]="'featherUserCheck'"
+    ></tcd-custom-button>
+    <!-- Edit profile -->
+    <tcd-custom-button
+      *ngIf="myProfile"
+      buttonText="Edit profile"
+      [customRoute]="'/create-profile'"
+    ></tcd-custom-button>
+  </div>
 
-<!-- note from Jean: it might make sense to also display the overall matches here -->
-<!-- Stats -->
-<tcd-stats [level]="myUser.level"></tcd-stats>
+  <!-- note from Jean: it might make sense to also display the overall matches here -->
+  <!-- Stats -->
+  <div class="flex w-full items-center justify-center gap-4">
+    <tcd-wins-losses
+      class="aspect-square"
+      [number]="user.wins"
+      [text]="'wins'"
+    ></tcd-wins-losses>
+    <tcd-wins-losses
+      class="aspect-square"
+      [number]="user.matches - user.wins"
+      [text]="'losses'"
+    ></tcd-wins-losses>
+  </div>
 
-<!-- Achievements -->
-<div class="flex flex-col items-center w-full">
+  <tcd-stats [level]="user.level"></tcd-stats>
+
+  <!-- Friends -->
+  <div class="w-full" *ngIf="friends.length > 0">
+    <p class="text-center">Friends</p>
+    <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
+      <div class="p-4" *ngFor="let friend of friends">
+        <tcd-profile-card [user]="friend"></tcd-profile-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements -->
+  <div
+    class="flex flex-col items-center w-full"
+    *ngIf="user.achievements && user.achievements.length > 0"
+  >
     <p>Achievements</p>
-    <div class="bg-black w-full rounded-3xl h-fit p-4 grid gap-4 grid-cols-3 sm:grid-cols-5 justify-items-center items-center" >
-        <div *ngFor="let achievement of achievements">
-            <tcd-achievement [achievement]="achievement"></tcd-achievement>
-        </div>
+    <div
+      class="bg-black w-full rounded-3xl h-fit p-4 grid gap-4 grid-cols-3 sm:grid-cols-5 justify-items-center items-center"
+    >
+      <div *ngFor="let achievement of user.achievements">
+        <tcd-achievement [achievement]="achievement"></tcd-achievement>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Match history -->
-<div class="flex flex-col items-center w-full">
+  <!-- Match history -->
+  <div
+    class="flex flex-col items-center w-full"
+    *ngIf="matches && matches.length > 0"
+  >
     <p>Match history</p>
-    <div class="bg-black w-full rounded-3xl h-fit p-4" >
-        <div *ngFor="let match of matches">
-            <tcd-match [match]="match" [me]="myUser"></tcd-match>
-        </div>
+    <div class="bg-black w-full rounded-3xl h-fit p-4">
+      <div *ngFor="let match of matches">
+        <tcd-match [match]="match" [me]="user"></tcd-match>
+      </div>
     </div>
-</div>
+  </div>
 </section>
-

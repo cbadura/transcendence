@@ -1,10 +1,12 @@
-import {Inject, Injectable} from '@angular/core';
-import {Socket} from 'ngx-socket-io';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {Injectable, OnDestroy} from '@angular/core';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 
 import {Channel} from '../shared/chat/Channel';
+import {User} from 'src/app/shared/interfaces/user';
 import {EUserRole} from '../shared/macros/EUserRole';
 import {ESocketMessage} from '../shared/chat/ESocketMessage';
+import {Socket} from 'ngx-socket-io';
+import {UserDataService} from './user-data.service';
 
 interface Change {
   id: number,
@@ -14,21 +16,28 @@ interface Change {
 @Injectable({
   providedIn: 'root'
 })
-export class ChannelService {
+export class ChannelService implements OnDestroy{
   channels: Channel[] = [];
   eventSubject = new Subject<{ eventType: string; data: any}>();
+  myUser!: User;
+  private userSubscription!: Subscription;
+  chatSocket: Socket | null = null;
 
-  constructor(
-    @Inject('chatSocket') private chatSocket: Socket) {
-      this.subscribeToEvents();
-    }
+  constructor(private userService: UserDataService) {
+    this.chatSocket = userService.chatSocket;
+    this.subscribeToEvents();
+    console.log('~~~~~~~~~~~~SUBSCRIBED CHANNEL~~~~~~~~~~~~~');
+    this.tryListChannels();
+    this.userSubscription = this.userService.user$.subscribe(
+      (user) => {
+        this.myUser = user;
+        console.log('channel service constructor');
+      }
+    );
+  }
 
   serverChannels = new BehaviorSubject<Channel[]>(this.channels);
   serverChatObs$ = this.serverChannels.asObservable();
-
-  /* getServerChannels(): Channel[] {
-    return this.serverChannels.value;
-  } */
 
   execActions(channel: Channel, userChanges: Change[]) {
 	  userChanges.forEach((change: Change) => {
@@ -53,7 +62,6 @@ export class ChannelService {
 	  });
   }
 
-
   /* SOCKET.IO calls */
 
   createChannel(channel: Channel, password: string) {
@@ -66,21 +74,21 @@ export class ChannelService {
     if (password) {
       newChannel.password = password;
     }
-    this.chatSocket.emit('tryCreateChannel', newChannel);
+    this.chatSocket?.emit('tryCreateChannel', newChannel);
   }
 
   // Todo: add password field in channel card
-  joinChannel(channel: Channel) {
+  joinChannel(channel: Channel, password: string | null) {
     let newChannel = {
       channelName: channel.name,
-      currName: channel.name
-      // password: ''
+      currName: channel.name,
+      password: ''
     }
-    /* if (password) {
+    if (password) {
       newChannel.password = password;
-    } */
+    }
     console.log('JOIN', newChannel);
-    this.chatSocket.emit(ESocketMessage.TRY_JOIN_CHANNEL, newChannel);
+    this.chatSocket?.emit(ESocketMessage.TRY_JOIN_CHANNEL, newChannel);
   }
 
   updateChannel(channel: Channel, password: string, currName: string) {
@@ -94,7 +102,7 @@ export class ChannelService {
       newChannel.password = password;
     }
     console.log('UPDATE', newChannel);
-    this.chatSocket.emit(ESocketMessage.TRY_UPDATE_CHANNEL, newChannel);
+    this.chatSocket?.emit(ESocketMessage.TRY_UPDATE_CHANNEL, newChannel);
   }
 
   deleteChannel(name: string) {
@@ -102,7 +110,7 @@ export class ChannelService {
     let ch = {
       channelName: name
     };
-    this.chatSocket.emit(ESocketMessage.TRY_DELETE_CHANNEL, ch);
+    this.chatSocket?.emit(ESocketMessage.TRY_DELETE_CHANNEL, ch);
   }
 
   /*~~~~~Nadiia~~~~~*/
@@ -115,7 +123,7 @@ export class ChannelService {
       expirationTimestamp: timestamp
     }
     console.log('BAN', ban);
-    this.chatSocket.emit(ESocketMessage.TRY_BAN_FROM_CHANNEL, ban);
+    this.chatSocket?.emit(ESocketMessage.TRY_BAN_FROM_CHANNEL, ban);
   }
 
   muteUser(chName: string, targetId: number, timestamp: number) {
@@ -125,7 +133,7 @@ export class ChannelService {
       expirationTimestamp: timestamp
     }
     console.log('MUTE', mute);
-    this.chatSocket.emit(ESocketMessage.TRY_MUTE_FROM_CHANNEL, mute);
+    this.chatSocket?.emit(ESocketMessage.TRY_MUTE_FROM_CHANNEL, mute);
   }
 
   kickUser(chName: string, targetId: number) {
@@ -134,7 +142,7 @@ export class ChannelService {
       targetUserId: targetId
     }
     console.log('KICK', kick);
-    this.chatSocket.emit(ESocketMessage.TRY_KICK_FROM_CHANNEL, kick);
+    this.chatSocket?.emit(ESocketMessage.TRY_KICK_FROM_CHANNEL, kick);
   }
 
   inviteUser(chName: string, targetId: number) {
@@ -143,18 +151,17 @@ export class ChannelService {
       targetUserId: targetId
     }
     console.log('INVITE', invite);
-    this.chatSocket.emit(ESocketMessage.TRY_INVITE_TO_CHANNEL, invite);
+    this.chatSocket?.emit(ESocketMessage.TRY_INVITE_TO_CHANNEL, invite);
   }
 
-  leaveChannel(chName: string) {
-    //TODO add info if owner is leaving :
-    //  option: EChannelLeaveOption;
-    //  transferId: number;
+  leaveChannel(chName: string, option: string, id?: number) {
     let leave = {
-      channelName: chName
+      channelName: chName,
+	  option: option,
+	  transferId: id ? id : -1
     }
     console.log('LEAVE', leave);
-    this.chatSocket.emit(ESocketMessage.TRY_LEAVE_CHANNEL, leave);
+    this.chatSocket?.emit(ESocketMessage.TRY_LEAVE_CHANNEL, leave);
   }
 
   addAdmin(chName: string, targetId: number) {
@@ -163,7 +170,7 @@ export class ChannelService {
       userId: targetId
     }
     console.log('ADD ADMIN', addAdmin);
-    this.chatSocket.emit(ESocketMessage.TRY_ADD_ADMIN, addAdmin);
+    this.chatSocket?.emit(ESocketMessage.TRY_ADD_ADMIN, addAdmin);
   }
 
   removeAdmin(chName: string, targetId: number) {
@@ -172,7 +179,11 @@ export class ChannelService {
       userId: targetId
     }
     console.log('REMOVE ADMIN', removeAdmin);
-    this.chatSocket.emit(ESocketMessage.TRY_REMOVE_ADMIN, removeAdmin);
+    this.chatSocket?.emit(ESocketMessage.TRY_REMOVE_ADMIN, removeAdmin);
+  }
+
+  tryListChannels() {
+    this.chatSocket?.emit('tryListChannels');
   }
 
   /*~~~~~~~~~~~~~~~~*/
@@ -181,6 +192,7 @@ export class ChannelService {
     this.chatSocket?.on(
       'listChannels',
       (data: any) => {
+        console.log('listChannels', data);
         this.channels = data.channels;
         this.serverChannels.next(this.channels);
     });
@@ -195,14 +207,19 @@ export class ChannelService {
       'createdChannel',
       (data: any) => {
         console.log('CREATED', data);
+        let role = EUserRole.NONE;
+        if (data.ownerId === this.myUser.id) {
+          role = EUserRole.OWNER;
+        }
         let channel: Channel = {
           name: data.channelName,
           mode: data.mode,
-          role: EUserRole.OWNER,
+          role: role,
           isBanned: false,
           isMuted: false,
-          usersIds: [1],
-          adminIds: [] 
+          usersIds: [data.ownerId],
+          adminIds: [],
+		  ownerId: data.ownerId
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);
@@ -226,11 +243,9 @@ export class ChannelService {
       ESocketMessage.DELETED_CHANNEL,
       (data: any) => {
         console.log('DELETED', data);
-        this.channels = this.channels.filter(
-          (ch) =>
+        this.channels = this.channels.filter((ch) =>
             ch.name !== data.channelName
         );
-        console.log('AFTER DELETED', this.channels);
         this.serverChannels.next(this.channels);
     });
 
@@ -241,10 +256,13 @@ export class ChannelService {
       (data: any) => {
         console.log('JOINED', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
+          if (ch.name === data.channelName) {
+            ch = data;
             ch.usersIds = data.channelUsersIds;
-            ch.role = EUserRole.USER;
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.USER;
+              ch.isBanned = false;
+            }
           }
         });
         this.serverChannels.next(this.channels);
@@ -255,18 +273,17 @@ export class ChannelService {
       (data: any) => {
         console.log('BANNED', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
-            /* uncomment this part, when client will know it's id
-            if (data.targetUserId === myID){
+          if (ch.name === data.channelName) {
+            if (data.targetUserId === this.myUser.id){
               ch.isBanned = true;
               ch.banExpTime = data.expirationTimestamp;
-            }*/
+              ch.role = EUserRole.NONE;
+            }
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
 
-            if (ch.role === EUserRole.OWNER)
+            if (ch.role === EUserRole.OWNER) {
               ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-            // TODO when user knows its id, if he is kicked change his role to none
+            }
           }
         });
         this.serverChannels.next(this.channels);
@@ -291,11 +308,15 @@ export class ChannelService {
       (data: any) => {
         console.log('KICKED', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
+          if (ch.name === data.channelName) {
             ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-           if (ch.role === EUserRole.OWNER)
-             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-            // TODO when user knows its id, if he is kicked change his role to none
+            if (data.targetUserId === this.myUser.id) {
+              ch.role = EUserRole.NONE;
+            }
+            if (ch.role === EUserRole.OWNER) {
+              ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
+            }
+          }
         });
         this.serverChannels.next(this.channels);
       });
@@ -317,18 +338,21 @@ export class ChannelService {
       (data: any) => {
         console.log('LEFT', data);
         this.channels.find((ch) => {
-          if (ch.name === data.channelName)
-          {
-            ch.usersIds = ch.usersIds.filter((id) => id !== data.targetUserId);
-           if (ch.role === EUserRole.OWNER)
-             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);
-          
-            /* uncomment this part, when client will know it's id
-              if (data.transferId === myID)
-                 ch.role = EUserRole.OWNER;
-             */
-            // TODO when user knows its id, if he is kicked change his role to none
-         }
+          if (ch.name === data.channelName) {
+            ch.usersIds = ch.usersIds.filter((id) => id !== data.userId);
+            if (ch.role === EUserRole.OWNER) {
+              ch.adminIds = ch.adminIds.filter((id) => id !== data.userId);
+            }
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.NONE;
+            }
+
+			if (ch.usersIds.length <= 0) {
+				this.channels = this.channels.filter((ch) =>
+					ch.name !== data.channelName
+				);
+			}
+          }
        });
        this.serverChannels.next(this.channels);
      });
@@ -340,8 +364,11 @@ export class ChannelService {
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
-            ch.role = EUserRole.ADMIN;
-            ch.adminIds.push(data.userId);
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.ADMIN;
+              ch.ownerId = data.ownerId;
+            }
+            ch.adminIds = data.adminIds;
           }
         });
         this.serverChannels.next(this.channels);
@@ -350,12 +377,13 @@ export class ChannelService {
     this.chatSocket?.on(
       ESocketMessage.REMOVED_ADMIN,
       (data: any) => {
-        console.log('REMOVED ADMIN', data);
         this.channels.find((ch) => {
           if (ch.name === data.channelName)
           {
-            ch.role = EUserRole.USER;
-             ch.adminIds = ch.adminIds.filter((id) => id !== data.targetUserId);6
+            if (data.userId === this.myUser.id) {
+              ch.role = EUserRole.USER;
+            }
+            ch.adminIds = ch.adminIds.filter((id) => id !== data.userId);
           }
         });
         this.serverChannels.next(this.channels);
@@ -363,5 +391,7 @@ export class ChannelService {
 
    /*~~~~~~~~~~~~~~~~*/
   }
-
+  ngOnDestroy() {
+    this.userSubscription.unsubscribe();
+  }
 }
