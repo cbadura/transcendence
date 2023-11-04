@@ -524,6 +524,8 @@ export class ChatService {
     joinedDto.userId = who;
     joinedDto.channelName = dto.channelName;
     joinedDto.channelUsersIds = channel.users;
+    joinedDto.isMuted = !!channel.mutes.find((mute) => mute.userId === who);
+    joinedDto.muteExpTime = channel.mutes.find((mute) => mute.userId === who)?.expireTimestamp;
 
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
