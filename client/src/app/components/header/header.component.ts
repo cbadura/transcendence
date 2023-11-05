@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit {
 	public fadedColor!: string;
 	public saturatedColor!: string;
 	public hovered: number = -1;
-	pages = ['Game', 'Leaderboard', 'Channels', 'Profile'];
+	pages = ['Game', 'Leaderboard', 'Channels', 'Profile','Testing'];
 	
 	constructor(private router: Router,
     private userDataService: UserDataService) {

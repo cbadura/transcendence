@@ -67,6 +67,9 @@ import { ActivateTwofaComponent } from './components/profile-components/activate
 import { GameService } from './services/game.service';
 import { WinsLossesComponent } from './components/profile-components/wins-losses/wins-losses.component';
 import { LeaveChatComponent } from './components/chat/leave-chat/leave-chat.component';
+import { TestComponent } from './components/testComponent/test.component';
+import { TooltipComponent } from './components/tooltip/component/tooltip.component';
+import { TooltipDirective } from './components/tooltip/directives/tooltip.directive';
 
 // const chatConfig: SocketIoConfig = { url: 'http://localhost:3000/chat', options: {} };
 // const gameConfig: SocketIoConfig = { url: 'http://localhost:3000/game?userId=1', options: {} };
@@ -107,6 +110,9 @@ import { LeaveChatComponent } from './components/chat/leave-chat/leave-chat.comp
     ActivateTwofaComponent,
     WinsLossesComponent,
     LeaveChatComponent,
+    TestComponent,
+    TooltipComponent,
+    TooltipDirective,
   ],
   imports: [
     HttpClientModule,

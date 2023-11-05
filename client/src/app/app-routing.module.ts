@@ -15,6 +15,7 @@ import { TokenComponent } from './components/authentication/token/token.componen
 import { TwofaComponent } from './components/authentication/twofa/twofa.component';
 // import { SigninComponent } from './components/signin/signin.component';
 import {ConfirmDeactivateGuard} from './guards/can-deactivate.guard';
+import { TestComponent } from './components/testComponent/test.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'game', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard] },
   { path: 'game/:invite', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard] },
   { path: 'leaderboard', component: LeaderboardComponent },
+  { path: 'testing', component: TestComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'chat/:channel', component: ChatComponent },
   { path: 'profile/:profile', component: ProfileComponent },
