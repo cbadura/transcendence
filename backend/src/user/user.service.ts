@@ -8,11 +8,9 @@ import { Match } from 'src/entities/match.entity';
 import { MatchUser } from 'src/entities/match-user.entity';
 import { Relationship } from 'src/entities/relationship.entity';
 import { Socket } from 'socket.io';
-import { ISocketUser } from '../chat/chat.interfaces';
 import { EUserStatus } from '../network-game/interfaces/IGameSocketUser';
 import { UserStatusUpdateDto } from './dto/user-status-update.dto';
-import { EUserMessages } from './user.interface';
-import { WsException } from '@nestjs/websockets';
+import { EUserMessages, ISocketUserStatus } from './user.interface';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
@@ -30,15 +28,26 @@ export class UserService {
   ) {}
 
   // ~~~~~~~
-  private clients: ISocketUser[] = [];
+  private clients: ISocketUserStatus[] = [];
 
   private getUserIdFromSocket(socket: Socket): number {
-    const user: ISocketUser = this.clients.find(
+    const user: ISocketUserStatus = this.clients.find(
       (client) => client.socket.id === socket.id,
     );
-    if (!user) throw new WsException('Unexpected error');
-    return user.userId;
+    return user?.userId;
   }
+  
+  private createList(): UserStatusUpdateDto[] {
+    let listUsers: UserStatusUpdateDto[] = [];
+    listUsers = this.clients.map((user) => {
+      const upd = new UserStatusUpdateDto();
+      upd.userId = user.userId;
+      upd.status = user.status;
+      return upd;
+    });
+    return listUsers;
+  }
+  
   async handleConnection(socket: Socket) {
     
     // temporary solution, check token from cookie and verify it after connection
@@ -50,7 +59,7 @@ export class UserService {
       socket.disconnect(true);
       return ;
     }
-
+    
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
       socket.disconnect(true);
@@ -63,9 +72,10 @@ export class UserService {
       socket.disconnect(true);
       return;
     }
-    const client: ISocketUser = {
+    const client: ISocketUserStatus = {
       socket,
       userId: userId,
+      status: EUserStatus.ONLINE
     };
     const statusUpdate: UserStatusUpdateDto = {
       userId,
@@ -75,10 +85,11 @@ export class UserService {
       (client) => client.userId === userId,
     );
     this.clients.push(client);
-    if (!isOnline)
+    if (!isOnline) {
       this.clients.forEach((client) => {
         client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
       });
+    }
   }
 
   handleDisconnect(client: Socket) {
@@ -86,7 +97,8 @@ export class UserService {
       userId: this.getUserIdFromSocket(client),
       status: EUserStatus.OFFLINE,
     };
-    const clientSockets: ISocketUser[] = this.clients.filter(
+    if (statusUpdate.userId === undefined) return ;
+    const clientSockets: ISocketUserStatus[] = this.clients.filter(
       (client) => client.userId === statusUpdate.userId,
     );
     if (clientSockets.length === 1)
@@ -98,7 +110,18 @@ export class UserService {
     );
   }
 
+  listUserStatuses (client: Socket){
+    client.emit(
+        EUserMessages.LIST_USER_STATUSES,
+        this.createList(),
+    );
+  }
+
   notifyUserStatusUpdate(userId: number, status: EUserStatus) {
+    this.clients.forEach((client) => {
+      if (client.userId === userId)
+        client.status = status;
+    });
     const statusUpdate: UserStatusUpdateDto = {
       userId,
       status,

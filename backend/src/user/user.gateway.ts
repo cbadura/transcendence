@@ -1,14 +1,14 @@
-import { UseFilters } from '@nestjs/common';
-import { BadRequestTransformationFilter } from '../chat/chat.filter';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
+  ConnectedSocket,
   OnGatewayConnection,
-  OnGatewayDisconnect,
+  OnGatewayDisconnect, SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { UserService } from './user.service';
 import { Socket } from 'socket.io';
+import { EUserMessages } from "./user.interface";
 
-@UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:4200',
@@ -23,5 +23,13 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     this.userService.handleDisconnect(client);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(EUserMessages.TRY_LIST_USER_STATUSES)
+  listUserStatuses(
+      @ConnectedSocket() socket: Socket,
+  ) {
+    this.userService.listUserStatuses(socket);
   }
 }
