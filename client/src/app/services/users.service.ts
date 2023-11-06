@@ -34,6 +34,8 @@ export class UserService {
     private http: HttpClient,
     private userService: UserDataService,
   ) {
+		console.log('users constructor');
+
     this.userSocket = userService.userSocket;
     this.subscribeToEvents();
   }
@@ -56,6 +58,7 @@ export class UserService {
   }
 
   subscribeToEvents() {
+	console.log('subscribed to user events');
     this.userSocket?.on(EUserMessages.STATUS_UPDATE, (data: any) => {
       console.log(EUserMessages.STATUS_UPDATE, data);
     //   this.statuses

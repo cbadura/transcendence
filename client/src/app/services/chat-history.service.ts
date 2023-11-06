@@ -34,7 +34,9 @@ export class ChatHistoryService {
     if (!this.chatHistories[channel]) {
       this.chatHistories[channel] = [];
     }
+	console.log('add Post called', channel, post);
     this.chatHistories[channel].push(post);
+	console.log('history', this.chatHistories[channel]);
     this.getOrCreateChatSubject(channel).next(this.chatHistories[channel]);
   }
 
