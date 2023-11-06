@@ -17,14 +17,23 @@
       (click)="selectChannel(page)"
       [isBlack]="selectedPage === page"
     ></tcd-custom-button>
+	<div class="relative">
+	<tcd-custom-button
+      [buttonText]="'Invites'"
+      (click)="selectChannel('Invites')"
+      [isBlack]="selectedPage === 'Invites'"
+    ></tcd-custom-button>
+	<div *ngIf="countInvites > 0" class="absolute rounded-full  font-Inter flex justify-center items-center text-xs font-bold shadow-sm h-5 w-5 bg-red-600 -top-1 -right-2">{{countInvites > 9 ? '+9' : countInvites}}</div>
+	</div>
   </div>
 
-  <!-- Public, Private, Protected channels -->
+  <!-- Public, Private, Protected and Invites channels -->
   <div
     *ngIf="
       (selectedPage === 'Public' ||
         selectedPage === 'Private' ||
-        selectedPage === 'Protected') &&
+        selectedPage === 'Protected' ||
+		selectedPage === 'Invites') &&
       filteredChannels.length > 0
     "
     class="border border-zinc-800 bg-zinc-800 rounded-3xl w-full"

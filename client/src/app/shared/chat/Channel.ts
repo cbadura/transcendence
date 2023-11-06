@@ -13,4 +13,5 @@ export interface Channel {
 	password?: string;
 	adminIds: number[];
 	ownerId: number;
+	invited?: boolean;
 }

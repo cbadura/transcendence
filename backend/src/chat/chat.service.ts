@@ -482,12 +482,12 @@ export class ChatService {
     this.broadcastToAllUserSockets(
       targetUser.userId,
       ESocketMessage.INVITED_TO_CHANNEL,
-      invDto,
+      channel,
     );
     this.broadcastToAllUserSockets(
       user,
       ESocketMessage.INVITED_TO_CHANNEL,
-      invDto,
+      channel,
     );
     channel.invites.push(targetUser.userId);
   }
