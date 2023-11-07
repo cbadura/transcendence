@@ -8,11 +8,7 @@ import { UserDataService } from './user-data.service';
 import { Socket } from 'ngx-socket-io';
 import { EUserStatus } from '../shared/macros/EUserStatus';
 import { EUserMessages } from '../shared/macros/EUserMessages';
-
-interface UserStatus {
-  id: number;
-  status: EUserStatus;
-}
+import { UserStatus } from '../shared/interfaces/userStatus';
 
 interface UserRelationship {
 	id: number;
@@ -38,6 +34,7 @@ export class UserService {
 
     this.userSocket = userService.userSocket;
     this.subscribeToEvents();
+	this.tryListUserStatuses();
   }
 
   getUsers(): Observable<User[]> {
@@ -57,12 +54,28 @@ export class UserService {
     return this.http.get<any[]>(matchesUrl);
   }
 
+    tryListUserStatuses() {
+	this.userSocket?.emit(EUserMessages.TRY_LIST_USER_STATUSES);
+  }
+
+
   subscribeToEvents() {
 	console.log('subscribed to user events');
     this.userSocket?.on(EUserMessages.STATUS_UPDATE, (data: any) => {
       console.log(EUserMessages.STATUS_UPDATE, data);
-    //   this.statuses
+	  const foundIndex = this.statuses.findIndex(status => status.userId === data.userId);
+	  if (foundIndex !== -1) {
+		this.statuses[foundIndex].status = data.status;
+	  } else {
+		this.statuses.push(data);
+	  }
       this.statusSubject.next(this.statuses);
     });
+
+	this.userSocket?.on(EUserMessages.LIST_USER_STATUSES, (data: any) => {
+		console.log(EUserMessages.LIST_USER_STATUSES, data);
+		this.statuses = data;
+		this.statusSubject.next(this.statuses);
+	})
   }
 }

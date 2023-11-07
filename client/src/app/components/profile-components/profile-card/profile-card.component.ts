@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'tcd-profile-card',
   templateUrl: './profile-card.component.html',
-  styleUrls: ['./profile-card.component.css'],
 })
 export class ProfileCardComponent implements OnInit {
   @Input() user!: User;
@@ -16,6 +15,7 @@ export class ProfileCardComponent implements OnInit {
   @Input() mute!: Function;
   @Input() disinvite!: Function;
   @Input() redirect: boolean = true;
+  @Input() userStatus: string = 'Offline';
   public selected!: string;
 
   constructor(private router: Router) {}

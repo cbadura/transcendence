@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { CookieService } from 'ngx-cookie-service';
-import { UserService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'tcd-token',
@@ -17,7 +16,6 @@ export class TokenComponent implements OnInit {
     private http: HttpClient,
     private userDataService: UserDataService,
 	private cookieService: CookieService,
-	private userService: UserService,
   ) {}
 
   ngOnInit() {

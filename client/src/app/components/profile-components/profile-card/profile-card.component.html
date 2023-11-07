@@ -1,24 +1,70 @@
-<div (click)="clickOnCard($event)" class="flex items-center justify-between bg-black p-4 rounded-3xl text-white cursor-pointer transition-all  hover:bg-zinc-700">
+<div
+  (click)="clickOnCard($event)"
+  class="flex items-center justify-between bg-black p-4 rounded-3xl text-white cursor-pointer transition-all hover:bg-zinc-700"
+>
+  <!-- Left side -->
+  <div class="flex gap-4 items-center">
+    <div
+      [ngClass]="{
+        'h-3 aspect-square  rounded-full border border-black': true,
+        'bg-green-300': userStatus === 'Online',
+        'bg-red-400': userStatus === 'Offline',
+        'bg-blue-400': userStatus === 'Playing',
+        'bg-yellow-300': userStatus === 'Queueing'
+      }"
+    ></div>
+    <div class="flex items-center justify-center gap-4">
+      <tcd-thumbnail [imgUrl]="user.avatar" [size]="'50px'"></tcd-thumbnail>
+      <div>
+        <p class="font-bold">{{ user.name }}</p>
+        <p>level {{ getFloorLevel() }}</p>
+      </div>
+    </div>
+  </div>
 
-	<!-- Left side -->
-	<div class="flex gap-4">
-		<tcd-thumbnail [imgUrl]="user.avatar" [size]="'50px'"></tcd-thumbnail>
-		<div>
-			<p class="font-bold">{{user.name}}</p>
-			<p>level {{getFloorLevel()}}</p>
-		</div>
-	</div>
-
-	<!-- Right side -->
-	<div class="flex gap-4">
-		<tcd-custom-button *ngIf="makeAdmin" [isDisabled]="isDisabled('makeAdmin')" [buttonText]="'makeAdmin'" (click)="changeSelected($event,'makeAdmin')" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="removeAdmin" [isDisabled]="isDisabled('removeAdmin')" [buttonText]="'removeAdmin'" (click)="changeSelected($event,'removeAdmin')" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="kick" [isDisabled]="isDisabled('kick')" [buttonText]="'kick'" (click)="changeSelected($event,'kick')" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="ban" [isDisabled]="isDisabled('ban')" [buttonText]="'ban'" (click)="changeSelected($event,'ban')" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="mute" [isDisabled]="isDisabled('mute')"  [buttonText]="'mute'" (click)="changeSelected($event,'mute')" [isBlack]="true"></tcd-custom-button>
-		<tcd-custom-button *ngIf="disinvite" [isDisabled]="isDisabled('disinvite')"  [buttonText]="'disinvite'" (click)="changeSelected($event,'disinvite')" [isBlack]="true"></tcd-custom-button>
-
-	</div>
-
-
+  <!-- Right side -->
+  <div class="flex gap-4">
+    <tcd-custom-button
+      *ngIf="makeAdmin"
+      [isDisabled]="isDisabled('makeAdmin')"
+      [buttonText]="'makeAdmin'"
+      (click)="changeSelected($event, 'makeAdmin')"
+      [isBlack]="true"
+    ></tcd-custom-button>
+    <tcd-custom-button
+      *ngIf="removeAdmin"
+      [isDisabled]="isDisabled('removeAdmin')"
+      [buttonText]="'removeAdmin'"
+      (click)="changeSelected($event, 'removeAdmin')"
+      [isBlack]="true"
+    ></tcd-custom-button>
+    <tcd-custom-button
+      *ngIf="kick"
+      [isDisabled]="isDisabled('kick')"
+      [buttonText]="'kick'"
+      (click)="changeSelected($event, 'kick')"
+      [isBlack]="true"
+    ></tcd-custom-button>
+    <tcd-custom-button
+      *ngIf="ban"
+      [isDisabled]="isDisabled('ban')"
+      [buttonText]="'ban'"
+      (click)="changeSelected($event, 'ban')"
+      [isBlack]="true"
+    ></tcd-custom-button>
+    <tcd-custom-button
+      *ngIf="mute"
+      [isDisabled]="isDisabled('mute')"
+      [buttonText]="'mute'"
+      (click)="changeSelected($event, 'mute')"
+      [isBlack]="true"
+    ></tcd-custom-button>
+    <tcd-custom-button
+      *ngIf="disinvite"
+      [isDisabled]="isDisabled('disinvite')"
+      [buttonText]="'disinvite'"
+      (click)="changeSelected($event, 'disinvite')"
+      [isBlack]="true"
+    ></tcd-custom-button>
+  </div>
 </div>

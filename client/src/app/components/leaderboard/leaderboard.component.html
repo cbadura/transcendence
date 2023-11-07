@@ -1,3 +1,3 @@
 <div class="border flex flex-col gap-4 items-center justify-start border-zinc-800 bg-zinc-800 rounded-3xl w-full mb-4 p-4">
-    <tcd-profile-card class="w-full" *ngFor="let user of users | sortByScore" [user]="user"></tcd-profile-card>
+    <tcd-profile-card class="w-full" *ngFor="let user of users | sortByScore" [user]="user" [userStatus]="getUserStatus(user.id)"></tcd-profile-card>
 </div>

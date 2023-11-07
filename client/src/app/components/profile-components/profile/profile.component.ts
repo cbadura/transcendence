@@ -8,15 +8,18 @@ import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserStatus } from 'src/app/shared/interfaces/userStatus';
 
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   user!: User;
   myUser!: User;
   private userSubscription!: Subscription;
+  private statusSubscription!: Subscription;
+  private statuses: UserStatus[] = [];
   friends: User[] = [];
   matches: Match[] = [];
   relation: string = 'none';
@@ -63,6 +66,12 @@ export class ProfileComponent implements OnInit {
           this.getUserRelation();
         }
       });
+
+      this.statusSubscription = this.userService.statusChatObs$.subscribe(
+        (statuses) => {
+          this.statuses = statuses;
+        },
+      );
 
       this.userService.getFriends(this.user.id).subscribe((data) => {
         data.forEach((friend) => {
@@ -126,7 +135,13 @@ export class ProfileComponent implements OnInit {
 
   getFloorLevel = () => Math.floor(this.user.level);
 
+  get userStatus() : string {
+	const userStatus = this.statuses.find(status => status.userId === Number(this.user.id));
+	return userStatus ? userStatus.status : 'Offline';
+  }
+
   ngOnDestroy() {
-	this.userSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
+    this.statusSubscription.unsubscribe();
   }
 }
