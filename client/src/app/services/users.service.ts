@@ -20,19 +20,22 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     const usersUrl = 'http://localhost:3000/users';
-    return this.http.get<User[]>(usersUrl);
+    return this.http.get<User[]>(usersUrl, { withCredentials: true });
   }
 
   getFriends(id: number): Observable<UserRelationship[]> {
     const friendsUrl = `http://localhost:3000/users/${id}/relationship`;
     const params = new HttpParams().set('filter', 'friend');
-    const requestUrl = `${friendsUrl}?${params.toString()}`;
-    return this.http.get<UserRelationship[]>(requestUrl);
+    return this.http.get<UserRelationship[]>(
+      friendsUrl,{
+        params: params,
+        withCredentials: true
+      });
   }
 
   getMatches(id: number) : Observable<any[]> {
 	const matchesUrl = `http://localhost:3000/users/${id}/matches`;
-	return this.http.get<any[]>(matchesUrl)
+	return this.http.get<any[]>(matchesUrl, { withCredentials: true })
   }
 
 }

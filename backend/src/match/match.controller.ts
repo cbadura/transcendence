@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from
 import { MatchService } from './match.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
+import { jwtAuthGuard } from 'src/auth/guard/jwt.guard';
 
 @Controller('match')
 export class MatchController {
@@ -13,11 +14,13 @@ export class MatchController {
         return this.matchService.createMatch(createMatchDto);
     }
 
+    @UseGuards(jwtAuthGuard)
     @Get()
     async getMatches(){
         return await this.matchService.getMatches();
     }
 
+    @UseGuards(jwtAuthGuard)
     @Get(":id")
     async getMatch(@Param("id",ParseIntPipe) id: number)  {
         console.log('here')

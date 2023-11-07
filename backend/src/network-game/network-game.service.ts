@@ -19,7 +19,7 @@ import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 export class NetworkGameService {
     constructor(readonly userService: UserService,private readonly matchService: MatchService) {
       this.monitorGameRooms();
-      this.LogGameRooms();
+      // this.LogGameRooms();
     }
     private clients: IGameSocketUser[] = [];
     private defaultQueue: IGameSocketUser[] = [];

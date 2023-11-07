@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -232,6 +232,11 @@ export class UserService {
   }
  
   async deleteUserDatabase(){
+    // const users = await this.userRepository.find();
+    // for (const user of users) {
+    //   await this.achievementRepo.delete({ userId: user.id});
+    //   await this.userRepository.delete(user.id);
+    // }
     await this.userRepository.createQueryBuilder().delete().from(User).execute();
     const query = `ALTER SEQUENCE User_id_seq RESTART WITH 1;`;
     await this.entityManager.query(query);
@@ -239,6 +244,8 @@ export class UserService {
 
   async getUserMatches(id: number): Promise<Match[]> {
     const user = await this.userRepository.findOne({where: {id: id}})
+    if (!user)
+      throw new NotFoundException('User doesnt exist');
     // console.log(user);
     const matchUsers = await this.matchUserRepository.find({where:{user: {id: user.id}},
       relations: ['match','match.matchUsers',"match.matchUsers.user"], 

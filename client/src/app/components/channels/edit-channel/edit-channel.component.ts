@@ -105,7 +105,7 @@ export class EditChannelComponent implements OnInit {
 
   fetchUser(id: number) {
     const url = `http://localhost:3000/users/${id}`;
-    this.http.get<User>(url).subscribe((data) => {
+    this.http.get<User>(url, { withCredentials: true }).subscribe((data) => {
       if (data && data.id !== Number(this.channel.ownerId)) {
         if (this.channel.adminIds?.includes(data.id)) {
           this.channelAdmins.push(data);
