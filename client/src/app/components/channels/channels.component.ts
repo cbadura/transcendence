@@ -61,7 +61,14 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 	}
     else if (selectedPage === 'DMs') {
       this.filteredChannels = [];
-    }
+    } else if (selectedPage === 'Invites')
+	{
+		this.filteredChannels = this.serverChannels.filter(channel => channel.invited === true);
+	}
+  }
+
+  get countInvites(): number {
+	  return this.serverChannels.filter(channel => channel.invited === true).length;
   }
 
   checkUserJoinedStatus(channel: Channel): boolean {

@@ -76,6 +76,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 			  timestamp: this.datepipe.transform(new Date(), 'dd/MM/yyyy HH:mm:ss') ?? '',
 			  gameInvite: true,
 		  }
+		  console.log('adding post to chat histor');
 		  this.chatHistoryService.addPost(this.channel.name, newPost);
 		}
 	  })

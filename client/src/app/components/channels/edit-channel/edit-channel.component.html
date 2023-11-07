@@ -53,7 +53,7 @@
   <div *ngIf="!emptyChannel && channelOwner" class="w-full flex flex-col gap-2">
     <label class="font-bold" for="name">Owner</label>
     <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
-      <tcd-profile-card [user]="channelOwner"></tcd-profile-card>
+      <tcd-profile-card [user]="channelOwner" [userStatus]="getUserStatus(channelOwner.id)"></tcd-profile-card>
     </div>
   </div>
 
@@ -68,6 +68,7 @@
         <tcd-profile-card
           [removeAdmin]="removeAdmin"
           [user]="admin"
+		  [userStatus]="getUserStatus(admin.id)"
         ></tcd-profile-card>
       </div>
     </div>
@@ -95,6 +96,7 @@
           [mute]="mute"
           [makeAdmin]="makeAdmin"
           [user]="user"
+		  [userStatus]="getUserStatus(user.id)"
         ></tcd-profile-card>
       </div>
     </div>
@@ -118,6 +120,7 @@
         <tcd-profile-card
           [disinvite]="disinvite"
           [user]="user"
+		  [userStatus]="getUserStatus(user.id)"
         ></tcd-profile-card>
       </div>
     </div>
@@ -136,4 +139,3 @@
     ></tcd-custom-button>
   </div>
 </section>
-<!-- ml-auto mr-auto pr-4 pl-4 -->

@@ -1,20 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { Channel } from 'src/app/shared/chat/Channel';
 import { EChannelMode } from 'src/app/shared/macros/EChannelMode';
-// import { EUserRole } from 'src/app/shared/macros/EUserRole';
 import { ChannelService } from 'src/app/services/channel.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { HttpClient } from '@angular/common/http';
-import { EUserRole } from 'src/app/shared/macros/EUserRole';
-// import { Observable, map } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { UserStatus } from 'src/app/shared/interfaces/userStatus';
+import { UserService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'tcd-edit-channel',
   templateUrl: './edit-channel.component.html',
 })
-export class EditChannelComponent implements OnInit {
+export class EditChannelComponent implements OnInit, OnDestroy {
   public modes: EChannelMode[] = [
     EChannelMode.PUBLIC,
     EChannelMode.PRIVATE,
@@ -31,12 +30,15 @@ export class EditChannelComponent implements OnInit {
   public tempUserChanges!: [{ id: number; change: string }];
   public invitedUsers!: User[];
   public popup: boolean = false;
+  private statusSubscription!: Subscription;
+  private statuses: UserStatus[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private channelService: ChannelService,
     private router: Router,
     private http: HttpClient,
+    private userService: UserService,
   ) {}
 
   ngOnInit() {
@@ -59,6 +61,19 @@ export class EditChannelComponent implements OnInit {
       }
       if (!this.emptyChannel) this.getMembers();
     });
+
+    this.statusSubscription = this.userService.statusChatObs$.subscribe(
+      (statuses) => {
+        this.statuses = statuses;
+      },
+    );
+  }
+
+  getUserStatus(id: number) {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    return userStatus ? userStatus.status : 'Offline';
   }
 
   selectMode(mode: EChannelMode) {
@@ -79,23 +94,30 @@ export class EditChannelComponent implements OnInit {
       this.router.navigate(['/channels']);
     } else {
       this.channelService.execActions(this.tempChannel, this.tempUserChanges);
-      this.channelService.updateChannel(
-        this.tempChannel,
-        this.tempPassword,
-        this.oldName,
-      );
+      //upd channel only when necessary
+      if (
+        this.channel.name !== this.tempChannel.name ||
+        this.channel.mode !== this.tempChannel.mode ||
+        (this.tempChannel.mode === EChannelMode.PROTECTED && this.tempPassword)
+      ) {
+        this.channelService.updateChannel(
+          this.tempChannel,
+          this.tempPassword,
+          this.oldName,
+        );
+      }
       this.router.navigate(['/channels']);
     }
   }
 
-  handleDelete(){
+  handleDelete() {
     this.channelService.deleteChannel(this.tempChannel.name);
     this.router.navigate(['/channels']);
   }
 
   getMembers() {
     if (!this.channel.usersIds) return;
-	console.log('this.channel', this.channel);
+    console.log('this.channel', this.channel);
     for (let id of this.channel.usersIds) {
       if (id) {
         this.fetchUser(id);
@@ -109,12 +131,12 @@ export class EditChannelComponent implements OnInit {
       if (data && data.id !== Number(this.channel.ownerId)) {
         if (this.channel.adminIds?.includes(data.id)) {
           this.channelAdmins.push(data);
-        } else{
+        } else {
           this.channelMembers.push(data);
         }
       } else if (data) {
-		this.channelOwner = data;
-	  }
+        this.channelOwner = data;
+      }
     });
   }
 
@@ -175,5 +197,9 @@ export class EditChannelComponent implements OnInit {
 
   closeUserPopup() {
     this.popup = false;
+  }
+
+  ngOnDestroy() {
+    this.statusSubscription.unsubscribe();
   }
 }

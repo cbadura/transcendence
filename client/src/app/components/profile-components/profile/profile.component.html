@@ -10,9 +10,10 @@
       <div
         [ngClass]="{
           'h-4 aspect-square  rounded-full border border-black': true,
-          'bg-green-300': user.status === 'online',
-          'bg-red-400': user.status === 'offline',
-          'bg-blue-400': user.status === 'ingame'
+          'bg-green-300': userStatus === 'Online',
+          'bg-red-400': userStatus === 'Offline',
+          'bg-blue-400': userStatus === 'Playing',
+		  'bg-yellow-300' : userStatus === 'Queueing'
         }"
       ></div>
       <h1 class="font-bold text-2xl">{{ user.name }}</h1>
