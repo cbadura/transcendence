@@ -1,13 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-
 import { Channel } from '../shared/chat/Channel';
 import { User } from 'src/app/shared/interfaces/user';
 import { EUserRole } from '../shared/macros/EUserRole';
 import { ESocketMessage } from '../shared/chat/ESocketMessage';
 import { Socket } from 'ngx-socket-io';
 import { UserDataService } from './user-data.service';
-
 import * as CryptoJS from 'crypto-js'
 
 interface Change {

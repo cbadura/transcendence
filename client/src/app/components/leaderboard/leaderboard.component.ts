@@ -26,11 +26,12 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     );
   }
 
-  getUserStatus(id : number) {
-	const userStatus = this.statuses.find(status => status.userId === Number(id));
-	return userStatus ? userStatus.status : 'Offline';
+  getUserStatus(id: number) {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    return userStatus ? userStatus.status : 'Offline';
   }
-  
 
   ngOnDestroy() {
     this.statusSubscription.unsubscribe();
