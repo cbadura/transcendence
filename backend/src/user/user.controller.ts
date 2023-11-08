@@ -23,20 +23,20 @@ export class UserController {
   }
 
   /*--------dev--------*/
-  @UseGuards(DebugRoute)
-  @Post()
+  @UseGuards(DebugRoute) 
+  @Post() // added to dev module
   createUser(@Body() dto: CreateUserDto): Promise<User> {
     return this.userService.createUser(dto);
   }
 
   @UseGuards(DebugRoute)
-  @Get('dummy')
+  @Get('dummy') // added to dev module
   createDummyUsers(){
     this.userService.createDummyUsers();
   }
 
   // @UseGuards(DebugRoute)
-  @Delete('dummy')
+  @Delete('dummy') // added to dev module
   deleteUserDatabase(){
     this.userService.deleteUserDatabase();
   }

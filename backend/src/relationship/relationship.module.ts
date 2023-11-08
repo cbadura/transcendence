@@ -14,6 +14,7 @@ import { UserModule } from 'src/user/user.module';
     TypeOrmModule.forFeature([Relationship,User]),
     JwtModule,
     UserModule
-  ]
+  ],
+  exports: [RelationshipService]
 })
 export class RelationshipModule {}

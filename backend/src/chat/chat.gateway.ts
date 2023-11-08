@@ -22,7 +22,6 @@ import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 import { LeaveChannelDto } from './dto/leave-channel.dto';
 import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
-import { WsJwtAuthGuard } from 'src/auth/guard/ws.jwt.guard';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({

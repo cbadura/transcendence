@@ -9,7 +9,7 @@ export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
     @UseGuards(DebugRoute) 
-    @Post()
+    @Post() // added to dev module
     createMatch(@Body() createMatchDto: CreateMatchDto){
         return this.matchService.createMatch(createMatchDto);
     }
@@ -28,7 +28,7 @@ export class MatchController {
     } 
 
     @UseGuards(DebugRoute)
-    @Get('/dummy/:user_id')
+    @Get('/dummy/:user_id') // added to dev module
     async createDummyMatches(@Param('user_id',ParseIntPipe) id: number ){
         console.log(id);
         //'default' | 'special'

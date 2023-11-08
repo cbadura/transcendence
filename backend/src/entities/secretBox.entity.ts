@@ -6,8 +6,8 @@ export class SecretBox {
   @PrimaryColumn({nullable: false})
   id: number;
 
-  @Column({nullable: false})
-  ftid: number;
+  // @Column({nullable: false})
+  // ftid: number;
 
   @Column()
   tempSecret: string;

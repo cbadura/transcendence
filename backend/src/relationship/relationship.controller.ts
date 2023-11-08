@@ -18,14 +18,14 @@ export class RelationshipController {
 
     // dev
     @UseGuards(DebugRoute)
-    @Get('/dummy/:id/friend')
+    @Get('/dummy/:id/friend') // added to dev module
     MakeFriends(@Param('id', ParseIntPipe) id: number) {
         this.relationshipService.generateDebugRelationships(id,'friend');
     }
 
     // dev
     @UseGuards(DebugRoute)
-    @Get('/dummy/:id/blocked')
+    @Get('/dummy/:id/blocked') //added to dev module
     BlockRandomUsers(@Param('id', ParseIntPipe) id: number) {
         this.relationshipService.generateDebugRelationships(id,'blocked');
     }

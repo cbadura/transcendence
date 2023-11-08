@@ -13,7 +13,6 @@ import { UserStatusUpdateDto } from './dto/user-status-update.dto';
 import { EUserMessages, ISocketUserStatus } from './user.interface';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
-import { AuthService } from 'src/auth/auth.service';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 
 @Injectable()
