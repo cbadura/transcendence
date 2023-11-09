@@ -22,7 +22,7 @@ export class UserDataService {
     tfa: false,
 	achievements: [],
   };
-  private serverAddress: string = `http://${import.meta.env['HOST']}:3000`;
+  private serverAddress: string = `http://${import.meta.env['HOST_NAME']}:3000`;
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
   userSocket: Socket | null = null;
@@ -36,7 +36,7 @@ export class UserDataService {
   getNewestUser() {
 	// const token = this.getTokenCookie();
   console.log('IN NEWEST USER')
-    const url = `http://${import.meta.env['HOST']}:3000/auth/profile`;
+    const url = `http://${import.meta.env['HOST_NAME']}:3000/auth/profile`;
     this.http.get(url, { withCredentials: true }).subscribe((response: any) => {
 		console.log('RESPONSE', response)
       const user: User = {
@@ -145,7 +145,7 @@ export class UserDataService {
   }
 
   removeRelation(relationID: number): Observable<any> {
-    const url = `http://${import.meta.env['HOST']}:3000/relationship/${relationID}`;
+    const url = `http://${import.meta.env['HOST_NAME']}:3000/relationship/${relationID}`;
     return this.http.delete(url, { withCredentials: true });
   }
 
@@ -219,7 +219,7 @@ export class UserDataService {
   CreateSocketConnections() {
     console.log('trying to create Sockets', this.myUser.id);
 
-    const gameUrl = `http://${import.meta.env['HOST']}:3000/game`;
+    const gameUrl = `http://${import.meta.env['HOST_NAME']}:3000/game`;
     if (!this.gameSocket) {
       this.gameSocket = new Socket({
         url: gameUrl,
@@ -230,7 +230,7 @@ export class UserDataService {
 
     if (!this.chatSocket) {
       this.chatSocket = new Socket({
-        url: `http://${import.meta.env['HOST']}:3000/chat`,
+        url: `http://${import.meta.env['HOST_NAME']}:3000/chat`,
         options: {
           withCredentials: true,
           forceNew: true
@@ -240,7 +240,7 @@ export class UserDataService {
 
     if (!this.userSocket) {
       this.userSocket = new Socket({
-        url: `http://${import.meta.env['HOST']}:3000/`,
+        url: `http://${import.meta.env['HOST_NAME']}:3000/`,
         options: {
           withCredentials: true,
           forceNew: true

@@ -100,7 +100,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   fetchUser(id: number) {
-    const url = `http://${import.meta.env['HOST']}:3000/users/${id}`;
+    const url = `http://${import.meta.env['HOST_NAME']}:3000/users/${id}`;
     this.http.get<User>(url, { withCredentials: true }).subscribe((data) => {
       if (data) {
         this.friends.push(data);

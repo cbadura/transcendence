@@ -29,6 +29,7 @@ services:
       - "TCD_UID=${TCD_UID}"
       - "TCD_SECRET=${TCD_SECRET}"
       - "TCD_CALLBACKURL=${TCD_CALLBACKURL}"
+      - "HOST_NAME=${HOST_NAME}"
     depends_on:
       - db
     networks:
@@ -43,6 +44,8 @@ services:
     container_name: frontend
     ports:
       - "4200:4200"
+    environment:
+      - "HOST_NAME=${HOST_NAME}"
     depends_on:
       - backend
     networks:

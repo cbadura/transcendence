@@ -11,7 +11,7 @@ import { EUserMessages } from "./user.interface";
 
 @WebSocketGateway({
   cors: {
-    origin: `http://${process.env.HOST}:4200`,
+    origin: `http://${process.env.HOST_NAME}:4200`,
     credentials: true
   },
 })

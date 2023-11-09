@@ -164,7 +164,7 @@ export class UserService {
         ftid: null,
         name: dto.name,
         color: dto.color,
-        avatar: `http://${process.env.HOST}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`,
+        avatar: `http://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`,
         tfa: false,
         level:1.00,
         matches: 0,
@@ -186,7 +186,7 @@ export class UserService {
   createUser(dtoUserCreator: CreateUserDto): Promise<User> {
     console.log(dtoUserCreator);
     if(dtoUserCreator.avatar == null)
-      dtoUserCreator.avatar = `http://${process.env.HOST}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
+      dtoUserCreator.avatar = `http://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`
     const newUser:CreateUserDto = {
       ...dtoUserCreator,
       tfa: false,
@@ -207,7 +207,7 @@ export class UserService {
   }
 
   private async deleteExistingImage(user: User){
-    if(!user.avatar.includes(`http://${process.env.HOST}:3000/users/profilepic/default_0`)){
+    if(!user.avatar.includes(`http://${process.env.HOST_NAME}:3000/users/profilepic/default_0`)){
         const filePath = this.createImageFilePath(user.avatar)
         try {
           await fsPromises.unlink(filePath); 
@@ -238,7 +238,7 @@ export class UserService {
       for(let i: number = 0 ; i < 100 ;i++){
         let user = new CreateUserDto;
         user.name = 'DummyUser_' + Math.floor(100000 + Math.random() * 900000).toString();
-        user.avatar = `http://${process.env.HOST}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+        user.avatar = `http://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
         user.color = colors[Math.floor(100000 + Math.random() * 900000) % 6];
         user.level = Number(((100000 + Math.random() * 10000) % 100).toFixed(2)); 
         user.matches = Math.floor(100000 + Math.random() * 900000) % 500;

@@ -26,7 +26,7 @@ import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
   cors:{
-    origin: `http://${process.env.HOST}:4200`,
+    origin: `http://${process.env.HOST_NAME}:4200`,
     credentials: true
   },
   namespace: 'chat',
