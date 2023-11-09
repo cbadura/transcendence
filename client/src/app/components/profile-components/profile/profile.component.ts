@@ -140,6 +140,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 	return userStatus ? userStatus.status : 'Offline';
   }
 
+  navigateToDm() {
+	this.router.navigate(['chat', 'dm', this.user]);
+  }
+
   ngOnDestroy() {
     this.userSubscription.unsubscribe();
     this.statusSubscription.unsubscribe();

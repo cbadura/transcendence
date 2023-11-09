@@ -26,6 +26,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   public gameType: "default" | "special" = "default";
   private roomId: number = 0;
   public ownerLeavePopup: boolean = false;
+  public isDM: boolean = false;
 
   myUser!: User;
   channel!: Channel;
@@ -47,7 +48,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 		  });
     // Get params from URL
     this.route.params.subscribe(params => {
-      const { channel, ...rest } = params;
+      const { type, ...rest } = params;
+	  console.log('params', params);
+	  console.log('type', type);
       this.channel = rest as Channel;
 	  this.channel.usersIds = params['usersIds']?.split(',').map((num: string) => +num);
 	  console.log('channel from params', this.channel);

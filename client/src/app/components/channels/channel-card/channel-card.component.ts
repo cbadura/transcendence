@@ -41,7 +41,7 @@ export class ChannelCardComponent {
     if (this.joinMode) {
       this.joinChannel(event);
       return;
-    } else this.router.navigate(['chat', 'channel', channel]);
+    } else this.router.navigate(['chat', 'type', channel]);
   }
 
   showPasswordField() {

@@ -57,6 +57,7 @@
       buttonText="Message"
       [icon]="'featherMail'"
 	  [isDisabled]="userStatus === 'Offline'"
+	  (click)="navigateToDm()"
     ></tcd-custom-button>
     <!-- Edit profile -->
     <tcd-custom-button
