@@ -1,0 +1,71 @@
+<section
+  class="flex justify-center items-center flex-col max-w-screen-md ml-auto mr-auto pr-4 pl-4 h-full-header gap-4"
+>
+  <!-- Profile picture -->
+
+  <!-- <p *ngIf="this.tempUser.avatar.length < 2">Upload a picture, or one of these avatars will be chosen for you</p> -->
+
+  <!-- Edit picture section -->
+  <div class="flex justify-center items-center w-full space-x-5">
+    <tcd-profile-pic [profilePic]="getCorrectPic()" [size]="'8rem'">
+    </tcd-profile-pic>
+    <input
+      type="file"
+      #fileInput
+      (change)="onFileSelected($event)"
+      style="display: none"
+    />
+    <tcd-custom-button
+      [buttonText]="'Upload new picture'"
+      (click)="fileInput.click()"
+    >
+    </tcd-custom-button>
+    <tcd-custom-button [buttonText]="'Delete'" (click)="deleteTempPic()"></tcd-custom-button>
+  </div>
+
+  <!-- Edit name section -->
+  <div class="w-full flex flex-col">
+    <label class="font-bold mb-2" for="name">* Name</label>
+    <input
+      class="p-2 border border-black rounded-full bg-transparent outline-none"
+      name="name"
+      type="text"
+      [(ngModel)]="tempName"
+      placeholder="{{ oldUser.name }}"
+    />
+  </div>
+
+  <!-- Edit color section -->
+  <div class="w-full flex flex-col">
+    <label class="font-bold mb-2" for="color">* Color</label>
+    <div class="flex gap-2">
+      <div
+        *ngFor="let color of availableColors"
+        [ngStyle]="{ 'background-color': color }"
+        [class.border-4]="color == tempColor"
+        (click)="editColor(color)"
+        class="border border-black w-9 aspect-square hover:cursor-pointer transition-all hover:border-4 rounded-lg active:scale-95"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Activate 2FA button -->
+  <tcd-custom-button *ngIf="!oldUser.tfa" [icon]="'featherLock'" [buttonText]="'Enable 2FA'" (click)="open2FAPopup()" [isBlack]="true" class="mr-auto mt-4"></tcd-custom-button>
+<!-- Deactivate 2FA button -->
+<tcd-custom-button *ngIf="oldUser.tfa" [icon]="'featherUnlock'" [buttonText]="'Disable 2FA'" (click)="deactivateTFA()" [isBlack]="true" class="mr-auto mt-4"></tcd-custom-button>
+
+
+
+  <!-- 2FA Popup -->
+  <tcd-activate-twofa [user]="oldUser" (closeClicked)="close2FAPopup()" *ngIf="twoFAPopup" ></tcd-activate-twofa>
+
+
+  <!-- Save changes -->
+  <div class="w-full flex justify-end">
+    <tcd-custom-button
+      [buttonText]="'Save changes'"
+      [onClick]="saveChanges"
+      [isBlack]="true"
+    ></tcd-custom-button>
+  </div>
+</section>

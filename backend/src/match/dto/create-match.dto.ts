@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty,IsArray, ArrayMinSize, ValidateNested, ArrayMaxSize } from "class-validator";
+import { IsNotEmpty,IsArray, ArrayMinSize, ValidateNested, ArrayMaxSize, IsOptional } from "class-validator";
 import { User } from "src/entities/user.entity";
 
 class MatchParticipant{
@@ -15,8 +15,24 @@ class MatchParticipant{
     user: User;
 }
 
-export class CreateMatchDto {
+class MatchEndReason{
+  @IsNotEmpty()
+  reason: 'score' | 'disconnect';
 
+  
+  @IsOptional()
+  disconnected_user_id: number;
+}
+
+export class CreateMatchDto {
+  
+  //this is necesarry to detemine who won if a user disconnected, so even a 0:4 match can be won if the player with 4 points leaves
+  @IsNotEmpty()
+  matchEndReason: MatchEndReason;
+  
+  @IsNotEmpty()
+  matchType: 'default' | 'special';
+  
     @IsArray()
   @IsNotEmpty()
   @ArrayMinSize(2)

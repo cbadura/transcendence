@@ -10,6 +10,12 @@ export class Match{
     @Column()
     timestamp: Date;
 
+    @Column()
+    reason: 'score' | 'disconnect';
+
+    @Column()
+    matchType: 'default' | 'special';
+
     @OneToMany(()=>MatchUser,(matchUser)=>matchUser.match, {
         cascade: ['insert'],
     })

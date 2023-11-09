@@ -18,18 +18,26 @@ import { Match } from './entities/match.entity';
 import { MatchUser } from './entities/match-user.entity';
 import { RelationshipModule } from './relationship/relationship.module';
 import { Relationship } from './entities/relationship.entity';
+import { NetworkGameModule } from './network-game/network-game.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { SecretBox } from './entities/secretBox.entity';
+import { DevModule } from './dev/dev.module';
+
+const isDevMode: boolean = process.env.MODE === 'dev';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
   imports: [
+    ConfigModule.forRoot({ envFilePath: '.env' }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'db',
-      port: 5432,
-      username: 'transcendence',
-      password: 'transcendence',
-      database: 'transcendence',
-      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship],
+      host: 'localhost', // db (not from env for submit!!!)
+      port: Number.parseInt(process.env.POSTGRES_PORT), //5432 (not from env for submit!!!)
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      entities: [User,AchievementDefinition,Achievement,Match,MatchUser,Relationship,SecretBox],
       synchronize: true,
     }),
     MulterModule.register({
@@ -43,6 +51,9 @@ import { Relationship } from './entities/relationship.entity';
     MatchModule,
     MatchUserModule,
     RelationshipModule,
+    NetworkGameModule,
+    AuthModule,
+    ...isDevMode ? [DevModule] : [],
   ], 
   controllers: [AppController],
   providers: [AppService],

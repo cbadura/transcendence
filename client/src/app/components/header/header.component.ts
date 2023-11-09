@@ -1,10 +1,10 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../services/user-data.service';
-import { User } from '../../shared/user';
-import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/color';
+import { User } from '../../shared/interfaces/user';
+import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/functions/color';
 
 @Component({
   selector: 'tcd-header',
@@ -12,15 +12,17 @@ import { LightenDarkenColor, SaturatedColor } from 'src/app/shared/color';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  myUser!: User;
+	@Input() noUser!: boolean;
+  	myUser!: User;
 	private userSubscription!: Subscription;
 	public fadedColor!: string;
 	public saturatedColor!: string;
 	public hovered: number = -1;
-	pages = ['Game', 'Leaderboard', 'Chat', 'Profile'];
+	pages = ['Game', 'Leaderboard', 'Channels', 'Profile'];
 	
 	constructor(private router: Router,
     private userDataService: UserDataService) {
+      console.log(userDataService)
   }
 	
 
@@ -33,6 +35,11 @@ export class HeaderComponent implements OnInit {
 			this.saturatedColor = LightenDarkenColor(SaturatedColor(this.myUser.color, 20), -10);
       }
     );
+  }
+
+  createDevUser() {
+    console.log("WTF")
+    this.userDataService.createDevelopmentUser();
   }
 
   isCurrentPage(page: string): boolean {

@@ -1,59 +1,147 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-
-import { dummyUsers } from 'src/app/temp/dummyUsers';
+import { ActivatedRoute } from '@angular/router';
 import { UserDataService } from 'src/app/services/user-data.service';
-import { User } from 'src/app/shared/user';
-import { Achievement } from 'src/app/shared/achievement';
-import { Match } from 'src/app/shared/match';
+import { UserService } from 'src/app/services/users.service';
+import { User } from 'src/app/shared/interfaces/user';
+import { Achievement } from 'src/app/shared/interfaces/achievement';
+import { Match } from 'src/app/shared/interfaces/match';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { UserStatus } from 'src/app/shared/interfaces/userStatus';
 
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
-
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
+  user!: User;
   myUser!: User;
   private userSubscription!: Subscription;
-  achievements: Achievement[] = [];
+  private statusSubscription!: Subscription;
+  private statuses: UserStatus[] = [];
+  friends: User[] = [];
   matches: Match[] = [];
+  relation: string = 'none';
+  relationID!: number;
+  public myProfile: boolean = false;
 
   constructor(
-    private userDataService: UserDataService) {
+    private route: ActivatedRoute,
+    private userDataService: UserDataService,
+    private userService: UserService,
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
-    const currentUser = this.userDataService.getUser();
-    console.log('Current User ID:', currentUser.id);
-    }
-  
-
-  ngOnInit() {
-    this.userSubscription = this.userDataService.user$.subscribe(
-      (user) => {
-        this.myUser = user;
-        this.userDataService.fetchUserById(this.myUser.id).subscribe(data => {
-          this.myUser = data;
-          console.log('Profile', data);
-        });
-      }
-    );
-
-    this.achievements = [
-      { name: 'Paddle Master', url: 'https://picsum.photos/100' },
-      { name: 'Ping Pong Champion', url: 'https://picsum.photos/100' },
-      { name: 'Pong Prodigy', url: 'https://picsum.photos/100' },
-      { name: 'Rally King', url: 'https://picsum.photos/100' },
-      { name: 'Paddle Wizard', url: 'https://picsum.photos/100' },
-      { name: 'Table Tennis Titan', url: 'https://picsum.photos/100' },
-    ];
-
-
-
-    this.matches = [
-      { opponent: dummyUsers[0], dateTime: '2021-04-01T12:00:00', myScore: 10, opponentScore: 5 },
-      { opponent: dummyUsers[1], dateTime: '2021-04-02T12:00:00', myScore: 5, opponentScore: 10 },
-      { opponent: dummyUsers[2], dateTime: '2021-04-03T12:00:00', myScore: 2, opponentScore: 3 },
-    ];
+  getUserRelation() {
+    this.userService.getFriends(this.myUser.id).subscribe((data) => {
+      data.forEach((friend) => {
+        if (friend.relational_user_id === Number(this.user.id)) {
+          console.log('Friend object that represents relationship:', friend);
+          this.relation = friend.relationship_status;
+          this.relationID = friend.id;
+        }
+      });
+    });
   }
 
-  getFloorLevel = () => Math.floor(this.myUser.level);
+  ngOnInit() {
+    this.route.params.subscribe((params: any) => {
+      const { profile, ...rest } = params;
+      this.user = rest as User;
+
+      this.userSubscription = this.userDataService.user$.subscribe((user) => {
+        if (!this.user.name) {
+          // My profile
+          this.user = user;
+          console.log('My profile user:', this.user);
+          this.myProfile = true;
+        } else {
+          // Profile from other user
+          console.log('Profile from other user');
+          this.myUser = user;
+          if (this.myUser.id === Number(this.user.id))
+            this.router.navigate(['/profile']);
+          this.getUserRelation();
+        }
+      });
+
+      this.statusSubscription = this.userService.statusChatObs$.subscribe(
+        (statuses) => {
+          this.statuses = statuses;
+        },
+      );
+
+      this.userService.getFriends(this.user.id).subscribe((data) => {
+        data.forEach((friend) => {
+          this.fetchUser(friend.relational_user_id);
+        });
+      });
+    });
+
+    this.userService.getMatches(this.user.id).subscribe((data) => {
+      data.forEach((obj) => {
+        let userIndex;
+        let oppIndex;
+        obj.matchUsers[0].user.id == this.user.id
+          ? (userIndex = 0)
+          : (userIndex = 1);
+        oppIndex = userIndex === 0 ? 1 : 0;
+        const match: Match = {
+          opponent: obj.matchUsers[oppIndex].user,
+          dateTime: obj.timestamp,
+          myScore: obj.matchUsers[userIndex].score,
+          opponentScore: obj.matchUsers[oppIndex].score,
+        };
+        this.matches.push(match);
+      });
+    });
+  }
+
+  fetchUser(id: number) {
+    const url = `http://localhost:3000/users/${id}`;
+    this.http.get<User>(url, { withCredentials: true }).subscribe((data) => {
+      if (data) {
+        this.friends.push(data);
+      }
+    });
+  }
+
+  addRelation(status: string): void {
+    this.userDataService.addRelation(status, this.user.id).subscribe(
+      (data) => {
+        console.log(data);
+        this.relation = data.relationship_status;
+        this.relationID = data.id;
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+  }
+
+  removeRelation(): void {
+    this.userDataService.removeRelation(this.relationID).subscribe(
+      (data) => {
+        console.log(data);
+        this.relation = 'none';
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+  }
+
+  getFloorLevel = () => Math.floor(this.user.level);
+
+  get userStatus() : string {
+	const userStatus = this.statuses.find(status => status.userId === Number(this.user.id));
+	return userStatus ? userStatus.status : 'Offline';
+  }
+
+  ngOnDestroy() {
+    this.userSubscription.unsubscribe();
+    this.statusSubscription.unsubscribe();
+  }
 }

@@ -2,8 +2,7 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'tcd-custom-button',
-  templateUrl: './custom-button.component.html',
-  styleUrls: ['./custom-button.component.css']
+  templateUrl: './custom-button.component.html'
 })
 export class CustomButtonComponent {
 	@Input() buttonText: string = "buttonText";
@@ -11,4 +10,6 @@ export class CustomButtonComponent {
 	@Input() customRoute?: string;
 	@Input() isBlack: boolean = false;
 	@Input() size: string = "small";
+	@Input() isDisabled: boolean = false;
+	@Input() icon!: string;
 }

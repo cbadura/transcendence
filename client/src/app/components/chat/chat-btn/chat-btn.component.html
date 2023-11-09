@@ -1,3 +1,5 @@
-<div class=" flex justify-center items-center aspect-square h-10 m-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-all active:scale-95">
-    <ng-icon class="cursor-pointer" name="{{icon}}"></ng-icon>
+<div class="cursor-pointer relative flex justify-center items-center aspect-square h-10 m-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-all active:scale-95" [ngClass]="{'text-white': white}">
+	<div *ngIf="notification" class="absolute top-1.5 right-1.5 w-3 rounded-full aspect-square bg-red-500"></div>
+	<ng-icon class="cursor-pointer" name="{{icon}}"></ng-icon>
   </div>
+  

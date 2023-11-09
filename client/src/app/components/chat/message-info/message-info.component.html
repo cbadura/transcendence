@@ -3,13 +3,13 @@
   <!-- Only render image and name for other users -->
   <ng-container *ngIf="!isMe">
     <tcd-thumbnail
-      [imgUrl]="post.user.avatar"
+      [imgUrl]= "post.senderAvatar"
       [size]="'2.5rem'"
     ></tcd-thumbnail>
-    <p>{{ post.user.name }}</p>
+    <p>{{ post.senderName }}</p>
   </ng-container>
 
   <!-- Render  time for all users-->
-  <p [ngClass]="{'ml-auto': isMe}">{{ post.dateTime }}</p>
+  <p [ngClass]="{'ml-auto': isMe}">{{ post.timestamp }}</p>
 
 </div>

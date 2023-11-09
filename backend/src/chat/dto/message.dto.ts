@@ -1,9 +1,9 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class MessageDto {
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  timestamp?: number;
+  timestamp?: string;
 
   @IsString()
   message: string;

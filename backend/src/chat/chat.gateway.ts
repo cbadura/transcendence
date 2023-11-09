@@ -11,7 +11,7 @@ import { ChatService } from './chat.service';
 import { Socket } from 'socket.io';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { EBanMute, ESocketMessage } from './chat.interfaces';
-import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BadRequestTransformationFilter } from './chat.filter';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { DeleteChannelDto } from './dto/delete-channel.dto';
@@ -25,7 +25,10 @@ import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
-  cors: true,
+  cors:{
+    origin: 'http://localhost:4200',
+    credentials: true
+  },
   namespace: 'chat',
 })
 export class ChatGateway
@@ -34,10 +37,7 @@ export class ChatGateway
   constructor(private readonly chatService: ChatService) {}
 
   handleConnection(client: Socket) {
-    this.chatService.handleConnection(
-      client,
-      +client?.handshake?.query?.userId,
-    );
+    this.chatService.handleConnection(client);
   }
 
   handleDisconnect(client: Socket) {
@@ -51,6 +51,15 @@ export class ChatGateway
     }, 1000);
   }
 
+  @UsePipes(new ValidationPipe())
+  @SubscribeMessage(ESocketMessage.TRY_LIST_CHANNELS)
+  listChannels(
+      @ConnectedSocket() socket: Socket,
+  ) {
+    this.chatService.listChannels(socket);
+  }
+
+  // @UseGuards(WsJwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.TRY_CREATE_CHANNEL)
   createChannel(
@@ -148,7 +157,6 @@ export class ChatGateway
     @MessageBody() dto: AddRemoveAdminDto,
   ) {
     this.chatService.addAdmin(socket, dto);
-    //  this.chatService.addRemoveAdmin(socket, dto, ESocketMessage.TRY_ADD_ADMIN);
   }
 
   @UsePipes(new ValidationPipe())
@@ -158,10 +166,5 @@ export class ChatGateway
     @MessageBody() dto: AddRemoveAdminDto,
   ) {
     this.chatService.removeAdmin(socket, dto);
-    /* this.chatService.addRemoveAdmin(
-      socket,
-      dto,
-      ESocketMessage.TRY_REMOVE_ADMIN,
-    );*/
   }
 }

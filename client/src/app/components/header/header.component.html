@@ -1,8 +1,8 @@
-<header class="flex h-20 justify-between items-center font-sans font-bold text-2xl ">
-	<div class="p-2 pr-4 pl-4 h-full flex justify-center items-center cursor-pointer font-Sniglet text-3xl">
+<header class="flex h-20 justify-between items-center font-sans">
+	<div class="p-2 pr-4 pl-4 h-full flex justify-center items-center cursor-pointer font-Sniglet font-bold text-3xl">
 		<a routerLink="/" (mouseenter)="hovered = -2" (mouseleave)="hovered = -1" [style.color]="hovered === -2 ? saturatedColor : 'black'">PONG</a>
 	</div>
-	<ul class="m-2 flex h-full items-center">
+	<ul *ngIf="!noUser"  class="m-2 flex h-full items-center  text-2xl ">
 		<li *ngFor="let page of pages; let i = index"
 			class=" flex items-center justify-center p-2 h-full cursor-pointer font-light transition-all "
 			(mouseenter)="hovered = i" (mouseleave)="hovered = -1"
@@ -10,4 +10,5 @@
 			<a routerLink="/{{ page | lowercase }}">{{ page | lowercase }}</a>
 		</li>
 	</ul>
+	<tcd-custom-button class="m-2"(click)="createDevUser()" [customRoute]="'/create-profile'"  *ngIf="noUser" [buttonText]="'Sign in'" [isBlack]="true"></tcd-custom-button>
 </header>

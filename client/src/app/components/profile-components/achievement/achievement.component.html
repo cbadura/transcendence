@@ -1,4 +1,5 @@
-<div class=" flex flex-col items-center  h-[125px]">
-    <tcd-thumbnail [imgUrl]="achievement.url" [size]="'5rem'"></tcd-thumbnail>
-    <h2 class="text-center text-white">{{ achievement.name }}</h2>
+<div class="tooltip flex flex-col items-center relative" >
+	<span class="tooltiptext text-white text-center bg-zinc-800 rounded-3xl p-2 absolute z-50">{{achievement.achievementDefinition.description}}</span>
+    <tcd-thumbnail [imgUrl]="achievement.achievementDefinition.image" [size]="'5rem'"></tcd-thumbnail>
+    <h2 class="text-center text-white">{{ achievement.achievementDefinition.name }}</h2>
 </div>

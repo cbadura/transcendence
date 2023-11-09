@@ -1,13 +1,33 @@
 <button
+*ngIf="!isDisabled"
   [ngClass]="{
-    'rounded-full p-2 border border-black transition-all active:scale-95': true,
-    'bg-black text-white': isBlack,
+    'rounded-full p-2 border border-black transition-all active:scale-95 flex items-center justify-between gap-2': true,
+    'bg-black text-white hover:bg-zinc-800': isBlack,
     'hover:bg-black hover:text-white': !isBlack,
     'h-10': size == 'small',
-    'p-4 text-4xl' : size == 'big'
+    'p-4 text-4xl' : size == 'big',
   }"
   (click)="onClick && onClick()"
   [routerLink]="customRoute"
+
 >
+<ng-icon *ngIf="icon" class="cursor-pointer ml-1" name="{{icon}}"></ng-icon>
+{{ buttonText }}
+</button>
+
+
+<button
+*ngIf="isDisabled"
+  [ngClass]="{
+    'rounded-full border p-2 cursor-not-allowed transition-all ': true,
+    'bg-zinc-400 text-zinc-800 ': isBlack,
+    'border-zinc-700 text-zinc-700': !isBlack,
+    'h-10': size == 'small',
+    'p-4 text-4xl' : size == 'big',
+  }"
+  [routerLink]="customRoute"
+  disabled
+>
+<ng-icon *ngIf="icon" class="cursor-pointer ml-1" name="{{icon}}"></ng-icon>
   {{ buttonText }}
 </button>
