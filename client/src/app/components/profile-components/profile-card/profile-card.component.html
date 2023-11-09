@@ -4,7 +4,7 @@
 >
   <!-- Left side -->
   <div class="flex gap-4 items-center">
-    <div
+    <div *ngIf="userStatus"
       [ngClass]="{
         'h-3 aspect-square  rounded-full border border-black': true,
         'bg-green-300': userStatus === 'Online',

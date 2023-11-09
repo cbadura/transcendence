@@ -48,19 +48,28 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 		  });
     // Get params from URL
     this.route.params.subscribe(params => {
-      const { type, ...rest } = params;
+      const { channel, ...rest } = params;
 	  console.log('params', params);
-	  console.log('type', type);
-      this.channel = rest as Channel;
-	  this.channel.usersIds = params['usersIds']?.split(',').map((num: string) => +num);
-	  console.log('channel from params', this.channel);
+	  console.log('channel', channel);
+	  if (channel === 'dm') this.isDM = true;
+
+	  if (this.isDM) {
+		console.log('is DM in chat!')
+
+	  } else {
+		  this.channel = rest as Channel;
+		  this.channel.usersIds = params['usersIds']?.split(',').map((num: string) => +num);
+		  console.log('channel from params', this.channel);
+		}
     });
     // Unsubscribe from any previous subscription
-    if (this.postSubscription) {
-      this.postSubscription.unsubscribe();
-    }
-    // Subscribe to the chat history for the new channel
-    this.postSubscription = this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
+    // if (this.postSubscription) {
+    //   this.postSubscription.unsubscribe();
+    // }
+	if (this.isDM) {
+	} else {
+		// Subscribe to the chat history for the new channel
+		this.postSubscription = this.chatHistoryService.getChatObservableForChannel(this.channel.name).subscribe(posts => {
       this.messages = posts;
     });
 
@@ -83,6 +92,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 		  this.chatHistoryService.addPost(this.channel.name, newPost);
 		}
 	  })
+	}
   }
 
   acceptInvitation() {
@@ -137,10 +147,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy() {
-    this.userSubscription.unsubscribe();
-	this.gameSubscription.unsubscribe();
-    if (this.postSubscription) {
-      this.postSubscription.unsubscribe();
-    }
+	if (this.userSubscription) this.userSubscription.unsubscribe();
+	if (this.gameSubscription) this.gameSubscription.unsubscribe();
+    if (this.postSubscription) this.postSubscription.unsubscribe();
   }
 }
