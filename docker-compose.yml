@@ -26,10 +26,14 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - "POSTGRES_DB=${POSTGRES_DB}"
+      - "POSTGRES_USER=${POSTGRES_USER}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
       - "TCD_UID=${TCD_UID}"
       - "TCD_SECRET=${TCD_SECRET}"
       - "TCD_CALLBACKURL=${TCD_CALLBACKURL}"
       - "HOST_NAME=${HOST_NAME}"
+      - "JWT_SECRET=${JWT_SECRET}"
     depends_on:
       - db
     networks:
@@ -45,7 +49,7 @@ services:
     ports:
       - "4200:4200"
     environment:
-      - "HOST_NAME=${HOST_NAME}"
+      - "NG_APP_HOST_NAME=${HOST_NAME}"
     depends_on:
       - backend
     networks:

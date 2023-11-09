@@ -38,12 +38,12 @@ export class UserService {
   }
 
   getUsers(): Observable<User[]> {
-    const usersUrl = `http://${import.meta.env['HOST_NAME']}:3000/users`;
+    const usersUrl = `http://${import.meta.env['NG_APP_HOST_NAME']}:3000/users`;
     return this.http.get<User[]>(usersUrl, { withCredentials: true });
   }
 
   getFriends(id: number): Observable<UserRelationship[]> {
-    const friendsUrl = `http://${import.meta.env['HOST_NAME']}:3000/users/${id}/relationship`;
+    const friendsUrl = `http://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}/relationship`;
     const params = new HttpParams().set('filter', 'friend');
     return this.http.get<UserRelationship[]>(
       friendsUrl,{
@@ -53,7 +53,7 @@ export class UserService {
   }
 
   getMatches(id: number) : Observable<any[]> {
-	const matchesUrl = `http://${import.meta.env['HOST_NAME']}:3000/users/${id}/matches`;
+	const matchesUrl = `http://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}/matches`;
 	return this.http.get<any[]>(matchesUrl, { withCredentials: true })
   }
 
