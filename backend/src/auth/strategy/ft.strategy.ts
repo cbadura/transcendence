@@ -12,7 +12,7 @@ export class ftStrategy extends PassportStrategy(Strategy) {
       // tokenURL: 'https://api.intra.42.fr/oauth/token',
       clientID: process.env.TCD_UID,
       clientSecret: process.env.TCD_SECRET,
-      callbackURL: process.env.TCD_CALLBACKURL,
+      callbackURL: `http://${process.env.HOST_NAME}:4200/signin/token`,
       scope: ['public'],
       passReqToCallback: true,
     });
