@@ -58,6 +58,9 @@
         },
         "serve": {
           "builder": "@ngx-env/builder:dev-server",
+          "options":{
+            "disableHostCheck": true
+          },
           "configurations": {
             "production": {
               "browserTarget": "transcendence:build:production"
