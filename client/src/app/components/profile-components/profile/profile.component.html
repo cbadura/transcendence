@@ -51,6 +51,13 @@
       buttonText="Unblock"
       [icon]="'featherUserCheck'"
     ></tcd-custom-button>
+	  <!-- Message -->
+    <tcd-custom-button
+      *ngIf="!myProfile && relation !== 'blocked'"
+      buttonText="Message"
+      [icon]="'featherMail'"
+	  [isDisabled]="userStatus === 'Offline'"
+    ></tcd-custom-button>
     <!-- Edit profile -->
     <tcd-custom-button
       *ngIf="myProfile"
