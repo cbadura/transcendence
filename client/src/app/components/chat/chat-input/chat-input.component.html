@@ -17,7 +17,7 @@
 
   <!-- Buttons -->
   <tcd-chat-btn [icon]="'featherSend'" (click)="onSendClick()"></tcd-chat-btn>
-  <tcd-chat-btn [icon]="'featherUser'" (click)="openUserPopup()"></tcd-chat-btn>
+  <tcd-chat-btn *ngIf="!isDM" [icon]="'featherUser'" (click)="openUserPopup()"></tcd-chat-btn>
 </div>
 
 <!-- User search Popup -->

@@ -1,5 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/shared/interfaces/user';
 import { GameService } from 'src/app/services/game.service';
 
@@ -14,14 +22,31 @@ export class ChatInputComponent implements OnInit {
   public popup: boolean = false;
   public typePopup: boolean = false;
   public tempUserChanges!: [{ id: number; change: string }];
-  public gameType: "default" | "special" = "default";
+  public gameType: 'default' | 'special' = 'default';
   private invitedUser!: User;
+  user!: User;
+  public isDM: boolean = false;
 
-  constructor(private gameService: GameService,
-    private router: Router) {}
+  constructor(
+    private gameService: GameService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
-    this.tempUserChanges = [{ id: 0, change: '' }];	
+    this.tempUserChanges = [{ id: 0, change: '' }];
+    this.route.params.subscribe((params) => {
+      const { channel, ...rest } = params;
+      console.log('channel in header', channel);
+      if (channel === 'dm') {
+        this.isDM = true;
+        this.user = rest as User;
+        this.user.id = Number(this.user.id);
+        this.user.level = Number(this.user.level);
+        this.user.wins = Number(this.user.wins);
+        this.user.matches = Number(this.user.matches);
+      }
+    });
   }
 
   focusInputField() {
@@ -31,7 +56,7 @@ export class ChatInputComponent implements OnInit {
   onSendClick() {
     const message = this.inputField.nativeElement.value;
     this.sendMessage.emit(message);
-    this.inputField.nativeElement.value = "";
+    this.inputField.nativeElement.value = '';
   }
 
   onUserSelected(user: User) {
@@ -49,14 +74,14 @@ export class ChatInputComponent implements OnInit {
     this.closeTypePopup();
     this.gameService.InviteToMatch(this.gameType, this.invitedUser.id);
     let invite = {
-      gameType: this.gameType
-    }
+      gameType: this.gameType,
+    };
     this.router.navigate(['game', 'invite', invite]);
   }
 
   editTempUserChanges = (id: number, mode: string) => {
     let index = this.tempUserChanges.findIndex(
-      (change) => change.id === id && change.change === mode
+      (change) => change.id === id && change.change === mode,
     );
     if (index !== -1) {
       this.tempUserChanges.splice(index, 1);
@@ -66,7 +91,7 @@ export class ChatInputComponent implements OnInit {
   };
 
   openUserPopup() {
-    this.popup = true;
+	this.popup = true;
   }
 
   closeUserPopup() {
