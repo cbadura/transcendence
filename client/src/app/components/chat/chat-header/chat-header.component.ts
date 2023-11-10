@@ -39,14 +39,11 @@ export class ChatHeaderComponent implements OnInit {
       if (channel === 'dm') this.isDM = true;
 
       if (this.isDM) {
-		console.log('is DM in header!')
-		console.log('is DM', this.isDM);
 		this.user = rest as User;
 		this.user.id = Number(this.user.id);
 		this.user.level = Number(this.user.level);
 		this.user.wins = Number(this.user.wins);
 		this.user.matches = Number(this.user.matches);
-		console.log('user in header', this.user);
       } else {
         this.channel = rest as Channel;
         this.channel.usersIds = params['usersIds']
