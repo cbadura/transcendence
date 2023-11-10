@@ -14,6 +14,7 @@ import { EUserMessages, ISocketUserStatus } from './user.interface';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
+import { AuthSocket } from 'src/auth/ws.middleware';
 
 @Injectable()
 export class UserService {
@@ -47,17 +48,18 @@ export class UserService {
     return listUsers;
   }
   
-  async handleConnection(socket: Socket) {
+  async handleConnection(socket: AuthSocket) {
     
     // temporary solution, check token from cookie and verify it after connection
     // need to make a middleware to validate cookie/token before connection
     // const userId = await this.authService.verifyJwtFromHandshake(socket.handshake);
-    const userId = await verifyJwtFromHandshake(socket.handshake);
-    if (!userId) {
-      socket.emit('exception', 'Invalid token');
-      socket.disconnect(true);
-      return ;
-    }
+    // const userId = await verifyJwtFromHandshake(socket.handshake);
+    // if (!userId) {
+    //   socket.emit('exception', 'Invalid token');
+    //   socket.disconnect(true);
+    //   return ;
+    // }
+    const userId = socket.userId;
     
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');

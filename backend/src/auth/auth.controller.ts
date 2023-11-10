@@ -68,19 +68,19 @@ export class AuthController {
     return req.user;
   }
 
-  @Get('logout') // not needed...probably
+  @Get('logout')
   logout(@Req() req: Request, @Res() res: Response) {
     res.clearCookie('token').send('logged out');
   }
 
   /* ----------dev-------------- */
 
-  @Get('boxes')
+  @Get('boxes') //added to dev module
   boxes() {
     return this.authService.getBoxes();
   }
 
-  @Delete('boxes')
+  @Delete('boxes') //added to dev module
   wipe() {
     return this.authService.burnAllSecret();
   }
