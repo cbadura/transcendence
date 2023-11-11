@@ -208,6 +208,7 @@ export class GameRoom {
         }
         user.room_id = this.room_id;
         this.clients.push(user);
+        this.userService.notifyUserStatusUpdate(user.userId, EUserStatus.IN_MATCH);
 
         if(this.clients.length == this.maxClients){
             await this.sendRoomInfo();
