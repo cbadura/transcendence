@@ -25,7 +25,8 @@
         <tcd-message-bubble
           [post]="message"
           [isMe]="myUser.id == message.senderId"
-		  (accept)="acceptInvitation()"
+		      (accept)="acceptInvitation()"
+		      (decline)="declineInvitation()"
           class="flex"
         ></tcd-message-bubble>
       </div>

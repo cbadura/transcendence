@@ -37,6 +37,10 @@ export class GameService {
     }); //temp fix the create same behavior as before
   }
 
+  /* LeaveQueue(userId: number) {
+    this.gameSocket?.emit(ESocketGameMessage.TRY_LEAVE_QUEUE);
+  } */
+
   CreateTrainingMatch(gameType: 'default' | 'special') {
     this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {
       gameType: gameType,
