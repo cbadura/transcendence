@@ -102,10 +102,12 @@ export class GameComponent implements CanComponentDeactivate {
   }
 
   startGame(gameType: 'default' | 'special'): void {
+    console.log('statusssss start game1', this.status);
     this.gameType = gameType;
     this.status = 'waiting';
     this.gameService.JoinQueue(this.myUser.id, gameType);
     this.subscribeToEventObject();
+    console.log('statusssss start game2', this.status);
   }
 
   subscribeToEventObject() {
@@ -166,6 +168,7 @@ export class GameComponent implements CanComponentDeactivate {
   returnToGameSelectionScreen(){
     this.gameService.leaveMatch();
     this.cleanUpPrevMatch();
+    console.log('statusssssssssssss', this.status);
   }
 
   //right now this play again will just queue up the user again.
