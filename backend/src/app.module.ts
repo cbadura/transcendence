@@ -24,7 +24,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SecretBox } from './entities/secretBox.entity';
 import { DevModule } from './dev/dev.module';
 
-const isDevMode: boolean = process.env.MODE === 'dev';
+const isDevMode: boolean = process.env.MODE == 'dev';
 
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
