@@ -89,8 +89,8 @@ export class ChatService {
       .filter(
         (ch) =>
           ch.mode !== EChannelMode.PRIVATE ||
-          this.getUserRole(ch, user.userId) !== EUserRole.NONE ||
-          this.isInvited(ch, user.userId),
+          this.getUserRole(ch, user.userId) !== EUserRole.NONE // ||
+         // this.isInvited(ch, user.userId),
         //this last check depends on frontend implementation
       )
       .map((ch): ChannelDto => {
@@ -99,6 +99,7 @@ export class ChatService {
         channel.mode = ch.mode;
         channel.ownerId = ch.ownerId;
         channel.role = this.getUserRole(ch, user.userId);
+        channel.isInvited = this.isInvited(ch, user.userId);
         channel.isBanned = !!ch.bans.find((ban) => ban.userId === user.userId);
         if (channel.isBanned)
           channel.banExpTime = ch.bans.find(
