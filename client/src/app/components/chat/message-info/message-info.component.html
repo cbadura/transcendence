@@ -1,4 +1,7 @@
-<div class="flex items-center gap-3 text-white pt-3">
+<div
+(click)="clickOnCard($event)" 
+class="flex items-center gap-3 text-white pt-3">
+  
 
   <!-- Only render image and name for other users -->
   <ng-container *ngIf="!isMe">
