@@ -1,5 +1,6 @@
 export interface Post {
     senderId?: number;
+	receiverId?: number;
     senderName?: string;
     senderColor?: string;
     senderAvatar: string;

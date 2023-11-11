@@ -8,15 +8,18 @@ import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserStatus } from 'src/app/shared/interfaces/userStatus';
 
 @Component({
   selector: 'tcd-profile',
   templateUrl: './profile.component.html',
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   user!: User;
   myUser!: User;
   private userSubscription!: Subscription;
+  private statusSubscription!: Subscription;
+  private statuses: UserStatus[] = [];
   friends: User[] = [];
   matches: Match[] = [];
   relation: string = 'none';
@@ -64,6 +67,12 @@ export class ProfileComponent implements OnInit {
         }
       });
 
+      this.statusSubscription = this.userService.statusChatObs$.subscribe(
+        (statuses) => {
+          this.statuses = statuses;
+        },
+      );
+
       this.userService.getFriends(this.user.id).subscribe((data) => {
         data.forEach((friend) => {
           this.fetchUser(friend.relational_user_id);
@@ -92,7 +101,7 @@ export class ProfileComponent implements OnInit {
 
   fetchUser(id: number) {
     const url = `http://localhost:3000/users/${id}`;
-    this.http.get<User>(url).subscribe((data) => {
+    this.http.get<User>(url, { withCredentials: true }).subscribe((data) => {
       if (data) {
         this.friends.push(data);
       }
@@ -126,7 +135,17 @@ export class ProfileComponent implements OnInit {
 
   getFloorLevel = () => Math.floor(this.user.level);
 
+  get userStatus() : string {
+	const userStatus = this.statuses.find(status => status.userId === Number(this.user.id));
+	return userStatus ? userStatus.status : 'Offline';
+  }
+
+  navigateToDm() {
+	this.router.navigate(['chat', 'dm', this.user]);
+  }
+
   ngOnDestroy() {
-	this.userSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
+    this.statusSubscription.unsubscribe();
   }
 }

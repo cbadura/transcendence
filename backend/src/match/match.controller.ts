@@ -2,22 +2,25 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from
 import { MatchService } from './match.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
+import { jwtAuthGuard } from 'src/auth/guard/jwt.guard';
 
 @Controller('match')
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
     @UseGuards(DebugRoute) 
-    @Post()
+    @Post() // added to dev module
     createMatch(@Body() createMatchDto: CreateMatchDto){
         return this.matchService.createMatch(createMatchDto);
     }
 
+    @UseGuards(jwtAuthGuard)
     @Get()
     async getMatches(){
         return await this.matchService.getMatches();
     }
 
+    @UseGuards(jwtAuthGuard)
     @Get(":id")
     async getMatch(@Param("id",ParseIntPipe) id: number)  {
         console.log('here')
@@ -25,7 +28,7 @@ export class MatchController {
     } 
 
     @UseGuards(DebugRoute)
-    @Get('/dummy/:user_id')
+    @Get('/dummy/:user_id') // added to dev module
     async createDummyMatches(@Param('user_id',ParseIntPipe) id: number ){
         console.log(id);
         //'default' | 'special'

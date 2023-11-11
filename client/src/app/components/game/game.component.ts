@@ -63,15 +63,13 @@ export class GameComponent implements CanComponentDeactivate {
 
     // Get params from URL
     this.route.params.subscribe(params => {
-      if (params) {
+      if (params['gameType']) {
         console.log('START FROM INVITE');
         this.gameType = params['gameType'];
         this.status = 'waiting';
         this.subscribeToEventObject();
       }
     });
-
-    // Get game data
   }
 
   // Initialize canvas after view Init

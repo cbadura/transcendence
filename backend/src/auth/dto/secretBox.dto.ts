@@ -5,8 +5,8 @@ export class secretBoxDto {
   @IsNumber()
   id: number;
 
-  @IsNumber()
-  ftid: number;
+  // @IsNumber()
+  // ftid: number;
 
   @IsString()
   tempSecret: string;

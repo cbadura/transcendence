@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { CookieService } from 'ngx-cookie-service';
 
-
 @Component({
   selector: 'tcd-token',
   templateUrl: './token.component.html',

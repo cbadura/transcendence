@@ -6,9 +6,10 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { EBanMute, ESocketMessage } from './chat.interfaces';
 import { UseFilters, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
@@ -22,7 +23,7 @@ import { KickFromChannelDto } from './dto/kick-from-channel.dto';
 import { InviteToChannelDto } from './dto/invite-to-channel.dto';
 import { LeaveChannelDto } from './dto/leave-channel.dto';
 import { AddRemoveAdminDto } from './dto/add-remove-admin.dto';
-import { WsJwtAuthGuard } from 'src/auth/guard/ws.jwt.guard';
+import { AuthSocket, WSAuthMiddleware } from 'src/auth/ws.middleware';
 
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
@@ -35,21 +36,28 @@ import { WsJwtAuthGuard } from 'src/auth/guard/ws.jwt.guard';
 export class ChatGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService
+    ) {}
 
-  handleConnection(client: Socket) {
+  // @WebSocketServer()
+  // server: Server;
+
+  afterInit(server: Server) {
+    const middle = WSAuthMiddleware();
+    server.use(middle);
+    // setInterval(() => this.chatService.checkChannels(this.chatService.updateBanMutelist), 1000);
+    setInterval(() => {
+      this.chatService.channels.forEach((ch) => this.chatService.updateBanMutelist(ch))
+    }, 1000);
+  }
+
+  handleConnection(client: AuthSocket) {
     this.chatService.handleConnection(client);
   }
 
   handleDisconnect(client: Socket) {
     this.chatService.handleDisconnect(client);
-  }
-
-  afterInit() {
-    // setInterval(() => this.chatService.checkChannels(this.chatService.updateBanMutelist), 1000);
-    setInterval(() => {
-      this.chatService.channels.forEach((ch) => this.chatService.updateBanMutelist(ch))
-    }, 1000);
   }
 
   @UsePipes(new ValidationPipe())
@@ -60,7 +68,6 @@ export class ChatGateway
     this.chatService.listChannels(socket);
   }
 
-  // @UseGuards(WsJwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ESocketMessage.TRY_CREATE_CHANNEL)
   createChannel(

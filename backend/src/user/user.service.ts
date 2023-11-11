@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -8,15 +8,13 @@ import { Match } from 'src/entities/match.entity';
 import { MatchUser } from 'src/entities/match-user.entity';
 import { Relationship } from 'src/entities/relationship.entity';
 import { Socket } from 'socket.io';
-import { ISocketUser } from '../chat/chat.interfaces';
 import { EUserStatus } from '../network-game/interfaces/IGameSocketUser';
 import { UserStatusUpdateDto } from './dto/user-status-update.dto';
-import { EUserMessages } from './user.interface';
-import { WsException } from '@nestjs/websockets';
+import { EUserMessages, ISocketUserStatus } from './user.interface';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
-import { AuthService } from 'src/auth/auth.service';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
+import { AuthSocket } from 'src/auth/ws.middleware';
 
 @Injectable()
 export class UserService {
@@ -30,27 +28,39 @@ export class UserService {
   ) {}
 
   // ~~~~~~~
-  private clients: ISocketUser[] = [];
+  private clients: ISocketUserStatus[] = [];
 
   private getUserIdFromSocket(socket: Socket): number {
-    const user: ISocketUser = this.clients.find(
+    const user: ISocketUserStatus = this.clients.find(
       (client) => client.socket.id === socket.id,
     );
-    if (!user) throw new WsException('Unexpected error');
-    return user.userId;
+    return user?.userId;
   }
-  async handleConnection(socket: Socket) {
+  
+  private createList(): UserStatusUpdateDto[] {
+    let listUsers: UserStatusUpdateDto[] = [];
+    listUsers = this.clients.map((user) => {
+      const upd = new UserStatusUpdateDto();
+      upd.userId = user.userId;
+      upd.status = user.status;
+      return upd;
+    });
+    return listUsers;
+  }
+  
+  async handleConnection(socket: AuthSocket) {
     
     // temporary solution, check token from cookie and verify it after connection
     // need to make a middleware to validate cookie/token before connection
     // const userId = await this.authService.verifyJwtFromHandshake(socket.handshake);
-    const userId = await verifyJwtFromHandshake(socket.handshake);
-    if (!userId) {
-      socket.emit('exception', 'Invalid token');
-      socket.disconnect(true);
-      return ;
-    }
-
+    // const userId = await verifyJwtFromHandshake(socket.handshake);
+    // if (!userId) {
+    //   socket.emit('exception', 'Invalid token');
+    //   socket.disconnect(true);
+    //   return ;
+    // }
+    const userId = socket.userId;
+    
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
       socket.disconnect(true);
@@ -63,9 +73,10 @@ export class UserService {
       socket.disconnect(true);
       return;
     }
-    const client: ISocketUser = {
+    const client: ISocketUserStatus = {
       socket,
       userId: userId,
+      status: EUserStatus.ONLINE
     };
     const statusUpdate: UserStatusUpdateDto = {
       userId,
@@ -75,10 +86,11 @@ export class UserService {
       (client) => client.userId === userId,
     );
     this.clients.push(client);
-    if (!isOnline)
+    if (!isOnline) {
       this.clients.forEach((client) => {
         client.socket.emit(EUserMessages.STATUS_UPDATE, statusUpdate);
       });
+    }
   }
 
   handleDisconnect(client: Socket) {
@@ -86,7 +98,8 @@ export class UserService {
       userId: this.getUserIdFromSocket(client),
       status: EUserStatus.OFFLINE,
     };
-    const clientSockets: ISocketUser[] = this.clients.filter(
+    if (statusUpdate.userId === undefined) return ;
+    const clientSockets: ISocketUserStatus[] = this.clients.filter(
       (client) => client.userId === statusUpdate.userId,
     );
     if (clientSockets.length === 1)
@@ -98,7 +111,18 @@ export class UserService {
     );
   }
 
+  listUserStatuses (client: Socket){
+    client.emit(
+        EUserMessages.LIST_USER_STATUSES,
+        this.createList(),
+    );
+  }
+
   notifyUserStatusUpdate(userId: number, status: EUserStatus) {
+    this.clients.forEach((client) => {
+      if (client.userId === userId)
+        client.status = status;
+    });
     const statusUpdate: UserStatusUpdateDto = {
       userId,
       status,
@@ -232,6 +256,11 @@ export class UserService {
   }
  
   async deleteUserDatabase(){
+    // const users = await this.userRepository.find();
+    // for (const user of users) {
+    //   await this.achievementRepo.delete({ userId: user.id});
+    //   await this.userRepository.delete(user.id);
+    // }
     await this.userRepository.createQueryBuilder().delete().from(User).execute();
     const query = `ALTER SEQUENCE User_id_seq RESTART WITH 1;`;
     await this.entityManager.query(query);
@@ -239,6 +268,8 @@ export class UserService {
 
   async getUserMatches(id: number): Promise<Match[]> {
     const user = await this.userRepository.findOne({where: {id: id}})
+    if (!user)
+      throw new NotFoundException('User doesnt exist');
     // console.log(user);
     const matchUsers = await this.matchUserRepository.find({where:{user: {id: user.id}},
       relations: ['match','match.matchUsers',"match.matchUsers.user"], 

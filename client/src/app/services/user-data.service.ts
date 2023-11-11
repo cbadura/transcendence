@@ -86,7 +86,7 @@ export class UserDataService {
       color: newColor,
     };
 
-    return new Promise<User>((resolve, reject) => {this.http.put(this.serverAddress + '/users/' + id, updatedUser).subscribe(
+    return new Promise<User>((resolve, reject) => {this.http.put(this.serverAddress + '/users', updatedUser, { withCredentials: true }).subscribe(
       (data) => {
         console.log('EDIT', JSON.stringify(data));
         this.replaceUser(data as User);
@@ -110,8 +110,9 @@ export class UserDataService {
     console.log('attempt upload');
     this.http
       .post<UploadedResponse>(
-        `${this.serverAddress}/users/${this.myUser.id}/profilepic`,
+        `${this.serverAddress}/users/profilepic`,
         formData,
+        { withCredentials: true },
       )
       .subscribe(
         (data) => {
@@ -136,12 +137,16 @@ export class UserDataService {
       relationship_status: status,
     };
     console.log(data);
-    return this.http.post(this.serverAddress + '/relationship', data);
+    return this.http.post(
+      this.serverAddress + '/relationship',
+      data,
+      { withCredentials: true }
+    );
   }
 
   removeRelation(relationID: number): Observable<any> {
     const url = `http://localhost:3000/relationship/${relationID}`;
-    return this.http.delete(url);
+    return this.http.delete(url, { withCredentials: true });
   }
 
   //   2FA

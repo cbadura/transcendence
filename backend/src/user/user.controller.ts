@@ -11,42 +11,45 @@ import * as path from 'path';
 import { jwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { DebugRoute } from 'src/auth/guard/debugRoute.guard';
 
+
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,) {}
 
+  @UseGuards(jwtAuthGuard)
   @Get()
   GetUsers(){
     return this.userService.getUsers();
   }
 
   /*--------dev--------*/
-  @UseGuards(DebugRoute)
-  @Post()
+  @UseGuards(DebugRoute) 
+  @Post() // added to dev module
   createUser(@Body() dto: CreateUserDto): Promise<User> {
     return this.userService.createUser(dto);
   }
 
   @UseGuards(DebugRoute)
-  @Get('dummy')
+  @Get('dummy') // added to dev module
   createDummyUsers(){
     this.userService.createDummyUsers();
   }
 
-  @UseGuards(DebugRoute)
-  @Delete('dummy')
+  // @UseGuards(DebugRoute)
+  @Delete('dummy') // added to dev module
   deleteUserDatabase(){
     this.userService.deleteUserDatabase();
   }
   /*---------dev---------*/
 
   //todo: prevent uploading files if user doesnt exist 
-  @Post(':id/profilepic') //remove id
+  @UseGuards(jwtAuthGuard)
+  @Post('profilepic') //remove id
   @UseInterceptors(FileInterceptor('file',{
     storage: diskStorage({
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
-          const userId = req.params.id;
+          const userId = req.user['id'];
           const extension = extname(file.originalname)
           const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
           callback(null,filename);
@@ -55,8 +58,7 @@ export class UserController {
   }))
   uploadProfilePicture(
     @UploadedFile() file: Express.Multer.File,
-    @Param('id',ParseIntPipe) id: number,
-    @Req() request: Request,
+    @Req() req: Request,
     ) {
 
     // const baseUrl = request.protocol + '://' + request.get('host');
@@ -67,7 +69,7 @@ export class UserController {
     console.log('successfully uploaded file to: ',userProfileImageURL);
     updateDTO.avatar = userProfileImageURL;
     try {
-       this.userService.updateUser(id,updateDTO);
+       this.userService.updateUser(req.user['id'],updateDTO);
     } catch (error) {
         throw new NotFoundException()
     }
@@ -75,6 +77,7 @@ export class UserController {
   }
 
   // this makes sense, but blocks the other
+  @UseGuards(jwtAuthGuard)
   @Get('profilepic/:filename')
   ServeUploadedFile(@Param('filename')filename:string, @Res() res: Response){
       const filePath = path.join(__dirname, '../../', 'uploadedData/profilepictures/', filename);
@@ -82,7 +85,13 @@ export class UserController {
       res.sendFile(filePath)
   }
 
+  @UseGuards(jwtAuthGuard)
+  @Get('profile')
+  getProfile(@Req() req: Request) {
+    return req.user;
+  }
 
+  @UseGuards(jwtAuthGuard)
   @Get(':id')
   getUser(@Param('id',ParseIntPipe) id: number) {
       try {
@@ -92,27 +101,30 @@ export class UserController {
       }
   };
 
-  @Put(':id') //remove id
-  updateUser(@Param('id',ParseIntPipe ) id: number,@Body() dto: UpdateUserDto) {
+  @UseGuards(jwtAuthGuard)
+  @Put() //remove id
+  updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
       try {
-          return this.userService.updateUser(id,dto);
+          return this.userService.updateUser(req.user['id'] ,dto);
       } catch (error) {
           throw new NotFoundException()
       }
   };
 
-  @UseGuards(DebugRoute)
-  @Delete(':id') //remove id
-  deleteUser(@Param('id',ParseIntPipe) id: number){
-    return this.userService.deleteUser(id);
+  @UseGuards(jwtAuthGuard)
+  @Delete() //remove id
+  deleteUser(@Req() req: Request){
+    return this.userService.deleteUser(req.user['id']);
   }
 
+  @UseGuards(jwtAuthGuard)
   @Get(':id/matches')
   getUserMatches(@Param('id',ParseIntPipe) id: number){
     return this.userService.getUserMatches(id);
   }
 
-  @Get(':id/relationship') // remove id
+  @UseGuards(jwtAuthGuard)
+  @Get(':id/relationship') // no need to remove id, user can view others friend list in their profile
   getUserRelationships(@Param('id',ParseIntPipe) id: number,
   @Query('filter') filter?: string,
   ){
@@ -120,7 +132,5 @@ export class UserController {
         throw new BadRequestException('filterField must be either "friend" or "blocked"');
     return this.userService.getUserRelationships(id,filter);
   }
-
-  
 
 }

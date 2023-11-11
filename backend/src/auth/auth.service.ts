@@ -10,7 +10,6 @@ import { toDataURL } from 'qrcode'
 import { secretBoxDto } from './dto/secretBox.dto';
 import { SecretBox } from 'src/entities/secretBox.entity';
 import { verifyDto } from './dto/verify.dto';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { Response } from 'express';
 import { cookieConfig } from './cookie.config';
 import { Handshake } from 'socket.io/dist/socket';
@@ -37,23 +36,23 @@ export class AuthService {
     // };
   }
 
-  private dataToImage(qr: string) { //useless, keeping it just for reference, should remove soon. 
-    if (!qr)
-      throw new InternalServerErrorException();
-    const data = qr.replace(/^data:image\/\w+;base64,/, '');
-    return qr;
-  }
+  // private dataToImage(qr: string) { //useless, keeping it just for reference, should remove soon. 
+  //   if (!qr)
+  //     throw new InternalServerErrorException();
+  //   const data = qr.replace(/^data:image\/\w+;base64,/, '');
+  //   return qr;
+  // }
 
   private async secretToImage(user: User, secret: string) { //return qr directly
     const otpurl = authenticator.keyuri(user.name, 'pong', secret);
     const qr = await toDataURL(otpurl);
-    return this.dataToImage(qr);
+    return qr;
   }
 
   private createBox(user: User) {
     const newBox: secretBoxDto = {
       id: user.id,
-      ftid: user.ftid,
+      // ftid: user.ftid,
       tempSecret: authenticator.generateSecret()
     }
     return this.boxRepo.save(newBox);
@@ -175,17 +174,12 @@ export class AuthService {
   //   return payload.id;
   // }
   
-  findUser(ftid: number): Promise<User | undefined> {
-    return this.userRepo.findOne({where: {ftid} });
-  }
-
-
   /* -------------dev-------------- */
-  getBoxes() {
+  getBoxes() { // added to dev module
     return this.boxRepo.find();
   }
 
-  burnAllSecret() {
+  burnAllSecret() { // added to dev module
     this.boxRepo.clear();
   }
 
