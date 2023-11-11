@@ -117,8 +117,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             };
             console.log('adding post to chat histor');
             this.chatHistoryService.addPost(this.channel.name, newPost);
+            setTimeout(() => {
+              this.messages.pop();
+            }, 30000);
           }
-        },
+        }
       );
     }
   }
@@ -130,6 +133,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       gameType: this.gameType,
     };
     this.router.navigate(['game', 'invite', invite]);
+  }
+  
+  declineInvitation() {
+    console.log('INVITE DECLINED', this.myUser.id);
+    this.gameService.JoinRoom(this.roomId, false);
+    this.gameService.leaveMatch();
+    this.messages.pop();
   }
 
   tryLeaveChannel() {
