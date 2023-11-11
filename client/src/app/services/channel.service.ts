@@ -356,7 +356,9 @@ export class ChannelService implements OnDestroy {
           if (data.userId === this.myUser.id) {
             ch.role = EUserRole.NONE;
           }
-
+          if (data.transferId && data.transferId === this.myUser.id){
+            ch.role = EUserRole.OWNER;
+          }
           if (ch.usersIds.length <= 0) {
             this.channels = this.channels.filter(
               (ch) => ch.name !== data.channelName,
