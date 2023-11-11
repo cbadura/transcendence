@@ -17,8 +17,8 @@ export class GameService {
   gameSocket: Socket | null = null;
   myEvent!: { eventType: string; data: any };
 
-  private eventSubject = new BehaviorSubject<{ eventType: string; data: any }>(
-    this.myEvent,
+  private eventSubject = new Subject<{ eventType: string; data: any }>(
+    // this.myEvent,
   );
   event$ = this.eventSubject.asObservable();
 
