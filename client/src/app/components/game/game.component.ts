@@ -166,7 +166,6 @@ export class GameComponent implements CanComponentDeactivate {
   returnToGameSelectionScreen(){
     this.gameService.leaveMatch();
     this.cleanUpPrevMatch();
-    console.log('statusssssssssssss', this.status);
   }
 
   //right now this play again will just queue up the user again.
