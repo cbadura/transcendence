@@ -61,12 +61,12 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 	}
    else if (selectedPage === 'Invites')
 	{
-		this.filteredChannels = this.serverChannels.filter(channel => channel.invited === true);
+		this.filteredChannels = this.serverChannels.filter(channel => channel.isInvited === true);
 	}
   }
 
   get countInvites(): number {
-	  return this.serverChannels.filter(channel => channel.invited === true).length;
+	  return this.serverChannels.filter(channel => channel.isInvited === true).length;
   }
 
   checkUserJoinedStatus(channel: Channel): boolean {

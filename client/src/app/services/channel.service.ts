@@ -263,7 +263,7 @@ export class ChannelService implements OnDestroy {
       this.channels.find((ch) => {
         if (ch.name === data.channelName) {
           ch.usersIds = data.channelUsersIds;
-		  ch.invited = false;
+		  ch.isInvited = false;
           if (data.userId === this.myUser.id) {
             ch.role = EUserRole.USER;
             ch.isBanned = false;
@@ -326,7 +326,7 @@ export class ChannelService implements OnDestroy {
 	  if (data.ownerId === this.myUser.id || data.users.includes(this.myUser.id) || data.admins.includes(this.myUser.id)) return;
       let invitedChannel = this.channels.find((ch) => ch.name === data.name);
       if (invitedChannel) {
-        invitedChannel.invited = true;
+        invitedChannel.isInvited = true;
       } else {
         let channel: Channel = {
           name: data.name,
@@ -337,7 +337,7 @@ export class ChannelService implements OnDestroy {
           usersIds: data.users,
           adminIds: data.admins,
           ownerId: data.ownerId,
-          invited: true,
+          isInvited: true,
         };
         this.channels.push(channel);
       }
