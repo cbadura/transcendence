@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { UserService } from 'src/app/services/users.service';
-import { ChatHistoryService } from 'src/app/services/chat-history.service';
 import { User } from 'src/app/shared/interfaces/user';
 import { Achievement } from 'src/app/shared/interfaces/achievement';
 import { Match } from 'src/app/shared/interfaces/match';
@@ -30,7 +29,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private userDataService: UserDataService,
-	private chatHistoryService: ChatHistoryService,
+
     private userService: UserService,
     private http: HttpClient,
     private router: Router,
