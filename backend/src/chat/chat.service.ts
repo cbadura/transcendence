@@ -548,6 +548,8 @@ export class ChatService {
     joinedDto.isMuted = !!channel.mutes.find((mute) => mute.userId === who);
     joinedDto.muteExpTime = channel.mutes.find((mute) => mute.userId === who)?.expireTimestamp;
 
+    if (userInvited)
+      channel.invites = channel.invites.filter((user) => user !== who);
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
       user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);
