@@ -33,6 +33,10 @@ export class UserDataService {
     console.log('USer dataservice created')
   }
 
+    isUserLoggedIn(): boolean {
+    return this.myUser.id !== 0;
+  }
+
   getNewestUser() {
 	// const token = this.getTokenCookie();
   console.log('IN NEWEST USER')
