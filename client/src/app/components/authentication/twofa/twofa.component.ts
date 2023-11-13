@@ -80,7 +80,7 @@ export class TwofaComponent implements OnInit {
         if (data.verified) {
 		  this.cookieService.set('token', data.access_token);
           this.userDataService.getNewestUser();
-          this.router.navigate(['/game']);
+          this.router.navigate(['/profile']);
         } else {
           this.animationClass = 'shake-horizontal';
           const divElement =

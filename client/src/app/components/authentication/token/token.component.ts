@@ -34,7 +34,7 @@ export class TokenComponent implements OnInit {
 			  // this.cookieService.set('token', token);
               if (response.verified) {
                 this.userDataService.getNewestUser();
-                this.router.navigate(['/create-profile']);
+                this.router.navigate(['/profile']);
               } else {
                 this.router.navigate(['/signin/2fa']);
               }
