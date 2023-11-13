@@ -61,7 +61,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.myProfile = true;
         } else {
           // Profile from other user
-          console.log('Profile from other user');
+          console.log('Profile from other user', user);
           this.myUser = user;
           if (this.myUser.id === Number(this.user.id))
             this.router.navigate(['/profile']);
@@ -84,6 +84,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     this.userService.getMatches(this.user.id).subscribe((data) => {
       data.forEach((obj) => {
+		console.log('MATCH', obj);
         let userIndex;
         let oppIndex;
         obj.matchUsers[0].user.id == this.user.id

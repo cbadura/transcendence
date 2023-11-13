@@ -53,6 +53,7 @@ export class UserService {
   }
 
   getMatches(id: number) : Observable<any[]> {
+	console.log('getting matches for user id', id);
 	const matchesUrl = `http://localhost:3000/users/${id}/matches`;
 	return this.http.get<any[]>(matchesUrl, { withCredentials: true })
   }
