@@ -37,27 +37,49 @@ export class UserDataService {
     return this.myUser.id !== 0;
   }
 
-  async getNewestUser() {
-	// const token = this.getTokenCookie();
+  getNewestUser() : Promise<User> {
   console.log('IN NEWEST USER')
     const url = `http://localhost:3000/users/profile`;
-    this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
-		console.log('RESPONSE', response)
-      const user: User = {
-        id: response.id,
-        name: response.name,
-        status: response.status,
-        level: response.level,
-        matches: response.matches,
-        wins: response.wins,
-        color: response.color,
-        avatar: response.avatar,
-        tfa: response.tfa,
-		    achievements: response.achievements,
-      };
-      this.replaceUser(user);
-    })
-    this.CreateSocketConnections();
+
+    return new Promise<User>((resolve, reject) => {this.http.get(url, { withCredentials: true }).subscribe(
+      (response : any) => {
+        const user: User = {
+          id: response.id,
+          name: response.name,
+          status: response.status,
+          level: response.level,
+          matches: response.matches,
+          wins: response.wins,
+          color: response.color,
+          avatar: response.avatar,
+          tfa: response.tfa,
+          achievements: response.achievements,
+        };
+        this.replaceUser(user);
+        this.CreateSocketConnections();
+        resolve(user as User);
+      }, (error) => {
+        reject(error);
+      }
+    )}) 
+
+    // this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
+		// console.log('RESPONSE', response)
+    //   const user: User = {
+    //     id: response.id,
+    //     name: response.name,
+    //     status: response.status,
+    //     level: response.level,
+    //     matches: response.matches,
+    //     wins: response.wins,
+    //     color: response.color,
+    //     avatar: response.avatar,
+    //     tfa: response.tfa,
+		//     achievements: response.achievements,
+    //   };
+    //   this.replaceUser(user);
+    // })
+    // this.CreateSocketConnections();
   }
 
   async createDevelopmentUser() {

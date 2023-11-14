@@ -48,10 +48,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: any) => {
+    this.route.params.subscribe(async (params: any) => {
       const { profile, ...rest } = params;
       this.user = rest as User;
 
+      await this.userDataService.getNewestUser();
       this.userSubscription = this.userDataService.user$.subscribe((user) => {
         if (!this.user.name) {
           // My profile
