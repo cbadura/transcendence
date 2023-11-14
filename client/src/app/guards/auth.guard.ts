@@ -5,9 +5,7 @@ import { UserDataService } from '../services/user-data.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private userDataService: UserDataService, private router: Router) {
-
-  }
+  constructor(private userDataService: UserDataService, private router: Router) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     console.log('Current URL', state.url);
@@ -16,9 +14,8 @@ export class AuthGuard implements CanActivate {
     try {
       const user = await this.userDataService.getNewestUser();
     } catch(error) {
-      console.log('USERRRRRRR');
-
-      if (state.url === '/') return true;
+      if (state.url === '/')
+        return true;
       this.router.navigate(['/']);
       return false;
     }
