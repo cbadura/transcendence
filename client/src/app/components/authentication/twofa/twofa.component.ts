@@ -78,7 +78,7 @@ export class TwofaComponent implements OnInit {
       (data) => {
         console.log(data);
         if (data.verified) {
-		  this.cookieService.set('token', data.access_token);
+		  // this.cookieService.set('token', data.access_token);
           this.userDataService.getNewestUser();
           this.router.navigate(['/']);
         } else {

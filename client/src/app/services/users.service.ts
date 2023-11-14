@@ -9,6 +9,7 @@ import { Socket } from 'ngx-socket-io';
 import { EUserStatus } from '../shared/macros/EUserStatus';
 import { EUserMessages } from '../shared/macros/EUserMessages';
 import { UserStatus } from '../shared/interfaces/userStatus';
+import { UserDataUpdateDto } from '../shared/dto/user-data-update.dto';
 
 interface UserRelationship {
 	id: number;
@@ -81,5 +82,16 @@ export class UserService {
 		this.statuses = data;
 		this.statusSubject.next(this.statuses);
 	})
+
+  // this.userSocket?.on(EUserMessages.USER_UPDATE, (dto: UserDataUpdateDto) => {
+  //   console.log('user UPDATEEEEEEEEEEEEEEEE', dto);
+  //   const userData = this.statuses.find(udata => udata.userId === dto.userId);
+  //   if (userData) {
+  //     userData.color = dto.color ? dto.color : undefined;
+  //     userData.name = dto.name ? dto.name : undefined;
+  //     userData.avatar = dto.avatar ? dto.avatar : undefined;
+  //   }
+  // })
+
   }
 }

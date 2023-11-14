@@ -157,6 +157,7 @@ export class ChatService {
     // }
 
     const userId = socket.userId;
+    console.log(`userId ${userId} connected to chat`);
     // console.log('userId', userId);
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
@@ -173,7 +174,6 @@ export class ChatService {
       userId: userId,
     };
     this.clients.push(client);
-    console.log(`userId ${userId} connected to chat`);
     // send channel list on connection
     // client.socket.emit(
     //   ESocketMessage.LIST_CHANNELS,

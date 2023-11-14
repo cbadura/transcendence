@@ -48,10 +48,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: any) => {
+    this.route.params.subscribe(async (params: any) => {
       const { profile, ...rest } = params;
       this.user = rest as User;
 
+      await this.userDataService.getNewestUser();
       this.userSubscription = this.userDataService.user$.subscribe((user) => {
         if (!this.user.name) {
           // My profile
@@ -66,39 +67,42 @@ export class ProfileComponent implements OnInit, OnDestroy {
             this.router.navigate(['/profile']);
           this.getUserRelation();
         }
+        this.userService.getFriends(this.user.id).subscribe((data) => {
+          data.forEach((friend) => {
+            this.fetchUser(friend.relational_user_id);
+          });
+        });
+        this.userService.getMatches(this.user.id).subscribe((data) => {
+          data.forEach((obj) => {
+        console.log('MATCH', obj);
+            let userIndex;
+            let oppIndex;
+            obj.matchUsers[0].user.id == this.user.id
+              ? (userIndex = 0)
+              : (userIndex = 1);
+            oppIndex = userIndex === 0 ? 1 : 0;
+            const match: Match = {
+              opponent: obj.matchUsers[oppIndex].user,
+              dateTime: obj.timestamp,
+              myScore: obj.matchUsers[userIndex].score,
+              opponentScore: obj.matchUsers[oppIndex].score,
+            };
+            this.matches.push(match);
+          });
+        });
+        
+      });
+
+
       });
 
       this.statusSubscription = this.userService.statusChatObs$.subscribe(
         (statuses) => {
           this.statuses = statuses;
         },
-      );
+        );
+        
 
-      this.userService.getFriends(this.user.id).subscribe((data) => {
-        data.forEach((friend) => {
-          this.fetchUser(friend.relational_user_id);
-        });
-      });
-    });
-
-    this.userService.getMatches(this.user.id).subscribe((data) => {
-      data.forEach((obj) => {
-		console.log('MATCH', obj);
-        let userIndex;
-        let oppIndex;
-        obj.matchUsers[0].user.id == this.user.id
-          ? (userIndex = 0)
-          : (userIndex = 1);
-        oppIndex = userIndex === 0 ? 1 : 0;
-        const match: Match = {
-          opponent: obj.matchUsers[oppIndex].user,
-          dateTime: obj.timestamp,
-          myScore: obj.matchUsers[userIndex].score,
-          opponentScore: obj.matchUsers[oppIndex].score,
-        };
-        this.matches.push(match);
-      });
-    });
   }
 
   fetchUser(id: number) {

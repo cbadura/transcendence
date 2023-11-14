@@ -40,6 +40,8 @@ export class NetworkGameService {
     // }
       // console.log('userId',userId)
       const userId = socket.userId;
+      console.log(`userId ${userId} connected to game`);
+
 
       if (isNaN(userId)) {
         socket.emit('exception', 'Invalid user id');

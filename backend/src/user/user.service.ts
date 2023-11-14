@@ -60,6 +60,8 @@ export class UserService {
     //   return ;
     // }
     const userId = socket.userId;
+    console.log(`userId ${userId} connected to user`);
+
     
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');

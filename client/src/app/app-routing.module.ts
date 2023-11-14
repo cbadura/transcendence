@@ -18,7 +18,7 @@ import {ConfirmDeactivateGuard} from './guards/can-deactivate.guard';
 import {AuthGuard} from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'game', component: GameComponent, canActivate: [AuthGuard],canDeactivate: [ConfirmDeactivateGuard] },
   { path: 'game/:invite', component: GameComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmDeactivateGuard] },
   { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
