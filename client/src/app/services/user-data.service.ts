@@ -20,7 +20,7 @@ export class UserDataService {
     avatar: 'a',
     qr: '',
     tfa: false,
-	achievements: [],
+	  achievements: [],
   };
   private serverAddress: string = 'http://localhost:3000';
   gameSocket: Socket | null = null;
@@ -33,15 +33,15 @@ export class UserDataService {
     console.log('USer dataservice created')
   }
 
-    isUserLoggedIn(): boolean {
+  isUserLoggedIn(): boolean {
     return this.myUser.id !== 0;
   }
 
-  getNewestUser() {
+  async getNewestUser() {
 	// const token = this.getTokenCookie();
   console.log('IN NEWEST USER')
-    const url = `http://localhost:3000/auth/profile`;
-    this.http.get(url, { withCredentials: true }).subscribe((response: any) => {
+    const url = `http://localhost:3000/users/profile`;
+    this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
 		console.log('RESPONSE', response)
       const user: User = {
         id: response.id,
@@ -53,11 +53,11 @@ export class UserDataService {
         color: response.color,
         avatar: response.avatar,
         tfa: response.tfa,
-		achievements: response.achievements,
+		    achievements: response.achievements,
       };
       this.replaceUser(user);
-      this.CreateSocketConnections();
-    });
+    })
+    this.CreateSocketConnections();
   }
 
   async createDevelopmentUser() {
@@ -78,7 +78,7 @@ export class UserDataService {
       )
   }
 
-  replaceUser(user: any) {
+  async replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
   }
