@@ -68,12 +68,19 @@ export class UserService {
 	console.log('subscribed to user events');
     this.userSocket?.on(EUserMessages.STATUS_UPDATE, (data: any) => {
       console.log(EUserMessages.STATUS_UPDATE, data);
-	  const foundIndex = this.statuses.findIndex(status => status.userId === data.userId);
-	  if (foundIndex !== -1) {
-		this.statuses[foundIndex].status = data.status;
-	  } else {
-		this.statuses.push(data);
-	  }
+	  // const foundIndex = this.statuses.findIndex(status => status.userId === data.userId);
+	  // if (foundIndex !== -1) {
+		// this.statuses[foundIndex].status = data.status;
+	  // } else {
+		// this.statuses.push(data);
+	  // }
+      const userd = this.statuses.find(status => status.userId === data.userId);
+      if (userd)
+        userd.status = data.status;
+      else
+        this.statuses.push(data);
+      
+      
       this.statusSubject.next(this.statuses);
     });
 
@@ -83,15 +90,22 @@ export class UserService {
 		this.statusSubject.next(this.statuses);
 	})
 
-  // this.userSocket?.on(EUserMessages.USER_UPDATE, (dto: UserDataUpdateDto) => {
-  //   console.log('user UPDATEEEEEEEEEEEEEEEE', dto);
-  //   const userData = this.statuses.find(udata => udata.userId === dto.userId);
-  //   if (userData) {
-  //     userData.color = dto.color ? dto.color : undefined;
-  //     userData.name = dto.name ? dto.name : undefined;
-  //     userData.avatar = dto.avatar ? dto.avatar : undefined;
-  //   }
-  // })
+  this.userSocket?.on(EUserMessages.USER_UPDATE, (dto: UserDataUpdateDto) => {
+    console.log('user UPDATEEEEEEEEEEEEEEEE', dto);
+    const userData = this.statuses.find(udata => udata.userId === dto.userId);
+    if (userData) {
+      // if ('name' in dto)
+      //   userData.name = dto.name;
+      // if ('avatar' in dto)
+      //   userData.avatar = dto.avatar;
+      // if ('color' in dto)
+      //   userData.color = dto.color;
+      Object.assign(userData, dto);
+    }
+    console.log('USERRRRRRTUVVV', userData);
+    console.log('USERSSS LIST', this.statuses);
+    this.statusSubject.next(this.statuses);
+  })
 
   }
 }

@@ -163,18 +163,7 @@ export class UserService {
   }
 
   async updateUser(id: number, dto: UpdateUserDto) {
-    if (id === 0) { // temp fix until dev specific endpoint
-      return this.createUser({
-        ftid: null,
-        name: dto.name,
-        color: dto.color,
-        avatar: `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`,
-        tfa: false,
-        level:1.00,
-        matches: 0,
-        wins: 0
-      })
-    }
+    
     const currUser = await this.userRepository.findOne({ where: { id }});
     if(dto.avatar != null && currUser != null){
       await this.deleteExistingImage(currUser);
