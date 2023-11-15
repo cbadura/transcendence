@@ -24,6 +24,6 @@
   ></tcd-chat-btn>
 
   <!-- DM -->
-  <tcd-profile-card *ngIf="isDM" class="w-full" [user]="this.user"></tcd-profile-card>
+  <tcd-profile-card *ngIf="isDM" class="w-full" [user]="this.user" [userName]="this.user.name" [userAvatar]="this.user.avatar"></tcd-profile-card>
   
 </div>
