@@ -89,7 +89,12 @@
     <p class="text-center">Friends</p>
     <div class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full">
       <div class="p-4" *ngFor="let friend of friends">
-        <tcd-profile-card [user]="friend"></tcd-profile-card>
+        <tcd-profile-card 
+          [user]="friend"
+          [userStatus]="getUserStatus(friend.id)"
+          [userName]="getUserName(friend.id)"
+          [userAvatar]="getUserAvatar(friend.id)"
+        ></tcd-profile-card>
       </div>
     </div>
   </div>

@@ -150,6 +150,35 @@ export class ProfileComponent implements OnInit, OnDestroy {
 	this.router.navigate(['chat', 'dm', this.user]);
   }
 
+  getUserStatus(id: number) {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    return userStatus ? userStatus.status : 'Offline';
+  }
+
+  getUserName(id: number): string {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    const user = this.friends.find(user => user.id === id);
+    if (userStatus && user)
+      user.name = userStatus.name ?? user.name;
+    return userStatus?.name ?? this.friends.find(user => user.id === id)?.name ?? 'wtf';
+    // return userStatus?.name ? userStatus?.name : this.users.find(user => user.id === id)?.name;
+  }
+
+  getUserAvatar(id: number): string {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    const user = this.friends.find(user => user.id === id);
+    if (userStatus && user)
+      user.avatar = userStatus.avatar ?? user.avatar;
+    return userStatus?.avatar ?? this.friends.find(user => user.id === id)?.avatar ?? 'wtf';
+  }
+
+
   ngOnDestroy() {
     this.userSubscription.unsubscribe();
     this.statusSubscription.unsubscribe();
