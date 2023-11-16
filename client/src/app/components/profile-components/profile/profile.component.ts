@@ -53,8 +53,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
 
     
+    await this.userDataService.getNewestUser();
     this.route.params.subscribe(async (params: any) => {
-      await this.userDataService.getNewestUser();
       const id = params['profile'];
       console.log('GGGGGGGGGGGGGGGGG', id)
       // const { profile, ...rest } = params;
@@ -65,10 +65,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.http.get<User>(
           `http://localhost:3000/users/${id}`,
           { withCredentials: true}
-        ).subscribe(user => {
-          this.user = user
-        }, error => {
-          console.log('Error;', error);
+        ).subscribe({
+          next: user => {
+            this.user = user;
+          },
+          error: error => {
+            console.log('Error:', error);
+          }
         });
 
       }
