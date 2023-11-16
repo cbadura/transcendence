@@ -19,6 +19,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   myUser!: User;
   private userSubscription!: Subscription;
   private statusSubscription!: Subscription;
+  private friendSubscription!: Subscription;
   private statuses: UserStatus[] = [];
   friends: User[] = [];
   matches: Match[] = [];
@@ -47,22 +48,38 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    if (this.userSubscription)
-      this.userSubscription.unsubscribe();
-    if (this.statusSubscription)
-      this.statusSubscription.unsubscribe();
+  async ngOnInit() {
+    
 
-    console.log("INIT PROFILE COMPONENT")
-    this.friends = [];
-    console.log('friends after being emptied', this.friends);
 
-    this.matches = [];
+    
     this.route.params.subscribe(async (params: any) => {
-      const { profile, ...rest } = params;
-      this.user = rest as User;
-
       await this.userDataService.getNewestUser();
+      const id = params['profile'];
+      console.log('GGGGGGGGGGGGGGGGG', id)
+      // const { profile, ...rest } = params;
+      // this.user = rest as User;
+      if (!id)
+        this.user = this.myUser;
+      else {
+        this.http.get<User>(
+          `http://localhost:3000/users/${id}`,
+          { withCredentials: true}
+        ).subscribe(user => {
+          this.user = user
+        }, error => {
+          console.log('Error;', error);
+        });
+
+      }
+      
+      
+
+      if (this.myUser && this.myUser.id === Number(this.user.id)) {
+        this.router.navigate(['/profile']);
+        return ;
+      }
+
       this.userSubscription = this.userDataService.user$.subscribe((user) => {
         if (!this.user.name) {
           // My profile
@@ -78,7 +95,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
         if (!(this.myUser && this.myUser.id === Number(this.user.id))) {
 
-          this.userService.getFriends(this.user.id).subscribe((data) => {
+          this.friendSubscription = this.userService.getFriends(this.user.id).subscribe((data) => {
             data.forEach((friend) => {
               this.fetchUser(friend.relational_user_id);
             });
@@ -113,12 +130,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
         
       });
+
       if (this.myUser && this.myUser.id === Number(this.user.id)) {
-        this.userSubscription.unsubscribe();
-        this.statusSubscription.unsubscribe();
-        this.friends = [];
         console.log('redirecting to /profile....')
         this.router.navigate(['/profile']);
+        return ;
       }
 
       });
@@ -207,8 +223,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     if (this.userSubscription)
       this.userSubscription.unsubscribe();
-    // if (this.statusSubscription)
+    if (this.statusSubscription)
       this.statusSubscription.unsubscribe();
+    if (this.friendSubscription)
+      this.friendSubscription.unsubscribe();
     
   }
 }
