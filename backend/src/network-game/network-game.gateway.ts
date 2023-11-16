@@ -8,7 +8,7 @@ import { JoinRoomDto } from './dto/join-room.dto';
 
 @WebSocketGateway({
   cors: {
-    origin: `http://${process.env.HOST_NAME}:4200`,
+    origin: `https://${process.env.HOST_NAME}:4200`,
     credentials: true
   },
   namespace: 'game'

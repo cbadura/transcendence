@@ -25,7 +25,7 @@ export class SeedingService implements OnModuleInit{
         ];
         
         for (let i = 0; i < AchievementDevs.length; i++) {
-            AchievementDevs[i].image = `http://${process.env.HOST_NAME}:3000/achievement-definition/achievementImages/` + AchievementDevs[i].image;
+            AchievementDevs[i].image = `https://${process.env.HOST_NAME}:3000/achievement-definition/achievementImages/` + AchievementDevs[i].image;
         }
         const existingData = await this.achievementDefinitionRepository.find({order: {id: "ASC"}});
         let i = 0;

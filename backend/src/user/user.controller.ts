@@ -63,7 +63,7 @@ export class UserController {
 
     // const baseUrl = request.protocol + '://' + request.get('host');
     // dirty fix by cosmo :(, prepended `http://localhost:3000` to the imageURL 
-    const userProfileImageURL = `http://${process.env.HOST_NAME}:3000/users/profilepic/${file.filename}`
+    const userProfileImageURL = `https://${process.env.HOST_NAME}:3000/users/profilepic/${file.filename}`
 
     let updateDTO = new UpdateUserDto();
     console.log('successfully uploaded file to: ',userProfileImageURL);
