@@ -10,7 +10,7 @@ import { EUserRole } from 'src/app/shared/macros/EUserRole';
   templateUrl: './channels.component.html',
 })
 export class ChannelsComponent implements OnInit, OnDestroy {
-  public pages = ['My channels', 'DMs', 'Public', 'Private', 'Protected'];
+  public pages = ['My channels', 'Public', 'Private', 'Protected'];
   public selectedPage! : string;
   public serverChannels: Channel[] = [];
   public filteredChannels: Channel[] = [];
@@ -59,16 +59,14 @@ export class ChannelsComponent implements OnInit, OnDestroy {
 	  this.joinedChannels = this.joinedChannels.filter(channel => !this.ownChannels.includes(channel));
 		console.log('JOINED CHANNELS', this.joinedChannels);
 	}
-    else if (selectedPage === 'DMs') {
-      this.filteredChannels = [];
-    } else if (selectedPage === 'Invites')
+   else if (selectedPage === 'Invites')
 	{
-		this.filteredChannels = this.serverChannels.filter(channel => channel.invited === true);
+		this.filteredChannels = this.serverChannels.filter(channel => channel.isInvited === true);
 	}
   }
 
   get countInvites(): number {
-	  return this.serverChannels.filter(channel => channel.invited === true).length;
+	  return this.serverChannels.filter(channel => channel.isInvited === true).length;
   }
 
   checkUserJoinedStatus(channel: Channel): boolean {

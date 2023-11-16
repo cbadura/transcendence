@@ -50,6 +50,7 @@
         *ngFor="let member of members"
         (click)="transferOwnership(member.id)"
         [user]="member"
+		[userName]="member.name" [userAvatar]="member.avatar"
         [redirect]="false"
       ></tcd-profile-card>
     </div>

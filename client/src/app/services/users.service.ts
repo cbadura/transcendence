@@ -9,6 +9,7 @@ import { Socket } from 'ngx-socket-io';
 import { EUserStatus } from '../shared/macros/EUserStatus';
 import { EUserMessages } from '../shared/macros/EUserMessages';
 import { UserStatus } from '../shared/interfaces/userStatus';
+import { UserDataUpdateDto } from '../shared/dto/user-data-update.dto';
 
 interface UserRelationship {
 	id: number;
@@ -53,6 +54,7 @@ export class UserService {
   }
 
   getMatches(id: number) : Observable<any[]> {
+	console.log('getting matches for user id', id);
 	const matchesUrl = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}/matches`;
 	return this.http.get<any[]>(matchesUrl, { withCredentials: true })
   }
@@ -66,12 +68,19 @@ export class UserService {
 	console.log('subscribed to user events');
     this.userSocket?.on(EUserMessages.STATUS_UPDATE, (data: any) => {
       console.log(EUserMessages.STATUS_UPDATE, data);
-	  const foundIndex = this.statuses.findIndex(status => status.userId === data.userId);
-	  if (foundIndex !== -1) {
-		this.statuses[foundIndex].status = data.status;
-	  } else {
-		this.statuses.push(data);
-	  }
+	  // const foundIndex = this.statuses.findIndex(status => status.userId === data.userId);
+	  // if (foundIndex !== -1) {
+		// this.statuses[foundIndex].status = data.status;
+	  // } else {
+		// this.statuses.push(data);
+	  // }
+      const userd = this.statuses.find(status => status.userId === data.userId);
+      if (userd)
+        userd.status = data.status;
+      else
+        this.statuses.push(data);
+      
+      
       this.statusSubject.next(this.statuses);
     });
 
@@ -80,5 +89,23 @@ export class UserService {
 		this.statuses = data;
 		this.statusSubject.next(this.statuses);
 	})
+
+  this.userSocket?.on(EUserMessages.USER_UPDATE, (dto: UserDataUpdateDto) => {
+    console.log('user UPDATEEEEEEEEEEEEEEEE', dto);
+    const userData = this.statuses.find(udata => udata.userId === dto.userId);
+    if (userData) {
+      // if ('name' in dto)
+      //   userData.name = dto.name;
+      // if ('avatar' in dto)
+      //   userData.avatar = dto.avatar;
+      // if ('color' in dto)
+      //   userData.color = dto.color;
+      Object.assign(userData, dto);
+    }
+    console.log('USERRRRRRTUVVV', userData);
+    console.log('USERSSS LIST', this.statuses);
+    this.statusSubject.next(this.statuses);
+  })
+
   }
 }

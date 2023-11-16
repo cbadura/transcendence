@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private userDataService: UserDataService,
+
     private userService: UserService,
     private http: HttpClient,
     private router: Router,
@@ -47,10 +48,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe((params: any) => {
+    this.route.params.subscribe(async (params: any) => {
       const { profile, ...rest } = params;
       this.user = rest as User;
 
+      await this.userDataService.getNewestUser();
       this.userSubscription = this.userDataService.user$.subscribe((user) => {
         if (!this.user.name) {
           // My profile
@@ -59,44 +61,48 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.myProfile = true;
         } else {
           // Profile from other user
-          console.log('Profile from other user');
+          console.log('Profile from other user', user);
           this.myUser = user;
           if (this.myUser.id === Number(this.user.id))
             this.router.navigate(['/profile']);
           this.getUserRelation();
         }
+        this.userService.getFriends(this.user.id).subscribe((data) => {
+          data.forEach((friend) => {
+            this.fetchUser(friend.relational_user_id);
+          });
+        });
+        this.userService.getMatches(this.user.id).subscribe((data) => {
+          data.forEach((obj) => {
+        console.log('MATCH', obj);
+            let userIndex;
+            let oppIndex;
+            obj.matchUsers[0].user.id == this.user.id
+              ? (userIndex = 0)
+              : (userIndex = 1);
+            oppIndex = userIndex === 0 ? 1 : 0;
+            const match: Match = {
+              opponent: obj.matchUsers[oppIndex].user,
+              dateTime: obj.timestamp,
+              myScore: obj.matchUsers[userIndex].score,
+              opponentScore: obj.matchUsers[oppIndex].score,
+            };
+            this.matches.push(match);
+          });
+        });
+        
+      });
+
+
       });
 
       this.statusSubscription = this.userService.statusChatObs$.subscribe(
         (statuses) => {
           this.statuses = statuses;
         },
-      );
+        );
+        
 
-      this.userService.getFriends(this.user.id).subscribe((data) => {
-        data.forEach((friend) => {
-          this.fetchUser(friend.relational_user_id);
-        });
-      });
-    });
-
-    this.userService.getMatches(this.user.id).subscribe((data) => {
-      data.forEach((obj) => {
-        let userIndex;
-        let oppIndex;
-        obj.matchUsers[0].user.id == this.user.id
-          ? (userIndex = 0)
-          : (userIndex = 1);
-        oppIndex = userIndex === 0 ? 1 : 0;
-        const match: Match = {
-          opponent: obj.matchUsers[oppIndex].user,
-          dateTime: obj.timestamp,
-          myScore: obj.matchUsers[userIndex].score,
-          opponentScore: obj.matchUsers[oppIndex].score,
-        };
-        this.matches.push(match);
-      });
-    });
   }
 
   fetchUser(id: number) {
@@ -139,6 +145,39 @@ export class ProfileComponent implements OnInit, OnDestroy {
 	const userStatus = this.statuses.find(status => status.userId === Number(this.user.id));
 	return userStatus ? userStatus.status : 'Offline';
   }
+
+  navigateToDm() {
+	this.router.navigate(['chat', 'dm', this.user]);
+  }
+
+  getUserStatus(id: number) {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    return userStatus ? userStatus.status : 'Offline';
+  }
+
+  getUserName(id: number): string {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    const user = this.friends.find(user => user.id === id);
+    if (userStatus && user)
+      user.name = userStatus.name ?? user.name;
+    return userStatus?.name ?? this.friends.find(user => user.id === id)?.name ?? 'wtf';
+    // return userStatus?.name ? userStatus?.name : this.users.find(user => user.id === id)?.name;
+  }
+
+  getUserAvatar(id: number): string {
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(id),
+    );
+    const user = this.friends.find(user => user.id === id);
+    if (userStatus && user)
+      user.avatar = userStatus.avatar ?? user.avatar;
+    return userStatus?.avatar ?? this.friends.find(user => user.id === id)?.avatar ?? 'wtf';
+  }
+
 
   ngOnDestroy() {
     this.userSubscription.unsubscribe();

@@ -7,15 +7,23 @@
 <div
   class="bg-black h-24 rounded-2xl text-white p-4 flex justify-between items-center absolute w-[95%] left-1/2 transform translate-x-[-50%] top-5"
 >
+  <!-- Channel -->
   <!-- Name and users count -->
-  <div class="flex flex-col justify-center">
+  <div *ngIf="!isDM" class="flex flex-col justify-center">
     <h1 class="font-bold">🎮 {{ this.channel.name }} 🕹️</h1>
     <div class="flex items-center gap-2">
       <ng-icon class="cursor-pointer" name="{{ 'featherUsers' }}"></ng-icon>
       <p>{{ this.channel.usersIds.length }}</p>
     </div>
   </div>
-
   <!-- Leave channel -->
-  <tcd-chat-btn (click)="onLeave()" [icon]="'featherXSquare'"></tcd-chat-btn>
+  <tcd-chat-btn
+    *ngIf="!isDM"
+    (click)="onLeave()"
+    [icon]="'featherXSquare'"
+  ></tcd-chat-btn>
+
+  <!-- DM -->
+  <tcd-profile-card *ngIf="isDM" class="w-full" [user]="this.user" [userName]="this.user.name" [userAvatar]="this.user.avatar"></tcd-profile-card>
+  
 </div>

@@ -13,6 +13,9 @@
         "build": {
           "builder": "@ngx-env/builder:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "crypto-js"
+            ],
             "outputPath": "dist/transcendence",
             "index": "src/index.html",
             "main": "src/main.ts",

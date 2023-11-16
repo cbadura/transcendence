@@ -2,12 +2,13 @@ import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
-  OnGatewayDisconnect, SubscribeMessage,
+  OnGatewayDisconnect, OnGatewayInit, SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { UserService } from './user.service';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { EUserMessages } from "./user.interface";
+import { AuthSocket, WSAuthMiddleware } from 'src/auth/ws.middleware';
 
 @WebSocketGateway({
   cors: {
@@ -15,9 +16,15 @@ import { EUserMessages } from "./user.interface";
     credentials: true
   },
 })
-export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(private readonly userService: UserService) {}
-  handleConnection(client: Socket) {
+
+  afterInit(server: Server) {
+    const mid = WSAuthMiddleware();
+    server.use(mid);
+  }
+
+  handleConnection(client: AuthSocket) {
     this.userService.handleConnection(client);
   }
 

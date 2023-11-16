@@ -6,7 +6,7 @@
 				placeholder="Search Users">
 			<tcd-chat-btn (click)="closeUserPopup()" [icon]="'featherX'" [white]="true"></tcd-chat-btn>
 		</div>
-		<tcd-profile-card *ngFor="let user of filteredUsers" [user]="user" [userStatus]="getUserStatus(user.id)" [redirect]="false" (click)="selectUser(user)"></tcd-profile-card>
+		<tcd-profile-card *ngFor="let user of filteredUsers" [user]="user"  [userName]="user.name" [userAvatar]="user.avatar" [userStatus]="getUserStatus(user.id)" [redirect]="false" (click)="selectUser(user)"></tcd-profile-card>
 		<div *ngIf="filteredUsers.length == 0 && searchTerm !== ''" class="text-center text-white">No users found</div>
 	</div>
 </div>

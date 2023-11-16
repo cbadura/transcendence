@@ -4,7 +4,7 @@
 >
   <!-- Left side -->
   <div class="flex gap-4 items-center">
-    <div
+    <div *ngIf="userStatus"
       [ngClass]="{
         'h-3 aspect-square  rounded-full border border-black': true,
         'bg-green-300': userStatus === 'Online',
@@ -14,9 +14,9 @@
       }"
     ></div>
     <div class="flex items-center justify-center gap-4">
-      <tcd-thumbnail [imgUrl]="user.avatar" [size]="'50px'"></tcd-thumbnail>
+      <tcd-thumbnail [imgUrl]="userAvatar" [size]="'50px'"></tcd-thumbnail>
       <div>
-        <p class="font-bold">{{ user.name }}</p>
+        <p class="font-bold">{{ userName }}</p>
         <p>level {{ getFloorLevel() }}</p>
       </div>
     </div>

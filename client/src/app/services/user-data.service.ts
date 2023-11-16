@@ -20,7 +20,7 @@ export class UserDataService {
     avatar: 'a',
     qr: '',
     tfa: false,
-	achievements: [],
+	  achievements: [],
   };
   private serverAddress: string = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000`;
   gameSocket: Socket | null = null;
@@ -33,27 +33,53 @@ export class UserDataService {
     console.log('USer dataservice created')
   }
 
-  getNewestUser() {
-	// const token = this.getTokenCookie();
+  isUserLoggedIn(): boolean {
+    return this.myUser.id !== 0;
+  }
+
+  getNewestUser() : Promise<User> {
   console.log('IN NEWEST USER')
     const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/auth/profile`;
-    this.http.get(url, { withCredentials: true }).subscribe((response: any) => {
-		console.log('RESPONSE', response)
-      const user: User = {
-        id: response.id,
-        name: response.name,
-        status: response.status,
-        level: response.level,
-        matches: response.matches,
-        wins: response.wins,
-        color: response.color,
-        avatar: response.avatar,
-        tfa: response.tfa,
-		achievements: response.achievements,
-      };
-      this.replaceUser(user);
-      this.CreateSocketConnections();
-    });
+
+    return new Promise<User>((resolve, reject) => {this.http.get(url, { withCredentials: true }).subscribe(
+      (response : any) => {
+        const user: User = {
+          id: response.id,
+          name: response.name,
+          status: response.status,
+          level: response.level,
+          matches: response.matches,
+          wins: response.wins,
+          color: response.color,
+          avatar: response.avatar,
+          tfa: response.tfa,
+          achievements: response.achievements,
+        };
+        this.replaceUser(user);
+        this.CreateSocketConnections();
+        resolve(user as User);
+      }, (error) => {
+        reject(error);
+      }
+    )}); 
+
+    // this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
+		// console.log('RESPONSE', response)
+    //   const user: User = {
+    //     id: response.id,
+    //     name: response.name,
+    //     status: response.status,
+    //     level: response.level,
+    //     matches: response.matches,
+    //     wins: response.wins,
+    //     color: response.color,
+    //     avatar: response.avatar,
+    //     tfa: response.tfa,
+		//     achievements: response.achievements,
+    //   };
+    //   this.replaceUser(user);
+    // })
+    // this.CreateSocketConnections();
   }
 
   async createDevelopmentUser() {
@@ -74,7 +100,7 @@ export class UserDataService {
       )
   }
 
-  replaceUser(user: any) {
+  async replaceUser(user: any) {
     this.myUser = { ...this.myUser, ...user };
     this.userSubject.next(this.myUser);
   }

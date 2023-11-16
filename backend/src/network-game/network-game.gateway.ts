@@ -1,10 +1,11 @@
-import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit } from '@nestjs/websockets';
 import { NetworkGameService } from './network-game.service';
-import { Namespace, Socket } from 'socket.io';
+import { Namespace, Server, Socket } from 'socket.io';
 import { ESocketGameMessage } from './interfaces/ESocketGameMessage';
 import { JoinQueueDto } from './dto/join-queue.dto';
 import { CreatePrivateRoomDto } from './dto/create-private-room.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
+import { AuthSocket, WSAuthMiddleware } from 'src/auth/ws.middleware';
 
 @WebSocketGateway({
   cors: {
@@ -13,12 +14,17 @@ import { JoinRoomDto } from './dto/join-room.dto';
   },
   namespace: 'game'
 })
-export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NetworkGameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   constructor(private readonly networkGameService: NetworkGameService) {}
   @WebSocketServer()
   server: Namespace;
 
-  handleConnection(@ConnectedSocket() client: Socket) {
+  afterInit(server: Server) {
+    const mid = WSAuthMiddleware();
+    server.use(mid);
+  }
+
+  handleConnection(@ConnectedSocket() client: AuthSocket) {
     // console.log('Client connected');
     this.networkGameService.handleConnection(client);
   }

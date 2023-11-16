@@ -15,7 +15,9 @@ export class ProfileCardComponent implements OnInit {
   @Input() mute!: Function;
   @Input() disinvite!: Function;
   @Input() redirect: boolean = true;
-  @Input() userStatus: string = 'Offline';
+  @Input() userStatus!: string;
+  @Input() userName!: string;
+  @Input() userAvatar!: string;
   public selected!: string;
 
   constructor(private router: Router) {}

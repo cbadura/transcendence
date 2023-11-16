@@ -14,6 +14,7 @@ import { EUserMessages, ISocketUserStatus } from './user.interface';
 import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
+import { AuthSocket } from 'src/auth/ws.middleware';
 
 @Injectable()
 export class UserService {
@@ -47,17 +48,20 @@ export class UserService {
     return listUsers;
   }
   
-  async handleConnection(socket: Socket) {
+  async handleConnection(socket: AuthSocket) {
     
     // temporary solution, check token from cookie and verify it after connection
     // need to make a middleware to validate cookie/token before connection
     // const userId = await this.authService.verifyJwtFromHandshake(socket.handshake);
-    const userId = await verifyJwtFromHandshake(socket.handshake);
-    if (!userId) {
-      socket.emit('exception', 'Invalid token');
-      socket.disconnect(true);
-      return ;
-    }
+    // const userId = await verifyJwtFromHandshake(socket.handshake);
+    // if (!userId) {
+    //   socket.emit('exception', 'Invalid token');
+    //   socket.disconnect(true);
+    //   return ;
+    // }
+    const userId = socket.userId;
+    console.log(`userId ${userId} connected to user`);
+
     
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
@@ -159,18 +163,7 @@ export class UserService {
   }
 
   async updateUser(id: number, dto: UpdateUserDto) {
-    if (id === 0) { // temp fix until dev specific endpoint
-      return this.createUser({
-        ftid: null,
-        name: dto.name,
-        color: dto.color,
-        avatar: `https://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`,
-        tfa: false,
-        level:1.00,
-        matches: 0,
-        wins: 0
-      })
-    }
+    
     const currUser = await this.userRepository.findOne({ where: { id }});
     if(dto.avatar != null && currUser != null){
       await this.deleteExistingImage(currUser);

@@ -27,6 +27,7 @@ import {AddRemoveAdminDto} from './dto/add-remove-admin.dto';
 import { User } from 'src/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
+import { AuthSocket } from 'src/auth/ws.middleware';
 
 @Injectable()
 export class ChatService {
@@ -88,8 +89,8 @@ export class ChatService {
       .filter(
         (ch) =>
           ch.mode !== EChannelMode.PRIVATE ||
-          this.getUserRole(ch, user.userId) !== EUserRole.NONE ||
-          this.isInvited(ch, user.userId),
+          this.getUserRole(ch, user.userId) !== EUserRole.NONE // ||
+         // this.isInvited(ch, user.userId),
         //this last check depends on frontend implementation
       )
       .map((ch): ChannelDto => {
@@ -98,6 +99,7 @@ export class ChatService {
         channel.mode = ch.mode;
         channel.ownerId = ch.ownerId;
         channel.role = this.getUserRole(ch, user.userId);
+        channel.isInvited = this.isInvited(ch, user.userId);
         channel.isBanned = !!ch.bans.find((ban) => ban.userId === user.userId);
         if (channel.isBanned)
           channel.banExpTime = ch.bans.find(
@@ -142,18 +144,20 @@ export class ChatService {
   }
 
   // TODO change later userId into token and extract userId from token
-  async handleConnection(socket: Socket) {
+  async handleConnection(socket: AuthSocket) {
   
     // // temporary solution, check token from cookie and verify it after connection
     // // need to make a middleware to validate cookie/token before connection
     // const userId = await this.authService.verifyJwtFromHandshake(socket.handshake);
-    const userId = await verifyJwtFromHandshake(socket.handshake);
-    if (!userId) {
-      socket.emit('exception', 'Invalid token');
-      socket.disconnect(true);
-      return ;
-    }
+    // const userId = await verifyJwtFromHandshake(socket.handshake);
+    // if (!userId) {
+    //   socket.emit('exception', 'Invalid token');
+    //   socket.disconnect(true);
+    //   return ;
+    // }
 
+    const userId = socket.userId;
+    console.log(`userId ${userId} connected to chat`);
     // console.log('userId', userId);
     if (isNaN(userId)) {
       socket.emit('exception', 'Invalid user id');
@@ -170,7 +174,6 @@ export class ChatService {
       userId: userId,
     };
     this.clients.push(client);
-    console.log(`userId ${userId} connected to chat`);
     // send channel list on connection
     // client.socket.emit(
     //   ESocketMessage.LIST_CHANNELS,
@@ -545,6 +548,8 @@ export class ChatService {
     joinedDto.isMuted = !!channel.mutes.find((mute) => mute.userId === who);
     joinedDto.muteExpTime = channel.mutes.find((mute) => mute.userId === who)?.expireTimestamp;
 
+    if (userInvited)
+      channel.invites = channel.invites.filter((user) => user !== who);
     //notify all channel users about new one joining
     activeUsers.forEach((user) => {
       user.socket.emit(ESocketMessage.JOINED_TO_CHANNEL, joinedDto);

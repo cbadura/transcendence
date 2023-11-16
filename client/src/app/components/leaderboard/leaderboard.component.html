@@ -6,5 +6,7 @@
     *ngFor="let user of users | sortByScore"
     [user]="user"
     [userStatus]="getUserStatus(user.id)"
+    [userName]="getUserName(user.id)"
+    [userAvatar]="getUserAvatar(user.id)"
   ></tcd-profile-card>
 </div>

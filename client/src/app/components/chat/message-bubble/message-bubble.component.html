@@ -13,7 +13,7 @@
 			<button (click)="onAccept()" [ngStyle]="{
 				'background-color': post.senderColor
 			}" class="rounded-full text-black p-2 cursor-pointer transition-all active:scale-95">Join</button>
-			<button [ngStyle]="{
+			<button (click)="onDecline()" [ngStyle]="{
 			'background-color': post.senderColor
 		  }" class="rounded-full text-black p-2 cursor-pointer transition-all active:scale-95">Decline</button>
 		</div>

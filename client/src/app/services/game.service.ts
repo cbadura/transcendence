@@ -17,8 +17,8 @@ export class GameService {
   gameSocket: Socket | null = null;
   myEvent!: { eventType: string; data: any };
 
-  private eventSubject = new BehaviorSubject<{ eventType: string; data: any }>(
-    this.myEvent,
+  private eventSubject = new Subject<{ eventType: string; data: any }>(
+    // this.myEvent,
   );
   event$ = this.eventSubject.asObservable();
 
@@ -36,6 +36,10 @@ export class GameService {
       gameType: gameType,
     }); //temp fix the create same behavior as before
   }
+
+  /* LeaveQueue(userId: number) {
+    this.gameSocket?.emit(ESocketGameMessage.TRY_LEAVE_QUEUE);
+  } */
 
   CreateTrainingMatch(gameType: 'default' | 'special') {
     this.gameSocket?.emit(ESocketGameMessage.TRY_CREATE_ROOM, {

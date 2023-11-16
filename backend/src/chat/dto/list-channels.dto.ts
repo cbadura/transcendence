@@ -26,6 +26,9 @@ export class ChannelDto {
   role: EUserRole;
 
   @IsBoolean()
+  isInvited: boolean;
+
+  @IsBoolean()
   isBanned: boolean;
 
   @IsBoolean()

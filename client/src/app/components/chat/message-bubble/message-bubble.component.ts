@@ -9,6 +9,7 @@ export class MessageBubbleComponent implements OnInit {
   @Input() post!: Post;
   @Input() isMe!: boolean;
   @Output() accept = new EventEmitter<void>();
+  @Output() decline = new EventEmitter<void>();
   public invite!: string;
   constructor() {}
 
@@ -25,5 +26,9 @@ export class MessageBubbleComponent implements OnInit {
 
   onAccept() {
     this.accept.emit();
+  }
+
+  onDecline() {
+    this.decline.emit();
   }
 }

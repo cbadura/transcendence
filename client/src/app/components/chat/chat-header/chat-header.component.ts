@@ -2,6 +2,7 @@ import {
   Component,
   OnInit,
   Output,
+  Input,
   EventEmitter,
   OnDestroy,
 } from '@angular/core';
@@ -20,7 +21,9 @@ import { ChatHistoryService } from 'src/app/services/chat-history.service';
 })
 export class ChatHeaderComponent implements OnInit {
   channel!: Channel;
+  user!: User;
   public gameType: 'default' | 'special' = 'default';
+  public isDM: boolean = false;
   @Output() leave = new EventEmitter<void>();
 
   constructor(
@@ -32,10 +35,21 @@ export class ChatHeaderComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       const { channel, ...rest } = params;
-      this.channel = rest as Channel;
-      this.channel.usersIds = params['usersIds']
-        ?.split(',')
-        .map((num: string) => +num);
+	  console.log('channel in header', channel);
+      if (channel === 'dm') this.isDM = true;
+
+      if (this.isDM) {
+		this.user = rest as User;
+		this.user.id = Number(this.user.id);
+		this.user.level = Number(this.user.level);
+		this.user.wins = Number(this.user.wins);
+		this.user.matches = Number(this.user.matches);
+      } else {
+        this.channel = rest as Channel;
+        this.channel.usersIds = params['usersIds']
+          ?.split(',')
+          .map((num: string) => +num);
+      }
     });
   }
 

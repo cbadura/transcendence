@@ -25,7 +25,8 @@
         <tcd-message-bubble
           [post]="message"
           [isMe]="myUser.id == message.senderId"
-		  (accept)="acceptInvitation()"
+		      (accept)="acceptInvitation()"
+		      (decline)="declineInvitation()"
           class="flex"
         ></tcd-message-bubble>
       </div>
@@ -33,7 +34,7 @@
       <!-- Input field -->
       <tcd-chat-input
         (sendMessage)="savePost($event)"
-        [userIds]="this.channel.usersIds"
+        [userIds]="isDM ? [] : this.channel.usersIds"
       ></tcd-chat-input>
     </div>
   </div>

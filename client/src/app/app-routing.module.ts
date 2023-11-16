@@ -15,22 +15,22 @@ import { TokenComponent } from './components/authentication/token/token.componen
 import { TwofaComponent } from './components/authentication/twofa/twofa.component';
 // import { SigninComponent } from './components/signin/signin.component';
 import {ConfirmDeactivateGuard} from './guards/can-deactivate.guard';
-
+import {AuthGuard} from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'game', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard] },
-  { path: 'game/:invite', component: GameComponent, canDeactivate: [ConfirmDeactivateGuard] },
-  { path: 'leaderboard', component: LeaderboardComponent },
-  { path: 'chat', component: ChatComponent },
-  { path: 'chat/:channel', component: ChatComponent },
-  { path: 'profile/:profile', component: ProfileComponent },
-  { path: 'profile', component: ProfileComponent },
+  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: 'game', component: GameComponent, canActivate: [AuthGuard],canDeactivate: [ConfirmDeactivateGuard] },
+  { path: 'game/:invite', component: GameComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmDeactivateGuard] },
+  { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
+  { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
+  { path: 'chat/:channel', component: ChatComponent, canActivate: [AuthGuard] },
+  { path: 'profile/:profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   // { path: 'edit-profile', component: EditProfileComponent },
-  { path: 'create-profile', component: CreateProfileComponent },
-  { path: 'channels', component: ChannelsComponent },
-  { path: 'channels/edit/:channel', component: EditChannelComponent },
-  { path: 'channels/edit', component: EditChannelComponent },
+  { path: 'create-profile', component: CreateProfileComponent, canActivate: [AuthGuard] },
+  { path: 'channels', component: ChannelsComponent, canActivate: [AuthGuard] },
+  { path: 'channels/edit/:channel', component: EditChannelComponent, canActivate: [AuthGuard] },
+  { path: 'channels/edit', component: EditChannelComponent, canActivate: [AuthGuard] },
   { path: 'signin', component: SigninComponent },
   { path: 'signin/token', component: TokenComponent },
   { path: 'signin/2fa', component: TwofaComponent },

@@ -21,6 +21,7 @@
     "@ng-icons/core": "^25.3.1",
     "@ng-icons/feather-icons": "^25.3.1",
     "@ng-icons/heroicons": "^25.3.1",
+    "class-validator": "^0.14.0",
     "crypto-js": "^4.2.0",
     "ngx-cookie-service": "^16.0.1",
     "ngx-socket-io": "^4.5.1",
