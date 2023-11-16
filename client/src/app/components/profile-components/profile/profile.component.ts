@@ -48,6 +48,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (this.userSubscription)
+      this.userSubscription.unsubscribe();
+    if (this.statusSubscription)
+      this.statusSubscription.unsubscribe();
+
+    console.log("INIT PROFILE COMPONENT")
+    this.friends = [];
+    console.log('friends after being emptied', this.friends);
+
+    this.matches = [];
     this.route.params.subscribe(async (params: any) => {
       const { profile, ...rest } = params;
       this.user = rest as User;
@@ -63,44 +73,57 @@ export class ProfileComponent implements OnInit, OnDestroy {
           // Profile from other user
           console.log('Profile from other user', user);
           this.myUser = user;
-          if (this.myUser.id === Number(this.user.id))
-            this.router.navigate(['/profile']);
+ 
           this.getUserRelation();
         }
-        this.userService.getFriends(this.user.id).subscribe((data) => {
-          data.forEach((friend) => {
-            this.fetchUser(friend.relational_user_id);
+        if (!(this.myUser && this.myUser.id === Number(this.user.id))) {
+
+          this.userService.getFriends(this.user.id).subscribe((data) => {
+            data.forEach((friend) => {
+              this.fetchUser(friend.relational_user_id);
+            });
           });
-        });
-        this.userService.getMatches(this.user.id).subscribe((data) => {
-          data.forEach((obj) => {
-        console.log('MATCH', obj);
-            let userIndex;
-            let oppIndex;
-            obj.matchUsers[0].user.id == this.user.id
-              ? (userIndex = 0)
-              : (userIndex = 1);
-            oppIndex = userIndex === 0 ? 1 : 0;
-            const match: Match = {
-              opponent: obj.matchUsers[oppIndex].user,
-              dateTime: obj.timestamp,
-              myScore: obj.matchUsers[userIndex].score,
-              opponentScore: obj.matchUsers[oppIndex].score,
-            };
-            this.matches.push(match);
+
+          console.log('friIIIIIEND', this.friends);
+          this.userService.getMatches(this.user.id).subscribe((data) => {
+            data.forEach((obj) => {
+          // console.log('MATCH', obj);
+              let userIndex;
+              let oppIndex;
+              obj.matchUsers[0].user.id == this.user.id
+                ? (userIndex = 0)
+                : (userIndex = 1);
+              oppIndex = userIndex === 0 ? 1 : 0;
+              const match: Match = {
+                opponent: obj.matchUsers[oppIndex].user,
+                dateTime: obj.timestamp,
+                myScore: obj.matchUsers[userIndex].score,
+                opponentScore: obj.matchUsers[oppIndex].score,
+              };
+              this.matches.push(match);
+            });
           });
+
+        }
+        
+        this.statusSubscription = this.userService.statusChatObs$.subscribe(
+          (statuses) => {
+            this.statuses = statuses;
         });
+
         
       });
-
+      if (this.myUser && this.myUser.id === Number(this.user.id)) {
+        this.userSubscription.unsubscribe();
+        this.statusSubscription.unsubscribe();
+        this.friends = [];
+        console.log('redirecting to /profile....')
+        this.router.navigate(['/profile']);
+      }
 
       });
 
-      this.statusSubscription = this.userService.statusChatObs$.subscribe(
-        (statuses) => {
-          this.statuses = statuses;
-        },
-        );
+      
         
 
   }
@@ -180,7 +203,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    this.userSubscription.unsubscribe();
-    this.statusSubscription.unsubscribe();
+    console.log("DESTROY PROFILE COMPONENT")
+
+    if (this.userSubscription)
+      this.userSubscription.unsubscribe();
+    // if (this.statusSubscription)
+      this.statusSubscription.unsubscribe();
+    
   }
 }
