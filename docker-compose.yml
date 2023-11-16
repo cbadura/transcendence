@@ -36,6 +36,8 @@ services:
       - "JWT_SECRET=${JWT_SECRET:?variable JWT_SECRET is missing}"
     depends_on:
       - db
+    volumes:
+      - pictures:/app/uploadedData
     networks:
       - 42_network
 
@@ -58,5 +60,11 @@ services:
 
 volumes:
   dbdata:
+  pictures:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: "./backend/uploadedData"
 networks:
   42_network:
