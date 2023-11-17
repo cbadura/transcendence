@@ -53,6 +53,15 @@ export class UserService {
       });
   }
 
+  getFriendsv2(id: number): Observable<User[]> {
+    const friendsUrl = `http://localhost:3000/users/${id}/friends`;
+    return this.http.get<User[]>(
+      friendsUrl,
+      { withCredentials: true }
+    );
+
+  }
+
   getMatches(id: number) : Observable<any[]> {
 	console.log('getting matches for user id', id);
 	const matchesUrl = `http://localhost:3000/users/${id}/matches`;

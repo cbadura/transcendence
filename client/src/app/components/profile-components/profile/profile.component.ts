@@ -51,7 +51,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private getUserProfile(id: number) {
     this.http.get<User>(
       `http://localhost:3000/users/${id}`,
-      { withCredentials: true}
+      { withCredentials: true }
     ).subscribe({
       next: user => {
         this.user = user;
@@ -71,17 +71,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
       // const { profile, ...rest } = params;
       // this.user = rest as User;
       if (!id) {
+        // this.user = this.myUser;
+        // await this.userDataService.getNewestUser();
         this.user = this.myUser;
         this.myProfile = true;
+        console.log("THIS IS MY PROFILEEEEEEEEEEEEEE");
       } else {
         this.getUserProfile(id);
         this.myProfile = false;
+        console.log('THIS IS SOMEOOOOOOOOOOOOONE PROFILE')
+        this.getUserRelation();
       }
+      });
       
-      // if (this.myUser && this.myUser.id === Number(this.user.id)) {
-      //   this.router.navigate(['/profile']);
-      //   return ;
-      // }
+      
 
       // this.userSubscription = this.userDataService.user$.subscribe((user) => {
       //   if (!id) {
@@ -126,10 +129,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       //   }
         
-      //   this.statusSubscription = this.userService.statusChatObs$.subscribe(
-      //     (statuses) => {
-      //       this.statuses = statuses;
-      //   });
+        // this.statusSubscription = this.userService.statusChatObs$.subscribe(
+        //   (statuses) => {
+        //     this.statuses = statuses;
+        // });
 
         
       // });
@@ -140,43 +143,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       //   return ;
       // }
 
-      });
-      this.userSubscription = this.userDataService.user$.subscribe({
-        next: user => {
-          if (this.myProfile)
-            this.user = user;
-          else {
-            this.myUser = user;
-            this.getUserRelation();
-          }
+      
           
-          this.friendSubscription = this.userService.getFriends(this.user.id).subscribe((data) => {
-            data.forEach((friend) => {
-              this.fetchUser(friend.relational_user_id);
-            });
-          });
-
-          this.userService.getMatches(this.user.id).subscribe((data) => {
-            data.forEach((obj) => {
-          // console.log('MATCH', obj);
-              let userIndex;
-              let oppIndex;
-              obj.matchUsers[0].user.id == this.user.id
-                ? (userIndex = 0)
-                : (userIndex = 1);
-              oppIndex = userIndex === 0 ? 1 : 0;
-              const match: Match = {
-                opponent: obj.matchUsers[oppIndex].user,
-                dateTime: obj.timestamp,
-                myScore: obj.matchUsers[userIndex].score,
-                opponentScore: obj.matchUsers[oppIndex].score,
-              };
-              this.matches.push(match);
-            });
-          });
-
-        }
-      })
       console.log('WTFFFFFFFF', this.userDataService.user$);
 
       
