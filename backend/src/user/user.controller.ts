@@ -76,6 +76,12 @@ export class UserController {
       return {img: userProfileImageURL};
   }
 
+  @UseGuards(jwtAuthGuard)
+  @Delete('profilepic')
+  resetProfilePic(@Req() req: Request) {
+    return this.userService.resetProfilePic(req.user['id']);
+  }
+
   // this makes sense, but blocks the other
   @UseGuards(jwtAuthGuard)
   @Get('profilepic/:filename')

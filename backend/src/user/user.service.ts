@@ -224,6 +224,17 @@ export class UserService {
     return filePath;
   }
 
+  async resetProfilePic(id: number) {
+    const user = await this.getUser(id);
+    if (!user)
+      throw new NotFoundException();
+    this.deleteExistingImage(user);
+    const newAvatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+    user.avatar = newAvatar;
+    this.userRepository.save(user);
+    return newAvatar
+  }
+
   async createDummyUsers() {
     const colors: string[] = ['#E7C9FF','#C9FFE5','#C9CBFF','#FFC9C9','#FFFDC9','#C9FFFC'];
     try{
