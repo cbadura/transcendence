@@ -74,8 +74,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
           console.log('Profile from other user', user);
           this.myUser = user;
  
-          this.getUserRelation();
+          // this.getUserRelation();
         }
+        if (this.myUser && this.myUser.id === Number(this.user.id)) {
+          this.router.navigate(['/profile']);
+          return ;
+        }
+
         if (!(this.myUser && this.myUser.id === Number(this.user.id))) {
 
           this.userService.getFriends(this.user.id).subscribe((data) => {
@@ -207,7 +212,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     if (this.userSubscription)
       this.userSubscription.unsubscribe();
-    // if (this.statusSubscription)
+    if (this.statusSubscription)
       this.statusSubscription.unsubscribe();
     
   }
