@@ -1,12 +1,13 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { Channel } from '../shared/chat/Channel';
-import { User } from 'src/app/shared/interfaces/user';
-import { EUserRole } from '../shared/macros/EUserRole';
-import { ESocketMessage } from '../shared/chat/ESocketMessage';
-import { Socket } from 'ngx-socket-io';
-import { UserDataService } from './user-data.service';
+import {Injectable, OnDestroy} from '@angular/core';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
+import {Channel} from '../shared/chat/Channel';
+import {User} from 'src/app/shared/interfaces/user';
+import {EUserRole} from '../shared/macros/EUserRole';
+import {ESocketMessage} from '../shared/chat/ESocketMessage';
+import {Socket} from 'ngx-socket-io';
+import {UserDataService} from './user-data.service';
 import * as CryptoJS from 'crypto-js'
+import {EChannelMode} from "../shared/macros/EChannelMode";
 
 interface Change {
   id: number;
@@ -347,6 +348,7 @@ export class ChannelService implements OnDestroy {
 
     this.chatSocket?.on(ESocketMessage.LEFT_CHANNEL, (data: any) => {
       console.log('LEFT', data);
+      let isPrivate: boolean = false
       this.channels.find((ch) => {
         if (ch.name === data.channelName) {
           ch.usersIds = ch.usersIds.filter((id) => id !== data.userId);
@@ -364,8 +366,13 @@ export class ChannelService implements OnDestroy {
               (ch) => ch.name !== data.channelName,
             );
           }
+          if (ch.mode === EChannelMode.PRIVATE)
+            isPrivate = true;
         }
       });
+      if (data.userId === this.myUser.id && isPrivate) {
+        this.channels = this.channels.filter((channel) => channel.name !== data.channelName)
+      }
       this.serverChannels.next(this.channels);
     });
 
