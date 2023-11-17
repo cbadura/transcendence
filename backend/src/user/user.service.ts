@@ -290,6 +290,15 @@ export class UserService {
     return true;
   }
 
+  async getUserFriendList(id: number): Promise<User[]> {
+    const relations = await this.getUserRelationships(id, 'friend');
+    // console.log(relations);
+    const friendsPromises = relations.map(relation => this.getUser(relation.relational_user_id));
+    const friends = await Promise.all(friendsPromises);
+    console.log(friends);
+    return friends;
+  }
+
 
   validateFileExtension() {
     
