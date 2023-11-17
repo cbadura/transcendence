@@ -133,4 +133,10 @@ export class UserController {
     return this.userService.getUserRelationships(id,filter);
   }
 
+  @UseGuards(jwtAuthGuard)
+  @Get(':id/friends')
+  async getUserFriendList(@Param('id', ParseIntPipe) id: number): Promise<User[]> {
+    return await this.userService.getUserFriendList(id);
+  }
+
 }
