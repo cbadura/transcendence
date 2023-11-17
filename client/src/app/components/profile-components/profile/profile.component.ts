@@ -48,10 +48,21 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  private getUserProfile(id: number) {
+    this.http.get<User>(
+      `http://localhost:3000/users/${id}`,
+      { withCredentials: true}
+    ).subscribe({
+      next: user => {
+        this.user = user;
+      },
+      error: error => {
+        console.log('Error:', error);
+      }
+    });
+  }
+
   async ngOnInit() {
-    
-
-
     
     await this.userDataService.getNewestUser();
     this.route.params.subscribe(async (params: any) => {
@@ -59,52 +70,92 @@ export class ProfileComponent implements OnInit, OnDestroy {
       console.log('GGGGGGGGGGGGGGGGG', id)
       // const { profile, ...rest } = params;
       // this.user = rest as User;
-      if (!id)
+      if (!id) {
         this.user = this.myUser;
-      else {
-        this.http.get<User>(
-          `http://localhost:3000/users/${id}`,
-          { withCredentials: true}
-        ).subscribe({
-          next: user => {
-            this.user = user;
-          },
-          error: error => {
-            console.log('Error:', error);
-          }
-        });
-
+        this.myProfile = true;
+      } else {
+        this.getUserProfile(id);
+        this.myProfile = false;
       }
       
-      
+      // if (this.myUser && this.myUser.id === Number(this.user.id)) {
+      //   this.router.navigate(['/profile']);
+      //   return ;
+      // }
 
-      if (this.myUser && this.myUser.id === Number(this.user.id)) {
-        this.router.navigate(['/profile']);
-        return ;
-      }
-
-      this.userSubscription = this.userDataService.user$.subscribe((user) => {
-        if (!this.user.name) {
-          // My profile
-          this.user = user;
-          console.log('My profile user:', this.user);
-          this.myProfile = true;
-        } else {
-          // Profile from other user
-          console.log('Profile from other user', user);
-          this.myUser = user;
+      // this.userSubscription = this.userDataService.user$.subscribe((user) => {
+      //   if (!id) {
+      //     // My profile
+      //     this.user = user;
+      //     console.log('My profile user:', this.user);
+      //     this.myProfile = true;
+      //   } else {
+      //     // Profile from other user
+      //     console.log('Profile from other user', user);
+      //     this.myUser = user;
  
-          this.getUserRelation();
-        }
-        if (!(this.myUser && this.myUser.id === Number(this.user.id))) {
+      //     this.getUserRelation();
+      //   }
+      //   if (!(this.myUser && this.myUser.id === Number(this.user.id))) {
 
+      //     this.friendSubscription = this.userService.getFriends(this.user.id).subscribe((data) => {
+      //       data.forEach((friend) => {
+      //         this.fetchUser(friend.relational_user_id);
+      //       });
+      //     });
+
+      //     console.log('friIIIIIEND', this.friends);
+      //     this.userService.getMatches(this.user.id).subscribe((data) => {
+      //       data.forEach((obj) => {
+      //     // console.log('MATCH', obj);
+      //         let userIndex;
+      //         let oppIndex;
+      //         obj.matchUsers[0].user.id == this.user.id
+      //           ? (userIndex = 0)
+      //           : (userIndex = 1);
+      //         oppIndex = userIndex === 0 ? 1 : 0;
+      //         const match: Match = {
+      //           opponent: obj.matchUsers[oppIndex].user,
+      //           dateTime: obj.timestamp,
+      //           myScore: obj.matchUsers[userIndex].score,
+      //           opponentScore: obj.matchUsers[oppIndex].score,
+      //         };
+      //         this.matches.push(match);
+      //       });
+      //     });
+
+      //   }
+        
+      //   this.statusSubscription = this.userService.statusChatObs$.subscribe(
+      //     (statuses) => {
+      //       this.statuses = statuses;
+      //   });
+
+        
+      // });
+
+      // if (this.myUser && this.myUser.id === Number(this.user.id)) {
+      //   console.log('redirecting to /profile....')
+      //   this.router.navigate(['/profile']);
+      //   return ;
+      // }
+
+      });
+      this.userSubscription = this.userDataService.user$.subscribe({
+        next: user => {
+          if (this.myProfile)
+            this.user = user;
+          else {
+            this.myUser = user;
+            this.getUserRelation();
+          }
+          
           this.friendSubscription = this.userService.getFriends(this.user.id).subscribe((data) => {
             data.forEach((friend) => {
               this.fetchUser(friend.relational_user_id);
             });
           });
 
-          console.log('friIIIIIEND', this.friends);
           this.userService.getMatches(this.user.id).subscribe((data) => {
             data.forEach((obj) => {
           // console.log('MATCH', obj);
@@ -125,22 +176,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
           });
 
         }
-        
-        this.statusSubscription = this.userService.statusChatObs$.subscribe(
-          (statuses) => {
-            this.statuses = statuses;
-        });
-
-        
-      });
-
-      if (this.myUser && this.myUser.id === Number(this.user.id)) {
-        console.log('redirecting to /profile....')
-        this.router.navigate(['/profile']);
-        return ;
-      }
-
-      });
+      })
+      console.log('WTFFFFFFFF', this.userDataService.user$);
 
       
         
