@@ -74,7 +74,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           console.log('Profile from other user', user);
           this.myUser = user;
  
-          // this.getUserRelation();
+          this.getUserRelation();
         }
         if (this.myUser && this.myUser.id === Number(this.user.id)) {
           this.router.navigate(['/profile']);
