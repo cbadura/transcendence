@@ -229,7 +229,7 @@ export class ChannelService implements OnDestroy {
           isMuted: false,
           usersIds: [data.ownerId],
           adminIds: [],
-		  ownerId: data.ownerId
+		      ownerId: data.ownerId
         }
         this.channels.push(channel);
         this.serverChannels.next(this.channels);
@@ -264,7 +264,7 @@ export class ChannelService implements OnDestroy {
       this.channels.find((ch) => {
         if (ch.name === data.channelName) {
           ch.usersIds = data.channelUsersIds;
-		  ch.isInvited = false;
+		      ch.isInvited = false;
           if (data.userId === this.myUser.id) {
             ch.role = EUserRole.USER;
             ch.isBanned = false;
@@ -342,7 +342,7 @@ export class ChannelService implements OnDestroy {
         };
         this.channels.push(channel);
       }
-	  console.log('channels after invited',this.channels)
+	    console.log('channels after invited',this.channels)
       this.serverChannels.next(this.channels);
     });
 

@@ -1,6 +1,6 @@
-# ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 # build the front-end
-# ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 FROM node:16 AS frontend_build
 
 ARG HOST_NAME
@@ -12,9 +12,9 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 # set up correct nginx configs
-# ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 FROM alpine:latest AS nginx_config
 
 ARG HOST_NAME
@@ -27,9 +27,9 @@ RUN openssl req -x509 -newkey rsa:4096 -keyout /transcendence.key \
 COPY nginx.conf /nginx.conf
 RUN /bin/sed -i -e "s/\$HOST_NAME/$HOST_NAME/g" nginx.conf
 
-# ~ ~ ~
+# ~ ~ ~ ~ ~ ~
 # run nginx
-# ~ ~ ~
+# ~ ~ ~ ~ ~ ~
 FROM nginx:latest
 
 RUN rm -rf /var/www
