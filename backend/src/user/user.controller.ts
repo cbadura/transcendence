@@ -51,8 +51,11 @@ export class UserController {
       filename: (req,file,callback) => {
           const userId = req.user['id'];
           const extension = extname(file.originalname)
-          const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
-          callback(null,filename);
+          const allowedExtensions: string[] = [".jgep",".png",".PNG",".JPEG"]
+          if(allowedExtensions.find((elem)=> elem == extension)){
+            const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
+            callback(null,filename);
+          }   
       }
     })
   }))
@@ -60,7 +63,7 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
     ) {
-
+      console.log("here")
     // const baseUrl = request.protocol + '://' + request.get('host');
     // dirty fix by cosmo :(, prepended `http://localhost:3000` to the imageURL 
     const userProfileImageURL = `http://localhost:3000/users/profilepic/${file.filename}`
