@@ -61,7 +61,7 @@ export class UserDataService {
       }, (error) => {
         reject(error);
       }
-    )}) 
+    )})
 
     // this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
 		// console.log('RESPONSE', response)
@@ -119,7 +119,7 @@ export class UserDataService {
         resolve(data as User);
       },
       (error) => {
-        window.alert('Error editing user: ' + JSON.stringify(error));
+        window.alert('Error editing user: ' + error?.error?.message);
         reject(error);
       },
     );

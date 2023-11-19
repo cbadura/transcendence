@@ -1,4 +1,22 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  ParseIntPipe,
+  Body,
+  Controller,
+  Get,
+  Res,
+  Post,
+  Query,
+  Param,
+  NotFoundException,
+  Put,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  Req,
+  BadRequestException,
+  UseGuards,
+  HttpException, HttpStatus
+} from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -112,11 +130,12 @@ export class UserController {
 
   @UseGuards(jwtAuthGuard)
   @Put() //remove id
-  updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
+  async updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
       try {
-          return this.userService.updateUser(req.user['id'] ,dto);
+          return await this.userService.updateUser(req.user['id'] ,dto);
       } catch (error) {
-          throw new NotFoundException()
+          throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
+          //throw new NotFoundException()
       }
   };
 

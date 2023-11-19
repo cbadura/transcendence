@@ -15,6 +15,7 @@ import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 import { AuthSocket } from 'src/auth/ws.middleware';
+import {WsException} from "@nestjs/websockets";
 
 @Injectable()
 export class UserService {
@@ -163,7 +164,10 @@ export class UserService {
   }
 
   async updateUser(id: number, dto: UpdateUserDto) {
-    
+    if (dto?.name.length > 20)
+      throw new WsException(
+          'Username is too long. Please try again. [Max 20 chars]',
+      );
     const currUser = await this.userRepository.findOne({ where: { id }});
     if(dto.avatar != null && currUser != null){
       await this.deleteExistingImage(currUser);

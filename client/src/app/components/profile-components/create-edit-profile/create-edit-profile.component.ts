@@ -53,21 +53,26 @@ export class CreateProfileComponent implements OnInit {
 
   saveChanges = async () => {
 	console.log('save changes', this.tempName, this.tempColor, this.oldUser);
-  
+
 	if (
 	  this.tempName !== this.oldUser.name ||
 	  this.tempColor !== this.oldUser.color
 	) {
-	  await this.userDataService.editUserById(this.tempName, this.tempColor);
+    try {
+      await this.userDataService.editUserById(this.tempName, this.tempColor);
+    }
+	  catch (error) {
+      console.log('Caught error: ', error);
+    }
 	}
-  
+
 	if (this.tempFile) {
 	  await this.userDataService.uploadProfilePic(this.tempFile);
 	}
-  
+
 	this.router.navigate(['/profile']);
   };
-  
+
 
   editColor(color: string) {
     this.tempColor = color;
