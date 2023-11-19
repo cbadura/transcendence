@@ -131,12 +131,12 @@ export class UserController {
   @UseGuards(jwtAuthGuard)
   @Put() //remove id
   async updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
-      // try {
+       try {
           return await this.userService.updateUser(req.user['id'] ,dto);
-      // } catch (error) {
-      //     throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
+       } catch (error) {
+           throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
       //    // throw new NotFoundException()
-      // }
+       }
   };
 
   @UseGuards(jwtAuthGuard)
