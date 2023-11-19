@@ -73,22 +73,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           });
         });
         this.userService.getMatches(this.user.id).subscribe((data) => {
-          data.forEach((obj) => {
-        console.log('MATCH', obj);
-            let userIndex;
-            let oppIndex;
-            obj.matchUsers[0].user.id == this.user.id
-              ? (userIndex = 0)
-              : (userIndex = 1);
-            oppIndex = userIndex === 0 ? 1 : 0;
-            const match: Match = {
-              opponent: obj.matchUsers[oppIndex].user,
-              dateTime: obj.timestamp,
-              myScore: obj.matchUsers[userIndex].score,
-              opponentScore: obj.matchUsers[oppIndex].score,
-            };
-            this.matches.push(match);
-          });
+          this.matches = data;
         });
         
       });

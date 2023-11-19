@@ -6,6 +6,7 @@ import { ESocketGameMessage } from '../shared/macros/ESocketGameMessage';
 import { GameRenderInfo } from '../components/game/Render/GameRenderInfo';
 import { UserDataService } from './user-data.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Match } from '../shared/interfaces/match';
 
 @Injectable({
   providedIn: 'root',
@@ -108,6 +109,18 @@ export class GameService {
           eventType: ESocketGameMessage.UPDATE_GAME_INFO,
           data: { gameRenderInfo },
         };
+        this.eventSubject.next(this.myEvent);
+      },
+    );
+
+    this.gameSocket?.on(
+      ESocketGameMessage.GAME_ENDED,
+      (match: Match) => {
+        this.myEvent = {
+          eventType: ESocketGameMessage.GAME_ENDED,
+          data: { match },
+        };
+        console.log(this.myEvent)
         this.eventSubject.next(this.myEvent);
       },
     );
