@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -165,9 +165,8 @@ export class UserService {
 
   async updateUser(id: number, dto: UpdateUserDto) {
     if (dto?.name.length > 20)
-      throw new WsException(
-          'Username is too long. Please try again. [Max 20 chars]',
-      );
+      throw new HttpException('Username is too long. Please try again. [Max 20 chars]',
+          HttpStatus.BAD_REQUEST);
     const currUser = await this.userRepository.findOne({ where: { id }});
     if(dto.avatar != null && currUser != null){
       await this.deleteExistingImage(currUser);
