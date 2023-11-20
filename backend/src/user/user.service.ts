@@ -164,7 +164,7 @@ export class UserService {
   }
 
   async updateUser(id: number, dto: UpdateUserDto) {
-    if (dto?.name.length > 20)
+    if (dto?.name && dto?.name.length > 20)
       throw new HttpException('Username is too long. Please try again. [Max 20 chars]',
           HttpStatus.BAD_REQUEST);
     const currUser = await this.userRepository.findOne({ where: { id }});
