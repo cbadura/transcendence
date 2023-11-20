@@ -235,7 +235,7 @@ export class UserService {
     const newAvatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
     user.avatar = newAvatar;
     this.userRepository.save(user);
-    return newAvatar
+    return newAvatar;
   }
 
   async createDummyUsers() {

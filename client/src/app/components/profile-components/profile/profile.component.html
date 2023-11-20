@@ -101,7 +101,7 @@
       </div>
     </div>
     <div
-      *ngIf="friends.length === 0"
+      *ngIf="!friends || friends.length === 0"
       class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full flex flex-col items-center justify-center h-24"
     >
       <img src="assets/empty.svg" class="w-10" />
@@ -121,7 +121,7 @@
       </div>
     </div>
     <div
-      *ngIf="user.achievements.length === 0"
+      *ngIf="!user || !user.achievements || user.achievements.length === 0"
       class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full flex flex-col items-center justify-center h-24"
     >
       <img src="assets/empty.svg" class="w-10" />
@@ -140,7 +140,7 @@
       </div>
     </div>
 	<div
-	*ngIf="matches.length === 0"
+	*ngIf="!matches || matches.length === 0"
 	class="mb-4 border border-zinc-800 bg-zinc-800 rounded-3xl w-full flex flex-col items-center justify-center h-24"
   >
 	<img src="assets/empty.svg" class="w-10" />

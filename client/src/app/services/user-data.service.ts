@@ -17,7 +17,7 @@ export class UserDataService {
     matches: 0,
     wins: 0,
     color: '#E7C9FF',
-    avatar: 'a',
+    avatar: '/assets/default.png',
     qr: '',
     tfa: false,
 	  achievements: [],
@@ -151,6 +151,24 @@ export class UserDataService {
       );
   }
 
+  deleteProfilePic() {
+	//make delete request to /profilepic
+	this.http
+	  .delete(`${this.serverAddress}/users/profilepic`, {
+		withCredentials: true,
+	  })
+	  .subscribe(
+		(data) => {
+			console.log('delete profile pic', data);
+		  this.myUser.avatar = '';
+		  this.replaceUser(this.myUser);
+		},
+		(error) => {
+		  console.log(error);
+		},
+	  );
+  }
+
   getTokenCookie() {
 	return this.cookieService.get('token');
   }
@@ -175,17 +193,10 @@ export class UserDataService {
     return this.http.delete(url, { withCredentials: true });
   }
 
-  //   2FA
-//   setToken(newToken: string) {
-//     this.token = newToken;
-//   }
-
   getQRCode() {
     interface QRCodeResponse {
       qr: string;
     }
-	// const token = this.getTokenCookie();
-    // const params = new HttpParams().set('token', token);
     this.http
       .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
         /*params*/ withCredentials: true,

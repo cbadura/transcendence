@@ -24,6 +24,7 @@ export class CreateProfileComponent implements OnInit {
   tempPic!: string;
   tempCode!: string;
   twoFAPopup : boolean = false;
+  deleteServerPic: boolean = false;
   availableColors: string[] = [
     '#E7C9FF',
     '#C9FFE5',
@@ -68,8 +69,9 @@ export class CreateProfileComponent implements OnInit {
 
 	if (this.tempFile) {
 	  await this.userDataService.uploadProfilePic(this.tempFile);
+	} else if (this.deleteServerPic) {
+		await this.userDataService.deleteProfilePic();
 	}
-
 	this.router.navigate(['/profile']);
   };
 
@@ -86,18 +88,29 @@ export class CreateProfileComponent implements OnInit {
     reader.readAsDataURL(this.tempFile);
     reader.onload = () => {
       this.tempPic = reader.result as string;
+	  this.deleteServerPic = false;
     };
   }
 
   getCorrectPic(): string {
-    if (!this.tempPic) return this.oldUser.avatar;
-    else return this.tempPic;
+    if (!this.tempPic) return this.deleteServerPic ? '/assets/default.png' : this.oldUser.avatar;
+	else return this.tempPic;
   }
 
   deleteTempPic() {
-    this.tempPic = '';
-    this.tempFile = null;
-    this.fileInput.nativeElement.value = null;
+	if (this.tempFile)
+	{
+		this.tempPic = '';
+		this.tempFile = null;
+		this.fileInput.nativeElement.value = null;
+		this.deleteServerPic = false;
+		console.log('delete temp pic');
+	}
+	else 
+	{
+		this.deleteServerPic = true;
+		console.log('delete server pic');
+	}
   }
 
   open2FAPopup()
