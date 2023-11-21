@@ -23,7 +23,7 @@ export class CreateProfileComponent implements OnInit {
   tempFile!: File | null;
   tempPic!: string;
   tempCode!: string;
-  twoFAPopup : boolean = false;
+  twoFAPopup: boolean = false;
   deleteServerPic: boolean = false;
   availableColors: string[] = [
     '#E7C9FF',
@@ -53,28 +53,34 @@ export class CreateProfileComponent implements OnInit {
   }
 
   saveChanges = async () => {
-	console.log('save changes', this.tempName, this.tempColor, this.oldUser);
+    console.log('save changes', this.tempName, this.tempColor, this.oldUser);
 
-	if (
-	  this.tempName !== this.oldUser.name ||
-	  this.tempColor !== this.oldUser.color
-	) {
-    try {
-      await this.userDataService.editUserById(this.tempName, this.tempColor);
+    if (
+      this.tempName !== this.oldUser.name ||
+      this.tempColor !== this.oldUser.color
+    ) {
+      try {
+        await this.userDataService.editUserById(this.tempName, this.tempColor);
+      } catch (error) {
+        console.log('Caught error: ', error);
+      }
     }
-	  catch (error) {
-      console.log('Caught error: ', error);
-    }
-	}
 
-	if (this.tempFile) {
-	  await this.userDataService.uploadProfilePic(this.tempFile);
-	} else if (this.deleteServerPic) {
-		await this.userDataService.deleteProfilePic();
-	}
-	this.router.navigate(['/profile']);
+    if (this.tempFile) {
+      try {
+        await this.userDataService.uploadProfilePic(this.tempFile);
+      } catch (error) {
+        console.error('Error uploading profile picture', error);
+      }
+    } else if (this.deleteServerPic) {
+      try {
+        await this.userDataService.deleteProfilePic();
+      } catch (error) {
+        console.error('Error deleting profile picture', error);
+      }
+    }
+    this.router.navigate(['/profile']);
   };
-
 
   editColor(color: string) {
     this.tempColor = color;
@@ -88,44 +94,39 @@ export class CreateProfileComponent implements OnInit {
     reader.readAsDataURL(this.tempFile);
     reader.onload = () => {
       this.tempPic = reader.result as string;
-	  this.deleteServerPic = false;
+      this.deleteServerPic = false;
     };
   }
 
   getCorrectPic(): string {
-    if (!this.tempPic) return this.deleteServerPic ? '/assets/default.png' : this.oldUser.avatar;
-	else return this.tempPic;
+    if (!this.tempPic)
+      return this.deleteServerPic ? '/assets/default.png' : this.oldUser.avatar;
+    else return this.tempPic;
   }
 
   deleteTempPic() {
-	if (this.tempFile)
-	{
-		this.tempPic = '';
-		this.tempFile = null;
-		this.fileInput.nativeElement.value = null;
-		this.deleteServerPic = false;
-		console.log('delete temp pic');
-	}
-	else 
-	{
-		this.deleteServerPic = true;
-		console.log('delete server pic');
-	}
+    if (this.tempFile) {
+      this.tempPic = '';
+      this.tempFile = null;
+      this.fileInput.nativeElement.value = null;
+      this.deleteServerPic = false;
+      console.log('delete temp pic');
+    } else {
+      this.deleteServerPic = true;
+      console.log('delete server pic');
+    }
   }
 
-  open2FAPopup()
-  {
-	this.twoFAPopup = true;
+  open2FAPopup() {
+    this.twoFAPopup = true;
   }
 
-  close2FAPopup()
-  {
-	this.twoFAPopup = false;
+  close2FAPopup() {
+    this.twoFAPopup = false;
   }
 
-  deactivateTFA()
-  {
-	this.userDataService.deactivateTFA();
+  deactivateTFA() {
+    this.userDataService.deactivateTFA();
   }
 
   ngOnDestroy(): void {
