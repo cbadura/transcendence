@@ -100,7 +100,8 @@ export class UserController {
   @UseGuards(jwtAuthGuard)
   @Delete('profilepic')
   resetProfilePic(@Req() req: Request) {
-    return this.userService.resetProfilePic(req.user['id']);
+    const newImage = this.userService.resetProfilePic(req.user['id']);
+    return {img: newImage};
   }
 
   // this makes sense, but blocks the other
