@@ -150,5 +150,14 @@ export class GameService {
 		  };
 		  this.eventSubject.next(this.myEvent);
 	})
+
+	this.gameSocket?.on(ESocketGameMessage.MATCH_INVITATION_FAILED, (data: any) => {
+		this.myEvent = {
+			eventType: ESocketGameMessage.MATCH_INVITATION_FAILED,
+			data: { data },
+		  };
+		  alert(data);
+		  this.eventSubject.next(this.myEvent);
+	})
   }
 }
