@@ -75,7 +75,8 @@ export class UserController {
             callback(null,filename);
           }   
       }
-    })
+    }),
+    limits: { fileSize: 10000000}
   }))
   uploadProfilePicture(
     @UploadedFile() file: Express.Multer.File,
