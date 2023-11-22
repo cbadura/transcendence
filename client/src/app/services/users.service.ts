@@ -53,6 +53,16 @@ export class UserService {
       });
   }
 
+  getBlocked(id: number): Observable<UserRelationship[]> {
+    const url = `http://localhost:3000/users/${id}/relationship`;
+    const params = new HttpParams().set('filter', 'blocked');
+    return this.http.get<UserRelationship[]>(
+      url,{
+        params: params,
+        withCredentials: true
+      });
+  }
+
   getFriendsv2(id: number): Observable<User[]> {
     const friendsUrl = `http://localhost:3000/users/${id}/friends`;
     return this.http.get<User[]>(

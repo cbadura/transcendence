@@ -46,110 +46,125 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
       });
     });
+
+    this.userService.getBlocked(this.myUser.id).subscribe((data) => {
+      data.forEach((block) => {
+        if (block.relational_user_id === Number(this.user.id)) {
+          console.log('block object that represents relationship:', block);
+          this.relation = block.relationship_status;
+          this.relationID = block.id;
+        }
+      });
+    });
   }
 
-  private getUserProfile(id: number) {
-    this.http.get<User>(
-      `http://localhost:3000/users/${id}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: user => {
-        this.user = user;
-      },
-      error: error => {
-        console.log('Error:', error);
+  getUserRelationv2() {
+
+  }
+
+  private async getUserProfile(id: number) {
+    // this.http.get<User>(
+    //   `http://localhost:3000/users/${id}`,
+    //   { withCredentials: true }
+    // ).subscribe({
+    //   next: user => {
+    //     this.user = user;
+    //   },
+    //   error: error => {
+    //     console.log('Error:', error);
+    //   }
+    // });
+    const url = `http://localhost:3000/users/${id}`;
+    return new Promise<User>((resolve, reject) => {this.http.get(url, { withCredentials: true }).subscribe(
+      (response : any) => {
+        const user: User = {
+          id: response.id,
+          name: response.name,
+          status: response.status,
+          level: response.level,
+          matches: response.matches,
+          wins: response.wins,
+          color: response.color,
+          avatar: response.avatar,
+          tfa: response.tfa,
+          achievements: response.achievements,
+        };
+        resolve(user as User);
+      }, (error) => {
+        reject(error);
       }
-    });
+    )}) 
+
   }
 
   async ngOnInit() {
     
-    await this.userDataService.getNewestUser();
+    this.myUser = await this.userDataService.getNewestUser();
+    
+    console.log('MYUSEEEEER', this.myUser);
     this.route.params.subscribe(async (params: any) => {
+      this.friends = [];
+      this.matches = [];
+      this.relation = 'none';
       const id = params['profile'];
       console.log('GGGGGGGGGGGGGGGGG', id)
       // const { profile, ...rest } = params;
       // this.user = rest as User;
+      // this.userSubscription = this.userDataService.user$.subscribe((user) => {
+      // })
       if (!id) {
-        // this.user = this.myUser;
         // await this.userDataService.getNewestUser();
         this.user = this.myUser;
         this.myProfile = true;
         console.log("THIS IS MY PROFILEEEEEEEEEEEEEE");
       } else {
-        this.getUserProfile(id);
+        this.user = await this.getUserProfile(id);
         this.myProfile = false;
         console.log('THIS IS SOMEOOOOOOOOOOOOONE PROFILE')
         this.getUserRelation();
       }
+      // this.getUserRelation();
+      console.log('RELATIONNNNN', this.relation);
+
+      // user own profile
+      if (this.myUser && this.myUser.id === Number(this.user.id)) {
+        console.log('redirecting to /profile....')
+        this.router.navigate(['/profile']);
+        // return ;
+      }
+
+      console.log('USEEEEER', this.user);
+      
+      this.friendSubscription = this.userService.getFriendsv2(this.user.id).subscribe((data) => {
+        data.forEach((friend) => {
+          this.friends.push(friend);
+        });
       });
       
-      
+      this.userService.getMatches(this.user.id).subscribe((data) => {
+        data.forEach((obj) => {
+          let userIndex;
+          let oppIndex;
+          obj.matchUsers[0].user.id == this.user.id
+            ? (userIndex = 0)
+            : (userIndex = 1);
+          oppIndex = userIndex === 0 ? 1 : 0;
+          const match: Match = {
+            opponent: obj.matchUsers[oppIndex].user,
+            dateTime: obj.timestamp,
+            myScore: obj.matchUsers[userIndex].score,
+            opponentScore: obj.matchUsers[oppIndex].score,
+          };
+          this.matches.push(match);
+        });
+      });
 
-      // this.userSubscription = this.userDataService.user$.subscribe((user) => {
-      //   if (!id) {
-      //     // My profile
-      //     this.user = user;
-      //     console.log('My profile user:', this.user);
-      //     this.myProfile = true;
-      //   } else {
-      //     // Profile from other user
-      //     console.log('Profile from other user', user);
-      //     this.myUser = user;
- 
-      //     this.getUserRelation();
-      //   }
-      //   if (!(this.myUser && this.myUser.id === Number(this.user.id))) {
+      this.statusSubscription = this.userService.statusChatObs$.subscribe(
+        (statuses) => {
+          this.statuses = statuses;
+      });
 
-      //     this.friendSubscription = this.userService.getFriends(this.user.id).subscribe((data) => {
-      //       data.forEach((friend) => {
-      //         this.fetchUser(friend.relational_user_id);
-      //       });
-      //     });
-
-      //     console.log('friIIIIIEND', this.friends);
-      //     this.userService.getMatches(this.user.id).subscribe((data) => {
-      //       data.forEach((obj) => {
-      //     // console.log('MATCH', obj);
-      //         let userIndex;
-      //         let oppIndex;
-      //         obj.matchUsers[0].user.id == this.user.id
-      //           ? (userIndex = 0)
-      //           : (userIndex = 1);
-      //         oppIndex = userIndex === 0 ? 1 : 0;
-      //         const match: Match = {
-      //           opponent: obj.matchUsers[oppIndex].user,
-      //           dateTime: obj.timestamp,
-      //           myScore: obj.matchUsers[userIndex].score,
-      //           opponentScore: obj.matchUsers[oppIndex].score,
-      //         };
-      //         this.matches.push(match);
-      //       });
-      //     });
-
-      //   }
-        
-        // this.statusSubscription = this.userService.statusChatObs$.subscribe(
-        //   (statuses) => {
-        //     this.statuses = statuses;
-        // });
-
-        
-      // });
-
-      // if (this.myUser && this.myUser.id === Number(this.user.id)) {
-      //   console.log('redirecting to /profile....')
-      //   this.router.navigate(['/profile']);
-      //   return ;
-      // }
-
-      
-          
-      console.log('WTFFFFFFFF', this.userDataService.user$);
-
-      
-        
-
+    });
   }
 
   fetchUser(id: number) {
@@ -186,9 +201,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
     );
   }
 
-  getFloorLevel = () => Math.floor(this.user.level);
+  getFloorLevel = () => this.user ? Math.floor(this.user.level) : 0;
 
   get userStatus() : string {
+  if (!this.user)
+    return 'Offline';
 	const userStatus = this.statuses.find(status => status.userId === Number(this.user.id));
 	return userStatus ? userStatus.status : 'Offline';
   }
