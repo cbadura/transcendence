@@ -51,6 +51,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       if (isNaN(id) && param) {
         //check if url has params after /profile
         this.router.navigate(['/profile']);
+
         return;
       }
       if (!id) {
@@ -74,7 +75,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       //   Own user profile
       if (this.user && this.myUser && this.myUser.id === Number(this.user.id)) {
         this.router.navigate(['/profile']);
-        return;
       }
 
       this.friendSubscription = this.userService
