@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../../services/user-data.service';
 import { User } from '../../../shared/interfaces/user';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -70,6 +71,8 @@ export class CreateProfileComponent implements OnInit {
       try {
         await this.userDataService.uploadProfilePic(this.tempFile);
       } catch (error) {
+        if ((error as any).status)
+          window.alert('The selected image is too large. Please choose an image that is less than 10MB.')
         console.error('Error uploading profile picture', error);
       }
     } else if (this.deleteServerPic) {
