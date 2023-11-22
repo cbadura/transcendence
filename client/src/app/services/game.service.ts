@@ -6,6 +6,7 @@ import { ESocketGameMessage } from '../shared/macros/ESocketGameMessage';
 import { GameRenderInfo } from '../components/game/Render/GameRenderInfo';
 import { UserDataService } from './user-data.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Match } from '../shared/interfaces/match';
 
 @Injectable({
   providedIn: 'root',
@@ -112,6 +113,18 @@ export class GameService {
       },
     );
 
+    this.gameSocket?.on(
+      ESocketGameMessage.GAME_ENDED,
+      (match: Match) => {
+        this.myEvent = {
+          eventType: ESocketGameMessage.GAME_ENDED,
+          data: { match },
+        };
+        console.log(this.myEvent)
+        this.eventSubject.next(this.myEvent);
+      },
+    );
+
     this.gameSocket?.on(ESocketGameMessage.GAME_ABORTED, (data: any) => {
       console.log('Game Aborted in service', data);
       this.myEvent = {
@@ -135,6 +148,15 @@ export class GameService {
 			eventType: ESocketGameMessage.OPP_PLAY_AGAIN,
 			data: { data },
 		  };
+		  this.eventSubject.next(this.myEvent);
+	})
+
+	this.gameSocket?.on(ESocketGameMessage.MATCH_INVITATION_FAILED, (data: any) => {
+		this.myEvent = {
+			eventType: ESocketGameMessage.MATCH_INVITATION_FAILED,
+			data: { data },
+		  };
+		  alert(data);
 		  this.eventSubject.next(this.myEvent);
 	})
   }

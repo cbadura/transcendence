@@ -1,4 +1,22 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  ParseIntPipe,
+  Body,
+  Controller,
+  Get,
+  Res,
+  Post,
+  Query,
+  Param,
+  NotFoundException,
+  Put,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  Req,
+  BadRequestException,
+  UseGuards,
+  HttpException, HttpStatus
+} from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -49,10 +67,13 @@ export class UserController {
     storage: diskStorage({
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
-          const userId = req.user['id'];
+          const userId = req.user['id']; 
           const extension = extname(file.originalname)
-          const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
-          callback(null,filename);
+          const allowedExtensions: string[] = [".jgep",".png",".PNG",".JPEG",".JPG"]
+          if(allowedExtensions.find((elem)=> elem == extension)){
+            const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
+            callback(null,filename);
+          }   
       }
     })
   }))
@@ -60,7 +81,7 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
     ) {
-
+      console.log("here")
     // const baseUrl = request.protocol + '://' + request.get('host');
     // dirty fix by cosmo :(, prepended `http://localhost:3000` to the imageURL 
     const userProfileImageURL = `http://localhost:3000/users/profilepic/${file.filename}`
@@ -74,6 +95,13 @@ export class UserController {
         throw new NotFoundException()
     }
       return {img: userProfileImageURL};
+  }
+
+  @UseGuards(jwtAuthGuard)
+  @Delete('profilepic')
+  resetProfilePic(@Req() req: Request) {
+    const newImage = this.userService.resetProfilePic(req.user['id']);
+    return {img: newImage};
   }
 
   // this makes sense, but blocks the other
@@ -103,12 +131,13 @@ export class UserController {
 
   @UseGuards(jwtAuthGuard)
   @Put() //remove id
-  updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
-      try {
-          return this.userService.updateUser(req.user['id'] ,dto);
-      } catch (error) {
-          throw new NotFoundException()
-      }
+  async updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
+       try {
+          return await this.userService.updateUser(req.user['id'] ,dto);
+       } catch (error) {
+           throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
+      //    // throw new NotFoundException()
+       }
   };
 
   @UseGuards(jwtAuthGuard)

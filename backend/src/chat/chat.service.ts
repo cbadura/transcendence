@@ -209,6 +209,10 @@ export class ChatService {
   }
 
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
+    if (channelDto.channelName.length > 20)
+      throw new WsException(
+          'Channel name is too long. Please try again. [Max 20 chars]',
+      );
     const channel: IChannel = {
       name: channelDto.channelName,
       ownerId: this.getUserIdFromSocket(socket),
@@ -313,7 +317,8 @@ export class ChatService {
     const sender: number = this.getUserIdFromSocket(socket);
     if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId))
       throw new WsException('Invalid message target');
-
+    if (dto.message.length > 1000)
+      throw new WsException('Message is too long. Please try again. [Max 1000 chars]');
     const messageToChannel: MessageDto = await this.buildMessage(sender, dto);
 
     //check channle member block list - use relation entity
@@ -321,7 +326,7 @@ export class ChatService {
       const channel: IChannel = this.getChannelfromName(dto.channel);
       const members: ISocketUser[] = this.getActiveChannelUsers(channel);
       if (!channel.users.find((member) => member === sender))
-        throw new WsException('You are not in the channel');
+        throw new WsException('Permission denied: You are not in the channel');
 
       const banned: IBanMute = channel.bans.find(
         (ban) => sender === ban.userId,
@@ -370,7 +375,7 @@ export class ChatService {
     const user: number = this.getUserIdFromSocket(socket);
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
-      throw new WsException('User has no permission');
+      throw new WsException('Permission denied: You cannot ban/mute others on this channel');
     if (!this.userService.getUser(dto.targetUserId)) 
       throw new WsException('Target user does not exist');
     if (!channel.users.find((user) => user === dto.targetUserId)) // not necessary since frontend will only send target user in channel
@@ -428,7 +433,7 @@ export class ChatService {
     const user: number = this.getUserIdFromSocket(socket);
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
-      throw new WsException('User has no permission');
+      throw new WsException('Permission denied: You cannot kick others from this channel');
     if (!channel.users.find((user) => user === dto.targetUserId))
       throw new WsException('Target user is not a member of the channel');
     // const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId); // this function looks in online users, you need to look in channel users instead.
@@ -470,7 +475,7 @@ export class ChatService {
     const user: number = this.getUserIdFromSocket(socket);
     const role: EUserRole = this.getUserRole(channel, user);
     if (role !== EUserRole.OWNER && role !== EUserRole.ADMIN)
-      throw new WsException('User has no permission');
+      throw new WsException('Permission denied: You cannot invite others to this channel');
     const targetUser: ISocketUser = this.getUserFromId(dto.targetUserId);
     if (!targetUser) throw new WsException('User not online');
     if (channel.users.find((user) => user === targetUser.userId))
@@ -597,8 +602,8 @@ export class ChatService {
           );
         } else leftDto.transferId = channel.users[1];
       }
+      channel.ownerId = leftDto.transferId;
     }
-    channel.ownerId = leftDto.transferId;
     const activeUsers: ISocketUser[] = this.getActiveChannelUsers(channel);
     //notify active channel users about the one leaving
     activeUsers.forEach((user) => {

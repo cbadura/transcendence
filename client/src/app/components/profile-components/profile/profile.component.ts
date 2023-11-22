@@ -139,24 +139,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
         data.forEach((friend) => {
           this.friends.push(friend);
         });
-      });
-      
-      this.userService.getMatches(this.user.id).subscribe((data) => {
-        data.forEach((obj) => {
-          let userIndex;
-          let oppIndex;
-          obj.matchUsers[0].user.id == this.user.id
-            ? (userIndex = 0)
-            : (userIndex = 1);
-          oppIndex = userIndex === 0 ? 1 : 0;
-          const match: Match = {
-            opponent: obj.matchUsers[oppIndex].user,
-            dateTime: obj.timestamp,
-            myScore: obj.matchUsers[userIndex].score,
-            opponentScore: obj.matchUsers[oppIndex].score,
-          };
-          this.matches.push(match);
+        this.userService.getMatches(this.user.id).subscribe((data) => {
+          this.matches = data;
         });
+        
       });
 
       this.statusSubscription = this.userService.statusChatObs$.subscribe(

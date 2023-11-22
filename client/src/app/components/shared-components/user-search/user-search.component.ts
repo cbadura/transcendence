@@ -28,6 +28,7 @@ export class UserSearchComponent implements OnInit, OnDestroy {
   @Input() searchIds: number[] = [];
   @Input() onlyIds!: boolean;
   @Input() invitation: string = '';
+  @Input() onlyOnline: boolean = false;
 
   constructor(private userService: UserService) {}
 
@@ -62,6 +63,12 @@ export class UserSearchComponent implements OnInit, OnDestroy {
 
   get filteredUsers(): User[] {
     if (this.searchTerm === '') return [];
+	if (this.onlyOnline) {
+		return this.users.filter((user) =>
+		  user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
+		  this.getUserStatus(user.id) === 'Online',
+		);
+		}
     return this.users.filter((user) =>
       user.name.toLowerCase().includes(this.searchTerm.toLowerCase()),
     );

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -15,6 +15,7 @@ import { UserDataUpdateDto } from './dto/user-data-update.dto';
 import { promises as fsPromises } from 'fs';
 import { verifyJwtFromHandshake } from 'src/auth/cookie.jwtverify';
 import { AuthSocket } from 'src/auth/ws.middleware';
+import {WsException} from "@nestjs/websockets";
 
 @Injectable()
 export class UserService {
@@ -163,7 +164,9 @@ export class UserService {
   }
 
   async updateUser(id: number, dto: UpdateUserDto) {
-    
+    if (dto?.name && dto?.name.length > 20)
+      throw new HttpException('Username is too long. Please try again. [Max 20 chars]',
+          HttpStatus.BAD_REQUEST);
     const currUser = await this.userRepository.findOne({ where: { id }});
     if(dto.avatar != null && currUser != null){
       await this.deleteExistingImage(currUser);
@@ -222,6 +225,17 @@ export class UserService {
     const path = __dirname.slice(0,pathIndex);
     const filePath = path + 'backend/uploadedData/profilepictures/'+ fileName;
     return filePath;
+  }
+
+  async resetProfilePic(id: number) {
+    const user = await this.getUser(id);
+    if (!user)
+      throw new NotFoundException();
+    this.deleteExistingImage(user);
+    const newAvatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+    user.avatar = newAvatar;
+    this.userRepository.save(user);
+    return newAvatar;
   }
 
   async createDummyUsers() {

@@ -14,7 +14,7 @@ import {
 
 // Interfaces
 import { User } from 'src/app/shared/interfaces/user';
-import { Match } from 'src/app/shared/interfaces/match';
+import { Match, MatchUser } from 'src/app/shared/interfaces/match';
 import { ESocketGameMessage } from 'src/app/shared/macros/ESocketGameMessage';
 import { GameRenderInfo } from 'src/app/components/game/Render/GameRenderInfo';
 
@@ -30,8 +30,9 @@ export class GameComponent implements CanComponentDeactivate {
   private userSubscription!: Subscription;
   public myUser!: User;
   private paddle!: number;
-  private opponent!: User | null;
   public match!: Match | null;
+  public opponent: User | null = null;
+  public resultString: string = 'notset';
   public status: string = 'new-game';
   private render!: Render | null;
   private gameRenderInfo!: GameRenderInfo;
@@ -139,14 +140,20 @@ export class GameComponent implements CanComponentDeactivate {
 			this.movePaddle();
 			if (!this.gameRenderInfo.gameOver) {
 				this.render.redraw(this.gameRenderInfo);
-			} else {
-				console.log('gameover data', event.data);
-				console.log('gameover');
-            this.status = 'gameover';
-            this.fillMatchData(this.gameRenderInfo);
-            return;
-          }
+			} 
         }
+      }
+
+      if (event.eventType === ESocketGameMessage.GAME_ENDED) {
+        console.log('GAME ENDED EVENT CALLED',event.data)
+        this.match = {...event.data.match};
+        let oppArrId = 0;
+        if(this.match?.matchUsers[0].user.id == this.myUser.id){
+          oppArrId = 1;
+        }
+        this.opponent = this.match?.matchUsers[oppArrId].user ? this.match?.matchUsers[oppArrId].user : null;
+        this.resultString = this.match?.matchUsers[oppArrId].outcome ? 'YOU LOOSE' : 'YOU WIN';
+        this.status = 'gameover'; 
       }
 
       // GAME_ABORTED
@@ -183,18 +190,6 @@ export class GameComponent implements CanComponentDeactivate {
   rematch(): void {
 	this.gameService.playAgain();
 	this.status = 'sent-rematch';
-  }
-
-  fillMatchData(game: GameRenderInfo): void {
-	if (!this.opponent) return;
-	console.log('this paddle', this.paddle);
-    this.match = {
-      opponent: this.opponent,
-      myScore: this.paddle === 1 ? game.paddles[0].score : game.paddles[1].score,
-      opponentScore: this.paddle === 1 ? game.paddles[1].score : game.paddles[0].score,
-      dateTime: new Date().toISOString(),
-    };
-	console.log('match', this.match);
   }
 
   leaveQueue() {

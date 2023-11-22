@@ -120,6 +120,11 @@ export class NetworkGameService {
           instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Instigator (You) have already invited somebody in the last 10 seconds')
           return;
         }
+        if(instigator.userId == dto.recipient_user_id){
+          console.log('exception','Instigator (You) cannot invite yourself to a game')
+          instigator.socket.emit(ESocketGameMessage.MATCH_INVITATION_FAILED,'Instigator (You) cannot invite yourself to a game')
+          return;
+        }
 
         //validate recipient
         let recipient;
