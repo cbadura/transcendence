@@ -113,7 +113,7 @@
   <div class="flex flex-col items-center w-full">
     <p>Achievements</p>
     <div
-      *ngIf="user.achievements && user.achievements.length > 0"
+      *ngIf="user && user.achievements && user.achievements.length > 0"
       class="bg-black w-full rounded-3xl h-fit p-4 grid gap-4 grid-cols-3 sm:grid-cols-5 justify-items-center items-center"
     >
       <div *ngFor="let achievement of user.achievements">
