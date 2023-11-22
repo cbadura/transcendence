@@ -135,8 +135,9 @@ export class UserController {
        try {
           return await this.userService.updateUser(req.user['id'] ,dto);
        } catch (error) {
-           throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
-      //    // throw new NotFoundException()
+        if (error.code === '23505')
+          throw new BadRequestException('Username is taken, please choose another username and try again');
+        throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
        }
   };
 

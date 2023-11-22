@@ -118,8 +118,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  getUserRelationv2() {}
-
   private async getUserProfile(id: number): Promise<void> {
     const url = `http://localhost:3000/users/${id}`;
 
