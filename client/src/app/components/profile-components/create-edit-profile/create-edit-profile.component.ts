@@ -71,7 +71,7 @@ export class CreateProfileComponent implements OnInit {
       try {
         await this.userDataService.uploadProfilePic(this.tempFile);
       } catch (error) {
-        if ((error as any).status)
+        if ((error as any).status === 413)
           window.alert('The selected image is too large. Please choose an image that is less than 10MB.')
         console.error('Error uploading profile picture', error);
       }

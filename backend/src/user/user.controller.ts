@@ -69,11 +69,11 @@ export class UserController {
       filename: (req,file,callback) => {
           const userId = req.user['id']; 
           const extension = extname(file.originalname)
-          const allowedExtensions: string[] = [".jgep",".png",".PNG",".JPEG",".JPG"]
+          const allowedExtensions: string[] = [".jpeg", ".jpg", ".png",".PNG",".JPEG",".JPG"]
           if(allowedExtensions.find((elem)=> elem == extension)){
             const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
             callback(null,filename);
-          }   
+          }
       }
     }),
     limits: { fileSize: 10000000}
