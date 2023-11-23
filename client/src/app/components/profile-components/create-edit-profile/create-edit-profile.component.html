@@ -3,18 +3,17 @@
 >
   <!-- Profile picture -->
 
-  <!-- <p *ngIf="this.tempUser.avatar.length < 2">Upload a picture, or one of these avatars will be chosen for you</p> -->
-
   <!-- Edit picture section -->
   <div class="flex justify-center items-center w-full space-x-5">
     <tcd-profile-pic [profilePic]="getCorrectPic()" [size]="'8rem'">
     </tcd-profile-pic>
-    <input
-      type="file"
-      #fileInput
-      (change)="onFileSelected($event)"
-      style="display: none"
-    />
+	<input
+	type="file"
+	#fileInput
+	(change)="onFileSelected($event)"
+	accept=".jpeg, .jpg, .png, .PNG, .JPEG, .JPG"
+	style="display: none"
+  />
     <tcd-custom-button
       [buttonText]="'Upload new picture'"
       (click)="fileInput.click()"

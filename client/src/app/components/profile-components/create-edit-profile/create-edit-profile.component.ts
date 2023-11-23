@@ -72,7 +72,9 @@ export class CreateProfileComponent implements OnInit {
         await this.userDataService.uploadProfilePic(this.tempFile);
       } catch (error) {
         if ((error as any).status === 413)
-          window.alert('The selected image is too large. Please choose an image that is less than 10MB.')
+          window.alert(
+            'The selected image is too large. Please choose an image that is less than 10MB.',
+          );
         console.error('Error uploading profile picture', error);
       }
     } else if (this.deleteServerPic) {
@@ -90,15 +92,35 @@ export class CreateProfileComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    this.tempFile = event.target.files[0];
-    console.log('file selected', this.tempFile);
-    if (!this.tempFile) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(this.tempFile);
-    reader.onload = () => {
-      this.tempPic = reader.result as string;
-      this.deleteServerPic = false;
-    };
+    const fileInput = event.target;
+
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+
+      // Check file size
+      if (!this.isValidFileSize(file.size)) {
+        alert(
+          'Please choose an image that is less than 10MB.',
+        );
+        fileInput.value = '';
+        return;
+      }
+
+      this.tempFile = file;
+      if (this.tempFile) {
+        const reader = new FileReader();
+        reader.readAsDataURL(this.tempFile);
+        reader.onload = () => {
+          this.tempPic = reader.result as string;
+          this.deleteServerPic = false;
+        };
+      }
+    }
+  }
+
+  isValidFileSize(fileSize: number): boolean {
+    const maxSize = 10 * 1024 * 1024;
+    return fileSize <= maxSize;
   }
 
   getCorrectPic(): string {
