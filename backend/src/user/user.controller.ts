@@ -40,29 +40,9 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  /*--------dev--------*/
-  @UseGuards(DebugRoute) 
-  @Post() // added to dev module
-  createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(dto);
-  }
-
-  @UseGuards(DebugRoute)
-  @Get('dummy') // added to dev module
-  createDummyUsers(){
-    this.userService.createDummyUsers();
-  }
-
-  // @UseGuards(DebugRoute)
-  @Delete('dummy') // added to dev module
-  deleteUserDatabase(){
-    this.userService.deleteUserDatabase();
-  }
-  /*---------dev---------*/
-
   //todo: prevent uploading files if user doesnt exist 
   @UseGuards(jwtAuthGuard)
-  @Post('profilepic') //remove id
+  @Post('profilepic')
   @UseInterceptors(FileInterceptor('file',{
     storage: diskStorage({
       destination: './uploadedData/profilepictures',
@@ -131,7 +111,7 @@ export class UserController {
   };
 
   @UseGuards(jwtAuthGuard)
-  @Put() //remove id
+  @Put()
   async updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
        try {
           return await this.userService.updateUser(req.user['id'] ,dto);
@@ -143,7 +123,7 @@ export class UserController {
   };
 
   @UseGuards(jwtAuthGuard)
-  @Delete() //remove id
+  @Delete()
   deleteUser(@Req() req: Request){
     return this.userService.deleteUser(req.user['id']);
   }

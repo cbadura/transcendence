@@ -8,12 +8,6 @@ import { jwtAuthGuard } from 'src/auth/guard/jwt.guard';
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
-    @UseGuards(DebugRoute) 
-    @Post() // added to dev module
-    createMatch(@Body() createMatchDto: CreateMatchDto){
-        return this.matchService.createMatch(createMatchDto);
-    }
-
     @UseGuards(jwtAuthGuard)
     @Get()
     async getMatches(){
@@ -25,33 +19,6 @@ export class MatchController {
     async getMatch(@Param("id",ParseIntPipe) id: number)  {
         console.log('here')
         return await this.matchService.getMatch(id);
-    } 
-
-    @UseGuards(DebugRoute)
-    @Get('/dummy/:user_id') // added to dev module
-    async createDummyMatches(@Param('user_id',ParseIntPipe) id: number ){
-        console.log(id);
-        //'default' | 'special'
-        for (let i = 0; i < 10; i++) {
-            let score = Math.floor(Math.random() * 1000);
-            let oppID = await this.matchService.getRandomUserID(id);
-            let oppScore = Math.floor(Math.random() * 1000);
-            let matchtype = Math.floor(Math.random() * 1000) % 2 == 0 ? 'default' : 'special';
-            if(score == oppScore)
-                score++;
-            let matchDTo= {
-                matchType: matchtype,
-                matchEndReason: {
-                    reason: 'score',
-                },
-                "matchUsers":[
-                    {"user_id": id,"score": score},
-                    {"user_id": oppID,"score": oppScore}
-                ]
-              } as CreateMatchDto;
-            await this.matchService.createMatch(matchDTo);
-        }
-        return null;
     }
 
 }

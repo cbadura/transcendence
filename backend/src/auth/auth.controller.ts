@@ -73,15 +73,4 @@ export class AuthController {
     res.clearCookie('token').send('logged out');
   }
 
-  /* ----------dev-------------- */
-
-  @Get('boxes') //added to dev module
-  boxes() {
-    return this.authService.getBoxes();
-  }
-
-  @Delete('boxes') //added to dev module
-  wipe() {
-    return this.authService.burnAllSecret();
-  }
 }
