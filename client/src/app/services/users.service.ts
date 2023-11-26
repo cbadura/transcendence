@@ -54,7 +54,7 @@ export class UserService {
   }
 
   getBlocked(id: number): Observable<UserRelationship[]> {
-    const url = `http://localhost:3000/users/${id}/relationship`;
+    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}/relationship`;
     const params = new HttpParams().set('filter', 'blocked');
     return this.http.get<UserRelationship[]>(
       url,{
@@ -64,7 +64,7 @@ export class UserService {
   }
 
   getFriendsv2(id: number): Observable<User[]> {
-    const friendsUrl = `http://localhost:3000/users/${id}/friends`;
+    const friendsUrl = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}/friends`;
     return this.http.get<User[]>(
       friendsUrl,
       { withCredentials: true }
@@ -98,8 +98,8 @@ export class UserService {
         userd.status = data.status;
       else
         this.statuses.push(data);
-      
-      
+
+
       this.statusSubject.next(this.statuses);
     });
 

@@ -232,7 +232,7 @@ export class UserService {
     if (!user)
       throw new NotFoundException();
     this.deleteExistingImage(user);
-    const newAvatar = `http://localhost:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+    const newAvatar = `https://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
     user.avatar = newAvatar;
     this.userRepository.save(user);
     return newAvatar;
