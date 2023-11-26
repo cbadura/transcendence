@@ -17,10 +17,10 @@ export class UserDataService {
     matches: 0,
     wins: 0,
     color: '#E7C9FF',
-    avatar: 'a',
+    avatar: '/assets/default.png',
     qr: '',
     tfa: false,
-	  achievements: [],
+    achievements: [],
   };
   private serverAddress: string = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000`;
   gameSocket: Socket | null = null;
@@ -29,8 +29,11 @@ export class UserDataService {
 
   private userSubject = new BehaviorSubject<User>(this.myUser);
   user$ = this.userSubject.asObservable();
-  constructor(private http: HttpClient, private cookieService: CookieService) {
-    console.log('USer dataservice created')
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+  ) {
+    console.log('USer dataservice created');
   }
 
   isUserLoggedIn(): boolean {
@@ -39,32 +42,34 @@ export class UserDataService {
 
   getNewestUser() : Promise<User> {
   console.log('IN NEWEST USER')
-    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/auth/profile`;
+    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/profile`;
 
-    return new Promise<User>((resolve, reject) => {this.http.get(url, { withCredentials: true }).subscribe(
-      (response : any) => {
-        const user: User = {
-          id: response.id,
-          name: response.name,
-          status: response.status,
-          level: response.level,
-          matches: response.matches,
-          wins: response.wins,
-          color: response.color,
-          avatar: response.avatar,
-          tfa: response.tfa,
-          achievements: response.achievements,
-        };
-        this.replaceUser(user);
-        this.CreateSocketConnections();
-        resolve(user as User);
-      }, (error) => {
-        reject(error);
-      }
-    )}); 
+    return new Promise<User>((resolve, reject) => {
+      this.http.get(url, { withCredentials: true }).subscribe(
+        (response: any) => {
+          const user: User = {
+            id: response.id,
+            name: response.name,
+            status: response.status,
+            level: response.level,
+            matches: response.matches,
+            wins: response.wins,
+            color: response.color,
+            avatar: response.avatar,
+            tfa: response.tfa,
+            achievements: response.achievements,
+          };
+          this.replaceUser(user);
+          this.CreateSocketConnections();
+          resolve(user as User);
+        },
+        (error) => {
+          reject(error);
+        },
+    });
 
     // this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
-		// console.log('RESPONSE', response)
+    // console.log('RESPONSE', response)
     //   const user: User = {
     //     id: response.id,
     //     name: response.name,
@@ -75,7 +80,7 @@ export class UserDataService {
     //     color: response.color,
     //     avatar: response.avatar,
     //     tfa: response.tfa,
-		//     achievements: response.achievements,
+    //     achievements: response.achievements,
     //   };
     //   this.replaceUser(user);
     // })
@@ -83,21 +88,21 @@ export class UserDataService {
   }
 
   async createDevelopmentUser() {
-
     const username = 'Dummy_' + new Date().getTime().toString();
     // await this.editUserById(username,'#E7C9FF')
-    this.http.post(
-      this.serverAddress + '/dev/register', {
-        name: username,
-        tfa: false,
-      },
-      { withCredentials: true }
-      ).subscribe(
-        (data) => {
-          this.replaceUser(data as User);
-          this.CreateSocketConnections();
-        }
+    this.http
+      .post(
+        this.serverAddress + '/dev/register',
+        {
+          name: username,
+          tfa: false,
+        },
+        { withCredentials: true },
       )
+      .subscribe((data) => {
+        this.replaceUser(data as User);
+        this.CreateSocketConnections();
+      });
   }
 
   async replaceUser(user: any) {
@@ -112,47 +117,83 @@ export class UserDataService {
       color: newColor,
     };
 
-    return new Promise<User>((resolve, reject) => {this.http.put(this.serverAddress + '/users', updatedUser, { withCredentials: true }).subscribe(
-      (data) => {
-        console.log('EDIT', JSON.stringify(data));
-        this.replaceUser(data as User);
-        resolve(data as User);
-      },
-      (error) => {
-        window.alert('Error editing user: ' + JSON.stringify(error));
-        reject(error);
-      },
-    );
+    return new Promise<User>((resolve, reject) => {
+      this.http
+        .put(this.serverAddress + '/users', updatedUser, {
+          withCredentials: true,
+        })
+        .subscribe(
+          (data) => {
+            console.log('EDIT', JSON.stringify(data));
+            this.replaceUser(data as User);
+            resolve(data as User);
+          },
+          (error) => {
+            window.alert('Error editing user: ' + error?.error?.message);
+            reject(error);
+          },
+        );
+    });
   }
-  );
-};
 
-  uploadProfilePic(file: File) {
+  uploadProfilePic(file: File): Promise<void> {
     interface UploadedResponse {
       img: string;
     }
+
     const formData = new FormData();
     formData.append('file', file, file.name);
     console.log('attempt upload');
-    this.http
-      .post<UploadedResponse>(
-        `${this.serverAddress}/users/profilepic`,
-        formData,
-        { withCredentials: true },
-      )
-      .subscribe(
-        (data) => {
-          this.myUser.avatar = data.img;
-          this.replaceUser(this.myUser);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
+
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .post<UploadedResponse>(
+          `${this.serverAddress}/users/profilepic`,
+          formData,
+          { withCredentials: true },
+        )
+        .subscribe(
+          (data) => {
+            console.log('upload profile pic', data);
+            this.myUser.avatar = data.img;
+            this.replaceUser(this.myUser);
+            resolve();
+          },
+          (error) => {
+            console.log(error);
+            reject(error);
+          },
+        );
+    });
+  }
+
+  deleteProfilePic(): Promise<void> {
+    interface DeletedResponse {
+      img: string;
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .delete<DeletedResponse>(`${this.serverAddress}/users/profilepic`, {
+          withCredentials: true,
+        })
+        .subscribe(
+          (data) => {
+            console.log('delete profile pic', data);
+            this.myUser.avatar = data.img;
+            this.replaceUser(this.myUser);
+            resolve();
+          },
+          (error) => {
+            console.log(error);
+            reject(error);
+          },
+        );
+    });
   }
 
   getTokenCookie() {
-	return this.cookieService.get('token');
+    return this.cookieService.get('token');
   }
 
   //   Relationships
@@ -163,11 +204,9 @@ export class UserDataService {
       relationship_status: status,
     };
     console.log(data);
-    return this.http.post(
-      this.serverAddress + '/relationship',
-      data,
-      { withCredentials: true }
-    );
+    return this.http.post(this.serverAddress + '/relationship', data, {
+      withCredentials: true,
+    });
   }
 
   removeRelation(relationID: number): Observable<any> {
@@ -175,17 +214,10 @@ export class UserDataService {
     return this.http.delete(url, { withCredentials: true });
   }
 
-  //   2FA
-//   setToken(newToken: string) {
-//     this.token = newToken;
-//   }
-
   getQRCode() {
     interface QRCodeResponse {
       qr: string;
     }
-	// const token = this.getTokenCookie();
-    // const params = new HttpParams().set('token', token);
     this.http
       .get<QRCodeResponse>(this.serverAddress + '/auth/2fa/activate', {
         /*params*/ withCredentials: true,
@@ -203,7 +235,7 @@ export class UserDataService {
   }
 
   activateTFA(code: string): Observable<any> {
-	// const token = this.getTokenCookie();
+    // const token = this.getTokenCookie();
     // const params = new HttpParams().set('token', token);
     const data = {
       key: code,
@@ -214,7 +246,7 @@ export class UserDataService {
   }
 
   verifyTFA(code: string): Observable<any> {
-	// const token = this.getTokenCookie();
+    // const token = this.getTokenCookie();
     // const params = new HttpParams().set('token', token);
     const data = {
       key: code,
@@ -225,7 +257,7 @@ export class UserDataService {
   }
 
   deactivateTFA() {
-	// const token = this.getTokenCookie();
+    // const token = this.getTokenCookie();
     // const params = new HttpParams().set('token', token);
     this.http
       .get(this.serverAddress + '/auth/2fa/deactivate', {
@@ -250,8 +282,9 @@ export class UserDataService {
       this.gameSocket = new Socket({
         url: gameUrl,
         options: {
-          withCredentials: true
-        }});
+          withCredentials: true,
+        },
+      });
     }
 
     if (!this.chatSocket) {
@@ -259,8 +292,9 @@ export class UserDataService {
         url: `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/chat`,
         options: {
           withCredentials: true,
-          forceNew: true
-      } });
+          forceNew: true,
+        },
+      });
       console.log('connecting chat socket', this.chatSocket);
     }
 
@@ -269,8 +303,9 @@ export class UserDataService {
         url: `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/`,
         options: {
           withCredentials: true,
-          forceNew: true
-        } });
+          forceNew: true,
+        },
+      });
       console.log('connecting user socket', this.userSocket);
     }
   }

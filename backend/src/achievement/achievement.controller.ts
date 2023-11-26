@@ -14,11 +14,5 @@ interface ApiResponse {
 @Controller('achievement')
 export class AchievementController {
     constructor(private readonly achievementService: AchievementService){}
-
-    @UseGuards(DebugRoute)
-    @Post() // added to dev module
-    GrantAchievement(@Body() createachievementdto: CreateAchievementDto): Promise<ApiResponse>{
-        return this.achievementService.GrantAchievement(createachievementdto);
-    }
     
 }

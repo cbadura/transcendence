@@ -209,6 +209,10 @@ export class ChatService {
   }
 
   createChannel(socket: Socket, channelDto: CreateChannelDto): IChannel {
+    if (channelDto.channelName.length > 20)
+      throw new WsException(
+          'Channel name is too long. Please try again. [Max 20 chars]',
+      );
     const channel: IChannel = {
       name: channelDto.channelName,
       ownerId: this.getUserIdFromSocket(socket),
@@ -313,7 +317,8 @@ export class ChatService {
     const sender: number = this.getUserIdFromSocket(socket);
     if ((!dto.channel && !dto.receiverId) || (dto.channel && dto.receiverId))
       throw new WsException('Invalid message target');
-
+    if (dto.message.length > 1000)
+      throw new WsException('Message is too long. Please try again. [Max 1000 chars]');
     const messageToChannel: MessageDto = await this.buildMessage(sender, dto);
 
     //check channle member block list - use relation entity

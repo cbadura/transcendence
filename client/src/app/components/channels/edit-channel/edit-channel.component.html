@@ -10,6 +10,7 @@
       type="text"
       [(ngModel)]="tempChannel.name"
       placeholder="tempChannel.name"
+	  maxlength="20"
     />
   </div>
 
@@ -79,6 +80,7 @@
   class="ml-auto"
 	(click)="openUserPopup()"
 	[buttonText]="'Add member'"
+	[isDisabled]="emptyChannel"
   ></tcd-custom-button>
 
   <!-- Members -->

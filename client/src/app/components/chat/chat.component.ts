@@ -196,6 +196,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 	this.chatHistoryService.sendMessage(newPost);
   }
   
+  get channelIds(): number[] {
+	if (!this.channel.usersIds) return [];
+	return this.channel.usersIds.filter((id) => id !== this.myUser.id);
+  }
 
   ngOnDestroy() {
     if (this.userSubscription) this.userSubscription.unsubscribe();

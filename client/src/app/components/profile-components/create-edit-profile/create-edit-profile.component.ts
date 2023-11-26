@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 
 import { UserDataService } from '../../../services/user-data.service';
 import { User } from '../../../shared/interfaces/user';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -23,7 +24,8 @@ export class CreateProfileComponent implements OnInit {
   tempFile!: File | null;
   tempPic!: string;
   tempCode!: string;
-  twoFAPopup : boolean = false;
+  twoFAPopup: boolean = false;
+  deleteServerPic: boolean = false;
   availableColors: string[] = [
     '#E7C9FF',
     '#C9FFE5',
@@ -52,62 +54,104 @@ export class CreateProfileComponent implements OnInit {
   }
 
   saveChanges = async () => {
-	console.log('save changes', this.tempName, this.tempColor, this.oldUser);
-  
-	if (
-	  this.tempName !== this.oldUser.name ||
-	  this.tempColor !== this.oldUser.color
-	) {
-	  await this.userDataService.editUserById(this.tempName, this.tempColor);
-	}
-  
-	if (this.tempFile) {
-	  await this.userDataService.uploadProfilePic(this.tempFile);
-	}
-  
-	this.router.navigate(['/profile']);
+    console.log('save changes', this.tempName, this.tempColor, this.oldUser);
+
+    if (
+      this.tempName !== this.oldUser.name ||
+      this.tempColor !== this.oldUser.color
+    ) {
+      try {
+        await this.userDataService.editUserById(this.tempName, this.tempColor);
+      } catch (error) {
+        console.log('Caught error: ', error);
+      }
+    }
+
+    if (this.tempFile) {
+      try {
+        await this.userDataService.uploadProfilePic(this.tempFile);
+      } catch (error) {
+        if ((error as any).status === 413)
+          window.alert(
+            'The selected image is too large. Please choose an image that is less than 10MB.',
+          );
+        console.error('Error uploading profile picture', error);
+      }
+    } else if (this.deleteServerPic) {
+      try {
+        await this.userDataService.deleteProfilePic();
+      } catch (error) {
+        console.error('Error deleting profile picture', error);
+      }
+    }
+    this.router.navigate(['/profile']);
   };
-  
 
   editColor(color: string) {
     this.tempColor = color;
   }
 
   onFileSelected(event: any) {
-    this.tempFile = event.target.files[0];
-    console.log('file selected', this.tempFile);
-    if (!this.tempFile) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(this.tempFile);
-    reader.onload = () => {
-      this.tempPic = reader.result as string;
-    };
+    const fileInput = event.target;
+
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+
+      // Check file size
+      if (!this.isValidFileSize(file.size)) {
+        alert(
+          'Please choose an image that is less than 10MB.',
+        );
+        fileInput.value = '';
+        return;
+      }
+
+      this.tempFile = file;
+      if (this.tempFile) {
+        const reader = new FileReader();
+        reader.readAsDataURL(this.tempFile);
+        reader.onload = () => {
+          this.tempPic = reader.result as string;
+          this.deleteServerPic = false;
+        };
+      }
+    }
+  }
+
+  isValidFileSize(fileSize: number): boolean {
+    const maxSize = 10 * 1024 * 1024;
+    return fileSize <= maxSize;
   }
 
   getCorrectPic(): string {
-    if (!this.tempPic) return this.oldUser.avatar;
+    if (!this.tempPic)
+      return this.deleteServerPic ? '/assets/default.png' : this.oldUser.avatar;
     else return this.tempPic;
   }
 
   deleteTempPic() {
-    this.tempPic = '';
-    this.tempFile = null;
-    this.fileInput.nativeElement.value = null;
+    if (this.tempFile) {
+      this.tempPic = '';
+      this.tempFile = null;
+      this.fileInput.nativeElement.value = null;
+      this.deleteServerPic = false;
+      console.log('delete temp pic');
+    } else {
+      this.deleteServerPic = true;
+      console.log('delete server pic');
+    }
   }
 
-  open2FAPopup()
-  {
-	this.twoFAPopup = true;
+  open2FAPopup() {
+    this.twoFAPopup = true;
   }
 
-  close2FAPopup()
-  {
-	this.twoFAPopup = false;
+  close2FAPopup() {
+    this.twoFAPopup = false;
   }
 
-  deactivateTFA()
-  {
-	this.userDataService.deactivateTFA();
+  deactivateTFA() {
+    this.userDataService.deactivateTFA();
   }
 
   ngOnDestroy(): void {

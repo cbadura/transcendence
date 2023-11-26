@@ -34,7 +34,7 @@
       <!-- Input field -->
       <tcd-chat-input
         (sendMessage)="savePost($event)"
-        [userIds]="isDM ? [] : this.channel.usersIds"
+        [userIds]="isDM ? [] : channelIds"
       ></tcd-chat-input>
     </div>
   </div>

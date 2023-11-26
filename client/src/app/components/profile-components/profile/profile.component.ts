@@ -19,6 +19,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   myUser!: User;
   private userSubscription!: Subscription;
   private statusSubscription!: Subscription;
+  private friendSubscription!: Subscription;
   private statuses: UserStatus[] = [];
   friends: User[] = [];
   matches: Match[] = [];
@@ -35,6 +36,66 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {}
 
+  async ngOnInit() {
+    this.myUser = await this.userDataService.getNewestUser();
+
+    console.log('My user', this.myUser);
+    this.route.params.subscribe(async (params: any) => {
+      this.friends = [];
+      this.matches = [];
+      this.relation = 'none';
+      const param = params['profile'];
+      const id: number = Number(param);
+
+      // If id is not a number, redirect to own profile
+      if (isNaN(id) && param) {
+        //check if url has params after /profile
+        this.router.navigate(['/profile']);
+
+        return;
+      }
+      if (!id) {
+        // url is /profile
+        this.user = this.myUser;
+        this.myProfile = true;
+      } else {
+        // url is /profile/id
+        try {
+          await this.getUserProfile(id);
+        } catch (error) {
+          this.router.navigate(['/profile']);
+          return;
+        }
+        console.log('User', this.user);
+        this.myProfile = false;
+        this.getUserRelation();
+      }
+      console.log('user realtion', this.relation);
+
+      //   Own user profile
+      if (this.user && this.myUser && this.myUser.id === Number(this.user.id)) {
+        this.router.navigate(['/profile']);
+      }
+
+      this.friendSubscription = this.userService
+        .getFriendsv2(this.user.id)
+        .subscribe((data) => {
+          data.forEach((friend) => {
+            this.friends.push(friend);
+          });
+          this.userService.getMatches(this.user.id).subscribe((data) => {
+            this.matches = data;
+          });
+        });
+
+      this.statusSubscription = this.userService.statusChatObs$.subscribe(
+        (statuses) => {
+          this.statuses = statuses;
+        },
+      );
+    });
+  }
+
   getUserRelation() {
     this.userService.getFriends(this.myUser.id).subscribe((data) => {
       data.forEach((friend) => {
@@ -45,64 +106,47 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
       });
     });
+
+    this.userService.getBlocked(this.myUser.id).subscribe((data) => {
+      data.forEach((block) => {
+        if (block.relational_user_id === Number(this.user.id)) {
+          console.log('block object that represents relationship:', block);
+          this.relation = block.relationship_status;
+          this.relationID = block.id;
+        }
+      });
+    });
   }
 
-  ngOnInit() {
-    this.route.params.subscribe(async (params: any) => {
-      const { profile, ...rest } = params;
-      this.user = rest as User;
+  private async getUserProfile(id: number): Promise<void> {
+    const url = `http://localhost:3000/users/${id}`;
 
-      await this.userDataService.getNewestUser();
-      this.userSubscription = this.userDataService.user$.subscribe((user) => {
-        if (!this.user.name) {
-          // My profile
-          this.user = user;
-          console.log('My profile user:', this.user);
-          this.myProfile = true;
-        } else {
-          // Profile from other user
-          console.log('Profile from other user', user);
-          this.myUser = user;
-          if (this.myUser.id === Number(this.user.id))
-            this.router.navigate(['/profile']);
-          this.getUserRelation();
-        }
-        this.userService.getFriends(this.user.id).subscribe((data) => {
-          data.forEach((friend) => {
-            this.fetchUser(friend.relational_user_id);
-          });
-        });
-        this.userService.getMatches(this.user.id).subscribe((data) => {
-          data.forEach((obj) => {
-        console.log('MATCH', obj);
-            let userIndex;
-            let oppIndex;
-            obj.matchUsers[0].user.id == this.user.id
-              ? (userIndex = 0)
-              : (userIndex = 1);
-            oppIndex = userIndex === 0 ? 1 : 0;
-            const match: Match = {
-              opponent: obj.matchUsers[oppIndex].user,
-              dateTime: obj.timestamp,
-              myScore: obj.matchUsers[userIndex].score,
-              opponentScore: obj.matchUsers[oppIndex].score,
+    return new Promise<void>((resolve, reject) => {
+      this.http.get(url, { withCredentials: true }).subscribe(
+        (response: any) => {
+          if (response) {
+            const user: User = {
+              id: response.id,
+              name: response.name,
+              status: response.status,
+              level: response.level,
+              matches: response.matches,
+              wins: response.wins,
+              color: response.color,
+              avatar: response.avatar,
+              tfa: response.tfa,
+              achievements: response.achievements,
             };
-            this.matches.push(match);
-          });
-        });
-        
-      });
-
-
-      });
-
-      this.statusSubscription = this.userService.statusChatObs$.subscribe(
-        (statuses) => {
-          this.statuses = statuses;
+            this.user = user;
+            resolve();
+          } else reject();
         },
-        );
-        
-
+        (error) => {
+          // Handle error if needed
+          reject(error);
+        },
+      );
+    });
   }
 
   fetchUser(id: number) {
@@ -139,15 +183,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
     );
   }
 
-  getFloorLevel = () => Math.floor(this.user.level);
+  getFloorLevel = () => (this.user ? Math.floor(this.user.level) : 0);
 
-  get userStatus() : string {
-	const userStatus = this.statuses.find(status => status.userId === Number(this.user.id));
-	return userStatus ? userStatus.status : 'Offline';
+  get userStatus(): string {
+    if (!this.user) return 'Offline';
+    const userStatus = this.statuses.find(
+      (status) => status.userId === Number(this.user.id),
+    );
+    return userStatus ? userStatus.status : 'Offline';
   }
 
   navigateToDm() {
-	this.router.navigate(['chat', 'dm', this.user]);
+    this.router.navigate(['chat', 'dm', this.user]);
   }
 
   getUserStatus(id: number) {
@@ -161,10 +208,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const userStatus = this.statuses.find(
       (status) => status.userId === Number(id),
     );
-    const user = this.friends.find(user => user.id === id);
-    if (userStatus && user)
-      user.name = userStatus.name ?? user.name;
-    return userStatus?.name ?? this.friends.find(user => user.id === id)?.name ?? 'wtf';
+    const user = this.friends.find((user) => user.id === id);
+    if (userStatus && user) user.name = userStatus.name ?? user.name;
+    return (
+      userStatus?.name ??
+      this.friends.find((user) => user.id === id)?.name ??
+      'wtf'
+    );
     // return userStatus?.name ? userStatus?.name : this.users.find(user => user.id === id)?.name;
   }
 
@@ -172,15 +222,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const userStatus = this.statuses.find(
       (status) => status.userId === Number(id),
     );
-    const user = this.friends.find(user => user.id === id);
-    if (userStatus && user)
-      user.avatar = userStatus.avatar ?? user.avatar;
-    return userStatus?.avatar ?? this.friends.find(user => user.id === id)?.avatar ?? 'wtf';
+    const user = this.friends.find((user) => user.id === id);
+    if (userStatus && user) user.avatar = userStatus.avatar ?? user.avatar;
+    return (
+      userStatus?.avatar ??
+      this.friends.find((user) => user.id === id)?.avatar ??
+      'wtf'
+    );
   }
 
-
   ngOnDestroy() {
-    this.userSubscription.unsubscribe();
-    this.statusSubscription.unsubscribe();
+    console.log('DESTROY PROFILE COMPONENT');
+
+    if (this.userSubscription) this.userSubscription.unsubscribe();
+    if (this.statusSubscription) this.statusSubscription.unsubscribe();
+    if (this.friendSubscription) this.friendSubscription.unsubscribe();
   }
 }

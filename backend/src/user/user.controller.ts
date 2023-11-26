@@ -1,4 +1,22 @@
-import { ParseIntPipe,Body, Controller, Get,Res, Post, Query,Param,NotFoundException,Put, Delete, UseInterceptors, UploadedFile, Req, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  ParseIntPipe,
+  Body,
+  Controller,
+  Get,
+  Res,
+  Post,
+  Query,
+  Param,
+  NotFoundException,
+  Put,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  Req,
+  BadRequestException,
+  UseGuards,
+  HttpException, HttpStatus
+} from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express'
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -22,45 +40,29 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  /*--------dev--------*/
-  @UseGuards(DebugRoute) 
-  @Post() // added to dev module
-  createUser(@Body() dto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(dto);
-  }
-
-  @UseGuards(DebugRoute)
-  @Get('dummy') // added to dev module
-  createDummyUsers(){
-    this.userService.createDummyUsers();
-  }
-
-  // @UseGuards(DebugRoute)
-  @Delete('dummy') // added to dev module
-  deleteUserDatabase(){
-    this.userService.deleteUserDatabase();
-  }
-  /*---------dev---------*/
-
   //todo: prevent uploading files if user doesnt exist 
   @UseGuards(jwtAuthGuard)
-  @Post('profilepic') //remove id
+  @Post('profilepic')
   @UseInterceptors(FileInterceptor('file',{
     storage: diskStorage({
       destination: './uploadedData/profilepictures',
       filename: (req,file,callback) => {
-          const userId = req.user['id'];
+          const userId = req.user['id']; 
           const extension = extname(file.originalname)
-          const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
-          callback(null,filename);
+          const allowedExtensions: string[] = [".jpeg", ".jpg", ".png",".PNG",".JPEG",".JPG"]
+          if(allowedExtensions.find((elem)=> elem == extension)){
+            const filename =`profilepic_user_${userId}_${new Date().getTime()}${extension}`;
+            callback(null,filename);
+          }
       }
-    })
+    }),
+    limits: { fileSize: 10000000}
   }))
   uploadProfilePicture(
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
     ) {
-
+      console.log("here")
     // const baseUrl = request.protocol + '://' + request.get('host');
     // dirty fix by cosmo :(, prepended `http://localhost:3000` to the imageURL 
     const userProfileImageURL = `https://${process.env.HOST_NAME}:3000/users/profilepic/${file.filename}`
@@ -79,7 +81,8 @@ export class UserController {
   @UseGuards(jwtAuthGuard)
   @Delete('profilepic')
   resetProfilePic(@Req() req: Request) {
-    return this.userService.resetProfilePic(req.user['id']);
+    const newImage = this.userService.resetProfilePic(req.user['id']);
+    return {img: newImage};
   }
 
   // this makes sense, but blocks the other
@@ -108,17 +111,19 @@ export class UserController {
   };
 
   @UseGuards(jwtAuthGuard)
-  @Put() //remove id
-  updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
-      try {
-          return this.userService.updateUser(req.user['id'] ,dto);
-      } catch (error) {
-          throw new NotFoundException()
-      }
+  @Put()
+  async updateUser(@Req() req: Request,@Body() dto: UpdateUserDto) {
+       try {
+          return await this.userService.updateUser(req.user['id'] ,dto);
+       } catch (error) {
+        if (error.code === '23505')
+          throw new BadRequestException('Username is taken, please choose another username and try again');
+        throw new HttpException(error?.message, HttpStatus.BAD_REQUEST);
+       }
   };
 
   @UseGuards(jwtAuthGuard)
-  @Delete() //remove id
+  @Delete()
   deleteUser(@Req() req: Request){
     return this.userService.deleteUser(req.user['id']);
   }
@@ -137,6 +142,12 @@ export class UserController {
       if (filter && filter !== 'friend' && filter !== 'blocked') 
         throw new BadRequestException('filterField must be either "friend" or "blocked"');
     return this.userService.getUserRelationships(id,filter);
+  }
+
+  @UseGuards(jwtAuthGuard)
+  @Get(':id/friends')
+  async getUserFriendList(@Param('id', ParseIntPipe) id: number): Promise<User[]> {
+    return await this.userService.getUserFriendList(id);
   }
 
 }

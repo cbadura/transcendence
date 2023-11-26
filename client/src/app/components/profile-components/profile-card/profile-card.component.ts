@@ -28,7 +28,7 @@ export class ProfileCardComponent implements OnInit {
   clickOnCard = (event: Event) => {
     if (this.redirect) {
 		event.stopPropagation();
-      this.router.navigate(['profile', 'profile', this.user]);
+      this.router.navigate(['profile',  this.user.id]);
     }
   };
 

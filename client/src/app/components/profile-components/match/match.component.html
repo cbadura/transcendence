@@ -1,4 +1,4 @@
-<div class="flex text-white justify-between items-center">
+<div class="flex text-white justify-between items-center" *ngIf="this.match != undefined">
 
     <!-- My user -->
   <div class="flex flex-col items-center h-[125px]">
@@ -7,23 +7,23 @@
 </div>
 
   <!-- Score and date -->
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center" *ngIf="this.match != undefined">
 
     <!-- Score -->
-    <div class="font-bold text-4xl flex p-2 rounded-xl" [ngClass]="{'bg-green-600': match.myScore > match.opponentScore, 'bg-red-600': match.myScore <= match.opponentScore}">
-      <h1>{{ match.myScore }}</h1>
+    <div class="font-bold text-4xl flex p-2 rounded-xl" [ngClass]="{'bg-green-600': ownerArrElemID == winnerArrElemId, 'bg-red-600': ownerArrElemID != winnerArrElemId}">
+      <h1>{{ match.matchUsers[ownerArrElemID].score }}</h1>
       <h1 class="ml-1 mr-1">:</h1>
-      <h1>{{ match.opponentScore }}</h1>
+      <h1>{{ match.matchUsers[oppArrElemID].score }}</h1>
     </div>
 
     <!-- Formatted date -->
-    <h1>{{ formatDate(match.dateTime) }}</h1>
+    <h1>{{ formatDate(match.timestamp) }}</h1>
   </div>
 
   <!-- Opponent -->
-  <div class="flex flex-col items-center h-[125px]">
-    <tcd-thumbnail class="aspect-square" [imgUrl]="match.opponent.avatar" [size]="'5rem'"></tcd-thumbnail>
-	<h1>{{ match.opponent.name.length > 10 ? (match.opponent.name | slice:0:10) + '...' : match.opponent.name }}</h1>
+  <div class="flex flex-col items-center h-[125px]" *ngIf="this.match != undefined">
+    <tcd-thumbnail class="aspect-square" [imgUrl]="match.matchUsers[oppArrElemID].user.avatar" [size]="'5rem'"></tcd-thumbnail>
+	<h1>{{match.matchUsers[oppArrElemID].user.name.length > 10 ? (match.matchUsers[oppArrElemID].user.name | slice:0:10) + '...' : match.matchUsers[oppArrElemID].user.name }}</h1>
 </div>
 
 </div>
