@@ -66,7 +66,7 @@ export class UserDataService {
         (error) => {
           reject(error);
         },
-    });
+      )});
 
     // this.http.get(url, { withCredentials: true }).subscribe(async (response: any) => {
     // console.log('RESPONSE', response)
