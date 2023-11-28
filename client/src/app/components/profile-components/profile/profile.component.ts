@@ -85,6 +85,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           });
           this.userService.getMatches(this.user.id).subscribe((data) => {
             this.matches = data;
+            this.matches.reverse();
           });
         });
 
