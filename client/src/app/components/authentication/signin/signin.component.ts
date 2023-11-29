@@ -8,6 +8,6 @@ export class SigninComponent {
 
 
 	redirectToLogin() {
-		window.location.href = 'http://localhost:3000/auth/login';
+		window.location.href = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/auth/login`;
 	}
 }

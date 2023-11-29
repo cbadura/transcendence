@@ -28,7 +28,7 @@ import { AuthSocket, WSAuthMiddleware } from 'src/auth/ws.middleware';
 @UseFilters(BadRequestTransformationFilter)
 @WebSocketGateway({
   cors:{
-    origin: 'http://localhost:4200',
+    origin: `https://${process.env.HOST_NAME}:4200`,
     credentials: true
   },
   namespace: 'chat',

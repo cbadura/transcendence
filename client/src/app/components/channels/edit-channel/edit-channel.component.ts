@@ -126,7 +126,7 @@ export class EditChannelComponent implements OnInit, OnDestroy {
   }
 
   fetchUser(id: number) {
-    const url = `http://localhost:3000/users/${id}`;
+    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}`;
     this.http.get<User>(url, { withCredentials: true }).subscribe((data) => {
       if (data && data.id !== Number(this.channel.ownerId)) {
         if (this.channel.adminIds?.includes(data.id)) {

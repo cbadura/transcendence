@@ -29,11 +29,11 @@ const isDevMode: boolean = process.env.MODE == 'dev';
 @Global() //might not be the best way, but only way for the multerModule to register globally
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env' }),
+    ConfigModule.forRoot({ envFilePath: '../.env' }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: Number.parseInt(process.env.POSTGRES_PORT),
+      host: 'db', // localhost (dont put in env for submit!!!)
+      port: 5432, //(dont put in env for submit!!!)
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,

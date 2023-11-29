@@ -8,7 +8,7 @@ import { Post } from 'src/app/shared/interfaces/post';
   templateUrl: './message-info.component.html',
 })
 export class MessageInfoComponent {
-  private serverAddress: string = 'http://localhost:3000';
+  private serverAddress: string = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000`;
   constructor(private http: HttpClient,private router: Router) {}
   ngOnInit(): void {}
 
@@ -18,7 +18,7 @@ export class MessageInfoComponent {
 clickOnCard = (event: Event) => {
   if(this.isMe){ //right now do nothing, because you dont want to accidentally move to own profile
     // event.stopPropagation();
-    // this.router.navigate(['profile',]); 
+    // this.router.navigate(['profile',]);
   }
   else{
     // this.http.get(this.serverAddress + '/users/' + this.post.senderId, { withCredentials: true }).subscribe(
