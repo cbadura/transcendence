@@ -21,17 +21,19 @@ clickOnCard = (event: Event) => {
     // this.router.navigate(['profile',]); 
   }
   else{
-    this.http.get(this.serverAddress + '/users/' + this.post.senderId, { withCredentials: true }).subscribe(
-      (data) => {
-        console.log('EDIT', JSON.stringify(data));
-        console.log('data =',data)
-        event.stopPropagation();
-        this.router.navigate(['profile', 'profile', data]); 
+    // this.http.get(this.serverAddress + '/users/' + this.post.senderId, { withCredentials: true }).subscribe(
+    //   (data) => {
+    //     console.log('EDIT', JSON.stringify(data));
+    //     console.log('data =',data)
+    //     event.stopPropagation();
+    //     // this.router.navigate(['profile', 'profile', data]); 
+    //     this.router.navigate(['profile', this.post.senderId]);
         
-      },
-      (error) => {
-        window.alert('Error editing user: ' + JSON.stringify(error));
-      })
+    //   },
+    //   (error) => {
+    //     window.alert('Error editing user: ' + JSON.stringify(error));
+    //   })
+    this.router.navigate(['profile', this.post.senderId]);
   };
   }
 }
