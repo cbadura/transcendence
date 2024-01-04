@@ -24,7 +24,7 @@ export class TokenComponent implements OnInit {
 
     if (code) {
       this.http
-        .get(`https://${import.meta.env['NG_APP_HOST_NAME']}:3000/auth/redirect?code=${code}`, { withCredentials: true })
+        .get(`http://localhost:3000/auth/redirect?code=${code}`, { withCredentials: true })
         .subscribe(
           (response: any) => {
             console.log('login response', response);

@@ -120,7 +120,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   private async getUserProfile(id: number): Promise<void> {
-    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}`;
+    const url = `http://localhost:3000/users/${id}`;
 
     return new Promise<void>((resolve, reject) => {
       this.http.get(url, { withCredentials: true }).subscribe(
@@ -151,7 +151,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   fetchUser(id: number) {
-    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/${id}`;
+    const url = `http://localhost:3000/users/${id}`;
     this.http.get<User>(url, { withCredentials: true }).subscribe((data) => {
       if (data) {
         this.friends.push(data);

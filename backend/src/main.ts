@@ -10,7 +10,7 @@ async function bootstrap() {
     transform: true, //automatically transform payloads to be objects typed according to their DTO classes
   }));
   app.enableCors({
-    origin: `https://${process.env.HOST_NAME}:4200`,
+    origin: `http://localhost:4200`,
     credentials: true // cookie
   });
   app.use(cookieParser());

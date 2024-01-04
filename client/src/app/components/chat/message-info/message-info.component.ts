@@ -8,7 +8,7 @@ import { Post } from 'src/app/shared/interfaces/post';
   templateUrl: './message-info.component.html',
 })
 export class MessageInfoComponent {
-  private serverAddress: string = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000`;
+  private serverAddress: string = `http://localhost:3000`;
   constructor(private http: HttpClient,private router: Router) {}
   ngOnInit(): void {}
 

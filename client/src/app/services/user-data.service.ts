@@ -22,7 +22,7 @@ export class UserDataService {
     tfa: false,
     achievements: [],
   };
-  private serverAddress: string = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000`;
+  private serverAddress: string = `http://localhost:3000`;
   gameSocket: Socket | null = null;
   chatSocket: Socket | null = null;
   userSocket: Socket | null = null;
@@ -42,7 +42,7 @@ export class UserDataService {
 
   getNewestUser() : Promise<User> {
   console.log('IN NEWEST USER')
-    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/users/profile`;
+    const url = `http://localhost:3000/users/profile`;
 
     return new Promise<User>((resolve, reject) => {
       this.http.get(url, { withCredentials: true }).subscribe(
@@ -210,7 +210,7 @@ export class UserDataService {
   }
 
   removeRelation(relationID: number): Observable<any> {
-    const url = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/relationship/${relationID}`;
+    const url = `http://localhost:3000/relationship/${relationID}`;
     return this.http.delete(url, { withCredentials: true });
   }
 
@@ -277,7 +277,7 @@ export class UserDataService {
   CreateSocketConnections() {
     console.log('trying to create Sockets', this.myUser.id);
 
-    const gameUrl = `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/game`;
+    const gameUrl = `http://localhost:3000/game`;
     if (!this.gameSocket) {
       this.gameSocket = new Socket({
         url: gameUrl,
@@ -289,7 +289,7 @@ export class UserDataService {
 
     if (!this.chatSocket) {
       this.chatSocket = new Socket({
-        url: `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/chat`,
+        url: `http://localhost:3000/chat`,
         options: {
           withCredentials: true,
           forceNew: true,
@@ -300,7 +300,7 @@ export class UserDataService {
 
     if (!this.userSocket) {
       this.userSocket = new Socket({
-        url: `https://${import.meta.env['NG_APP_HOST_NAME']}:3000/`,
+        url: `http://localhost:3000/`,
         options: {
           withCredentials: true,
           forceNew: true,

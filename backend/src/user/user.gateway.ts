@@ -12,7 +12,7 @@ import { AuthSocket, WSAuthMiddleware } from 'src/auth/ws.middleware';
 
 @WebSocketGateway({
   cors: {
-    origin: `https://${process.env.HOST_NAME}:4200`,
+    origin: `http://${process.env.HOST_NAME}:4200`,
     credentials: true
   },
 })

@@ -63,7 +63,7 @@ export class DevService {
       for(let i: number = 0; i < 100; i++){
         let user = new CreateUserDto;
         user.name = 'DummyUser_' + Math.floor(100000 + Math.random() * 900000).toString();
-        user.avatar = `https://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
+        user.avatar = `http://${process.env.HOST_NAME}:3000/users/profilepic/default_0${Math.floor(Math.random() * 100 % 5)}.jpg`;
         user.color = colors[Math.floor(100000 + Math.random() * 900000) % 6];
         user.level = Number(((100000 + Math.random() * 10000) % 100).toFixed(2)); 
         user.matches = Math.floor(100000 + Math.random() * 900000) % 500;
