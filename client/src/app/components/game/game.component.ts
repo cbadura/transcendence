@@ -87,8 +87,9 @@ export class GameComponent implements CanComponentDeactivate {
         'Are you sure you want to leave the game?',
       );
       if (navigate) {
+        this.cleanUpPrevMatch();
         console.log('navigating boiiiiiiiiiiiii')
-		this.status === 'playing' || this.status === 'gameover' ?  this.gameService.leaveMatch() : this.gameService.leaveQueue() ;
+		    this.status === 'playing' || this.status === 'gameover' ?  this.gameService.leaveMatch() : this.gameService.leaveQueue();
         return true;
       } else return false;
     }
@@ -184,7 +185,7 @@ export class GameComponent implements CanComponentDeactivate {
 	this.opponent = null;
 	this.render = null;
 	this.paddle = 0;
-	this.gameSubscription.unsubscribe();	
+	if (this.gameSubscription) this.gameSubscription.unsubscribe();
   }
 
   rematch(): void {
